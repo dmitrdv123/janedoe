@@ -1,0 +1,48 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -r pino-pretty -r node-cache -q dist/index.js\""
+  },
+  "dependencies": {
+    "@metamask/eth-sig-util": "^6.0.0",
+    "@repo/dao": "workspace:*",
+    "@repo/dao-aws": "workspace:*",
+    "@repo/evm": "workspace:*",
+    "@repo/common": "workspace:*",
+    "abitype": "^1.0.2",
+    "axios": "^1.4.0",
+    "better-lock": "^2.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "ethereumjs-util": "^7.1.5",
+    "express": "^4.18.1",
+    "express-jwt": "^8.4.1",
+    "jsonwebtoken": "^9.0.1",
+    "morgan": "^1.10.0",
+    "nanoid": "^3.0.0",
+    "nodemailer": "^6.9.5",
+    "pino": "^8.15.1",
+    "pino-http": "^8.5.0",
+    "pino-pretty": "^10.2.0",
+    "rango-sdk-basic": "^0.1.47",
+    "viem": "^2.9.15"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/morgan": "^1.9.4",
+    "@types/node": "18",
+    "@types/nodemailer": "^6.4.11",
+    "concurrently": "^7.6.0",
+    "eslint": "^8.45.0",
+    "nodemon": "^2.0.20",
+    "typescript": "^5.4.4"
+  }
+}

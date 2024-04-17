@@ -1,0 +1,21 @@
+{
+  "name": "@repo/common",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "abitype": "^1.0.2",
+    "axios": "^1.4.0",
+    "better-lock": "^2.0.3",
+    "node-cache": "^5.1.2",
+    "rango-sdk-basic": "^0.1.47"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "18",
+    "typescript": "^5.4.4"
+  }
+}

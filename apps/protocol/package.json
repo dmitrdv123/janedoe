@@ -1,0 +1,41 @@
+{
+  "name": "protocol",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "clean": "hardhat clean",
+    "build": "hardhat clean && hardhat compile",
+    "start": "hardhat node",
+    "dev": "hardhat node",
+    "deploy": "hardhat run ./scripts/deploy.ts",
+    "upgrade": "hardhat run ./scripts/upgrade.ts",
+    "seed": "hardhat run ./scripts/seed.ts",
+    "sandbox": "hardhat run ./scripts/sandbox.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ethersproject/bignumber": "^5.7.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.1",
+    "@openzeppelin/contracts-upgradeable": "^5.0.1",
+    "@openzeppelin/hardhat-upgrades": "^3.0.1",
+    "@types/jsonwebtoken": "^9.0.2",
+    "axios": "^1.4.0",
+    "@repo/common": "workspace:*",
+    "@repo/dao": "workspace:*",
+    "@repo/dao-aws": "workspace:*",
+    "@repo/dao-mongoose": "workspace:*",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.4.0",
+    "hardhat": "2.19.3",
+    "nanoid": "^3.0.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^8.45.0"
+  }
+}

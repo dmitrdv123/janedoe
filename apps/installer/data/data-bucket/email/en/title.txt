@@ -1,0 +1,1 @@
+Payment details for Company ID ${id} and Payment ID ${payment_id}

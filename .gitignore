@@ -1,0 +1,62 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# testing
+coverage
+coverage.json
+
+# cra
+out
+build
+dist
+pruned
+cache
+
+# other
+apps/api/data/**/*.json
+apps/api/data/**/*.txt
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# local env files
+.env.*
+.env
+!.env.example
+
+# config files
+.config.*.json
+.config.json
+!.config.example.json
+
+# turbo
+.turbo
+.sandbox
+.idea
+
+# protocol
+apps/protocol/artifacts/
+apps/protocol/cache
+apps/protocol/deployments/
+apps/protocol/typechain
+apps/protocol/typechain-types
+
+# installer
+apps/installer/**/*.js
+apps/installer/**/*.d.ts
+!apps/installer/jest.config.js
+apps/installer/cdk.context.json
+apps/installer/.cdk.staging
+apps/installer/cdk.out

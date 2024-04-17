@@ -1,0 +1,283 @@
+{
+  "pages": {
+    "accounts": {
+      "title": "Выберите аккаунты",
+      "shared_account": "Общие аккаунты",
+      "my_account": "Мой аккаунт",
+      "errors": {
+        "load_error": "Произошла ошибка при загрузке общих аккаунтов"
+      }
+    },
+    "app": {
+      "home": "Главная",
+      "balances": "Балансы",
+      "payments": "Платежи",
+      "account_settings": "Настройки аккаунта",
+      "payment_settings": "Настройки платежей",
+      "documentations": "Документация",
+      "support": "Поддержка",
+      "errors": {
+      }
+    },
+    "auth": {
+      "button": "Войти или зарегистрироваться",
+      "connect": "Подключить кошелек",
+      "errors": {
+        "nonce_not_defined": "Не удалось авторизоваться",
+        "fail_retrieve_nonce": "Не удалось авторизоваться"
+      }
+    }
+  },
+  "components": {
+    "account_settings": {
+      "title": "Настройки аккаунта",
+      "api_settings_title": "Настройки API",
+      "api_title": "Ключ API",
+      "api_key_placeholder": "Ключ API",
+      "api_key_desc": "Необходим для вызова методов API",
+      "api_generate_btn": "Сгенерировать",
+      "api_remove_btn": "Удалить",
+      "common_settings_title": "Общие настройки",
+      "common_settings_email": "Email",
+      "common_settings_email_placeholder": "Введите email",
+      "common_settings_email_invalid": "Пожалуйста, введите правильный email",
+      "common_settings_email_desc": "Для связи между нашей командой и вами",
+      "common_settings_company": "Описание компании",
+      "common_settings_company_desc": "Поделитесь кратким описанием компании или контактными данными, которые увидят ваши клиенты",
+      "common_settings_currency": "Валюта",
+      "common_settings_select_currency": "Пожалуйста, выберите валюту",
+      "common_settings_search_currency_placeholder": "Поиск по имени",
+      "common_settings_currency_desc": "Для отображения балансов и суммы платежей",
+      "notification_settings_title": "Настройки уведомлений",
+      "notification_settings_url": "Callback URL для платежа",
+      "notification_settings_url_placeholder": "Введите Callback URL для платежа",
+      "notification_settings_invalid_url": "Пожалуйста, введите правильный URL",
+      "notification_settings_url_desc": "Будет вызван после успешного платежа",
+      "notification_settings_key": "Секретный ключ",
+      "notification_settings_key_placeholder": "Секретный ключ",
+      "notification_settings_key_desc": "Будет отправлен как bearer token в заголовках Callback URL",
+      "notification_settings_save": "Сохранить",
+      "team_settings_title": "Командные настройки",
+      "team_settings_wallet_col": "Кошелек",
+      "team_settings_permissions_col": "Разрешения",
+      "team_settings_no_users": "Нет пользователей",
+      "team_settings_add_user": "Добавить пользователя",
+      "team_settings_remove_users": "Удалить всех пользователей",
+      "team_settings_wallet_placeholder": "Адрес кошелька",
+      "team_settings_hide_permission": "Скрыть разрешения",
+      "team_settings_show_permission": "Показать разрешения",
+      "team_settings_permission_disable": "Отключить",
+      "team_settings_permission_view": "Просмотр",
+      "team_settings_permission_modify": "Изменение",
+      "team_settings_balances": "Балансы",
+      "team_settings_payments": "Платежи",
+      "team_settings_common_settings": "Общие настройки",
+      "team_settings_notification_settings": "Настройки уведомлений",
+      "team_settings_api_settings": "Настройки API",
+      "team_settings_team_settings": "Командные настройки",
+      "team_settings_payment_settings": "Настройки платежей",
+      "errors": {
+        "fail_remove_api_key": "Не удалось удалить ключ API",
+        "fail_generate_api_key": "Не удалось сгенерировать ключ API",
+        "fail_save_common_settings": "Не удалось сохранить общие настройки",
+        "fail_save_notification_settings": "Не удалось сохранить настройки уведомлений",
+        "fail_save_team_settings": "Не удалось сохранить командные настройки"
+      }
+    },
+    "balances": {
+      "title": "Балансы",
+      "blockchain_col": "Блокчейн",
+      "blockchain_tokens_col": "Токены",
+      "blockchain_total_col": "Общая сумма",
+      "success": "Вывод средств был осуществлен успешно для {{blockchain}}",
+      "withdraw_all_btn": "Снять все",
+      "wallet_address_placeholder": "Адрес кошелька",
+      "withdraw_btn": "Снять",
+      "errors": {
+        "read_balance_error": "Произошла ошибка при загрузке балансов",
+        "token_price_error": "Цена токена не определена",
+        "transaction_error": "Ошибка обработки транзакции",
+        "withdraw_blockchain_error": "Не удалось снять средства с {{blockchain}}"
+      }
+    },
+    "home": {
+      "title": "Как получать платежи",
+      "desc": "Для получения платежей вам необходимо создавать URL по следующему шаблону:",
+      "payment_where": "Где:",
+      "account_id_desc": "ваш идентификатор аккаунта.",
+      "payment_id_desc": "Замените <1>payment id</1> на уникальный идентификатор, который позволит идентифицировать покупки пользователя. Это может быть любая строка максимальной длиной 50 символов, содержащая алфавитные символы, цифры, символы '_', '-'.",
+      "currency_desc": "Замените <1>currency</1> на необходимую фиатную валюту, например, USD",
+      "currency_List": "cписок поддерживаемых валют",
+      "currency_amount_desc": "Замените <1>currency amount</1> на необходимую сумму платежа в выбранной валюте, например, в USD.",
+      "example": "Пример:",
+      "more_details": "Прочитать подробнее в <1>документации</1>.",
+      "errors": {
+      }
+    },
+    "navbar": {
+      "connected_in": "Адрес: {{address}} {{blockchain}}",
+      "disconnect": "Отключиться",
+      "no_accounts": "Нет общих аккаунтов",
+      "account": "Аккаунт: {{account}}",
+      "shared_accounts": "Общие аккаунты",
+      "my_account": "Мой Аккаунт",
+      "language": "Язык: {{language}}",
+      "support": "Поддержка"
+    },
+    "payments": {
+      "title": "Платежи",
+      "no_payment": "Нет платежей",
+      "notification_col": "Уведомление",
+      "tran_hash_col": "Хеш транзакции",
+      "tran_hash_placeholder": "Хеш транзакции",
+      "payment_id_col": "ID платежа",
+      "payment_id_placeholder": "ID платежа",
+      "amount_col": "Сумма",
+      "token_col": "Токен",
+      "to_col": "Кому",
+      "to_placeholder": "Адрес получателя",
+      "from_col": "От кого",
+      "from_placeholder": "Адрес отправителя",
+      "blockchain_col": "Блокчейн",
+      "timestamp_col": "Время",
+      "download_btn": "Скачать ({{count}} записей)",
+      "clear_btn": "Очистить фильтры",
+      "success_btn": "Успех",
+      "error_btn": "Ошибка",
+      "not_send_btn": "Не отправлено",
+      "at_cur_time": "Настоящее время:",
+      "at_payment_time": "Время платежа:",
+      "notification_status_title": "Статус уведомления",
+      "notification_date_lbl": "Дата",
+      "notification_notification_lbl": "Уведомление",
+      "notification_status_code_lbl": "Код статуса",
+      "notification_response_lbl": "Ответ",
+      "notification_send_btn": "Отправить уведомление",
+      "notification_url_not_set": "Callback URL не задан в Настройках аккаунта - Настройках уведомлений",
+      "blockchain_filter_search_placeholder": "Поиск по имени блокчейна",
+      "date_from": "С даты",
+      "date_to": "По дату",
+      "errors": {
+        "fail_send_notification": "Не удалось отправить уведомление"
+      }
+    },
+    "payment_settings": {
+      "title": "Настройки платежей",
+      "desc": "Список блокчейнов и токенов, которые будут использоваться для приема платежей, перечисленных по приоритету в порядке убывания. Тот, что находится наверху, имеет наивысший приоритет.",
+      "no_blockchains_alert": "Пожалуйста, добавьте блокчейны",
+      "priority_col": "Приоритет",
+      "blockchain_col": "Блокчейн",
+      "tokens_col": "Токены",
+      "token_col": "Токен",
+      "add_blockchain_btn": "Добавить блокчейн",
+      "hide_tokens_btn": "Скрыть токены",
+      "show_tokens_btn": "Показать токены",
+      "add_tokens_alert": "Пожалуйста, добавьте токены",
+      "add_token_btn": "Добавить токен",
+      "blockchain_modal_title": "Выберите блокчейн",
+      "blockchain_modal_search_placeholder": "Поиск по имени блокчейна",
+      "token_modal_title": "Выберите токен",
+      "token_modal_search_placeholder": "Поиск по имени токена или адресу",
+      "errors": {
+        "fail_restore_default": "Не удалось восстановить настройки по умолчанию",
+        "fail_save": "Не удалось сохранить настройки платежей",
+        "cannot_find_blockchain": "Не удается найти детали блокчейна {{blockchain}}",
+        "cannot_find_native_token": "Не удается найти родной токен для блокчейна {{blockchain}}"
+      }
+    },
+    "support": {
+      "title": "Поддержка",
+      "success": "Запрос был успешно создан. Дальнейшая связь будет осуществляться по электронной почте.",
+      "success_ticket_id": "ID запроса:",
+      "back": "Вернуться",
+      "ticket_type": "Тип запроса",
+      "ticket_type_general": "Общее",
+      "ticket_type_payment": "Платежи",
+      "email": "Email",
+      "email_placeholder": "Введите email",
+      "email_required": "Введите корректный email",
+      "from_wallet": "Адрес плательщика",
+      "from_wallet_placeholder": "Введите адрес кошелька",
+      "to_wallet": "Адрес получателя платежа",
+      "to_wallet_placeholder": "Введите адрес кошелька",
+      "company_id": "ID компании",
+      "company_id_placeholder": "Введите ID компании",
+      "payment_id": "ID платежа",
+      "payment_id_placeholder": "Введите ID платежа",
+      "blockchain": "Блокчейн",
+      "blockchain_placeholder": "Введите имя блокчейна",
+      "token": "Токен",
+      "token_placeholder": "Введите имя токена",
+      "transaction": "Хэш транзакции",
+      "transaction_placeholder": "Введите хэш транзакции",
+      "desc": "Описание проблемы",
+      "desc_required": "Введите описание проблемы",
+      "submit": "Отправить",
+      "errors": {
+        "fail_submit": "Не удалось отправить запрос"
+      }
+    }
+  },
+  "states": {
+    "account_settings": {
+      "errors": {
+        "not_found": "Настройки аккаунта не определены",
+        "load_error": "Не удалось загрузить настройки аккаунта"
+      }
+    },
+    "exchange_rate": {
+      "errors": {
+        "not_found": "Обменный курс не определен",
+        "load_error": "Не удалось загрузить обменный курс"
+      }
+    },
+    "meta": {
+      "errors": {
+        "not_found": "Мета не определена",
+        "load_error": "Не удалось загрузить мета"
+      }
+    },
+    "settings": {
+      "errors": {
+        "not_found": "Настройки не определены",
+        "load_error": "Не удалось загрузить настройки"
+      }
+    }
+  },
+  "hooks": {
+    "write_and_wait_contract": {
+      "transaction_waiting_error": "Transaction waiting error {{hash}}",
+      "transaction_waiting": "Waiting for the transaction {{hash}}",
+      "transaction_confirmed": "Transaction confirmed",
+      "transaction_confirming": "Waiting for transaction confirmation",
+      "switch_chain_confirmed": "Blockchain switched",
+      "switch_chain_confirming": "Waiting for the blockchain switch"
+    }
+  },
+  "services": {
+    "errors": {
+      "request_error": "Не удалось отправить запрос"
+    }
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "processing": "Обработка...",
+    "saving": "Сохранение...",
+    "save_btn": "Сохранить",
+    "save_changes_btn": "Сохранить изменения",
+    "refresh_btn": "Обновить",
+    "apply_btn": "Применить",
+    "clear_btn": "Очистить",
+    "refresh_all_btn": "Обновить все",
+    "restore_defaults_btn": "Восстановить настройки по умолчанию",
+    "hide_btn": "Скрыть",
+    "show_btn": "Показать",
+    "nothing_found": "Ничего не найдено...",
+    "details": "Детали",
+    "errors": {
+      "default": "Произошла неизвестная ошибка",
+      "param_not_set": "Параметр {{name}} не задан или пуст",
+      "param_exceed_max_length": "Длина {{length}} параметра {{name}} превышает максимальную длину {{max_length}}"
+    }
+  }
+}

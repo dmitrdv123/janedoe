@@ -1,0 +1,54 @@
+{
+  "pages": {
+    "landing": {
+      "title_desc": "Принимайте платежи в криптовалюте",
+      "button": "Войти или зарегистрироваться",
+      "no_kyc": "Без KYC",
+      "no_fees": "Без комиссий",
+      "no_custodial": "Без кастодиальных кошельков",
+      "no_integration": "Не требуется интеграция",
+      "supported": "{{blockchains}} блокчейнов, {{tokens}} токенов и {{currencies}} валют",
+      "auto_convert": "Автоматическая конвертация токенов",
+      "read_more": "Прочитать подробнее"
+    }
+  },
+  "components": {
+    "navbar": {
+      "connected_in": "Адрес: {{address}} {{blockchain}}",
+      "disconnect": "Отключиться",
+      "no_accounts": "Нет общих аккаунтов",
+      "account": "Аккаунт: {{account}}",
+      "shared_accounts": "Общие аккаунты",
+      "my_account": "Мой Аккаунт",
+      "language": "Язык: {{language}}",
+      "support": "Поддержка",
+      "documentation": "Документация"
+    }
+  },
+  "services": {
+    "errors": {
+      "request_error": "Не удалось отправить запрос"
+    }
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "processing": "Обработка...",
+    "saving": "Сохранение...",
+    "save_btn": "Сохранить",
+    "save_changes_btn": "Сохранить изменения",
+    "refresh_btn": "Обновить",
+    "apply_btn": "Применить",
+    "clear_btn": "Очистить",
+    "refresh_all_btn": "Обновить все",
+    "restore_defaults_btn": "Восстановить настройки по умолчанию",
+    "hide_btn": "Скрыть",
+    "show_btn": "Показать",
+    "nothing_found": "Ничего не найдено...",
+    "details": "Детали",
+    "errors": {
+      "default": "Произошла неизвестная ошибка",
+      "param_not_set": "Параметр {{name}} не задан или пуст",
+      "param_exceed_max_length": "Длина {{length}} параметра {{name}} превышает максимальную длину {{max_length}}"
+    }
+  }
+}

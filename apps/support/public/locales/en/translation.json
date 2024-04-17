@@ -1,0 +1,78 @@
+{
+  "pages": {
+    "support": {
+      "title": "Support",
+      "success": "Request was created successfully. Further communication will be carried out by email.",
+      "success_ticket_id": "Ticket ID:",
+      "back": "Go back",
+      "ticket_type": "Request type",
+      "ticket_type_general": "General",
+      "ticket_type_payment": "Payments",
+      "email": "Email",
+      "email_placeholder": "Enter email",
+      "email_required": "Enter correct email",
+      "from_wallet": "Payer address",
+      "from_wallet_placeholder": "Enter address",
+      "to_wallet": "Payee address",
+      "to_wallet_placeholder": "Enter address",
+      "company_id": "Company ID",
+      "company_id_placeholder": "Enter company ID",
+      "payment_id": "Payment ID",
+      "payment_id_placeholder": "Enter payment ID",
+      "blockchain": "Blockchain",
+      "blockchain_placeholder": "Enter blockchain name",
+      "token": "Token",
+      "token_placeholder": "Enter token name",
+      "transaction": "Transaction hash",
+      "transaction_placeholder": "Enter transaction",
+      "desc": "Issue description",
+      "desc_required": "Issue description required",
+      "submit": "Send",
+      "errors": {
+        "fail_submit": "Failed to send request"
+      }
+    }
+  },
+  "components": {
+    "navbar": {
+      "connected_in": "Address: {{address}} {{blockchain}}",
+      "disconnect": "Disconnect",
+      "no_accounts": "No shared accounts",
+      "account": "Account: {{account}}",
+      "shared_accounts": "Shared Accounts",
+      "my_account": "My Account",
+      "language": "Language: {{language}}",
+      "support": "Support"
+    }
+  },
+  "states": {
+  },
+  "hooks": {
+  },
+  "services": {
+    "errors": {
+      "request_error": "Failed to send request"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "saving": "Saving...",
+    "save_btn": "Save",
+    "save_changes_btn": "Save Changes",
+    "refresh_btn": "Refresh",
+    "apply_btn": "Apply",
+    "clear_btn": "Clear",
+    "refresh_all_btn": "Refresh All",
+    "restore_defaults_btn": "Restore Defaults",
+    "hide_btn": "Hide",
+    "show_btn": "Show",
+    "nothing_found": "Nothing found...",
+    "details": "Details",
+    "errors": {
+      "default": "Unknown error happens",
+      "param_not_set": "Parameter {{name}} is not set or empty",
+      "param_exceed_max_length": "Length {{length}} of parameter {{name}} is exceed maximum length {{max_length}}"
+    }
+  }
+}

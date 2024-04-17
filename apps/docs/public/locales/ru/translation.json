@@ -1,0 +1,99 @@
+{
+  "pages": {
+    "app": {
+      "home": "Введение",
+      "tutorials": "Обучающие программы",
+      "tutorials_create_account": "Как создать учетную запись",
+      "tutorials_receive_payments": "Как получать платежи",
+      "tutorials_monitor_payments": "Как отслеживать платежи",
+      "tutorials_withdraw": "Как выводить средства",
+      "tutorials_share_access": "Как предоставить доступ к вашему аккаунту для других пользователей",
+      "tutorials_payment_settings": "Как настроить блокчейны и токены для приема платежей",
+      "tutorials_notifications": "Как получать уведомления о платежах",
+      "tutorials_api": "Как интегрироваться с API",
+      "resources": "Ресурсы",
+      "resources_currencies": "Поддерживаемые валюты",
+      "resources_blockchains": "Поддерживаемые блокчейны",
+      "resources_tokens": "Поддерживаемые токены",
+      "resources_contracts": "Адреса контрактов",
+      "errors": {
+      }
+    }
+  },
+  "components": {
+    "doc_navbar": {
+      "language": "Язык: {{language}}"
+    },
+    "doc_sidebar": {
+    },
+    "home": {
+      "title": "Введение"
+    },
+    "tutorials": {
+      "title": "Обучающие программы",
+      "tutorials_api_title": "Как интегрироваться с API",
+      "tutorials_create_account_title": "Как создать учетную запись",
+      "tutorials_monitor_payments_title": "Как отслеживать платежи",
+      "tutorials_notifications_title": "Как получать уведомления о платежах",
+      "tutorials_payment_settings_title": "Как настроить блокчейны и токены для приема платежей",
+      "tutorials_receive_payments_title": "Как получать платежи",
+      "tutorials_share_access_title": "Как предоставить доступ к вашему аккаунту для других пользователей",
+      "tutorials_withdraw_title": "Как выводить средства"
+    },
+    "resources": {
+      "title": "Ресурсы",
+      "resources_blockchains_title": "Поддерживаемые блокчейны",
+      "resources_contracts_title": "Адреса контрактов",
+      "resources_currencies_title": "Поддерживаемые валюты",
+      "resources_tokens_title": "Поддерживаемые токены",
+      "resources_tokens_search_placeholder": "Поиск по имени токена или адресу",
+      "resources_tokens_blockchain_select": "Выберете блокчейн",
+      "resources_tokens_found": "Найдено: {{count}} записей",
+      "resources_contracts_blockchain_col": "Блокчейн",
+      "resources_contracts_contract_col": "Контракт",
+      "resources_contracts_address_col": "Адрес"
+    }
+  },
+  "states": {
+    "meta": {
+      "errors": {
+        "not_found": "Мета не определена",
+        "load_error": "Не удалось загрузить мета"
+      }
+    },
+    "settings": {
+      "errors": {
+        "not_found": "Настройки не определены",
+        "load_error": "Не удалось загрузить настройки"
+      }
+    }
+  },
+  "hooks": {
+  },
+  "services": {
+    "errors": {
+      "request_error": "Не удалось отправить запрос"
+    }
+  },
+  "common": {
+    "details": "Детали",
+    "loading": "Загрузка...",
+    "processing": "Обработка...",
+    "saving": "Сохранение...",
+    "save_btn": "Сохранить",
+    "save_changes_btn": "Сохранить изменения",
+    "refresh_btn": "Обновить",
+    "apply_btn": "Применить",
+    "clear_btn": "Очистить",
+    "refresh_all_btn": "Обновить все",
+    "restore_defaults_btn": "Восстановить настройки по умолчанию",
+    "hide_btn": "Скрыть",
+    "show_btn": "Показать",
+    "nothing_found": "Ничего не найдено...",
+    "errors": {
+      "default": "Произошла неизвестная ошибка",
+      "param_not_set": "Параметр {{name}} не задан или пуст",
+      "param_exceed_max_length": "Длина {{length}} параметра {{name}} превышает максимальную длину {{max_length}}"
+    }
+  }
+}

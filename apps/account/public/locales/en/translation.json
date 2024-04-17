@@ -1,0 +1,283 @@
+{
+  "pages": {
+    "accounts": {
+      "title": "Choose Accounts",
+      "shared_account": "Shared Accounts",
+      "my_account": "My Account",
+      "errors": {
+        "load_error": "Error happens during loading the shared accounts"
+      }
+    },
+    "app": {
+      "home": "Home",
+      "balances": "Balances",
+      "payments": "Payments",
+      "account_settings": "Account Settings",
+      "payment_settings": "Payment Settings",
+      "documentations": "Documentations",
+      "support": "Support",
+      "errors": {
+      }
+    },
+    "auth": {
+      "button": "Sign In or Sign Up",
+      "connect": "Connect Wallet",
+      "errors": {
+        "nonce_not_defined": "Failed to authorize",
+        "fail_retrieve_nonce": "Failed to authorize"
+      }
+    }
+  },
+  "components": {
+    "account_settings": {
+      "title": "Account Settings",
+      "api_settings_title": "API Settings",
+      "api_title": "API Key",
+      "api_key_placeholder": "API key",
+      "api_key_desc": "Required to call API methods",
+      "api_generate_btn": "Generate",
+      "api_remove_btn": "Remove",
+      "common_settings_title": "Common Settings",
+      "common_settings_email": "Email",
+      "common_settings_email_placeholder": "Enter email",
+      "common_settings_email_invalid": "Please provide a correct email",
+      "common_settings_email_desc": "For communication between our team and you",
+      "common_settings_company": "Company Description",
+      "common_settings_company_desc": "Share some brief company description or contact details which your customers will see",
+      "common_settings_currency": "Currency",
+      "common_settings_select_currency": "Please select currency",
+      "common_settings_search_currency_placeholder": "Search by name",
+      "common_settings_currency_desc": "To show balances and payments amount",
+      "notification_settings_title": "Notification Settings",
+      "notification_settings_url": "Payment Callback URL",
+      "notification_settings_url_placeholder": "Enter payment callback URL",
+      "notification_settings_invalid_url": "Please provide a correct URL",
+      "notification_settings_url_desc": "Will be called to after a successful payment",
+      "notification_settings_key": "Secret Key",
+      "notification_settings_key_placeholder": "Secret key",
+      "notification_settings_key_desc": "Will be send as bearer token in a callback request headers",
+      "notification_settings_save": "Save",
+      "team_settings_title": "Team Settings",
+      "team_settings_wallet_col": "Wallet",
+      "team_settings_permissions_col": "Permissions",
+      "team_settings_no_users": "No users",
+      "team_settings_add_user": "Add User",
+      "team_settings_remove_users": "Remove All Users",
+      "team_settings_wallet_placeholder": "Wallet address",
+      "team_settings_hide_permission": "Hide Permissions",
+      "team_settings_show_permission": "Show Permissions",
+      "team_settings_permission_disable": "Disable",
+      "team_settings_permission_view": "View",
+      "team_settings_permission_modify": "Modification",
+      "team_settings_balances": "Balances",
+      "team_settings_payments": "Payments",
+      "team_settings_common_settings": "Common Settings",
+      "team_settings_notification_settings": "Notification Settings",
+      "team_settings_api_settings": "API Settings",
+      "team_settings_team_settings": "Team Settings",
+      "team_settings_payment_settings": "Payment Settings",
+      "errors": {
+        "fail_remove_api_key": "Failed to remove API key",
+        "fail_generate_api_key": "Failed to generate API key",
+        "fail_save_common_settings": "Failed to save common settings",
+        "fail_save_notification_settings": "Failed to save notification settings",
+        "fail_save_team_settings": "Failed to save team settings"
+      }
+    },
+    "balances": {
+      "title": "Balances",
+      "blockchain_col": "Blockchain",
+      "blockchain_tokens_col": "Tokens",
+      "blockchain_total_col": "Total Amount",
+      "success": "Withdrawal of funds has been done successfully for {{blockchain}}",
+      "withdraw_all_btn": "Withdraw All",
+      "wallet_address_placeholder": "Wallet address",
+      "withdraw_btn": "Withdraw",
+      "errors": {
+        "read_balance_error": "Error happens during loading balances",
+        "token_price_error": "Token price is not defined",
+        "transaction_error": "Transaction processing error",
+        "withdraw_blockchain_error": "Failed to withdraw funds from {{blockchain}}"
+      }
+    },
+    "home": {
+      "title": "How to receive payments",
+      "desc": "To receive payments you need to create a URL using the following template:",
+      "payment_where": "Where:",
+      "account_id_desc": "is your account ID.",
+      "payment_id_desc": "Replace <1>payment id</1> with some unique id that will be allowed to identify user purchases. It can be any string with max length 50 symbols that can contains only alphabetic symbols, numbers, symbols '_', '-'.",
+      "currency_desc": "Replace <1>currency</1> with the necessary fiat currency, for example, USD",
+      "currency_List": "list of supported currencies",
+      "currency_amount_desc": "Replace <1>currency amount</1> with the necessary payment amount in choosed currency, for example, in USD amount.",
+      "example": "Example:",
+      "more_details": "Read more in <1>documentation</1>.",
+      "errors": {
+      }
+    },
+    "navbar": {
+      "connected_in": "Address: {{address}} {{blockchain}}",
+      "disconnect": "Disconnect",
+      "no_accounts": "No shared accounts",
+      "account": "Account: {{account}}",
+      "shared_accounts": "Shared Accounts",
+      "my_account": "My Account",
+      "language": "Language: {{language}}",
+      "support": "Support"
+    },
+    "payments": {
+      "title": "Payments",
+      "no_payment": "No payments",
+      "notification_col": "Notification",
+      "tran_hash_col": "Transaction Hash",
+      "tran_hash_placeholder": "Transaction Hash",
+      "payment_id_col": "Payment Id",
+      "payment_id_placeholder": "Payment Id",
+      "amount_col": "Amount",
+      "token_col": "Token",
+      "to_col": "To",
+      "to_placeholder": "To address",
+      "from_col": "From",
+      "from_placeholder": "From address",
+      "blockchain_col": "Blockchain",
+      "timestamp_col": "Timestamp",
+      "download_btn": "Download ({{count}} records)",
+      "clear_btn": "Clear Filters",
+      "success_btn": "Success",
+      "error_btn": "Error",
+      "not_send_btn": "Not Send",
+      "at_cur_time": "At present time:",
+      "at_payment_time": "At payment time:",
+      "notification_status_title": "Notification Status",
+      "notification_date_lbl": "Date",
+      "notification_notification_lbl": "Notification",
+      "notification_status_code_lbl": "Status Code",
+      "notification_response_lbl": "Response",
+      "notification_send_btn": "Send Notification",
+      "notification_url_not_set": "Payment Callback URL is not set in Account Settings - Notification Settings",
+      "blockchain_filter_search_placeholder": "Search by blockchain name",
+      "date_from": "From Date",
+      "date_to": "To Date",
+      "errors": {
+        "fail_send_notification": "Failed to send notification"
+      }
+    },
+    "payment_settings": {
+      "title": "Payment Settings",
+      "desc": "List of blockchains and tokens that will be used to receive payments, listed by priority in descending order. The one at the top has the highest priority.",
+      "no_blockchains_alert": "Please add blockchains",
+      "priority_col": "Priority",
+      "blockchain_col": "Blockchain",
+      "tokens_col": "Tokens",
+      "token_col": "Token",
+      "add_blockchain_btn": "Add Blockchain",
+      "hide_tokens_btn": "Hide Tokens",
+      "show_tokens_btn": "Show Tokens",
+      "add_tokens_alert": "Please add tokens",
+      "add_token_btn": "Add Token",
+      "blockchain_modal_title": "Select a Blockchain",
+      "blockchain_modal_search_placeholder": "Search by blockchain name",
+      "token_modal_title": "Select a Token",
+      "token_modal_search_placeholder": "Search by token name or address",
+      "errors": {
+        "fail_restore_default": "Failed to restore default settings",
+        "fail_save": "Failed to save payment settings",
+        "cannot_find_blockchain": "Cannot find blockchain {{blockchain}} details",
+        "cannot_find_native_token": "Cannot find native token for blockchain {{blockchain}}"
+      }
+    },
+    "support": {
+      "title": "Support",
+      "success": "Request was created successfully. Further communication will be carried out by email.",
+      "success_ticket_id": "Ticket ID:",
+      "back": "Go back",
+      "ticket_type": "Request type",
+      "ticket_type_general": "General",
+      "ticket_type_payment": "Payments",
+      "email": "Email",
+      "email_placeholder": "Enter email",
+      "email_required": "Enter correct email",
+      "from_wallet": "Payer address",
+      "from_wallet_placeholder": "Enter address",
+      "to_wallet": "Payee address",
+      "to_wallet_placeholder": "Enter address",
+      "company_id": "Company ID",
+      "company_id_placeholder": "Enter company ID",
+      "payment_id": "Payment ID",
+      "payment_id_placeholder": "Enter payment ID",
+      "blockchain": "Blockchain",
+      "blockchain_placeholder": "Enter blockchain name",
+      "token": "Token",
+      "token_placeholder": "Enter token name",
+      "transaction": "Transaction hash",
+      "transaction_placeholder": "Enter transaction",
+      "desc": "Issue description",
+      "desc_required": "Issue description required",
+      "submit": "Send",
+      "errors": {
+        "fail_submit": "Failed to send request"
+      }
+    }
+  },
+  "states": {
+    "account_settings": {
+      "errors": {
+        "not_found": "Account settings is not defined",
+        "load_error": "Failed to load account settings"
+      }
+    },
+    "exchange_rate": {
+      "errors": {
+        "not_found": "Exchange rate is not defined",
+        "load_error": "Failed to load exchange rate"
+      }
+    },
+    "meta": {
+      "errors": {
+        "not_found": "Meta is not defined",
+        "load_error": "Failed to load meta"
+      }
+    },
+    "settings": {
+      "errors": {
+        "not_found": "Settings is not defined",
+        "load_error": "Failed to load settings"
+      }
+    }
+  },
+  "hooks": {
+    "write_and_wait_contract": {
+      "transaction_waiting_error": "Transaction waiting error {{hash}}",
+      "transaction_waiting": "Waiting for the transaction {{hash}}",
+      "transaction_confirmed": "Transaction confirmed",
+      "transaction_confirming": "Waiting for transaction confirmation",
+      "switch_chain_confirmed": "Blockchain switched",
+      "switch_chain_confirming": "Waiting for the blockchain switch"
+    }
+  },
+  "services": {
+    "errors": {
+      "request_error": "Failed to send request"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "saving": "Saving...",
+    "save_btn": "Save",
+    "save_changes_btn": "Save Changes",
+    "refresh_btn": "Refresh",
+    "apply_btn": "Apply",
+    "clear_btn": "Clear",
+    "refresh_all_btn": "Refresh All",
+    "restore_defaults_btn": "Restore Defaults",
+    "hide_btn": "Hide",
+    "show_btn": "Show",
+    "nothing_found": "Nothing found...",
+    "details": "Details",
+    "errors": {
+      "default": "Unknown error happens",
+      "param_not_set": "Parameter {{name}} is not set or empty",
+      "param_exceed_max_length": "Length {{length}} of parameter {{name}} is exceed maximum length {{max_length}}"
+    }
+  }
+}

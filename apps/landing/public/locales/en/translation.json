@@ -1,0 +1,54 @@
+{
+  "pages": {
+    "landing": {
+      "title_desc": "Accept payments in cryptocurrency",
+      "button": "Sign In or Sign Up",
+      "no_kyc": "No KYC",
+      "no_fees": "No fees",
+      "no_custodial": "No custodial wallets",
+      "no_integration": "No integration required",
+      "supported": "{{blockchains}} blockchains, {{tokens}} tokens and {{currencies}} currencies",
+      "auto_convert": "Automatic token conversion",
+      "read_more": "Read more"
+    }
+  },
+  "components": {
+    "navbar": {
+      "connected_in": "Address: {{address}} {{blockchain}}",
+      "disconnect": "Disconnect",
+      "no_accounts": "No shared accounts",
+      "account": "Account: {{account}}",
+      "shared_accounts": "Shared Accounts",
+      "my_account": "My Account",
+      "language": "Language: {{language}}",
+      "support": "Support",
+      "documentation": "Documentation"
+    }
+  },
+  "services": {
+    "errors": {
+      "request_error": "Failed to send request"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "saving": "Saving...",
+    "save_btn": "Save",
+    "save_changes_btn": "Save Changes",
+    "refresh_btn": "Refresh",
+    "apply_btn": "Apply",
+    "clear_btn": "Clear",
+    "refresh_all_btn": "Refresh All",
+    "restore_defaults_btn": "Restore Defaults",
+    "hide_btn": "Hide",
+    "show_btn": "Show",
+    "nothing_found": "Nothing found...",
+    "details": "Details",
+    "errors": {
+      "default": "Unknown error happens",
+      "param_not_set": "Parameter {{name}} is not set or empty",
+      "param_exceed_max_length": "Length {{length}} of parameter {{name}} is exceed maximum length {{max_length}}"
+    }
+  }
+}

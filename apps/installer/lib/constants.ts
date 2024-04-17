@@ -1,0 +1,4 @@
+export const APP_SETTINGS_PREFIX = 'app'
+export const BLOCKCHAIN_SETTINGS_PREFIX = 'blockchain'
+export const BLOCKCHAIN_EVM_CLIENT_CONFIG_SETTINGS_PREFIX = 'blockchain_evm_client_config'
+export const DEFAULT_ACCOUNT_PAYMENT_SETTINGS_PREFIX = 'account_default_payment'

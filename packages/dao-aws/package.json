@@ -1,0 +1,23 @@
+{
+  "name": "@repo/dao-aws",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.537.0",
+    "@aws-sdk/client-dynamodb": "^3.535.0",
+    "@aws-sdk/client-secrets-manager": "^3.535.0",
+    "@aws-sdk/util-dynamodb": "^3.535.0",
+    "@repo/common": "workspace:^",
+    "@repo/dao": "workspace:^",
+    "rango-sdk-basic": "^0.1.47"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "18",
+    "typescript": "^5.4.4"
+  }
+}

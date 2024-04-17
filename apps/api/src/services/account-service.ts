@@ -1,0 +1,579 @@
+import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
+import { Account, AccountProfile } from '@repo/dao/dist/src/interfaces/account-profile'
+import { SharedAccount } from '@repo/dao/dist/src/interfaces/shared-account'
+import { IpnKey, IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
+import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
+import { AccountApiSettings, AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountSettings, AccountTeamSettings } from '@repo/dao/dist/src/interfaces/account-settings'
+import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
+import { AppSettings } from '@repo/dao/dist/src/interfaces/settings'
+
+import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
+import { WithdrawBitcoinWalletResult } from '@repo/common/dist/src/interfaces/bitcoin'
+import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
+
+import { BLOCKCHAIN_BTC, COMMON_SETTINGS_DEFAULT_CURRENCY, COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH } from '../constants'
+import { logger } from '../utils/logger'
+import { CryptoService } from './crypto-service'
+import { IpnService } from './ipn-service'
+import { PaymentHistory, PaymentHistoryResponse } from '../interfaces/payment-history'
+import { PaymentLogService } from './payment-log-service'
+import { convertPaymentLogToPaymentHistoryData, getAddressOrDefault, isNullOrEmptyOrWhitespaces, isValidUrl, loadFile } from '../utils/utils'
+import { ExchangeRateApiService } from './exchange-rate-api-service'
+import { MetaService } from './meta-service'
+import { PaymentLogKey } from '../interfaces/payment-log'
+import { SettingsService } from './settings-service'
+
+export interface AccountService {
+  loadAccount(id: string): Promise<Account | undefined>
+  createAccount(address: string): Promise<Account>
+
+  loadAccountProfile(id: string): Promise<AccountProfile | undefined>
+  loadAccountProfileByAddress(address: string): Promise<AccountProfile | undefined>
+  loadAccountProfileByApiKey(apiKey: string): Promise<AccountProfile | undefined>
+
+  loadSharedAccount(shareToAddress: string, sharedAccountId: string): Promise<SharedAccount | undefined>
+  listSharedAccounts(address: string): Promise<SharedAccount[]>
+
+  loadDefaultAccountPaymentSettings(): Promise<AccountPaymentSettings>
+  loadAccountSettings(id: string): Promise<AccountSettings | undefined>
+
+  saveAccountPaymentSettings(id: string, paymentSettings: AccountPaymentSettings): Promise<void>
+  saveAccountCommonSettings(id: string, commonSettings: AccountCommonSettings): Promise<void>
+  saveAccountNotificationSettings(id: string, notificationSettings: AccountNotificationSettings): Promise<void>
+  saveAccountTeamSettings(id: string, address: string, teamSettings: AccountTeamSettings): Promise<void>
+
+  createAccountApiKeySettings(id: string): Promise<AccountApiSettings>
+  removeAccountApiKeySettings(id: string): Promise<void>
+
+  balance(id: string, blockchain: string): Promise<number>
+  withdraw(id: string, blockchain: string, address: string): Promise<WithdrawBitcoinWalletResult>
+  sendIpn(ipnKey: IpnKey): Promise<IpnResult>
+
+  loadPaymentHistory(id: string, filter: PaymentFilter, last: PaymentLogKey | undefined, size: number | undefined): Promise<PaymentHistoryResponse>
+  loadPaymentHistoryDataAsCsv(id: string, filter: PaymentFilter): Promise<string[][]>
+}
+
+export class AccountServiceImpl implements AccountService {
+  public constructor(
+    private settingsService: SettingsService,
+    private bitcoinService: BitcoinService,
+    private cryptoService: CryptoService,
+    private ipnService: IpnService,
+    private paymentLogService: PaymentLogService,
+    private exchangeRateApiService: ExchangeRateApiService,
+    private metaService: MetaService,
+    private accountDao: AccountDao
+  ) { }
+
+  public async loadPaymentHistory(id: string, filter: PaymentFilter, last: PaymentLogKey | undefined, size: number | undefined): Promise<PaymentHistoryResponse> {
+    const filteredPaymentLogs = await this.loadPaymentLogs(id, filter)
+
+    const lastIdx = last ?
+      filteredPaymentLogs.findIndex(
+        item => item.accountId === last.accountId
+          && item.paymentId === last.paymentId
+          && item.blockchain.toLocaleLowerCase() === last.blockchain.toLocaleLowerCase()
+          && item.transaction === last.transaction
+          && item.index === last.index
+          && item.timestamp === last.timestamp
+      )
+      : -1
+    if (last && lastIdx === -1) {
+      logger.debug('AccountService: last not found among payments')
+      return {
+        data: [],
+        totalSize: filteredPaymentLogs.length
+      }
+    }
+    logger.debug(`AccountService: last payment index is ${lastIdx}`)
+
+    const startIdx = lastIdx + 1
+    const endIdx = size ? startIdx + size : undefined
+    logger.debug(`AccountService: start to slice payment logs from ${startIdx} to ${endIdx} and convert to payment history`)
+    const paymentHistory = await Promise.all(
+      filteredPaymentLogs
+        .slice(startIdx, endIdx)
+        .map(paymentLog => this.convertPaymentLogToPaymentHistory(paymentLog))
+    )
+    logger.debug(`AccountService: ${paymentHistory.length} items after slicing and converting payment logs to payment history`)
+    logger.debug(paymentHistory)
+
+    return {
+      data: paymentHistory,
+      totalSize: filteredPaymentLogs.length
+    }
+  }
+
+  public async loadPaymentHistoryDataAsCsv(id: string, filter: PaymentFilter): Promise<string[][]> {
+    const headers = [
+      'Payment Id',
+
+      'Block',
+      'Timestamp',
+      'Transaction',
+      'Index',
+
+      'From',
+      'To',
+      'Amount',
+      'Amount USD (Payment Time)',
+      'Amount USD (Current Time)',
+      'Amount Currency (Payment Time)',
+      'Amount Currency (Current Time)',
+
+      'Blockchain',
+      'Token Address',
+      'Token Symbol',
+      'Token Decimals',
+      'Token USD Price (Payment Time)',
+      'Token USD Price (Current Time)',
+
+      'Currency',
+      'Currency Exchange Rate (Payment Time)',
+      'Currency Exchange Rate (Current Time)',
+
+      'Notification Result'
+    ]
+
+    const [settings, paymentLogs, meta] = await Promise.all([
+      this.loadAccountSettings(id),
+      this.loadPaymentLogs(id, filter),
+      this.metaService.meta()
+    ])
+
+    const now = Math.floor(Date.now() / 1000)
+    const timestamps = paymentLogs.map(item => item.timestamp)
+    const currency = settings?.commonSettings.currency ?? COMMON_SETTINGS_DEFAULT_CURRENCY
+    const currencyExchangeRates = await this.exchangeRateApiService.exchangeRates(currency, [...timestamps, now])
+
+    const paymentHistoryData = await Promise.all(
+      paymentLogs.map(async item => {
+        const ipnResult = await this.ipnService.loadIpnResult({
+          accountId: item.accountId,
+          paymentId: item.paymentId,
+          blockchain: item.blockchain,
+          transaction: item.transaction,
+          index: item.index
+        })
+
+        return convertPaymentLogToPaymentHistoryData(
+          item,
+          ipnResult,
+          meta,
+          currency,
+          currencyExchangeRates[now],
+          currencyExchangeRates
+        )
+      })
+    )
+
+    const data = paymentHistoryData.map(item => {
+      return [
+        item.paymentId, // 'Payment Id'
+
+        item.block, // 'Block'
+        item.timestamp.toString(), // 'Timestamp'
+        item.transaction, // 'Transaction'
+        item.index.toString(), // 'Index'
+
+        item.from ?? '', // 'From'
+        item.to, // 'To'
+        item.amount, // 'Amount'
+        item.amountUsdAtPaymentTime?.toString() ?? '', // 'Amount USD (Payment Time)'
+        item.amountUsdAtCurTime?.toString() ?? '', // 'Amount USD (Current Time)'
+        item.amountCurrencyAtPaymentTime?.toString() ?? '', // 'Amount Currency (Payment Time)'
+        item.amountCurrencyAtCurTime?.toString() ?? '', // 'Amount Currency (Current Time)',
+
+        item.blockchain, // 'Blockchain'
+        item.tokenAddress ?? '', // 'Token Address'
+        item.tokenSymbol ?? '', // 'Token Symbol'
+        item.tokenDecimals?.toString() ?? '', // 'Token Decimals'
+        item.tokenUsdPriceAtPaymentTime?.toString() ?? '', // 'Token USD Price (Payment Time)',
+        item.tokenUsdPriceAtCurTime?.toString() ?? '', // 'Token USD Price (Current Time)',
+
+        item.currency ?? '', // 'Currency'
+        item.currencyExchangeRateAtPaymentTime?.toString() ?? '', // 'Currency Exchange Rate' (Payment Time)
+        item.currencyExchangeRateAtCurTime?.toString() ?? '', // 'Currency Exchange Rate' (Current Time)
+
+        item.ipnResult?.error ? 'error' : (item.ipnResult?.result ? 'success' : '') // 'Notification Result'
+      ]
+    })
+
+    return [headers, ...data]
+  }
+
+  public async loadAccount(id: string): Promise<Account | undefined> {
+    const account = await this.accountDao.loadAccount(id)
+    if (account) {
+      account.profile.secret = this.cryptoService.decrypt(account.profile.secret)
+    }
+
+    return account
+  }
+
+  public async loadAccountProfile(id: string): Promise<AccountProfile | undefined> {
+    const profile = await this.accountDao.loadAccountProfile(id)
+    if (profile) {
+      profile.secret = this.cryptoService.decrypt(profile.secret)
+    }
+
+    return profile
+  }
+
+  public async loadAccountProfileByAddress(address: string): Promise<AccountProfile | undefined> {
+    const profile = await this.accountDao.loadAccountProfileByAddress(address)
+    if (profile) {
+      profile.secret = this.cryptoService.decrypt(profile.secret)
+    }
+
+    return profile
+  }
+
+  public async createAccount(address: string): Promise<Account> {
+    logger.debug(`AccountService: start to create account for ${address}`)
+
+    const id = this.cryptoService.generateRandom(ACCOUNT_ID_LENGTH)
+    const secret = this.cryptoService.generateRandom()
+    const encryptedSecret = this.cryptoService.encrypt(secret)
+
+    const paymentSettings = await this.loadDefaultAccountPaymentSettings()
+
+    const account: Account = {
+      profile: {
+        id, address, secret: encryptedSecret
+      },
+      settings: {
+        paymentSettings,
+        commonSettings: {
+          email: null,
+          description: null,
+          currency: COMMON_SETTINGS_DEFAULT_CURRENCY
+        },
+        notificationSettings: {
+          callbackUrl: null,
+          secretKey: null
+        },
+        apiSettings: {
+          apiKey: null
+        },
+        teamSettings: {
+          users: []
+        },
+      }
+    }
+
+    await this.accountDao.saveAccount(account)
+    await this.bitcoinService.createBitcoinWallet(id, false)
+
+    logger.debug('AccountService: end to create account')
+    logger.debug(account)
+
+    account.profile.secret = secret
+    return account
+  }
+
+  public async listSharedAccounts(address: string): Promise<SharedAccount[]> {
+    logger.debug(`AccountService: start to list shared accounts for ${address}`)
+    const sharedAccounts = await this.accountDao.listSharedAccounts(address)
+    logger.debug('AccountService: end to list shared accounts')
+    logger.debug(sharedAccounts)
+
+    return sharedAccounts
+  }
+
+  public async loadSharedAccount(shareToAddress: string, sharedAccountId: string): Promise<SharedAccount | undefined> {
+    logger.debug(`AccountService: start to load shared account for share to address ${shareToAddress} and shared account id ${sharedAccountId}`)
+    const sharedAccount = await this.accountDao.loadSharedAccount(shareToAddress, sharedAccountId)
+    logger.debug('AccountService: end to load shared account')
+    logger.debug(sharedAccount)
+
+    return sharedAccount
+  }
+
+  public async loadDefaultAccountPaymentSettings(): Promise<AccountPaymentSettings> {
+    return await this.settingsService.loadDefaultAccountPaymentSettings()
+  }
+
+  public async loadAccountSettings(id: string): Promise<AccountSettings | undefined> {
+    const settings = await this.accountDao.loadAccountSettings(id)
+
+    return settings
+      ? {
+        ...settings,
+        notificationSettings: {
+          ...settings.notificationSettings,
+          secretKey: settings.notificationSettings.secretKey ? this.cryptoService.decrypt(settings.notificationSettings.secretKey) : null
+        },
+        apiSettings: {
+          ...settings.apiSettings,
+          apiKey: settings.apiSettings.apiKey ? this.cryptoService.decrypt(settings.apiSettings.apiKey) : null
+        }
+      }
+      : undefined
+  }
+
+  public async saveAccountPaymentSettings(id: string, paymentSettings: AccountPaymentSettings): Promise<void> {
+    this.assertPaymentSettings(paymentSettings)
+
+    await this.accountDao.saveAccountPaymentSettings(id, paymentSettings)
+  }
+
+  public async saveAccountCommonSettings(id: string, commonSettings: AccountCommonSettings): Promise<void> {
+    const appSettings = await this.settingsService.loadAppSettings()
+    this.assertCommonSettings(commonSettings, appSettings)
+
+    await this.accountDao.saveAccountCommonSettings(id, commonSettings)
+  }
+
+  public async saveAccountNotificationSettings(id: string, notificationSettings: AccountNotificationSettings): Promise<void> {
+    this.assertNotificationSettings(notificationSettings)
+
+    if (notificationSettings.secretKey) {
+      notificationSettings.secretKey = this.cryptoService.encrypt(notificationSettings.secretKey)
+    }
+
+    await this.accountDao.saveAccountNotificationSettings(id, notificationSettings)
+  }
+
+  public async saveAccountTeamSettings(id: string, address: string, teamSettings: AccountTeamSettings): Promise<void> {
+    this.assertAccountTeamSettings(teamSettings, address)
+
+    await this.accountDao.saveAccountTeamSettings(id, address, teamSettings)
+  }
+
+  public async loadAccountProfileByApiKey(apiKey: string): Promise<AccountProfile | undefined> {
+    const encryptedApiKey = this.cryptoService.encrypt(apiKey)
+
+    logger.debug(`AccountService: start to load account profile by api key ${encryptedApiKey}`)
+    const profile = await this.accountDao.loadAccountProfileByApiKey(encryptedApiKey)
+    logger.debug('AccountService: end to load account profile by api key')
+    logger.debug(profile)
+
+    if (profile) {
+      profile.secret = this.cryptoService.decrypt(profile.secret)
+    }
+
+    return profile
+  }
+
+  public async createAccountApiKeySettings(id: string): Promise<AccountApiSettings> {
+    const apiKey = this.cryptoService.generateRandom()
+    const apiKeyEncrypted = this.cryptoService.encrypt(apiKey)
+
+    await this.accountDao.saveAccountApiKeySettings(id, { apiKey: apiKeyEncrypted })
+
+    return { apiKey }
+  }
+
+  public async removeAccountApiKeySettings(id: string): Promise<void> {
+    await this.accountDao.deleteAccountApiKeySettings(id)
+  }
+
+  public async balance(id: string, blockchain: string): Promise<number> {
+    switch (blockchain.toLocaleLowerCase()) {
+      case BLOCKCHAIN_BTC:
+        return await this.bitcoinService.getBitcoinBalance(id)
+      default:
+        throw new Error(`Unsupported blockchain ${blockchain}`)
+    }
+  }
+
+  public async withdraw(id: string, blockchain: string, address: string): Promise<WithdrawBitcoinWalletResult> {
+    switch (blockchain.toLocaleLowerCase()) {
+      case BLOCKCHAIN_BTC:
+        const settings = await this.loadAccountSettings(id)
+        if (!settings) {
+          logger.error(`AccountService: account payment settings not found for ${id}`)
+          throw new Error(`Account payment settings not found for ${id}`)
+        }
+
+        const wallet = settings.paymentSettings.blockchains.find(item => item.toLocaleLowerCase() === blockchain.toLocaleLowerCase())
+        if (!wallet) {
+          logger.error(`AccountService: wallet not found for ${blockchain}`)
+          throw new Error(`Wallet not found for ${blockchain}`)
+        }
+
+        return await this.bitcoinService.withdrawBitcoin(id, address)
+      default:
+        logger.error(`AccountService: unsupported blockchain ${blockchain}`)
+        throw new Error(`Unsupported blockchain ${blockchain}`)
+    }
+  }
+
+  public async sendIpn(ipnKey: IpnKey): Promise<IpnResult> {
+    logger.debug(`IpnNotificationObserver: start to load notification settings for account id ${ipnKey.accountId}`)
+    const settings = await this.loadAccountSettings(ipnKey.accountId)
+    logger.debug('IpnNotificationObserver: end to load notification settings')
+    if (!settings || !settings.notificationSettings.callbackUrl) {
+      logger.error('IpnNotificationObserver: notification settings not found or callback url is not set')
+      throw new Error('Notification settings not found or callback url is not set')
+    }
+    logger.debug(settings)
+
+    logger.debug('IpnNotificationObserver: start to load ipn')
+    const ipn = await this.ipnService.loadIpnData(ipnKey)
+    logger.debug('IpnNotificationObserver: end to load ipn')
+    if (!ipn) {
+      logger.error('IpnNotificationObserver: ipn not found')
+      throw new Error('IPN not found')
+    }
+    logger.debug(ipn)
+
+    logger.debug('IpnNotificationObserver: start to send ipn')
+    const result = await this.ipnService.trySendIpnRequest(settings.notificationSettings.callbackUrl, ipn, settings.notificationSettings.secretKey)
+    logger.debug('IpnNotificationObserver: end to send ipn')
+    logger.debug(result)
+
+    return result
+  }
+
+  public async loadPaymentLogs(id: string, filter: PaymentFilter): Promise<PaymentLog[]> {
+    logger.debug(`AccountService: start to list payment logs for id ${id} from ${filter.timestampFrom} to ${filter.timestampTo}`)
+    let paymentLogs = await this.paymentLogService.listPaymentLogs(id, filter)
+    logger.debug(`AccountService: found ${paymentLogs.length} payment logs`)
+    logger.debug(paymentLogs)
+
+    return paymentLogs
+  }
+
+  private async convertPaymentLogToPaymentHistory(paymentLog: PaymentLog): Promise<PaymentHistory> {
+    const ipnResult = await this.ipnService.loadIpnResult({
+      accountId: paymentLog.accountId,
+      paymentId: paymentLog.paymentId,
+      blockchain: paymentLog.blockchain,
+      transaction: paymentLog.transaction,
+      index: paymentLog.index
+    })
+
+    const res: PaymentHistory = {
+      id: paymentLog.accountId,
+      paymentId: paymentLog.paymentId,
+
+      block: paymentLog.block,
+      timestamp: paymentLog.timestamp,
+      transaction: paymentLog.transaction,
+      index: paymentLog.index,
+
+      from: paymentLog.from,
+      to: paymentLog.to,
+      amount: paymentLog.amount,
+      amountUsd: paymentLog.amountUsd,
+
+      blockchain: paymentLog.blockchain,
+      tokenAddress: paymentLog.tokenAddress,
+      tokenSymbol: paymentLog.tokenSymbol,
+      tokenDecimals: paymentLog.tokenDecimals,
+      tokenUsdPrice: paymentLog.tokenUsdPrice,
+
+      ipnResult: ipnResult ?? null
+    }
+
+    return res
+  }
+
+  private assertPaymentSettings(settings: AccountPaymentSettings): void {
+    const errors: string[] = []
+
+    if (settings.blockchains.length === 0) {
+      errors.push('Blockchains is not provided')
+    }
+
+    if (settings.assets.length === 0) {
+      errors.push('Assets is not provided')
+    }
+
+    const invalidBlockchains = settings.blockchains.find(isNullOrEmptyOrWhitespaces)
+    if (invalidBlockchains) {
+      errors.push('Some of blockchains value is empty')
+    }
+
+    const invalidAssets = settings.assets.find(
+      asset => isNullOrEmptyOrWhitespaces(asset.blockchain) || isNullOrEmptyOrWhitespaces(asset.symbol)
+    )
+    if (invalidAssets) {
+      errors.push('Blockchain or symbol is not provided for some of assets')
+    }
+
+    const duplicateBlockchains = settings.blockchains
+      .filter((blockchain, index, self) => self.indexOf(blockchain) !== index)
+    if (duplicateBlockchains.length > 0) {
+      errors.push(`Duplicate addresses found ${duplicateBlockchains.join(', ')}`)
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Payment settings validation errors: ${errors.join(', ')}`)
+    }
+  }
+
+  private assertCommonSettings(settings: AccountCommonSettings, appSettings: AppSettings): void {
+    const errors: string[] = []
+
+    if (settings.email && !/^[^\s@]+@[^\s@]+$/.test(settings.email)) {
+      errors.push('Email is not valid')
+    }
+
+    if (settings.description && settings.description.length > COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH) {
+      errors.push(`Description length should not be more than ${COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH}`)
+    }
+
+    if (settings.currency && appSettings.currencies.findIndex(item => item.symbol.toLocaleLowerCase() === settings.currency?.toLocaleLowerCase()) === -1) {
+      errors.push(`Currency ${settings.currency} is not supported`)
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Team settings validation errors: ${errors.join(', ')}`)
+    }
+  }
+
+  private assertNotificationSettings(settings: AccountNotificationSettings): void {
+    const errors: string[] = []
+
+    if (settings.callbackUrl && !isValidUrl(settings.callbackUrl)) {
+      errors.push('Callback URL is not valid')
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Team settings validation errors: ${errors.join(', ')}`)
+    }
+  }
+
+  private assertAccountTeamSettings(settings: AccountTeamSettings, ownerAddress: string): void {
+    const errors: string[] = []
+
+    const emptyAddress = settings.users.findIndex(user => isNullOrEmptyOrWhitespaces(user.address)) !== -1
+    if (emptyAddress) {
+      errors.push('Address is not provided for some of users')
+    }
+
+    const isOwnerAddress = settings?.users.findIndex(user => user.address.toLocaleLowerCase() === ownerAddress?.toLocaleLowerCase()) !== -1
+    if (isOwnerAddress) {
+      errors.push('Owner address should not be used')
+    }
+
+    const duplicateAddresses = settings.users
+      .map(user => user.address.toLocaleLowerCase())
+      .filter((address, index, self) => self.indexOf(address.toLocaleLowerCase()) !== index)
+    if (duplicateAddresses.length > 0) {
+      errors.push(`Duplicate addresses found ${duplicateAddresses.join(', ')}`)
+    }
+
+    const invalidAddresses = settings.users
+      .map(user => user.address)
+      .filter(address => !getAddressOrDefault(address))
+    if (invalidAddresses.length > 0) {
+      errors.push(`Invalid addresses found ${invalidAddresses.join(', ')}`)
+    }
+
+    settings?.users.forEach(
+      user => Object.entries(user.permissions).forEach(item => {
+        if (item[0] === 'balances' && !['Disable', 'View'].includes(item[1])) {
+          errors.push(`Invalid permission value ${item[0]} = ${item[1]} found for address ${user.address}`)
+        }
+      })
+    )
+
+    if (errors.length > 0) {
+      throw new Error(`Team settings validation errors: ${errors.join(', ')}`)
+    }
+  }
+}

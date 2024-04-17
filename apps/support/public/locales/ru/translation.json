@@ -1,0 +1,78 @@
+{
+  "pages": {
+    "support": {
+      "title": "Поддержка",
+      "success": "Запрос был успешно создан. Дальнейшая связь будет осуществляться по электронной почте.",
+      "success_ticket_id": "ID запроса:",
+      "back": "Вернуться",
+      "ticket_type": "Тип запроса",
+      "ticket_type_general": "Общее",
+      "ticket_type_payment": "Платежи",
+      "email": "Email",
+      "email_placeholder": "Введите email",
+      "email_required": "Введите корректный email",
+      "from_wallet": "Адрес плательщика",
+      "from_wallet_placeholder": "Введите адрес кошелька",
+      "to_wallet": "Адрес получателя платежа",
+      "to_wallet_placeholder": "Введите адрес кошелька",
+      "company_id": "ID компании",
+      "company_id_placeholder": "Введите ID компании",
+      "payment_id": "ID платежа",
+      "payment_id_placeholder": "Введите ID платежа",
+      "blockchain": "Блокчейн",
+      "blockchain_placeholder": "Введите имя блокчейна",
+      "token": "Токен",
+      "token_placeholder": "Введите имя токена",
+      "transaction": "Хэш транзакции",
+      "transaction_placeholder": "Введите хэш транзакции",
+      "desc": "Описание проблемы",
+      "desc_required": "Введите описание проблемы",
+      "submit": "Отправить",
+      "errors": {
+        "fail_submit": "Не удалось отправить запрос"
+      }
+    }
+  },
+  "components": {
+    "navbar": {
+      "connected_in": "Адрес: {{address}} {{blockchain}}",
+      "disconnect": "Отключиться",
+      "no_accounts": "Нет общих аккаунтов",
+      "account": "Аккаунт: {{account}}",
+      "shared_accounts": "Общие аккаунты",
+      "my_account": "Мой Аккаунт",
+      "language": "Язык: {{language}}",
+      "support": "Поддержка"
+    }
+  },
+  "states": {
+  },
+  "hooks": {
+  },
+  "services": {
+    "errors": {
+      "request_error": "Не удалось отправить запрос"
+    }
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "processing": "Обработка...",
+    "saving": "Сохранение...",
+    "save_btn": "Сохранить",
+    "save_changes_btn": "Сохранить изменения",
+    "refresh_btn": "Обновить",
+    "apply_btn": "Применить",
+    "clear_btn": "Очистить",
+    "refresh_all_btn": "Обновить все",
+    "restore_defaults_btn": "Восстановить настройки по умолчанию",
+    "hide_btn": "Скрыть",
+    "show_btn": "Показать",
+    "nothing_found": "Ничего не найдено...",
+    "details": "Детали",
+    "errors": {
+      "default": "Произошла неизвестная ошибка",
+      "param_not_set": "Параметр {{name}} не задан или пуст",
+      "param_exceed_max_length": "Длина {{length}} параметра {{name}} превышает максимальную длину {{max_length}}"
+    }
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "pages": {
+    "not_found": {
+      "title": "404, Страница не найдена",
+      "description": "Неверный URL или страница не найдена"
+    },
+    "payment_success": {
+      "success_desc": "Оплата прошла успешно.",
+      "link_details": "Детали"
+    },
+    "payment_status": {
+      "success": "Платеж успешно выполнен",
+      "table_date": "Дата",
+      "table_blockchain": "Блокчейн",
+      "table_from": "От кого",
+      "table_to": "Кому",
+      "table_token": "Токен",
+      "table_amount": "Сумма",
+      "table_transaction": "Транзакция",
+      "table_no_payments": "Платежи не найдены",
+      "at_cur_time": "Настоящее время:",
+      "at_payment_time": "Время платежа:",
+      "errors": {
+        "payment_history_load_error": "Не удалось загрузить историю платежей"
+      }
+    }
+  },
+  "components": {
+    "blockchain_button": {
+      "select_blockchain": "Выберите блокчейн",
+      "errors": {
+        "blockchain_required": "Выберете блокчейн",
+        "error_switching_network": "Не удалось переключить блокчейн"
+      }
+    },
+    "evm_payment": {
+      "connect_wallet": "Подключить кошелек",
+      "send_details": "отправить детали платежа",
+      "email_placeholder": "email@email.com",
+      "pay": "Оплатить",
+      "select_token": "Выберете токен",
+      "no_balance": "Не хватает баланса",
+      "conversion_desc": "будет cконвертирован",
+      "conversion_token": "в токен",
+      "conversion_select_token": "Выберете токен",
+      "conversion_slippage": "с проскальзыванием",
+      "conversion_custom_slippage_placeholder": "другое",
+      "total_duration": "Длительность: {{seconds}} секунд",
+      "fee": "Комиссии:",
+      "conversion": "Конвертация:",
+      "conversion_not_found_alert": "Конвертация не найдена",
+      "explain": "магазин не принимает {{token}} в качестве оплаты",
+      "to": "в",
+      "conversion_error_alert": "Не удалось вычислить конвертацию для токена",
+      "pay_processing": "Обработка транзакции платежа",
+      "errors": {
+        "failed_pay": "Оплата завершилась ошибкой",
+        "token_required": "Выберете токен",
+        "conversion_failed": "Не удалось вычислить конвертацию для токена"
+      }
+    },
+    "blockchain_modal": {
+      "title": "Выберите блокчейн",
+      "search_placeholder": "Поиск по имени блокчейна",
+      "conversion_checkbox": "без конвертации",
+      "conversion_checkbox_desc": "Конвертация возможна, если магазин не принимает оплату для выбранного блокчейна."
+
+    },
+    "tokens_modal": {
+      "title": "Выберите токен",
+      "search_placeholder": "Поиск по имени токена или адресу",
+      "price_not_defined": "Цена токена не определена",
+      "conversion_checkbox": "без конвертации",
+      "conversion_checkbox_desc": "Конвертация возможна, если магазин не принимает оплату выбранным токеном."
+    },
+    "payment_navbar": {
+      "connected_in": "Подключено как: {{address}}",
+      "disconnect": "Отключиться",
+      "language": "Язык: {{language}}",
+      "support": "Поддержка"
+    },
+    "payment_summary": {
+      "company_id": "ID компании",
+      "payment_id": "ID платежа"
+    },
+    "transfer_payment": {
+      "send_address": "Отправить на этот адрес",
+      "address_placeholder": "Адрес",
+      "amount_placeholder": "Сумма",
+      "amount": "Сумма",
+      "email": "Email",
+      "send_details": "отправить детали платежа",
+      "email_placeholder": "email@email.com",
+      "received": "Получено",
+      "errors": {
+        "wallet_not_found": "Адрес для платежа не найден",
+        "native_token_not_found": "Нативный токен для блокчейна не найден",
+        "native_token_price_not_defined": "Цена токена не определена"
+      }
+    },
+    "update_timer": {
+      "timer": "Курсы обмена токенов обновятся через {{seconds}} секунд"
+    },
+    "info_messages": {
+      "payment_conversion_error_explorer_urls": "URL-адреса сведений о транзакциях:",
+      "payment_conversion_error_output_details": "Детали конвертации токенов:",
+      "payment_conversion_error_output_details_middle_asset_in_dest": "Транзакция конвертации токена не удалась на последнем этапе из-за проскальзывания.",
+      "payment_conversion_error_output_details_middle_asset_in_src": "Транзакция конвертации токенов не удалась на этапе моста из-за проскальзывания, отсутствия ликвидности или по другим причинам.",
+      "payment_conversion_error_output_details_reverted_to_input": "Транзакция конвертации токена не удалась, и пользователь должен получить обратно входной токен.",
+      "payment_conversion_error_output_details_desired_output": "Транзакция конвертации токена прошла успешно.",
+      "payment_conversion_error_output_details_amount": "Сумма",
+      "payment_conversion_diagnosis_url": "Пожалуйста, следуйте этому <1>руководству</1>."
+    }
+  },
+  "states": {
+    "settings": {
+      "errors": {
+        "settings_load_error": "Не удалось загрузить настройки"
+      }
+    }
+  },
+  "hooks": {
+    "account_received_amount": {
+      "errors": {
+        "load_error": "Не удалось загрузить полученную сумму для {{blockchain}}"
+      }
+    },
+    "navigate_success": {
+      "errors": {
+        "send_error": "Не удалось отправить запрос об успешном платеже"
+      }
+    },
+    "payment_conversion": {
+      "errors": {
+        "default_error": "Не удалось рассчитать детали конвертации токена"
+      }
+    },
+    "payment_data": {
+      "errors": {
+        "id_not_set": "Id не задан",
+        "payment_id_not_set": "Id платежа не задан",
+        "currency_not_set": "Валюта платежа не задана",
+        "amount_currency_error": "Сумма платежа не задана"
+      }
+    },
+    "payment_details": {
+      "errors": {
+        "wallet_not_found": "Не удается найти адрес кошелька для блокчейна {{blockchain}}",
+        "contract_not_found": "Не удается найти адрес контракта janedoe для блокчейна {{blockchain}}"
+      }
+    },
+    "token_conversion_pay": {
+      "token_swap_processing": "Создание транзакции",
+      "token_approve_processing": "Обработка транзакции на установку разрешений на траты токена",
+      "token_pay_processing": "Обработка транзакции платежа"
+    },
+    "token_conversion_swap": {
+      "errors": {
+        "swap_not_defined": "Транзакция обмена токенов не определена",
+        "swap_transaction_not_defined": "Транзакция обмена токенов не определена",
+        "token_output_amount_less_than_required": "Выходная сумма {{amountCurrency}} {{currency}} меньше требуемой {{amountCurrencyRequired}} {{currency}}. Пожалуйста, обновите данные о конвертации токенов и повторите попытку оплаты или выберете другой токен."
+      }
+    },
+    "token_conversion_approval": {
+      "transaction_waiting_error": "Ошибка ожидания транзакции: запрос {{requestId}}, хэш {{txId}}",
+      "transaction_waiting": "Ожидание транзакции: запрос {{requestId}}, хэш {{txId}}",
+      "transaction_confirming": "Ожидание подтверждения транзакции: запрос {{requestId}}",
+      "transaction_confirmed": "Транзакция подтверждена: запрос {{requestId}}, хэш {{txId}}"
+    },
+    "token_conversion_main": {
+      "transaction_waiting_error": "Ошибка ожидания транзакции: запрос {{requestId}}, хэш {{txId}}",
+      "transaction_waiting": "Ожидание транзакции: запрос {{requestId}}, хэш {{txId}}",
+      "transaction_confirming": "Ожидание подтверждения транзакции: запрос {{requestId}}",
+      "transaction_confirmed": "Транзакция подтверждена: запрос {{requestId}}, хэш {{txId}}"
+    },
+    "token_approve_and_pay": {
+      "token_allowance_processing": "Чтение разрешений на траты токена",
+      "token_reset_approve_processing": "Обработка транзакции на сброс разрешений на траты токена",
+      "token_approve_processing": "Обработка транзакции на установку разрешений на траты токена",
+      "token_pay_processing": "Обработка транзакции платежа"
+    },
+    "native_pay": {
+      "native_pay_processing": "Обработка транзакции платежа"
+    },
+    "wallet_details": {
+      "errors": {
+        "load_error": "Не удалось загрузить данные кошелька для {{blockchain}}"
+      }
+    },
+    "write_and_wait_contract": {
+      "transaction_waiting_error": "Ошибка ожидания транзакции {{txId}}",
+      "transaction_waiting": "Ожидание транзакции {{txId}}",
+      "transaction_confirmed": "Транзакция подтверждена",
+      "transaction_confirming": "Ожидание подтверждения транзакции",
+      "switch_chain_confirmed": "Блокчейн переключился",
+      "switch_chain_confirming": "Ожидание переключения блокчейна"
+    }
+  },
+  "services": {
+    "errors": {
+      "transaction_timeout": "Время транзакции истекло",
+      "request_error": "Не удалось отправить запрос",
+      "wallet_not_found": "Не удается найти адрес кошелька для блокчейна {{blockchain}}",
+      "contract_not_found": "Не удается найти адрес контракта janedoe для блокчейна {{blockchain}}",
+      "route_not_found": "Не удается найти маршрут для конвертации {{blockchain}} {{token}} в один из токенов"
+    }
+  },
+  "common": {
+    "saving": "Сохранение...",
+    "loading": "Загрузка...",
+    "processing": "Обработка...",
+    "nothing": "Нет записей...",
+    "copy_btn": "Копировать",
+    "refresh_btn": "Обновить",
+    "settings": "Настройки",
+    "balance": "Баланс:",
+    "details": "Детали",
+    "errors": {
+      "default": "Произошла неизвестная ошибка",
+      "transaction_error": "Ошибка обработки транзакции",
+      "param_not_set": "Параметр {{name}} не задан или пуст",
+      "param_exceed_max_length": "Длина {{length}} параметра {{name}} превышает максимальную длину {{max_length}}"
+    }
+  }
+}

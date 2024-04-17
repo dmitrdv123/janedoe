@@ -1,0 +1,401 @@
+import { useCallback, useEffect, useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Button, Spinner, Table } from 'react-bootstrap'
+import { CheckCircle, ExclamationCircle } from 'react-bootstrap-icons'
+
+import { convertErrorToMessage, convertTimestampToDate } from '../../libs/utils'
+import { PaymentHistoryData, PaymentHistoryDataFilter } from '../../types/payment-history'
+import { useInfoMessages, useToggleModal } from '../../states/application/hook'
+import { CURRENCY_USD_SYMBOL, INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
+import TextWithCopy from './components/TextWithCopy'
+import TableFilterText from './components/TableFilterText'
+import TableFilterDate from './components/TableFilterDate'
+import TableFilterBlockchain from './components/TableFilterBlockchain'
+import TransactionHash from '../TransactionHash'
+import WalletAddress from '../WalletAddress'
+import { IpnResult } from '../../types/ipn'
+import { ApplicationModal } from '../../types/application-modal'
+import IpnModal from './components/IpnModal'
+import CurrencyAmount from '../CurrencyAmount'
+import TokenAmount from '../TokenAmount'
+import usePaymentHistory from '../../libs/hooks/usePaymentHistory'
+import useApiRequest from '../../libs/hooks/useApiRequest'
+import { ApiWrapper } from '../../libs/services/api-wrapper'
+import TokenDetails from '../TokenDetails'
+
+const Payments: React.FC = () => {
+  const [paymentHistoryData, setPaymentHistoryData] = useState<PaymentHistoryData[] | undefined>(undefined)
+  const [selectedPaymentHistory, setSelectedPaymentHistory] = useState<PaymentHistoryData | undefined>(undefined)
+  const [paymentHistoryDataFilter, setPaymentHistoryDataFilter] = useState<PaymentHistoryDataFilter>({
+    paymentId: '',
+    timestampFrom: '',
+    timestampTo: '',
+    from: '',
+    to: '',
+    blockchains: [],
+    transactionHash: ''
+  })
+  const observer = useRef<IntersectionObserver>()
+
+  const { t } = useTranslation()
+  const { addInfoMessage, removeInfoMessage } = useInfoMessages()
+  const openIpnModal = useToggleModal(ApplicationModal.IPN)
+
+  const { process: loadPaymentHistoryAsCsv } = useApiRequest<string[][]>()
+
+  const {
+    data: paymentHistory,
+    totalSize: paymentHistoryTotalSize,
+    status: paymentHistoryStatus,
+    error: paymentHistoryError,
+    loadNext: loadNextPaymentHistory,
+    reload: reloadPaymentHistory
+  } = usePaymentHistory(paymentHistoryDataFilter)
+
+  useEffect(() => {
+    if (paymentHistoryError) {
+      addInfoMessage(convertErrorToMessage(paymentHistoryError), INFO_MESSAGE_PAYMENT_HISTORY_ERROR, 'danger')
+    } else {
+      removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
+    }
+  }, [paymentHistoryError, t, addInfoMessage, removeInfoMessage])
+
+  const lastPaymentElementRef = useCallback((node: Element | null) => {
+    if (observer.current) {
+      observer.current.disconnect()
+    }
+
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        loadNextPaymentHistory()
+      }
+    })
+
+    if (node) {
+      observer.current?.observe(node)
+    }
+  }, [loadNextPaymentHistory])
+
+  useEffect(() => {
+    setPaymentHistoryData(paymentHistory)
+  }, [paymentHistory])
+
+  const updateIpnResultHandler = useCallback((origPaymentHistory: PaymentHistoryData, updatedIpnResult: IpnResult) => {
+    setPaymentHistoryData(
+      arr => arr?.map(item => {
+        if (item.paymentId.toLocaleLowerCase() === origPaymentHistory.paymentId.toLocaleLowerCase()
+          && item.blockchainName.toLocaleLowerCase() === origPaymentHistory.blockchainName.toLocaleLowerCase()
+          && item.transaction.toLocaleLowerCase() === origPaymentHistory.transaction.toLocaleLowerCase()
+          && item.timestamp === origPaymentHistory.timestamp
+          && item.index === origPaymentHistory.index) {
+          item.ipnResult = updatedIpnResult
+        }
+
+        return item
+      })
+    )
+  }, [])
+
+  const openIpnModalHandler = useCallback((paymentHistoryToShow: PaymentHistoryData) => {
+    setSelectedPaymentHistory(paymentHistoryToShow)
+    openIpnModal()
+  }, [openIpnModal])
+
+  const clearFiltersHandler = () => {
+    setPaymentHistoryDataFilter({
+      paymentId: '',
+      timestampFrom: '',
+      timestampTo: '',
+      from: '',
+      to: '',
+      blockchains: [],
+      transactionHash: ''
+    })
+  }
+
+  const timestampFilterHandler = (filterTimestampFrom: string, filterTimestampTo: string) => {
+    setPaymentHistoryDataFilter(filter => ({
+      ...filter,
+      timestampFrom: filterTimestampFrom,
+      timestampTo: filterTimestampTo
+    }))
+  }
+
+  const blockchainFilterHandler = (filterBlockchains: string[]) => {
+    setPaymentHistoryDataFilter(filter => ({
+      ...filter,
+      blockchains: filterBlockchains
+    }))
+  }
+
+  const fromFilterHandler = (filterFrom: string) => {
+    setPaymentHistoryDataFilter(filter => ({
+      ...filter,
+      from: filterFrom
+    }))
+  }
+
+  const toFilterHandler = (filterTo: string) => {
+    setPaymentHistoryDataFilter(filter => ({
+      ...filter,
+      to: filterTo
+    }))
+  }
+
+  const paymentIdFilterHandler = (filterPaymentId: string) => {
+    setPaymentHistoryDataFilter(filter => ({
+      ...filter,
+      paymentId: filterPaymentId
+    }))
+  }
+
+  const transactionHashFilterHandler = (filterTransactionHash: string) => {
+    setPaymentHistoryDataFilter(filter => ({
+      ...filter,
+      transactionHash: filterTransactionHash
+    }))
+  }
+
+  const getPaymentHistory = (paymentHistoryToShow: PaymentHistoryData[]) => {
+    return paymentHistoryToShow.map((paymentHistoryItem, i) => {
+      const blockchain = paymentHistoryItem.blockchain ?? undefined
+      const token = paymentHistoryItem.token ?? undefined
+
+      const dt = convertTimestampToDate(paymentHistoryItem.timestamp)
+
+      return (
+        <tr
+          className='border'
+          key={`payment_${paymentHistoryItem.paymentId}_${paymentHistoryItem.blockchain?.name}_${paymentHistoryItem.transaction}_${paymentHistoryItem.index}_${paymentHistoryItem.timestamp}`}
+          ref={i === paymentHistoryToShow.length - 1 ? lastPaymentElementRef : null}
+        >
+          <td>
+            {dt.toLocaleDateString()} {dt.toLocaleTimeString()}
+          </td>
+          <td>{blockchain?.displayName ?? paymentHistoryItem.blockchainName}</td>
+          <td>
+            <WalletAddress blockchain={blockchain} address={paymentHistoryItem.from} />
+          </td>
+          <td>
+            <WalletAddress blockchain={blockchain} address={paymentHistoryItem.to} />
+          </td>
+          <td>
+            {!!token && (
+              <TokenDetails
+                tokenSymbol={token.symbol}
+                tokenName={token.name}
+                tokenAddress={token.address}
+                blockchain={blockchain}
+              />
+            )}
+
+            {!token && (
+              <TokenDetails
+                tokenSymbol={paymentHistoryItem.tokenSymbol ?? paymentHistoryItem.tokenAddress ?? ''}
+                tokenAddress={paymentHistoryItem.tokenAddress}
+                blockchain={blockchain}
+              />
+            )}
+
+
+          </td>
+          <td>
+            <TokenAmount amount={paymentHistoryItem.amount} decimals={paymentHistoryItem.tokenDecimals} symbol={paymentHistoryItem.tokenSymbol} />
+
+            {(paymentHistoryItem.amountCurrencyAtPaymentTime && paymentHistoryItem.currency && paymentHistoryItem.currency.toLocaleLowerCase() !== CURRENCY_USD_SYMBOL) && (
+              <div>
+                {t('components.payments.at_payment_time')} <CurrencyAmount amount={paymentHistoryItem.amountCurrencyAtPaymentTime} currency={paymentHistoryItem.currency} />
+              </div>
+            )}
+            {(paymentHistoryItem.amountUsdAtPaymentTime) && (
+              <div>
+                {t('components.payments.at_payment_time')} <CurrencyAmount amount={paymentHistoryItem.amountUsdAtPaymentTime} currency={CURRENCY_USD_SYMBOL} />
+              </div>
+            )}
+
+            {(paymentHistoryItem.amountCurrencyAtCurTime && paymentHistoryItem.currency && paymentHistoryItem.currency.toLocaleLowerCase() !== CURRENCY_USD_SYMBOL) && (
+              <div>
+                {t('components.payments.at_cur_time')} <CurrencyAmount amount={paymentHistoryItem.amountCurrencyAtCurTime} currency={paymentHistoryItem.currency} />
+              </div>
+            )}
+            {(paymentHistoryItem.amountUsdAtCurTime) && (
+              <div>
+                {t('components.payments.at_cur_time')} <CurrencyAmount amount={paymentHistoryItem.amountUsdAtCurTime} currency={CURRENCY_USD_SYMBOL} />
+              </div>
+            )}
+          </td>
+          <td>
+            <TextWithCopy value={paymentHistoryItem.paymentId} />
+          </td>
+          <td>
+            <TransactionHash blockchain={blockchain} transactionHash={paymentHistoryItem.transaction} />
+          </td>
+          <td>
+            {(!paymentHistoryItem.ipnResult) && (
+              <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
+                {t('components.payments.not_send_btn')}
+              </Button>
+            )}
+
+            {paymentHistoryItem.ipnResult?.error && (
+              <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
+                <ExclamationCircle className='text-danger me-1' />
+                {t('components.payments.error_btn')}
+              </Button>
+            )}
+
+            {(!paymentHistoryItem.ipnResult?.error && !!paymentHistoryItem.ipnResult?.result) && (
+              <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
+                <CheckCircle className='text-danger me-1' />
+                {t('components.payments.success_btn')}
+              </Button>
+            )}
+          </td>
+        </tr>
+      )
+    })
+  }
+
+  return (
+    <>
+      <h3 className="mb-3">{t('components.payments.title')}</h3>
+
+      <IpnModal paymentHistory={selectedPaymentHistory} onUpdate={updateIpnResultHandler} />
+
+      <div className='mb-3'>
+        <Button variant="primary" onClick={() => reloadPaymentHistory()} disabled={paymentHistoryStatus === 'processing'}>
+          {t('common.refresh_btn')}
+          {paymentHistoryStatus === 'processing' && (
+            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true">
+              <span className="visually-hidden">{t('common.processing')}</span>
+            </Spinner>
+          )}
+        </Button>
+
+        <Button variant="outline-secondary" className='ms-1' disabled={paymentHistoryStatus === 'processing'} onClick={clearFiltersHandler}>
+          {t('components.payments.clear_btn')}
+        </Button>
+
+        {(!!paymentHistoryTotalSize) && (
+          <Button variant="link" className='ms-1' onClick={async () => {
+            const csvData = await loadPaymentHistoryAsCsv(
+              ApiWrapper.instance.accountPaymentHistoryAsCsvRequest({
+                paymentId: paymentHistoryDataFilter.paymentId.trim() ? paymentHistoryDataFilter.paymentId.trim() : undefined,
+                timestampFrom: paymentHistoryDataFilter.timestampFrom.trim() ? Number(paymentHistoryDataFilter.timestampFrom) : undefined,
+                timestampTo: paymentHistoryDataFilter.timestampTo.trim() ? Number(paymentHistoryDataFilter.timestampTo) : undefined,
+                from: paymentHistoryDataFilter.from.trim() ? paymentHistoryDataFilter.from.trim() : undefined,
+                to: paymentHistoryDataFilter.to.trim() ? paymentHistoryDataFilter.to.trim() : undefined,
+                blockchains: paymentHistoryDataFilter.blockchains.length > 0 ? paymentHistoryDataFilter.blockchains : undefined,
+                transaction: paymentHistoryDataFilter.transactionHash.trim() ? paymentHistoryDataFilter.transactionHash.trim() : undefined
+              })
+            )
+            const csvContent = 'data:text/csv;charset=utf-8,' + (csvData ?? []).join("\n")
+            const encodedUri = encodeURI(csvContent)
+            const link = document.createElement('a')
+            link.setAttribute('href', encodedUri)
+            link.setAttribute('download', "payment_history.csv")
+            document.body.appendChild(link)
+            link.click()
+          }}>
+            {t('components.payments.download_btn', { count: paymentHistoryTotalSize })}
+          </Button>
+        )}
+
+      </div>
+
+      <Table borderless responsive size="sm">
+        <thead>
+          <tr className='border'>
+            <th scope="col">
+              {t('components.payments.timestamp_col')}
+              <TableFilterDate
+                id="payment_history_timestamp"
+                from={paymentHistoryDataFilter.timestampFrom}
+                to={paymentHistoryDataFilter.timestampTo}
+                onChange={timestampFilterHandler}
+              />
+            </th>
+            <th scope="col">
+              {t('components.payments.blockchain_col')}
+              <TableFilterBlockchain
+                id="payment_history_blockchains"
+                blockchains={paymentHistoryDataFilter.blockchains}
+                onChange={blockchainFilterHandler}
+              />
+            </th>
+            <th scope="col">
+              {t('components.payments.from_col')}
+              <TableFilterText
+                id="payment_history_from"
+                placeholder={t('components.payments.from_placeholder')}
+                value={paymentHistoryDataFilter.from}
+                onChange={fromFilterHandler}
+              />
+            </th>
+            <th scope="col">
+              {t('components.payments.to_col')}
+              <TableFilterText
+                id="payment_history_to"
+                placeholder={t('components.payments.to_placeholder')}
+                value={paymentHistoryDataFilter.to}
+                onChange={toFilterHandler}
+              />
+            </th>
+            <th scope="col">
+              {t('components.payments.token_col')}
+            </th>
+            <th scope="col">
+              {t('components.payments.amount_col')}
+            </th>
+            <th scope="col">
+              {t('components.payments.payment_id_col')}
+              <TableFilterText
+                id="payment_history_payment_id"
+                placeholder={t('components.payments.payment_id_placeholder')}
+                value={paymentHistoryDataFilter.paymentId}
+                onChange={paymentIdFilterHandler}
+              />
+            </th>
+            <th scope="col">
+              {t('components.payments.tran_hash_col')}
+              <TableFilterText
+                id="payment_history_transaction_hash"
+                placeholder={t('components.payments.tran_hash_placeholder')}
+                value={paymentHistoryDataFilter.transactionHash}
+                onChange={transactionHashFilterHandler}
+              />
+            </th>
+            <th>
+              {t('components.payments.notification_col')}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {(!paymentHistoryData) && (
+            <tr>
+              <td colSpan={8}>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true">
+                  <span className="visually-hidden">{t('common.loading')}</span>
+                </Spinner>
+              </td>
+            </tr>
+          )}
+          {(paymentHistoryData && paymentHistoryData.length === 0) && (
+            <tr>
+              <td colSpan={8}>
+                {t('components.payments.no_payment')}
+              </td>
+            </tr>
+          )}
+          {(paymentHistoryData && paymentHistoryData.length > 0) && (
+            <>
+              {getPaymentHistory(paymentHistoryData)}
+            </>
+          )}
+        </tbody>
+      </Table>
+    </>
+  )
+}
+
+export default Payments

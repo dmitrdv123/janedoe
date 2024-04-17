@@ -1,0 +1,8 @@
+{
+  "baseUrlApi": "http://localhost:3010",
+  "baseUrlAccount": "http://localhost:3002",
+  "baseUrlDocs": "http://localhost:3003",
+  "baseUrlPayment": "http://localhost:3001",
+  "baseUrlSupport": "http://localhost:3005",
+  "baseUrlLanding": "http://localhost:3004"
+}

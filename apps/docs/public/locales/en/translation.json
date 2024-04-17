@@ -1,0 +1,96 @@
+{
+  "pages": {
+    "app": {
+      "home": "Introduction",
+      "tutorials": "Tutorials",
+      "tutorials_create_account": "How to create account",
+      "tutorials_receive_payments": "How to receive payments",
+      "tutorials_monitor_payments": "How to monitor payments",
+      "tutorials_withdraw": "How to withdraw funds",
+      "tutorials_share_access": "How to share access to your account",
+      "tutorials_payment_settings": "How to setup blockchains and tokens for payments",
+      "tutorials_notifications": "How to receive notifications about payments",
+      "tutorials_api": "How to use API",
+      "resources": "Resources",
+      "resources_currencies": "Supported currencies",
+      "resources_blockchains": "Supported blockchains",
+      "resources_tokens": "Supported tokens",
+      "resources_contracts": "Contract addresses",
+      "errors": {}
+    }
+  },
+  "components": {
+    "doc_navbar": {
+      "language": "Language: {{language}}"
+    },
+    "doc_sidebar": {},
+    "home": {
+      "title": "Introduction"
+    },
+    "tutorials": {
+      "title": "Tutorials",
+      "tutorials_api_title": "How to use API",
+      "tutorials_create_account_title": "How to create account",
+      "tutorials_monitor_payments_title": "How to monitor payments",
+      "tutorials_notifications_title": "How to receive notifications about payments",
+      "tutorials_payment_settings_title": "How to setup blockchains and tokens for payments",
+      "tutorials_receive_payments_title": "How to receive payments",
+      "tutorials_share_access_title": "How to share access to your account",
+      "tutorials_withdraw_title": "How to withdraw funds"
+    },
+    "resources": {
+      "title": "Resources",
+      "resources_blockchains_title": "Supported Blockchains",
+      "resources_contracts_title": "Contract Addresses",
+      "resources_currencies_title": "Supported Currencies",
+      "resources_tokens_title": "Supported Tokens",
+      "resources_tokens_search_placeholder": "Search by token name or address",
+      "resources_tokens_blockchain_select": "Select a blockchain",
+      "resources_tokens_found": "Found: {{count}} records",
+      "resources_contracts_blockchain_col": "Blockchain",
+      "resources_contracts_contract_col": "Contract",
+      "resources_contracts_address_col": "Address"
+    }
+  },
+  "states": {
+    "meta": {
+      "errors": {
+        "not_found": "Meta is not defined",
+        "load_error": "Failed to load meta"
+      }
+    },
+    "settings": {
+      "errors": {
+        "not_found": "Settings is not defined",
+        "load_error": "Failed to load settings"
+      }
+    }
+  },
+  "hooks": {},
+  "services": {
+    "errors": {
+      "request_error": "Failed to send request"
+    }
+  },
+  "common": {
+    "details": "Details",
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "saving": "Saving...",
+    "save_btn": "Save",
+    "save_changes_btn": "Save Changes",
+    "refresh_btn": "Refresh",
+    "apply_btn": "Apply",
+    "clear_btn": "Clear",
+    "refresh_all_btn": "Refresh All",
+    "restore_defaults_btn": "Restore Defaults",
+    "hide_btn": "Hide",
+    "show_btn": "Show",
+    "nothing_found": "Nothing found...",
+    "errors": {
+      "default": "Unknown error happens",
+      "param_not_set": "Parameter {{name}} is not set or empty",
+      "param_exceed_max_length": "Length {{length}} of parameter {{name}} is exceed maximum length {{max_length}}"
+    }
+  }
+}

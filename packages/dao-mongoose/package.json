@@ -1,0 +1,20 @@
+{
+  "name": "@repo/dao-mongoose",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "@repo/common": "workspace:^",
+    "@repo/dao": "workspace:^",
+    "mongoose": "^8.0.2",
+    "rango-sdk-basic": "^0.1.47"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "18",
+    "typescript": "^5.4.4"
+  }
+}

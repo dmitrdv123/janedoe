@@ -1,0 +1,224 @@
+{
+  "pages": {
+    "not_found": {
+      "title": "404, Page Not Found",
+      "description": "Incorrect URL or page not found"
+    },
+    "payment_success": {
+      "success_desc": "Payment is done successfully.",
+      "link_details": "Details"
+    },
+    "payment_status": {
+      "success": "Payment is done successfully",
+      "table_date": "Date",
+      "table_blockchain": "Blockchain",
+      "table_from": "From",
+      "table_to": "To",
+      "table_token": "Token",
+      "table_amount": "Amount",
+      "table_transaction": "Transaction",
+      "table_no_payments": "No payments found",
+      "at_cur_time": "At present time:",
+      "at_payment_time": "At payment time:",
+      "errors": {
+        "payment_history_load_error": "Failed to load payment history"
+      }
+    }
+  },
+  "components": {
+    "blockchain_button": {
+      "select_blockchain": "Select a blockchain",
+      "errors": {
+        "blockchain_required": "Select a blockchain",
+        "error_switching_network": "Failed to switch blockchain"
+      }
+    },
+    "evm_payment": {
+      "connect_wallet": "Connect Wallet",
+      "send_details": "to send the payment details",
+      "email_placeholder": "email@email.com",
+      "pay": "Pay",
+      "select_token": "Select a token",
+      "no_balance": "Not enough balance",
+      "conversion_desc": "will be converted",
+      "conversion_token": "into token",
+      "conversion_select_token": "Select a token",
+      "conversion_slippage": "with slippage",
+      "conversion_custom_slippage_placeholder": "custom",
+      "total_duration": "Duration: {{seconds}} seconds",
+      "fee": "Fee:",
+      "conversion": "Conversion:",
+      "conversion_not_found_alert": "Conversion not found",
+      "explain": "shop does not accept {{token}} as payment",
+      "to": "to",
+      "conversion_error_alert": "Failed to calculate сonversion path for token",
+      "pay_processing": "Payment transaction processing",
+      "errors": {
+        "failed_pay": "Payment has been failed",
+        "token_required": "Select a token",
+        "conversion_failed": "Failed to calculate conversion path for token"
+      }
+    },
+    "blockchain_modal": {
+      "title": "Select a Blockchain",
+      "search_placeholder": "Search by blockchain name",
+      "conversion_checkbox": "without conversion",
+      "conversion_checkbox_desc": "Conversion is possible if the store does not accept payment for the selected blockchain."
+    },
+    "tokens_modal": {
+      "title": "Select a Token",
+      "search_placeholder": "Search by token name or address",
+      "price_not_defined": "Token price is not defined",
+      "conversion_checkbox": "without conversion",
+      "conversion_checkbox_desc": "Conversion is possible if the store does not accept payment with the selected token."
+    },
+    "payment_navbar": {
+      "connected_in": "Connected in as: {{address}}",
+      "disconnect": "Disconnect",
+      "language": "Language: {{language}}",
+      "support": "Support"
+    },
+    "payment_summary": {
+      "company_id": "Company ID",
+      "payment_id": "Payment ID"
+    },
+    "transfer_payment": {
+      "send_address": "Send to this address",
+      "address_placeholder": "Address",
+      "amount_placeholder": "Amount",
+      "amount": "Amount",
+      "email": "Email",
+      "send_details": "to send the payment details",
+      "email_placeholder": "email@email.com",
+      "received": "Received",
+      "errors": {
+        "wallet_not_found": "Address for payment not found",
+        "native_token_not_found": "Native token for blockchain not found",
+        "native_token_price_not_defined": "Token price is not defined"
+      }
+    },
+    "update_timer": {
+      "timer": "Token exchange rates will update in {{seconds}} seconds"
+    },
+    "info_messages": {
+      "payment_conversion_error_explorer_urls": "Transactions Details URL's:",
+      "payment_conversion_error_output_details": "Token Conversion Details:",
+      "payment_conversion_error_output_details_middle_asset_in_dest": "Token conversion transaction failed on the last step because of slippage.",
+      "payment_conversion_error_output_details_middle_asset_in_src": "Token conversion transaction failed on bridge step because of slippage or lack of liquidity or other reasons.",
+      "payment_conversion_error_output_details_reverted_to_input": "Token conversion transaction failed and user should receive back the input token.",
+      "payment_conversion_error_output_details_desired_output": "Token conversion transaction succeeded.",
+      "payment_conversion_error_output_details_amount": "Amount",
+      "payment_conversion_diagnosis_url": "Please follow this <1>guide</1>."
+    }
+  },
+  "states": {
+    "settings": {
+      "errors": {
+        "settings_load_error": "Failed to load settings"
+      }
+    }
+  },
+  "hooks": {
+    "account_received_amount": {
+      "errors": {
+        "load_error": "Failed to load received amount for {{blockchain}}"
+      }
+    },
+    "navigate_success": {
+      "errors": {
+        "send_error": "Failed to send a payment success request"
+      }
+    },
+    "payment_conversion": {
+      "errors": {
+        "default_error": "Failed to calculate token conversion details"
+      }
+    },
+    "payment_data": {
+      "errors": {
+        "id_not_set": "Id is not set",
+        "payment_id_not_set": "Payment Id is not set",
+        "currency_not_set": "Payment currency is not set",
+        "amount_currency_error": "Payment amount is not set"
+      }
+    },
+    "payment_details": {
+      "errors": {
+        "wallet_not_found": "Cannot find wallet address for blockchain {{blockchain}}",
+        "contract_not_found": "Cannot find janedoe contract address for blockchain {{blockchain}}"
+      }
+    },
+    "token_conversion_pay": {
+      "token_swap_processing": "Creating transaction",
+      "token_approve_processing": "Processing transaction to set token spending permissions",
+      "token_pay_processing": "Processing payment transaction"
+    },
+    "token_conversion_swap": {
+      "errors": {
+        "swap_not_defined": "Token swap transaction is undefined",
+        "swap_transaction_not_defined": "Token swap transaction is undefined",
+        "token_output_amount_less_than_required": "The output amount {{amountCurrency}} {{currency}} is less than the required amount {{amountCurrencyRequired}} {{currency}}. Please update your token conversion information and try payment again or select a different token."
+      }
+    },
+    "token_conversion_approval": {
+      "transaction_waiting_error": "Transaction waiting error: request {{requestId}}, hash {{txId}}",
+      "transaction_waiting": "Waiting for the transaction: request {{requestId}}, hash {{txId}}",
+      "transaction_confirming": "Waiting for transaction confirmation: request {{requestId}}",
+      "transaction_confirmed": "Transaction confirmed: request {{requestId}}, hash {{txId}}"
+    },
+    "token_conversion_main": {
+      "transaction_waiting_error": "Transaction waiting error: request {{requestId}}, hash {{txId}}",
+      "transaction_waiting": "Waiting for the transaction: request {{requestId}}, hash {{txId}}",
+      "transaction_confirming": "Waiting for transaction confirmation: request {{requestId}}",
+      "transaction_confirmed": "Transaction confirmed: request {{requestId}}, hash {{txId}}"
+    },
+    "token_approve_and_pay": {
+      "token_allowance_processing": "Reading token spending permissions",
+      "token_reset_approve_processing": "Processing transaction to reset token spending permissions",
+      "token_approve_processing": "Processing transaction to set token spending permissions",
+      "token_pay_processing": "Processing payment transaction"
+    },
+    "native_pay": {
+      "native_pay_processing": "Payment transaction processing"
+    },
+    "wallet_details": {
+      "errors": {
+        "load_error": "Failed to load wallet data for {{blockchain}}"
+      }
+    },
+    "write_and_wait_contract": {
+      "transaction_waiting_error": "Transaction waiting error {{txId}}",
+      "transaction_waiting": "Waiting for the transaction {{txId}}",
+      "transaction_confirmed": "Transaction confirmed",
+      "transaction_confirming": "Waiting for transaction confirmation",
+      "switch_chain_confirmed": "Blockchain switched",
+      "switch_chain_confirming": "Waiting for the blockchain switch"
+    }
+  },
+  "services": {
+    "errors": {
+      "transaction_timeout": "Transaction timeout",
+      "request_error": "Failed to send request",
+      "wallet_not_found": "Cannot find wallet address for blockchain {{blockchain}}",
+      "contract_not_found": "Cannot find janedoe contract address for blockchain {{blockchain}}",
+      "route_not_found": "Cannot find route to convert {{blockchain}} {{token}} to one of tokens"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "processing": "Processing...",
+    "nothing": "No records...",
+    "copy_btn": "Copy",
+    "refresh_btn": "Refresh",
+    "settings": "Settings",
+    "balance": "Balance:",
+    "details": "Details",
+    "errors": {
+      "default": "Unknown error happens",
+      "transaction_error": "Transaction processing error",
+      "param_not_set": "Parameter {{name}} is not set or empty",
+      "param_exceed_max_length": "Length {{length}} of parameter {{name}} is exceed maximum length {{max_length}}"
+    }
+  }
+}

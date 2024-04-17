@@ -1,0 +1,20 @@
+{
+  "name": "@repo/evm",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "@repo/common": "workspace:^",
+    "@repo/dao": "workspace:^",
+    "abitype": "^1.0.2",
+    "viem": "^2.9.15"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "18",
+    "typescript": "^5.4.4"
+  }
+}
