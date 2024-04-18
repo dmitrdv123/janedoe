@@ -26,5 +26,12 @@
     "transport": "http",
     "rpcUrl": "https://optimism-rpc.publicnode.com",
     "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0x2105",
+    "blockchain": "base",
+    "transport": "http",
+    "rpcUrl": "https://base-rpc.publicnode.com",
+    "maxBlockRange": 49999
   }
 ]

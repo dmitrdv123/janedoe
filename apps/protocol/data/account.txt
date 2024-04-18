@@ -17,7 +17,7 @@
       "users": []
     },
     "paymentSettings": {
-      "blockchains": ["BSC", "POLYGON", "ARBITRUM", "OPTIMISM", "BTC"],
+      "blockchains": ["BSC", "POLYGON", "ARBITRUM", "OPTIMISM", "BASE", "BTC"],
       "assets": [
         {
           "blockchain": "HARDHAT",
@@ -91,6 +91,16 @@
         },
         {
           "blockchain": "OPTIMISM",
+          "symbol": "ETH",
+          "address": null
+        },
+        {
+          "blockchain": "BASE",
+          "symbol": "USDC",
+          "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"
+        },
+        {
+          "blockchain": "BASE",
           "symbol": "ETH",
           "address": null
         },

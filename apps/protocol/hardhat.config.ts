@@ -34,6 +34,11 @@ const config: HardhatUserConfig = {
       url: 'https://mainnet.optimism.io',
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
       chainId: 10
+    },
+    base: {
+      url: 'https://mainnet.base.org/',
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
+      chainId: 8453
     }
   }
 }
