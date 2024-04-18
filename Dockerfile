@@ -8,8 +8,7 @@ FROM base AS workspace
 
   RUN apk add --no-cache libc6-compat
   RUN apk update
-  RUN npm install pnpm@8.3.1 turbo --global
-  RUN pnpm config set store-dir ~/.pnpm-store
+  RUN npm install pnpm@9.0.2 turbo --global
 
   COPY pnpm-lock.yaml .
   RUN pnpm fetch

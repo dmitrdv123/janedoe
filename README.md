@@ -127,6 +127,7 @@ Transaction with hash "0x58425ba4ded7aa2b61504669f49e20a1f4582e6448a3ba538bc6a63
   - withdraw all for arb
   - a lot of errors
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
+- installer: create and reimport all wallet to central wallet
 
 disputable:
 - all: start to use bun instead of nodejs - https://bun.sh/guides. Since it should be much faster

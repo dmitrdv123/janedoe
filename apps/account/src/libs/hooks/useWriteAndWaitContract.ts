@@ -57,7 +57,7 @@ export default function useWriteAndWaitContract(
     }
 
     if (writeContractStatus === 'error') {
-      setError(writeContractError)
+      setError(writeContractError ? new Error(writeContractError.message) : undefined)
       setData(undefined)
       setStatus('error')
       return
@@ -76,7 +76,7 @@ export default function useWriteAndWaitContract(
     }
 
     if (switchChainStatus === 'error') {
-      setError(switchChainError)
+      setError(switchChainError ? new Error(switchChainError.message) : undefined)
       setData(undefined)
       setStatus('error')
       return
