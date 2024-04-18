@@ -74,10 +74,12 @@ VITE_APP_ENV=production NODE_ENV=production pnpm build
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network bsc
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network polygon
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network arbitrum
+NODE_ENV=production pnpm run deploy --filter=protocol -- --network optimism
 # upgrade contracts
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network bsc
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network polygon
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network arbitrum
+NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network optimism
 # deploy resources in aws
 NODE_ENV=production pnpm run deploy --filter=installer
 # init necessary data into db and bitcoin

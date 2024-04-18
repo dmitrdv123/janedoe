@@ -29,6 +29,11 @@ const config: HardhatUserConfig = {
       url: 'https://arb1.arbitrum.io/rpc',
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
       chainId: 42161
+    },
+    optimism: {
+      url: 'https://mainnet.optimism.io',
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
+      chainId: 10
     }
   }
 }

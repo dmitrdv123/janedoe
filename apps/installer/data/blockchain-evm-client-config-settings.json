@@ -14,11 +14,17 @@
       "maxBlockRange": 49999
   },
   {
-
     "chainId": "0xa4b1",
     "blockchain": "arbitrum",
     "transport": "http",
     "rpcUrl": "https://arbitrum-one-rpc.publicnode.com",
+    "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0xa",
+    "blockchain": "optimism",
+    "transport": "http",
+    "rpcUrl": "https://optimism-rpc.publicnode.com",
     "maxBlockRange": 49999
   }
 ]
