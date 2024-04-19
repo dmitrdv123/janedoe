@@ -17,7 +17,7 @@
       "users": []
     },
     "paymentSettings": {
-      "blockchains": ["BSC", "ARBITRUM", "BASE", "AVALANCHE", "POLYGON", "OPTIMISM", "BTC"],
+      "blockchains": ["BSC", "ARBITRUM", "BASE", "AVALANCHE", "POLYGON", "OPTIMISM", "ZKSYNC", "BTC"],
       "assets": [
         {
           "blockchain": "HARDHAT",
@@ -104,7 +104,6 @@
           "symbol": "MATIC",
           "address": null
         },
-
         {
           "blockchain": "OPTIMISM",
           "symbol": "USDT",
@@ -120,7 +119,21 @@
           "symbol": "ETH",
           "address": null
         },
-
+        {
+          "blockchain": "ZKSYNC",
+          "symbol": "USDT",
+          "address": "0x493257fd37edb34451f62edf8d2a0c418852ba4c"
+        },
+        {
+          "blockchain": "ZKSYNC",
+          "symbol": "USDC",
+          "address": "0x1d17cbcf0d6d143135ae902365d2e5e2a16538d4"
+        },
+        {
+          "blockchain": "ZKSYNC",
+          "symbol": "ETH",
+          "address": null
+        },
         {
           "blockchain": "BTC",
           "symbol": "BTC",

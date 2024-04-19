@@ -40,5 +40,12 @@
     "transport": "http",
     "rpcUrl": "https://avalanche-c-chain-rpc.publicnode.com",
     "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0x144",
+    "blockchain": "zksync",
+    "transport": "http",
+    "rpcUrl": "https://mainnet.era.zksync.io",
+    "maxBlockRange": 49999
   }
 ]

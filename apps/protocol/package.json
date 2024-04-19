@@ -22,20 +22,20 @@
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
     "@openzeppelin/hardhat-upgrades": "^3.0.1",
-    "@types/jsonwebtoken": "^9.0.2",
-    "axios": "^1.4.0",
     "@repo/common": "workspace:*",
     "@repo/dao": "workspace:*",
     "@repo/dao-aws": "workspace:*",
     "@repo/dao-mongoose": "workspace:*",
+    "axios": "^1.4.0",
     "dotenv": "^16.3.1",
     "ethers": "^6.4.0",
-    "hardhat": "2.19.3",
+    "hardhat": "2.19.4",
     "nanoid": "^3.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.2",
     "eslint": "^8.56.0"
   }
 }
