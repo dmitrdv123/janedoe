@@ -39,6 +39,11 @@ const config: HardhatUserConfig = {
       url: 'https://mainnet.base.org/',
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
       chainId: 8453
+    },
+    avalanche: {
+      url: 'https://api.avax.network/ext/bc/C/rpc',
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
+      chainId: 43114
     }
   }
 }

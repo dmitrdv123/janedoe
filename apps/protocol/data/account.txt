@@ -17,7 +17,7 @@
       "users": []
     },
     "paymentSettings": {
-      "blockchains": ["BSC", "POLYGON", "ARBITRUM", "OPTIMISM", "BASE", "BTC"],
+      "blockchains": ["BSC", "ARBITRUM", "BASE", "AVALANCHE", "POLYGON", "OPTIMISM", "BTC"],
       "assets": [
         {
           "blockchain": "HARDHAT",
@@ -50,21 +50,6 @@
           "address": null
         },
         {
-          "blockchain": "POLYGON",
-          "symbol": "USDT",
-          "address": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
-        },
-        {
-          "blockchain": "POLYGON",
-          "symbol": "USDC",
-          "address": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
-        },
-        {
-          "blockchain": "POLYGON",
-          "symbol": "MATIC",
-          "address": null
-        },
-        {
           "blockchain": "ARBITRUM",
           "symbol": "USDT",
           "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
@@ -80,6 +65,47 @@
           "address": null
         },
         {
+          "blockchain": "BASE",
+          "symbol": "USDC",
+          "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"
+        },
+        {
+          "blockchain": "BASE",
+          "symbol": "ETH",
+          "address": null
+        },
+        {
+          "blockchain": "AVALANCHE",
+          "symbol": "USDT",
+          "address": "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7"
+        },
+        {
+          "blockchain": "AVALANCHE",
+          "symbol": "USDC",
+          "address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e"
+        },
+        {
+          "blockchain": "AVALANCHE",
+          "symbol": "AVAX",
+          "address": null
+        },
+        {
+          "blockchain": "POLYGON",
+          "symbol": "USDT",
+          "address": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
+        },
+        {
+          "blockchain": "POLYGON",
+          "symbol": "USDC",
+          "address": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
+        },
+        {
+          "blockchain": "POLYGON",
+          "symbol": "MATIC",
+          "address": null
+        },
+
+        {
           "blockchain": "OPTIMISM",
           "symbol": "USDT",
           "address": "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58"
@@ -94,16 +120,7 @@
           "symbol": "ETH",
           "address": null
         },
-        {
-          "blockchain": "BASE",
-          "symbol": "USDC",
-          "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"
-        },
-        {
-          "blockchain": "BASE",
-          "symbol": "ETH",
-          "address": null
-        },
+
         {
           "blockchain": "BTC",
           "symbol": "BTC",

@@ -33,5 +33,12 @@
     "transport": "http",
     "rpcUrl": "https://base-rpc.publicnode.com",
     "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0xa86a",
+    "blockchain": "avalanche",
+    "transport": "http",
+    "rpcUrl": "https://avalanche-c-chain-rpc.publicnode.com",
+    "maxBlockRange": 49999
   }
 ]
