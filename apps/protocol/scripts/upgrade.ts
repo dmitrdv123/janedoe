@@ -6,6 +6,7 @@ import { AppSettingsContracts } from '@repo/dao/dist/src/interfaces/settings'
 import { getNetworkInfo, loadFileAsJson, saveFile, upgrade } from '../src/utils'
 import { RangoReceiver__factory, WrappedNative__factory } from '../typechain-types'
 import { NetworkInfo } from '../src/interfaces'
+import { DEPLOYMENTS_FOLDER } from '../src/constants'
 
 async function main() {
   const contract = process.env.CONTRACT
@@ -19,7 +20,7 @@ async function main() {
   const [signer] = await ethers.getSigners()
 
   const networkInfo = await getNetworkInfo()
-  const deploymentFile = `deployments/${networkInfo.name.toLocaleLowerCase()}.json`
+  const deploymentFile = `${DEPLOYMENTS_FOLDER}/${networkInfo.name.toLocaleLowerCase()}.json`
   const contractSettings = await loadFileAsJson<AppSettingsContracts>(deploymentFile)
   if (!contractSettings) {
     throw new Error(`Cannot find file ${deploymentFile}`)
@@ -135,7 +136,7 @@ async function upgradeRangoReceiver(signer: HardhatEthersSigner, contractSetting
 }
 
 async function saveDeployment(networkInfo: NetworkInfo, contractSettings: AppSettingsContracts) {
-  await saveFile('deployments', `${networkInfo.name}.json`, contractSettings)
+  await saveFile(DEPLOYMENTS_FOLDER, `${networkInfo.name}.json`, contractSettings)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

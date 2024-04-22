@@ -6,14 +6,14 @@ import { Wallet } from 'zksync-ethers'
 
 import { deployUpgradable, getNetworkInfo, saveFile } from '../src/utils'
 import { NetworkInfo } from '../src/interfaces'
-import { NATIVE_DECIMALS, NATIVE_NAME, NATIVE_SYMBOL } from '../src/constants'
+import { DEPLOYMENTS_FOLDER, NATIVE_DECIMALS, NATIVE_NAME, NATIVE_SYMBOL } from '../src/constants'
 
 const contractVersionJanedoe = 'JaneDoe'
 const contractVersionWrappedNative = 'WrappedNative'
 const contractVersionRangoReceiver = 'RangoReceiver'
 
 async function saveDeployment(janeDoeAddress: string | Addressable, wrappedNativeAddress: string | Addressable, rangoReceiverAddress: string | Addressable, networkInfo: NetworkInfo) {
-  await saveFile('deployments', `${networkInfo.name}.json`, {
+  await saveFile(DEPLOYMENTS_FOLDER, `${networkInfo.name}.json`, {
     chainId: networkInfo.hexChainId,
     blockchain: networkInfo.name,
     contractAddresses: {

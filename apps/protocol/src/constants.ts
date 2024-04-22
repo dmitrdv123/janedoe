@@ -7,3 +7,4 @@ export const UNISWAP_V2_ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2
 export const ETH_DECIMALS = 18
 export const USDT_DECIMALS = 6
 export const JWT_ALGORITHM: jwt.Algorithm = 'HS256'
+export const DEPLOYMENTS_FOLDER='../installer/data/deployments'

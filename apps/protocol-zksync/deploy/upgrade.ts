@@ -8,7 +8,7 @@ import { AppSettingsContracts } from '@repo/dao/dist/src/interfaces/settings'
 import { getNetworkInfo, loadFileAsJson, saveFile, upgrade } from '../src/utils'
 import { RangoReceiver__factory, WrappedNative__factory } from '../typechain-types'
 import { NetworkInfo } from '../src/interfaces'
-import { NATIVE_DECIMALS, NATIVE_NAME, NATIVE_SYMBOL } from '../src/constants'
+import { DEPLOYMENTS_FOLDER, NATIVE_DECIMALS, NATIVE_NAME, NATIVE_SYMBOL } from '../src/constants'
 
 async function upgradeWrappedNative(deployer: Deployer, contractSettings: AppSettingsContracts, contractVersion: string, contractInitialize: string) {
   const contractWrappedNative = WrappedNative__factory.connect(contractSettings.contractAddresses.WrappedNative, deployer.zkWallet)
@@ -76,7 +76,7 @@ async function upgradeRangoReceiver(deployer: Deployer, contractSettings: AppSet
 }
 
 async function saveDeployment(networkInfo: NetworkInfo, contractSettings: AppSettingsContracts) {
-  await saveFile('deployments', `${networkInfo.name}.json`, contractSettings)
+  await saveFile(DEPLOYMENTS_FOLDER, `${networkInfo.name}.json`, contractSettings)
 }
 
 export default async function () {
@@ -90,7 +90,7 @@ export default async function () {
   }
 
   const networkInfo = await getNetworkInfo()
-  const deploymentFile = `deployments/${networkInfo.name.toLocaleLowerCase()}.json`
+  const deploymentFile = `${DEPLOYMENTS_FOLDER}/${networkInfo.name.toLocaleLowerCase()}.json`
   const contractSettings = await loadFileAsJson<AppSettingsContracts>(deploymentFile)
   if (!contractSettings) {
     throw new Error(`Cannot find file ${deploymentFile}`)

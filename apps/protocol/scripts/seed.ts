@@ -7,9 +7,11 @@ import { AppSettingsContracts } from '@repo/dao/dist/src/interfaces/settings'
 import { BitcoinWrapperService } from '@repo/common/dist/src/services/bitcoin-wrapper-service'
 import { daoContainer as dynamoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
+import { Account } from '@repo/dao/dist/src/interfaces/account-profile'
+import { AccountPaymentSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 
 import { JaneDoe, JaneDoe__factory, WrappedNative, WrappedNative__factory } from '../typechain-types'
-import { USDC_ADDRESS, USDT_ADDRESS } from '../src/constants'
+import { DEPLOYMENTS_FOLDER, USDC_ADDRESS, USDT_ADDRESS } from '../src/constants'
 import { loadFile, loadFileAsJson, encrypt, printBalances, randomIntFromInterval, printBalancesEth, printBalancesToken, getNetworkInfo } from '../src/utils'
 import { EthPayer, EthPayerBuilder } from '../src/services/payers/eth-payer'
 import { TokenPayer, TokenPayerBuilder } from '../src/services/payers/token-payer'
@@ -35,7 +37,7 @@ async function init() {
   accounts = await ethers.getSigners()
 
   const networkInfo = await getNetworkInfo()
-  const deploymentFile = `deployments/${networkInfo.name.toLocaleLowerCase()}.json`
+  const deploymentFile = `${DEPLOYMENTS_FOLDER}/${networkInfo.name.toLocaleLowerCase()}.json`
   const contractSettings = await loadFileAsJson<AppSettingsContracts>(deploymentFile)
   if (!contractSettings) {
     throw new Error(`Cannot find file ${deploymentFile}`)
@@ -66,12 +68,18 @@ async function createAccounts() {
     throw new Error(`Cannot find file ${accountTemplateFile}`)
   }
 
+  const accountDefaultSettingsFile = '../installer/data/default-account-settings.json'
+  const accountDefaultSettings = await loadFileAsJson<AccountPaymentSettings>(accountDefaultSettingsFile)
+  if (!accountDefaultSettings) {
+    throw new Error(`Cannot find file ${accountDefaultSettingsFile}`)
+  }
+
   await Promise.all(
-    accounts.map(account => createAccount(account, accountTemplate))
+    accounts.map(account => createAccount(account, accountTemplate, accountDefaultSettings))
   )
 }
 
-async function createAccount(account: HardhatEthersSigner, accountTemplate: string) {
+async function createAccount(account: HardhatEthersSigner, accountTemplate: string, accountDefaultSettings: AccountPaymentSettings) {
   console.log(`Start to create account for address ${account.address}`)
 
   const existedAccountProfile = await accountDao.loadAccountProfileByAddress(account.address)
@@ -85,8 +93,12 @@ async function createAccount(account: HardhatEthersSigner, accountTemplate: stri
       .replaceAll('${ADDRESS}', account.address)
       .replaceAll('${SECRET}', secret)
 
+    const accountProfile: Account = JSON.parse(accountToCreate)
+    accountProfile.settings.paymentSettings.blockchains = [...accountProfile.settings.paymentSettings.blockchains, ...accountDefaultSettings.blockchains]
+    accountProfile.settings.paymentSettings.assets = [...accountProfile.settings.paymentSettings.assets, ...accountDefaultSettings.assets]
+
     console.log(`Start to save account for id ${id} and address ${account.address}`)
-    await accountDao.saveAccount(JSON.parse(accountToCreate))
+    await accountDao.saveAccount(accountProfile)
     console.log(`End to save account for id ${id} and address ${account.address}`)
   }
 

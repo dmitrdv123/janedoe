@@ -1,0 +1,14 @@
+{
+  "chainId": "0x89",
+  "blockchain": "polygon",
+  "contractAddresses": {
+    "JaneDoe": "0x62c00A7cA11F97306BAA6ff0E7ed53C1504e92BE",
+    "WrappedNative": "0x95005A422520Eeac518588365bCD6C383d59cf5a",
+    "RangoReceiver": "0xB3976b428B1221b1F9B2A72d680d358F1C55a182"
+  },
+  "contractDetails": {
+    "JaneDoe": "JaneDoe",
+    "WrappedNative": "WrappedNative",
+    "RangoReceiver": "RangoReceiverV3"
+  }
+}

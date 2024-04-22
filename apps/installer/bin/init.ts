@@ -39,7 +39,7 @@ async function saveDefaultAccountPaymentSettings(): Promise<void> {
 async function saveSettings(): Promise<void> {
   console.log('Start to save settings')
 
-  const deploymentsFolder = '../protocol/deployments'
+  const deploymentsFolder = 'data/deployments'
   const contracts: AppSettingsContracts[] = await Promise.all(
     fs.readdirSync(path.join(process.cwd(), deploymentsFolder))
       .filter(file => {
@@ -47,7 +47,11 @@ async function saveSettings(): Promise<void> {
           return true
         }
 
-        return file.toLocaleLowerCase() !== 'hardhat.json' && file.toLocaleLowerCase() !== 'localhost.json'
+        return file.toLocaleLowerCase() !== 'hardhat.json'
+          && file.toLocaleLowerCase() !== 'localhost.json'
+          && file.toLocaleLowerCase() !== 'zksyncinmemorynode.json'
+          && file.toLocaleLowerCase() !== 'zksyncdockerizednode.json'
+          && file.toLocaleLowerCase() !== 'zksyncsepoliatestnet.json'
       })
       .map(
         async file => {
@@ -99,20 +103,20 @@ async function saveBlockchainSettings(contracts: AppSettingsContracts[]): Promis
 
   await Promise.all(
     contracts
-    .filter(
-      contract => contract.blockchain.toLocaleLowerCase() !== 'hardhat' && contract.blockchain.toLocaleLowerCase() !== 'localhost'
-    )
-    .map(async contract => {
-      const existingSettings = await settingsDao.loadSettings<BlockchainSettings>(BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
-      if (!existingSettings) {
-        const blockNumber = await evmService.blockNumber(undefined, contract.chainId)
-        const blockchainSettings: BlockchainSettings = {
-          blockchain: contract.blockchain,
-          block: blockNumber.toString()
+      .filter(
+        contract => contract.blockchain.toLocaleLowerCase() !== 'hardhat' && contract.blockchain.toLocaleLowerCase() !== 'localhost'
+      )
+      .map(async contract => {
+        const existingSettings = await settingsDao.loadSettings<BlockchainSettings>(BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
+        if (!existingSettings) {
+          const blockNumber = await evmService.blockNumber(undefined, contract.chainId)
+          const blockchainSettings: BlockchainSettings = {
+            blockchain: contract.blockchain,
+            block: blockNumber.toString()
+          }
+          await settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
         }
-        await settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
-      }
-    })
+      })
   )
 }
 

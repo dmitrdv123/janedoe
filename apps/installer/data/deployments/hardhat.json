@@ -1,0 +1,14 @@
+{
+  "chainId": "0x7a69",
+  "blockchain": "hardhat",
+  "contractAddresses": {
+    "JaneDoe": "0xCA87833e830652C2ab07E1e03eBa4F2c246D3b58",
+    "WrappedNative": "0x8CeA85eC7f3D314c4d144e34F2206C8Ac0bbadA1",
+    "RangoReceiver": "0x7A5EC257391817ef241ef8451642cC6b222d4f8C"
+  },
+  "contractDetails": {
+    "JaneDoe": "JaneDoe",
+    "WrappedNative": "WrappedNative",
+    "RangoReceiver": "RangoReceiver"
+  }
+}

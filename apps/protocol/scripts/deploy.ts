@@ -3,6 +3,7 @@ import { Addressable } from 'ethers'
 
 import { deployUpgradable, getNetworkInfo, saveFile } from '../src/utils'
 import { NetworkInfo } from '../src/interfaces'
+import { DEPLOYMENTS_FOLDER } from '../src/constants'
 
 const contractVersionJanedoe = 'JaneDoe'
 const contractVersionWrappedNative = 'WrappedNative'
@@ -39,7 +40,7 @@ async function main() {
 }
 
 async function saveDeployment(janeDoeAddress: string | Addressable, wrappedNativeAddress: string | Addressable, rangoReceiverAddress: string | Addressable, networkInfo: NetworkInfo) {
-  await saveFile('deployments', `${networkInfo.name}.json`, {
+  await saveFile(DEPLOYMENTS_FOLDER, `${networkInfo.name}.json`, {
     chainId: networkInfo.hexChainId,
     blockchain: networkInfo.name,
     contractAddresses: {
