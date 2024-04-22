@@ -44,10 +44,14 @@ VITE_APP_ENV=local NODE_ENV=local pnpm build
 VITE_APP_ENV=local pnpm dev --filter=account --filter=docs --filter=payment --filter=landing --filter=support
 # run protocol
 NODE_ENV=local pnpm dev --filter=protocol -- --network hardhat
+# run protocol on zksync (optionally)
+NODE_ENV=local pnpm dev --filter=protocol-zksync -- --network zkSyncInMemoryNode
 # deploy resources in aws
 NODE_ENV=local pnpm run deploy --filter=installer
 # deploy contracts
 NODE_ENV=local pnpm run deploy --filter=protocol -- --network localhost
+# deploy contracts to zksync (optionally)
+NODE_ENV=local pnpm run deploy --filter=protocol-zksync -- --network zkSyncInMemoryNode
 # init necessary data into db and bitcoin
 NODE_ENV=local pnpm run init --filter=installer
 # some seed data like payments and accounts
@@ -77,7 +81,7 @@ NODE_ENV=production pnpm run deploy --filter=protocol -- --network arbitrum
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network optimism
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network base
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network avalanche
-NODE_ENV=production pnpm run deploy --filter=protocol -- --network zksync
+NODE_ENV=production pnpm run deploy --filter=protocol-zksync -- --network zksync
 # upgrade contracts
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network bsc
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network polygon
@@ -85,7 +89,7 @@ NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initiali
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network optimism
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network base
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network avalanche
-NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network zksync
+NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol-zksync -- --network zksync
 # deploy resources in aws
 NODE_ENV=production pnpm run deploy --filter=installer
 # init necessary data into db and bitcoin
@@ -136,6 +140,16 @@ Transaction with hash "0x58425ba4ded7aa2b61504669f49e20a1f4582e6448a3ba538bc6a63
   - a lot of errors
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - installer: create and reimport all wallet to central wallet
+- protocol, protocol-zksync:
+protocol:deploy: ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+protocol:deploy: │ Warning: It looks like you are using '<address payable>.send/transfer(<X>)' without providing    │
+protocol:deploy: │ the gas amount. Such calls will fail depending on the pubdata costs.                             │
+protocol:deploy: │ This might be a false positive if you are using an interface (like IERC20) instead of the        │
+protocol:deploy: │ native Solidity `send/transfer`.                                                                 │
+protocol:deploy: │ Please use 'payable(<address>).call{value: <X>}("")' instead, but be careful with the reentrancy │
+protocol:deploy: │ attack. `send` and `transfer` send limited amount of gas that prevents reentrancy, whereas       │
+protocol:deploy: │ `<address>.call{value: <X>}` sends all gas to the callee. Learn more on                          │
+protocol:deploy: │ https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
 
 disputable:
 - all: start to use bun instead of nodejs - https://bun.sh/guides. Since it should be much faster

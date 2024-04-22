@@ -1,0 +1,38 @@
+{
+  "name": "protocol-zksync",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "clean": "hardhat clean",
+    "build": "hardhat clean && hardhat compile",
+    "stop": "npx zksync-cli dev stop",
+    "start": "npx zksync-cli dev start fork mainnet",
+    "dev": "npx zksync-cli dev start fork mainnet",
+    "deploy": "hardhat deploy-zksync --script deploy.ts",
+    "upgrade": "hardhat deploy-zksync --script upgrade.ts",
+    "sandbox": "hardhat deploy-zksync --script sandbox.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@matterlabs/hardhat-zksync": "^1.0.0",
+    "@matterlabs/zksync-contracts": "^0.6.1",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@openzeppelin/contracts": "^4.9.5",
+    "@openzeppelin/contracts-upgradeable": "^4.9.5",
+    "@openzeppelin/hardhat-upgrades": "^3.0.1",
+    "@openzeppelin/upgrades-core": "^1.32.6",
+    "@repo/common": "workspace:*",
+    "@repo/dao": "workspace:*",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.4.0",
+    "hardhat": "2.19.4",
+    "zksync-ethers": "^6.7.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^8.56.0"
+  }
+}

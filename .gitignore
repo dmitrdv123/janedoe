@@ -53,6 +53,15 @@ apps/protocol/deployments/
 apps/protocol/typechain
 apps/protocol/typechain-types
 
+# protocol-zksync
+apps/protocol-zksync/artifacts/
+apps/protocol-zksync/artifacts-zk/
+apps/protocol-zksync/cache
+apps/protocol-zksync/cache-zk
+apps/protocol-zksync/deployments/
+apps/protocol-zksync/typechain
+apps/protocol-zksync/typechain-types
+
 # installer
 apps/installer/**/*.js
 apps/installer/**/*.d.ts
