@@ -47,5 +47,12 @@
     "transport": "http",
     "rpcUrl": "https://mainnet.era.zksync.io",
     "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0xe708",
+    "blockchain": "linea",
+    "transport": "http",
+    "rpcUrl": "https://rpc.linea.build",
+    "maxBlockRange": 49999
   }
 ]

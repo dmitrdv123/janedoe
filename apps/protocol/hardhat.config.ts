@@ -44,6 +44,10 @@ const config: HardhatUserConfig = {
       url: 'https://api.avax.network/ext/bc/C/rpc',
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
       chainId: 43114
+    },
+    linea: {
+      url: 'https://rpc.linea.build',
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     }
   }
 }
