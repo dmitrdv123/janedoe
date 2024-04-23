@@ -1,5 +1,5 @@
 {
-  "blockchains": ["BSC", "ARBITRUM", "BASE", "AVALANCHE", "POLYGON", "OPTIMISM", "ZKSYNC", "LINEA", "BTC"],
+  "blockchains": ["BSC", "ARBITRUM", "BASE", "AVALANCHE", "POLYGON", "OPTIMISM", "CRONOS", "ZKSYNC", "LINEA", "BTC"],
   "assets": [
     {
       "blockchain": "BSC",
@@ -83,6 +83,21 @@
     },
     {
       "blockchain": "OPTIMISM",
+      "symbol": "ETH",
+      "address": null
+    },
+    {
+      "blockchain": "CRONOS",
+      "symbol": "USDT",
+      "address": "0x66e428c3f67a68878562e79a0234c1f83c208770"
+    },
+    {
+      "blockchain": "CRONOS",
+      "symbol": "USDC",
+      "address": "0xc21223249ca28397b4b6541dffaecc539bff0c59"
+    },
+    {
+      "blockchain": "CRONOS",
       "symbol": "ETH",
       "address": null
     },

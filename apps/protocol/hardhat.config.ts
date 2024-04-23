@@ -17,36 +17,38 @@ const config: HardhatUserConfig = {
     },
     bsc: {
       url: 'https://bsc-dataseed.binance.org',
-      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
-      chainId: 56
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     },
     polygon: {
       url: 'https://polygon-rpc.com',
-      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
-      chainId: 137
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     },
     arbitrum: {
       url: 'https://arb1.arbitrum.io/rpc',
-      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
-      chainId: 42161
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     },
     optimism: {
       url: 'https://mainnet.optimism.io',
-      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
-      chainId: 10
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     },
     base: {
       url: 'https://mainnet.base.org/',
-      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
-      chainId: 8453
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     },
     avalanche: {
       url: 'https://api.avax.network/ext/bc/C/rpc',
-      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined,
-      chainId: 43114
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     },
     linea: {
       url: 'https://rpc.linea.build',
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
+    },
+    scroll: {
+      url: 'https://rpc.scroll.io',
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
+    },
+    cronos: {
+      url: 'https://evm.cronos.org',
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     }
   }

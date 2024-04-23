@@ -54,5 +54,19 @@
     "transport": "http",
     "rpcUrl": "https://rpc.linea.build",
     "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0x82750",
+    "blockchain": "scroll",
+    "transport": "http",
+    "rpcUrl": "https://rpc.scroll.io",
+    "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0x19",
+    "blockchain": "cronos",
+    "transport": "http",
+    "rpcUrl": "https://evm.cronos.org",
+    "maxBlockRange": 49999
   }
 ]
