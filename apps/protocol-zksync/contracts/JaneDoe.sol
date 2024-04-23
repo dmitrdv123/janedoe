@@ -4,20 +4,15 @@ pragma solidity ^0.8.0;
 import { ERC1155Upgradeable } from '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
-import './interfaces/IVersioned.sol';
 import './interfaces/IJaneDoe.sol';
 import './interfaces/IWrappedNative.sol';
 
-contract JaneDoe is ERC1155Upgradeable, IJaneDoe, IVersioned {
+contract JaneDoe is ERC1155Upgradeable, IJaneDoe {
   address private _wrappedNativeAddress;
 
   function initialize(string memory uri_, address wrappedNativeAddress_) initializer public {
     __ERC1155_init(uri_);
     _wrappedNativeAddress = wrappedNativeAddress_;
-  }
-
-  function version() external virtual override view returns (string memory) {
-    return 'v1';
   }
 
   function wrappedNativeAddress() public view returns (address) {

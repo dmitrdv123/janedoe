@@ -3,19 +3,14 @@ pragma solidity ^0.8.0;
 
 import { ERC20Upgradeable } from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
-import './interfaces/IVersioned.sol';
 import './interfaces/IWrappedNative.sol';
 
-contract WrappedNative is ERC20Upgradeable, IWrappedNative, IVersioned {
+contract WrappedNative is ERC20Upgradeable, IWrappedNative {
   uint8 private _decimals;
 
   function initialize(string memory name_, string memory symbol_, uint8 decimals_) initializer public {
     __ERC20_init(name_, symbol_);
     _decimals = decimals_;
-  }
-
-  function version() external virtual override view returns (string memory) {
-    return 'v1';
   }
 
   function decimals() public view virtual override returns (uint8) {

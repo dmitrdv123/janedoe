@@ -3,27 +3,23 @@ pragma solidity ^0.8.0;
 
 import { Initializable } from '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-import './interfaces/IVersioned.sol';
 import './interfaces/IJaneDoe.sol';
 import './interfaces/IRangoMessageReceiver.sol';
 
-contract RangoReceiverV2 is Initializable, IRangoMessageReceiver, IVersioned {
+contract RangoReceiverV4 is Initializable, ReentrancyGuard, IRangoMessageReceiver {
   address private _janedoeAddress;
 
-  function initialize1(address janedoeAddress_) reinitializer(2) public {
+  function initialize4(address janedoeAddress_) reinitializer(4) public {
     _janedoeAddress = janedoeAddress_;
-  }
-
-  function version() external virtual override view returns (string memory) {
-    return 'v2';
   }
 
   function janedoeAddress() public view returns (address) {
     return _janedoeAddress;
   }
 
-  function handleRangoMessage(address _token, uint _amount, ProcessStatus _status, bytes memory _message) external payable virtual override {
+  function handleRangoMessage(address _token, uint _amount, ProcessStatus _status, bytes memory _message) external payable virtual override nonReentrant {
     AppMessage memory message = abi.decode((_message), (AppMessage));
 
     if (_status == ProcessStatus.SUCCESS) {
@@ -37,7 +33,7 @@ contract RangoReceiverV2 is Initializable, IRangoMessageReceiver, IVersioned {
         (bool sent, ) = payable(message.from).call{value: _amount}("");
         require(sent, "failed to send native");
       } else {
-        SafeERC20.safeTransferFrom(IERC20(_token), message.from, message.from, _amount);
+        SafeERC20.safeTransfer(IERC20(_token), message.from, _amount);
       }
     }
 
