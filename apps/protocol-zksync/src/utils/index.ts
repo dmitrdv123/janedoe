@@ -18,10 +18,6 @@ export async function deployUpgradable(deployer: Deployer, name: string, args: u
   const constractProxyAddress = await contractProxy.getAddress()
   console.log(`Contract ${name} deployed to ${constractProxyAddress} with args ${JSON.stringify(args)}`)
 
-  contractProxy.connect(deployer.zkWallet)
-  const version = await contractProxy.version()
-  console.log(`Contract ${name} version ${version}`)
-
   return constractProxyAddress
 }
 
@@ -33,10 +29,6 @@ export async function upgrade(deployer: Deployer, name: string, address: string 
 
   const constractProxyAddress = await contractProxy.getAddress()
   console.log(`Contract ${name} deployed to ${constractProxyAddress} with args ${JSON.stringify(args)}`)
-
-  contractProxy.connect(deployer.zkWallet)
-  const version = await contractProxy.version()
-  console.log(`Contract ${name} version ${version}`)
 
   return constractProxyAddress
 }
@@ -94,6 +86,6 @@ export function getProvider(): Provider {
   if (!rpcUrl) {
     throw `RPC URL wasn't found in "${hre.network.name}"! Please add a "url" field to the network config in hardhat.config.ts`
   }
-  
+
   return new Provider(rpcUrl)
 }
