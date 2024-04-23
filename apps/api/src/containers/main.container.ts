@@ -11,6 +11,7 @@ import { SettingsDao } from '@repo/dao/dist/src/dao/settings.dao'
 import { EmailTemplateDao } from '@repo/dao/dist/src/dao/email-template.dao'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
 import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
+import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrapper-service'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
@@ -23,7 +24,6 @@ import { AuthController } from '../controllers/auth-controller'
 import { PaymentController } from '../controllers/payment-controller'
 import { AccountService, AccountServiceImpl } from '../services/account-service'
 import { AuthService, AuthServiceImpl } from '../services/auth-service'
-import { RangoWrapperService, RangoWrapperServiceImpl } from '../services/rango-wrapper-service'
 import { PaymentService, PaymentServiceImpl } from '../services/payment-service'
 import { SettingsService, SettingsServiceImpl } from '../services/settings-service'
 import { META_TASK_INTERVAL_SECONDS, NOTIFICATION_TASK_INTERVAL_SECONDS, PAYMENT_TASK_INTERVAL_SECONDS } from '../constants'
@@ -48,6 +48,7 @@ import { MetaService, MetaServiceImpl } from '../services/meta-service'
 import { SupportService, SupportServiceImpl } from '../services/support-service'
 import { DocController } from '../controllers/doc-controller'
 import { MetaTask } from '../tasks/meta-task'
+import { RangoService, RangoServiceImpl } from '../services/rango-service'
 
 const container = new Container()
 
@@ -70,7 +71,13 @@ container.register(
     awsContainer.resolve<SettingsDao>('settingsDao')
   )
 )
-container.register('rangoWrapperService', new RangoWrapperServiceImpl(commonContainer.resolve<CacheService>('cacheService')))
+container.register(
+  'rangoService',
+  new RangoServiceImpl(
+    commonContainer.resolve<RangoWrapperService>('rangoWrapperService'),
+    commonContainer.resolve<CacheService>('cacheService')
+  )
+)
 container.register('exchangeRateApiWrapperService', new ExchangeRateApiWrapperServiceImpl(commonContainer.resolve<CacheService>('cacheService')))
 container.register('cryptoService', new CryptoServiceImpl())
 container.register(
@@ -88,7 +95,7 @@ container.register(
 container.register(
   'metaService',
   new MetaServiceImpl(
-    container.resolve<RangoWrapperService>('rangoWrapperService'),
+    container.resolve<RangoService>('rangoService'),
     awsContainer.resolve<MetaDao>('metaDao')
   )
 )
@@ -166,7 +173,7 @@ container.register(
     container.resolve<SettingsService>('settingsService'),
     container.resolve<MetaService>('metaService'),
     container.resolve<PaymentService>('paymentService'),
-    container.resolve<RangoWrapperService>('rangoWrapperService'),
+    container.resolve<RangoService>('rangoService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService'),
     container.resolve<SupportService>('supportService')
   )

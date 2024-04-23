@@ -10,13 +10,14 @@ import { commonContainer } from '@repo/common/dist/src/containers/common.contain
 import { Account } from '@repo/dao/dist/src/interfaces/account-profile'
 import { AccountPaymentSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 
+import '../src/app-config'
+
 import { JaneDoe, JaneDoe__factory, WrappedNative, WrappedNative__factory } from '../typechain-types'
 import { DEPLOYMENTS_FOLDER, USDC_ADDRESS, USDT_ADDRESS } from '../src/constants'
 import { loadFile, loadFileAsJson, encrypt, printBalances, randomIntFromInterval, printBalancesEth, printBalancesToken, getNetworkInfo } from '../src/utils'
 import { EthPayer, EthPayerBuilder } from '../src/services/payers/eth-payer'
 import { TokenPayer, TokenPayerBuilder } from '../src/services/payers/token-payer'
 import { BtcPayer, BtcPayerBuilder } from '../src/services/payers/btc-payer'
-import { createAppConfig } from '../src/app-config'
 
 let accounts: HardhatEthersSigner[]
 
@@ -32,8 +33,6 @@ const accountDao = dynamoContainer.resolve<AccountDao>('accountDao')
 const bitcoinWrapperService = commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService')
 
 async function init() {
-  createAppConfig()
-
   accounts = await ethers.getSigners()
 
   const networkInfo = await getNetworkInfo()

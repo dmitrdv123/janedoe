@@ -4,27 +4,27 @@ import { SupportTicket } from '@repo/dao/dist/src/interfaces/support-ticket'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 
 import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, minifyToken, paramsFromUrl, processControllerError, tryParseFloat } from '../utils/utils'
-import { RangoWrapperService } from '../services/rango-wrapper-service'
 import { PaymentService } from '../services/payment-service'
 import { ExchangeRateApiService } from '../services/exchange-rate-api-service'
 import { MetaService } from '../services/meta-service'
 import { SupportService } from '../services/support-service'
 import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, CURRENCY_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, LANGUAGE_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
 import { SettingsService } from '../services/settings-service'
+import { RangoService } from '../services/rango-service'
 
 export class PaymentController {
   public constructor(
     private settingsService: SettingsService,
     private metaService: MetaService,
     private paymentService: PaymentService,
-    private rangoWrapperService: RangoWrapperService,
+    private rangoService: RangoService,
     private exchangeRateApiService: ExchangeRateApiService,
     private supportService: SupportService
   ) { }
 
   public async quote(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await this.rangoWrapperService.quote(paramsFromUrl(req.url))
+      const data = await this.rangoService.quote(paramsFromUrl(req.url))
       res.send(data)
     } catch (err) {
       processControllerError(res, err as Error)
@@ -33,7 +33,7 @@ export class PaymentController {
 
   public async swap(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await this.rangoWrapperService.swap(paramsFromUrl(req.url))
+      const data = await this.rangoService.swap(paramsFromUrl(req.url))
       res.send(data)
     } catch (err) {
       processControllerError(res, err as Error)
@@ -42,7 +42,7 @@ export class PaymentController {
 
   public async isApproved(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await this.rangoWrapperService.isApproved(paramsFromUrl(req.url))
+      const data = await this.rangoService.isApproved(paramsFromUrl(req.url))
       res.send(data)
     } catch (err) {
       processControllerError(res, err as Error)
@@ -51,7 +51,7 @@ export class PaymentController {
 
   public async status(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await this.rangoWrapperService.status(paramsFromUrl(req.url))
+      const data = await this.rangoService.status(paramsFromUrl(req.url))
       res.send(data)
     } catch (err) {
       processControllerError(res, err as Error)
@@ -130,7 +130,7 @@ export class PaymentController {
 
   public async balance(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await this.rangoWrapperService.balance(paramsFromUrl(req.url))
+      const data = await this.rangoService.balance(paramsFromUrl(req.url))
       res.send(data)
     } catch (err) {
       processControllerError(res, err as Error)

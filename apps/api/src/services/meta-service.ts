@@ -6,8 +6,8 @@ import appConfig from '@repo/common/dist/src/app-config'
 import { META_SAVING_SAMPLING_SECONDS } from '../constants'
 import { TokenByTimestamp } from '../interfaces/token'
 import { logger } from '../utils/logger'
-import { RangoWrapperService } from './rango-wrapper-service'
 import { isNullOrEmptyOrWhitespaces, unminifyAndCorrectToken } from '../utils/utils'
+import { RangoService } from './rango-service'
 
 export interface MetaService {
   meta(): Promise<MetaResponse>
@@ -17,7 +17,7 @@ export interface MetaService {
 
 export class MetaServiceImpl implements MetaService {
   public constructor(
-    private rangoWrapperService: RangoWrapperService,
+    private rangoService: RangoService,
     private metaDao: MetaDao
   ) { }
 
@@ -79,7 +79,7 @@ export class MetaServiceImpl implements MetaService {
   }
 
   private async requestMeta(): Promise<MetaResponse> {
-    const meta = await this.rangoWrapperService.meta()
+    const meta = await this.rangoService.meta()
     const modifiedMeta = appConfig.IS_DEV ? this.modifyMetaForLocal(meta) : meta
 
     const blockchains = Object.fromEntries(

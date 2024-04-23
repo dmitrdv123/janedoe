@@ -1,11 +1,8 @@
 import axios from 'axios'
 import { CheckApprovalResponse, MetaResponse, QuoteResponse, StatusResponse, SwapResponse, WalletDetailsResponse } from 'rango-sdk-basic'
 
-import { CacheService } from '@repo/common/dist/src/services/cache-service'
-import appConfig from '@repo/common/dist/src/app-config'
-
+import appConfig from '../app-config'
 import { isNullOrEmptyOrWhitespaces } from '../utils/utils'
-import { DEFAULT_RANGO_CACHING_SECONDS } from '../constants'
 
 export interface RangoWrapperService {
   meta(): Promise<MetaResponse>
@@ -17,14 +14,14 @@ export interface RangoWrapperService {
 }
 
 export class RangoWrapperServiceImpl implements RangoWrapperService {
-  public constructor(private cacheService: CacheService) { }
+  public constructor() { }
 
   public async meta(): Promise<MetaResponse> {
-    return await this.queryRangoWithCaching('meta/compact')
+    return await this.queryRango('meta/compact')
   }
 
   public async balance(params: string | undefined): Promise<WalletDetailsResponse> {
-    return await this.queryRangoWithCaching('basic/balance', params)
+    return await this.queryRango('basic/balance', params)
   }
 
   public async quote(params: string | undefined): Promise<QuoteResponse> {
@@ -41,16 +38,6 @@ export class RangoWrapperServiceImpl implements RangoWrapperService {
 
   public async status(params: string | undefined): Promise<StatusResponse> {
     return await this.queryRango('status', params)
-  }
-
-  private async queryRangoWithCaching<T>(path: string, params?: string): Promise<T> {
-    return this.cacheService.run(
-      `rango${path}#${params ?? ''}`,
-      DEFAULT_RANGO_CACHING_SECONDS,
-      async () => {
-        return await this.queryRango<T>(path, params)
-      }
-    )
   }
 
   private async queryRango<T>(path: string, params?: string): Promise<T> {

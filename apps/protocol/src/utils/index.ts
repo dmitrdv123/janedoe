@@ -9,6 +9,8 @@ import { customAlphabet } from 'nanoid'
 
 import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import appConfig from '@repo/common/dist/src/app-config'
+import { commonContainer } from '@repo/common/dist/src/containers/common.container'
+import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrapper-service'
 
 import { IERC20Metadata__factory, IERC20__factory, JaneDoe, WrappedNative } from '../../typechain-types'
 import { ETH_DECIMALS } from '../constants'
@@ -153,9 +155,22 @@ export async function removeFile(file: string): Promise<void> {
 export async function getNetworkInfo(): Promise<NetworkInfo> {
   const network = await ethers.provider.getNetwork()
 
-  const name = network.name.toLocaleLowerCase() === 'localhost' ? 'hardhat' : network.name
   const chainId = Number(network.chainId)
   const hexChainId = `0x${chainId.toString(16)}`
+
+  let name: string = ''
+  if (network.name.toLocaleLowerCase() === 'localhost' || network.name.toLocaleLowerCase() === 'hardhat') {
+    name = 'hardhat'
+  } else {
+    const rangoWrapperService = commonContainer.resolve<RangoWrapperService>('rangoWrapperService')
+    const meta = await rangoWrapperService.meta()
+    const blockchain = meta.blockchains.find(item => item.chainId === hexChainId)
+    if (!blockchain) {
+      throw new Error(`Cannot find blockchain ${hexChainId} in meta`)
+    }
+
+    name = blockchain.name.toLocaleLowerCase()
+  }
 
   return { name, chainId, hexChainId }
 }

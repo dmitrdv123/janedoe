@@ -53,3 +53,5 @@ export function createAppConfig() {
     TABLE_NAME: process.env.TABLE_NAME
   })
 }
+
+createAppConfig()

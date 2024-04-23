@@ -3,6 +3,8 @@ import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers'
 
 import { AppSettingsContracts } from '@repo/dao/dist/src/interfaces/settings'
 
+import '../src/app-config'
+
 import { getNetworkInfo, loadFileAsJson, saveFile, upgrade } from '../src/utils'
 import { RangoReceiver__factory, WrappedNative__factory } from '../typechain-types'
 import { NetworkInfo } from '../src/interfaces'

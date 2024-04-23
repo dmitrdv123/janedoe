@@ -1,6 +1,8 @@
 import { ethers } from 'hardhat'
 import { Addressable } from 'ethers'
 
+import '../src/app-config'
+
 import { deployUpgradable, getNetworkInfo, saveFile } from '../src/utils'
 import { NetworkInfo } from '../src/interfaces'
 import { DEPLOYMENTS_FOLDER } from '../src/constants'

@@ -4,6 +4,8 @@ import { Addressable } from 'ethers'
 import { Deployer } from '@matterlabs/hardhat-zksync'
 import { Wallet } from 'zksync-ethers'
 
+import '../src/app-config'
+
 import { deployUpgradable, getNetworkInfo, saveFile } from '../src/utils'
 import { NetworkInfo } from '../src/interfaces'
 import { DEPLOYMENTS_FOLDER, NATIVE_DECIMALS, NATIVE_NAME, NATIVE_SYMBOL } from '../src/constants'

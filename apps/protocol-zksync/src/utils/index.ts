@@ -6,6 +6,9 @@ import { Addressable } from 'ethers'
 import { Deployer } from '@matterlabs/hardhat-zksync'
 import { Provider } from "zksync-ethers";
 
+import { commonContainer } from '@repo/common/dist/src/containers/common.container'
+import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrapper-service'
+
 import { NetworkInfo } from '../interfaces'
 
 export async function deployUpgradable(deployer: Deployer, name: string, args: unknown[] = [], initializer: string = 'initialize') {
@@ -74,9 +77,22 @@ export async function removeFile(file: string): Promise<void> {
 export async function getNetworkInfo(): Promise<NetworkInfo> {
   const network = await getProvider().getNetwork()
 
-  const name = network.name.toLocaleLowerCase() === 'localhost' ? 'hardhat' : network.name
   const chainId = Number(network.chainId)
   const hexChainId = `0x${chainId.toString(16)}`
+
+  let name: string = ''
+  if (network.name.toLocaleLowerCase() === 'localhost' || network.name.toLocaleLowerCase() === 'hardhat') {
+    name = 'hardhat'
+  } else {
+    const rangoWrapperService = commonContainer.resolve<RangoWrapperService>('rangoWrapperService')
+    const meta = await rangoWrapperService.meta()
+    const blockchain = meta.blockchains.find(item => item.chainId === hexChainId)
+    if (!blockchain) {
+      throw new Error(`Cannot find blockchain ${hexChainId} in meta`)
+    }
+
+    name = blockchain.name.toLocaleLowerCase()
+  }
 
   return { name, chainId, hexChainId }
 }
