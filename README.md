@@ -95,6 +95,7 @@ NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initiali
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network linea
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network cronos
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network eth
+NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV2 INIT=initialize2 pnpm run upgrade --filter=protocol-zksync -- --network zksync
 # deploy resources in aws
 NODE_ENV=production pnpm run deploy --filter=installer
 # init necessary data into db and bitcoin

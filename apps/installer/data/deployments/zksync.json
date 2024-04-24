@@ -9,6 +9,6 @@
   "contractDetails": {
     "JaneDoe": "JaneDoe",
     "WrappedNative": "WrappedNative",
-    "RangoReceiver": "RangoReceiver"
+    "RangoReceiver": "RangoReceiverV2"
   }
 }

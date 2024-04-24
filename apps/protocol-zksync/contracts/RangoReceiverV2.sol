@@ -3,15 +3,14 @@ pragma solidity ^0.8.0;
 
 import { Initializable } from '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import './interfaces/IJaneDoe.sol';
 import './interfaces/IRangoMessageReceiver.sol';
 
-contract RangoReceiverV4 is Initializable, ReentrancyGuard, IRangoMessageReceiver {
+contract RangoReceiverV2 is Initializable, IRangoMessageReceiver {
   address private _janedoeAddress;
 
-  function initialize4(address janedoeAddress_) reinitializer(4) public {
+  function initialize2(address janedoeAddress_) reinitializer(2) public {
     _janedoeAddress = janedoeAddress_;
   }
 
@@ -19,7 +18,7 @@ contract RangoReceiverV4 is Initializable, ReentrancyGuard, IRangoMessageReceive
     return _janedoeAddress;
   }
 
-  function handleRangoMessage(address _token, uint _amount, ProcessStatus _status, bytes memory _message) external payable virtual override nonReentrant {
+  function handleRangoMessage(address _token, uint _amount, ProcessStatus _status, bytes memory _message) external payable virtual override {
     AppMessage memory message = abi.decode((_message), (AppMessage));
 
     if (_status == ProcessStatus.SUCCESS) {
