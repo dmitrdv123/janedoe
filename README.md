@@ -84,6 +84,7 @@ NODE_ENV=production pnpm run deploy --filter=protocol -- --network avalanche
 NODE_ENV=production pnpm run deploy --filter=protocol-zksync -- --network zksync
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network linea
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network cronos
+NODE_ENV=production pnpm run deploy --filter=protocol -- --network eth
 # upgrade contracts
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network bsc
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network polygon
@@ -93,6 +94,7 @@ NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initiali
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network avalanche
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network linea
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network cronos
+NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network eth
 # deploy resources in aws
 NODE_ENV=production pnpm run deploy --filter=installer
 # init necessary data into db and bitcoin

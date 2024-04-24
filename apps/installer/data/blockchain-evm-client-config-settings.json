@@ -68,5 +68,12 @@
     "transport": "http",
     "rpcUrl": "https://evm.cronos.org",
     "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0x1",
+    "blockchain": "ethereum",
+    "transport": "http",
+    "rpcUrl": "https://ethereum-rpc.publicnode.com",
+    "maxBlockRange": 49999
   }
 ]

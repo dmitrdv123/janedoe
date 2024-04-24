@@ -50,6 +50,10 @@ const config: HardhatUserConfig = {
     cronos: {
       url: 'https://evm.cronos.org',
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
+    },
+    eth: {
+      url: 'https://rpc.ankr.com/eth',
+      accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     }
   }
 }
