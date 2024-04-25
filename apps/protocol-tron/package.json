@@ -1,0 +1,25 @@
+{
+  "name": "protocol-tron",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "clean": "tronbox clean",
+    "build": "tronbox clean && tronbox compile",
+    "start": "docker pull tronbox/tre && docker run -it -p 9090:9090 --rm --name tron tronbox/tre",
+    "dev": "docker pull tronbox/tre && docker run -it -p 9090:9090 --rm --name tron tronbox/tre",
+    "deploy": "source .env && tronbox migrate",
+    "upgrade": "source .env && tronbox migrate",
+    "sandbox": "node ./scripts/sandbox.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2"
+  },
+  "devDependencies": {
+    "@openzeppelin/truffle-upgrades": "^1.21.0",
+    "tronweb": "^6.0.0-beta.2"
+  }
+}
