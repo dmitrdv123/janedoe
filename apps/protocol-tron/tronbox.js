@@ -1,3 +1,5 @@
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}`.trim() })
+
 const port = process.env.HOST_PORT || 9090
 
 module.exports = {
@@ -11,7 +13,7 @@ module.exports = {
       network_id: '1'
     },
     tronDevelopment: {
-      privateKey: '0000000000000000000000000000000000000000000000000000000000000001',
+      privateKey: process.env.SIGNER,
       userFeePercentage: 0,
       feeLimit: 1000 * 1e6,
       fullHost: 'http://127.0.0.1:' + port,

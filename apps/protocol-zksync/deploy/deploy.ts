@@ -15,7 +15,7 @@ const contractVersionWrappedNative = 'WrappedNative'
 const contractVersionRangoReceiver = 'RangoReceiver'
 
 async function saveDeployment(janeDoeAddress: string | Addressable, wrappedNativeAddress: string | Addressable, rangoReceiverAddress: string | Addressable, networkInfo: NetworkInfo) {
-  await saveFile(DEPLOYMENTS_FOLDER, `${networkInfo.name}.json`, {
+  await saveFile(DEPLOYMENTS_FOLDER, `${networkInfo.name.toLocaleLowerCase()}.json`, {
     chainId: networkInfo.hexChainId,
     blockchain: networkInfo.name,
     contractAddresses: {

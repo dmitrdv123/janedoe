@@ -1,6 +1,7 @@
 const { deployProxy } = require('@openzeppelin/truffle-upgrades')
 
-const { saveDeployment } = require('../src/utils')
+const { saveFile } = require('../src/utils')
+const { NATIVE_NAME, NATIVE_SYMBOL, NATIVE_DECIMALS, DEPLOYMENTS_FOLDER } = require('../src/constants')
 
 const WrappedNative = artifacts.require('./WrappedNative.sol')
 const JaneDoe = artifacts.require('./JaneDoe.sol')
@@ -10,30 +11,26 @@ module.exports = async function (deployer) {
   try {
     deployer.trufflePlugin = true
 
-    const nativeName = `${deployer.network.toLocaleUpperCase()}_NATIVE_NAME`
-    const nativeNameValue = process.env[nativeName]
-    if (!nativeNameValue) {
-      throw new Error(`${nativeName} is not set as env var`)
-    }
-
-    const nativeSymbol = `${deployer.network.toLocaleUpperCase()}_NATIVE_SYMBOL`
-    const nativeSymbolValue = process.env[nativeSymbol]
-    if (!nativeSymbolValue) {
-      throw new Error(`${nativeName} is not set as env var`)
-    }
-
-    const nativeDecimals = `${deployer.network.toLocaleUpperCase()}_NATIVE_DECIMALS`
-    const nativeDecimalsValueStr = process.env[nativeDecimals]
-    if (!nativeDecimalsValueStr) {
-      throw new Error(`${nativeName} is not set as env var`)
-    }
-    const nativeDecimalsValue = parseInt(nativeDecimalsValueStr)
-
-    const wrappedNative = await deployProxy(WrappedNative, [nativeNameValue, nativeSymbolValue, nativeDecimalsValue], { deployer, initializer: 'initialize', kind: 'transparent' })
+    const wrappedNative = await deployProxy(WrappedNative, [NATIVE_NAME, NATIVE_SYMBOL, NATIVE_DECIMALS], { deployer, initializer: 'initialize', kind: 'transparent' })
     const janeDoe = await deployProxy(JaneDoe, ['http://localhost', wrappedNative.address], { deployer, initializer: 'initialize', kind: 'transparent' })
     const rangoReceiver = await deployProxy(RangoReceiver, [janeDoe.address], { deployer, initializer: 'initialize', kind: 'transparent' })
 
-    await saveDeployment(janeDoe.address, wrappedNative.address, rangoReceiver.address, deployer.network)
+    const deployment = {
+      chainId: `0x${parseInt(deployer.network_id).toString(16)}`,
+      blockchain: deployer.network,
+      contractAddresses: {
+        JaneDoe: janeDoe.address,
+        WrappedNative: wrappedNative.address,
+        RangoReceiver: rangoReceiver.address
+      },
+      contractDetails: {
+        JaneDoe: 'JaneDoe',
+        WrappedNative: 'WrappedNative',
+        RangoReceiver: 'RangoReceiver'
+      }
+    }
+
+    await saveFile(DEPLOYMENTS_FOLDER, `${deployment.blockchain.toLocaleLowerCase()}.json`, deployment)
   } catch (error) {
     console.error(error)
   }

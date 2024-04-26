@@ -138,7 +138,7 @@ async function upgradeRangoReceiver(signer: HardhatEthersSigner, contractSetting
 }
 
 async function saveDeployment(networkInfo: NetworkInfo, contractSettings: AppSettingsContracts) {
-  await saveFile(DEPLOYMENTS_FOLDER, `${networkInfo.name}.json`, contractSettings)
+  await saveFile(DEPLOYMENTS_FOLDER, `${networkInfo.name.toLocaleLowerCase()}.json`, contractSettings)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

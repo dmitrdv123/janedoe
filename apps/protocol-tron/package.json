@@ -2,16 +2,14 @@
   "name": "protocol-tron",
   "version": "1.0.0",
   "description": "",
+  "type": "commonjs",
   "scripts": {
     "clean": "rm -rf build",
     "build": "tronbox compile",
-    "start": "docker pull tronbox/tre && docker run -it -p 9090:9090 --rm --name tron tronbox/tre",
-    "dev": "docker pull tronbox/tre && docker run -it -p 9090:9090 --rm --name tron tronbox/tre",
-    "deploy": "node ./scripts/run-script-os.js deploy",
-    "deploy:windows": "set_env_vars.bat && tronbox migrate",
-    "deploy:linux": "source .env.$NODE_ENV && tronbox migrate",
-    "deploy:other": "source .env.$NODE_ENV && tronbox migrate",
-    "upgrade": "node ./scripts/run-script-os.js deploy",
+    "start": "docker container rm tron -f && docker pull tronbox/tre && docker run -it -p 9090:9090 --rm --name tron tronbox/tre",
+    "dev": "docker container rm tron -f && docker pull tronbox/tre && docker run -it -p 9090:9090 --rm --name tron tronbox/tre",
+    "deploy": "tronbox migrate",
+    "upgrade": "tronbox migrate",
     "sandbox": "node ./scripts/sandbox.js"
   },
   "keywords": [],
@@ -19,10 +17,12 @@
   "license": "ISC",
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
-    "@openzeppelin/contracts-upgradeable": "^5.0.2"
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@openzeppelin/upgrades-core": "^1.32.6"
   },
   "devDependencies": {
     "@openzeppelin/truffle-upgrades": "^1.21.0",
+    "dotenv": "^16.4.5",
     "tronweb": "^6.0.0-beta.2"
   }
 }

@@ -3,7 +3,7 @@ const ProxyAdmin = artifacts.require(
   '@openzeppelin/upgrades-core/artifacts/@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol/ProxyAdmin.json'
 )
 
-const { saveDeployment } = require('../src/utils')
+const { saveFile, loadFileAsJson } = require('../src/utils')
 const { DEPLOYMENTS_FOLDER } = require('../src/constants')
 
 const RangoReceiver = artifacts.require('./RangoReceiver')
@@ -12,7 +12,7 @@ const RangoReceiverV3 = artifacts.require('./RangoReceiverV3')
 module.exports = async function (deployer) {
   try {
     const deploymentFile = `${DEPLOYMENTS_FOLDER}/${deployer.network.toLocaleLowerCase()}.json`
-    const contractSettings = await loadFileAsJson < AppSettingsContracts > (deploymentFile)
+    const contractSettings = await loadFileAsJson(deploymentFile)
     if (!contractSettings) {
       throw new Error(`Cannot find file ${deploymentFile}`)
     }
@@ -35,8 +35,9 @@ module.exports = async function (deployer) {
     if (!contractSettings.contractDetails) {
       contractSettings.contractDetails = {}
     }
-    contractSettings.contractDetails[contract] = 'RangoReceiverV3'
-    await saveDeployment(networkInfo, contractSettings)
+    contractSettings.contractDetails.RangoReceiver = 'RangoReceiverV3'
+
+    await saveFile(DEPLOYMENTS_FOLDER, `${contractSettings.blockchain.toLocaleLowerCase()}.json`, contractSettings)
   } catch (error) {
     console.error(error)
   }
