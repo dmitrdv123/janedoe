@@ -1,6 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 
+const { DEPLOYMENTS_FOLDER } = require('./constants')
+
 async function saveFile(dir, file, data) {
   const fullDir = path.join(process.cwd(), dir)
   if (!fs.existsSync(fullDir)) {
@@ -26,8 +28,25 @@ async function loadFileAsJson(file) {
   return data === undefined ? undefined : JSON.parse(data)
 }
 
+async function saveDeployments(deployment) {
+  const deploymentFile = `${deployment.blockchain.toLocaleLowerCase()}.json`
+  await saveFile(DEPLOYMENTS_FOLDER, deploymentFile, deployment)
+}
+
+async function loadDeployments(blockchain) {
+  const deploymentFile = `${DEPLOYMENTS_FOLDER}/${blockchain.toLocaleLowerCase()}.json`
+  const deployment = await loadFileAsJson(deploymentFile)
+  if (!deployment) {
+    throw new Error(`Cannot find file ${deploymentFile}`)
+  }
+
+  return deployment
+}
+
 module.exports = {
   saveFile,
   loadFile,
-  loadFileAsJson
+  loadFileAsJson,
+  saveDeployments,
+  loadDeployments
 }
