@@ -85,6 +85,7 @@ NODE_ENV=production pnpm run deploy --filter=protocol-zksync -- --network zksync
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network linea
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network cronos
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network eth
+NODE_ENV=production pnpm run deploy --filter=protocol-tron -- --network tron
 # upgrade contracts
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network bsc
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network polygon
