@@ -21,10 +21,19 @@ contract RangoReceiver is Initializable, IRangoMessageReceiver {
   function handleRangoMessage(address _token, uint _amount, ProcessStatus _status, bytes memory _message) external payable virtual override {
     AppMessage memory message = abi.decode((_message), (AppMessage));
 
-    if (_token == address(0)) {
-      IJaneDoe(_janedoeAddress).payNativeFrom{value: _amount}(message.from, message.to, message.paymentId);
-    } else {
-      IJaneDoe(_janedoeAddress).payFrom(message.from, message.to, _token, _amount, message.paymentId);
+    if (_status == ProcessStatus.SUCCESS) {
+      if (_token == address(0)) {
+        IJaneDoe(_janedoeAddress).payNativeFrom{value: _amount}(message.from, message.to, message.paymentId);
+      } else {
+        IJaneDoe(_janedoeAddress).payFrom(message.from, message.to, _token, _amount, message.paymentId);
+      }
+    } else if (_status == ProcessStatus.REFUND_IN_SOURCE || _status == ProcessStatus.REFUND_IN_DESTINATION) {
+      if (_token == address(0)) {
+        (bool sent, ) = payable(message.from).call{value: _amount}("");
+        require(sent, "failed to send native");
+      } else {
+        SafeERC20.safeTransfer(IERC20(_token), message.from, _amount);
+      }
     }
 
     emit HandleRangoMessage(block.timestamp, message.from, message.to, _token, _amount, message.paymentId, _status);

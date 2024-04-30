@@ -40,6 +40,13 @@ async function loadDeployments(blockchain) {
     throw new Error(`Cannot find file ${deploymentFile}`)
   }
 
+  if (!deployment.contractAddresses) {
+    deployment.contractAddresses = {}
+  }
+  if (!deployment.contractDetails) {
+    deployment.contractDetails = {}
+  }
+
   return deployment
 }
 

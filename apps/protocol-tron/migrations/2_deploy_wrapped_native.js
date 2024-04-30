@@ -1,12 +1,14 @@
 const { deployProxy } = require('@openzeppelin/truffle-upgrades')
 
-const { saveFile } = require('../src/utils')
-const { NATIVE_NAME, NATIVE_SYMBOL, NATIVE_DECIMALS, DEPLOYMENTS_FOLDER } = require('../src/constants')
+const { saveDeployments, loadDeployments } = require('../src/utils')
+const { NATIVE_NAME, NATIVE_SYMBOL, NATIVE_DECIMALS } = require('../src/constants')
 
 const WrappedNative = artifacts.require('./WrappedNative.sol')
 
 module.exports = async function (deployer) {
   deployer.trufflePlugin = true
+
+  const deployment = await loadDeployments(deployer.network)
 
   const wrappedNative = await deployProxy(
     WrappedNative,
@@ -14,18 +16,8 @@ module.exports = async function (deployer) {
     { deployer, initializer: 'initialize', kind: 'transparent' }
   )
 
-  await saveFile(
-    DEPLOYMENTS_FOLDER,
-    `${deployer.network.toLocaleLowerCase()}.json`,
-    {
-      chainId: `0x${parseInt(deployer.network_id).toString(16)}`,
-      blockchain: deployer.network,
-      contractAddresses: {
-        WrappedNative: wrappedNative.address
-      },
-      contractDetails: {
-        WrappedNative: 'WrappedNative'
-      }
-    }
-  )
+  deployment.contractAddresses.WrappedNative = wrappedNative.address
+  deployment.contractDetails.WrappedNative = 'WrappedNative'
+
+  await saveDeployments(deployment)
 }

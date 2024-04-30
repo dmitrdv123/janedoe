@@ -18,14 +18,7 @@ module.exports = async function (deployer) {
     { deployer, initializer: 'initialize', kind: 'transparent' }
   )
 
-  if (!deployment.contractAddresses) {
-    deployment.contractAddresses = {}
-  }
   deployment.contractAddresses.JaneDoe = janeDoe.address
-
-  if (!deployment.contractDetails) {
-    deployment.contractDetails = {}
-  }
   deployment.contractDetails.JaneDoe = 'JaneDoe'
 
   await saveDeployments(deployment)

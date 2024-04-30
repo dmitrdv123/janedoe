@@ -1,0 +1,16 @@
+{
+  "chainId": "0x1",
+  "blockchain": "tron",
+  "contractAddresses": {
+    "Migrations": "0x2e962b3d5ffc9955c50d09bf428dd3bc396b1097",
+    "WrappedNative": "0x8d9c8c9678751004eef8c16c96f77f2f6806cd69",
+    "JaneDoe": "0x906b01c9b2fee6ff90da30ce6bd610860907ee96",
+    "RangoReceiver": "0xa18fdd1a1da883883165b08dc8bb9d387fd4efa3"
+  },
+  "contractDetails": {
+    "Migrations": "Migrations",
+    "WrappedNative": "WrappedNative",
+    "JaneDoe": "JaneDoe",
+    "RangoReceiver": "RangoReceiver"
+  }
+}

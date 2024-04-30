@@ -8,9 +8,23 @@ module.exports = {
     tron: {
       privateKey: process.env.SIGNER,
       userFeePercentage: 100,
-      feeLimit: 1000 * 1e6,
+      feeLimit: 9000 * 1e6,
       fullHost: 'https://api.trongrid.io',
       network_id: '1'
+    },
+    tronShasta: {
+      privateKey: process.env.SIGNER,
+      userFeePercentage: 50,
+      feeLimit: 9000 * 1e6,
+      fullHost: 'https://api.shasta.trongrid.io',
+      network_id: '2'
+    },
+    tronNile: {
+      privateKey: process.env.SIGNER,
+      userFeePercentage: 100,
+      feeLimit: 9000 * 1e6,
+      fullHost: 'https://nile.trongrid.io',
+      network_id: '3'
     },
     tronDevelopment: {
       privateKey: process.env.SIGNER,

@@ -46,12 +46,16 @@ VITE_APP_ENV=local pnpm dev --filter=account --filter=docs --filter=payment --fi
 NODE_ENV=local pnpm dev --filter=protocol -- --network hardhat
 # run protocol on zksync (optionally)
 NODE_ENV=local pnpm dev --filter=protocol-zksync -- --network zkSyncInMemoryNode
+# run protocol on tron (optionally)
+NODE_ENV=local pnpm run dev --filter=protocol-tron
 # deploy resources in aws
 NODE_ENV=local pnpm run deploy --filter=installer
 # deploy contracts
 NODE_ENV=local pnpm run deploy --filter=protocol -- --network localhost
 # deploy contracts to zksync (optionally)
 NODE_ENV=local pnpm run deploy --filter=protocol-zksync -- --network zkSyncInMemoryNode
+# deploy contracts to tron (optionally)
+NODE_ENV=local pnpm run deploy --filter=protocol-tron -- --network=tronDevelopment
 # init necessary data into db and bitcoin
 NODE_ENV=local pnpm run init --filter=installer
 # some seed data like payments and accounts
@@ -187,3 +191,51 @@ learning:
 - replace debouncing with useDeferredValue https://medium.com/@mujaffarhssn/say-goodbye-to-debouncing-use-usedeferredvalue-hook-7af7742d4456
 - event emitter pattern to use in task and observers - https://medium.com/@arulvalananto/node-js-eventemitter-a-quick-5-minute-primer-on-what-it-is-why-its-essential-and-when-to-5fa218c9152f
 - ways to conditional rendering - https://levelup.gitconnected.com/code-like-a-pro-advanced-conditional-rendering-techniques-in-react-8e0cfb9aa04f
+
+# How to update tron contract
+
+Example of update RangoReceiver contract:
+1) Create file "./apps/protocol-tron/migrations/n_upgrade_rango_receiver_v3":
+```
+const { admin } = require('@openzeppelin/truffle-upgrades')
+const ProxyAdmin = artifacts.require(
+  '@openzeppelin/upgrades-core/artifacts/@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol/ProxyAdmin.json'
+)
+
+const { saveDeployments, loadDeployments } = require('../src/utils')
+
+const RangoReceiver = artifacts.require('./RangoReceiver')
+const RangoReceiverV3 = artifacts.require('./RangoReceiverV3')
+
+module.exports = async function (deployer) {
+  deployer.trufflePlugin = true
+
+  const deployment = await loadDeployments(deployer.network)
+
+  // Deploy the new RangoReceiverV3 implementation contract
+  console.log('Start deploy RangoReceiverV3')
+  await deployer.deploy(RangoReceiverV3)
+
+  // Upgrade proxy contract by admin
+  console.log('Start to upgrade proxy contract by admin')
+  const adminIns = await admin.getInstance()
+  const adminContract = await ProxyAdmin.at(adminIns.address)
+  await adminContract.upgrade(RangoReceiver.address, RangoReceiverV3.address)
+
+  // Init
+  console.log(`Start to init RangoReceiverV3 with args ${[deployment.contractAddresses.JaneDoe]}`)
+  const rangoReceiverV3Contract = await RangoReceiverV3.at(RangoReceiver.address)
+  await rangoReceiverV3Contract.initialize3(deployment.contractAddresses.JaneDoe)
+
+  if (!deployment.contractDetails) {
+    deployment.contractDetails = {}
+  }
+  deployment.contractDetails.RangoReceiver = 'RangoReceiverV3'
+
+  await saveDeployments(deployment)
+}
+```
+2) Run deployment:
+```
+NODE_ENV=production pnpm run deploy --filter=protocol-tron -- --network tron
+```
