@@ -1,5 +1,5 @@
 import * as chains from 'viem/chains'
-import { Address, createPublicClient, http, webSocket } from 'viem'
+import { Address, GetLogsReturnType, createPublicClient, http, parseEventLogs, webSocket } from 'viem'
 import { AbiEvent } from 'abitype'
 
 import { BlockchainEvmClientConfig } from '@repo/dao/dist/src/interfaces/blockchain-evm-client-config'
@@ -8,7 +8,7 @@ import { EvmEvent } from '../interfaces/evm-event'
 
 export interface EvmService {
   blockNumber(config: BlockchainEvmClientConfig | undefined, chainId: string): Promise<bigint>
-  events<T>(config: BlockchainEvmClientConfig | undefined, chainId: string, fromBlock: bigint, toBlock: bigint, address: Address, event: AbiEvent, args?: { [key: string]: string }): Promise<EvmEvent<T>[]>
+  events<T>(config: BlockchainEvmClientConfig | undefined, chainId: string, fromBlock: bigint, toBlock: bigint, address: Address, event: AbiEvent): Promise<EvmEvent<T>[]>
 }
 
 export class EvmServiceImpl implements EvmService {
@@ -17,7 +17,7 @@ export class EvmServiceImpl implements EvmService {
     return await client.getBlockNumber()
   }
 
-  public async events<T>(config: BlockchainEvmClientConfig | undefined, chainId: string, fromBlock: bigint, toBlock: bigint, address: Address, event: AbiEvent, args?: { [key: string]: string }): Promise<EvmEvent<T>[]> {
+  public async events<T>(config: BlockchainEvmClientConfig | undefined, chainId: string, fromBlock: bigint, toBlock: bigint, address: Address, event: AbiEvent): Promise<EvmEvent<T>[]> {
     if (fromBlock > toBlock) {
       return []
     }
@@ -30,27 +30,44 @@ export class EvmServiceImpl implements EvmService {
       : undefined
 
     let from: bigint = fromBlock
-    while(from <= toBlock) {
+    while (from <= toBlock) {
       const to = maxBlockRange
         ? (
           from + maxBlockRange >= toBlock
-              ? toBlock
-              : from + maxBlockRange
-          )
+            ? toBlock
+            : from + maxBlockRange
+        )
         : toBlock
 
-      const filter = await client.createEventFilter({
-        fromBlock: from,
-        toBlock: to,
-        address,
-        event,
-        args: args
+      let logs: GetLogsReturnType
+      switch (chainId) {
+        case '0xe708': // linea
+        case '0x144': // zkSync
+        case '0x19': // cronos: cronos have method eth_newfilter but not eth_newFilter which is used inside viem
+          logs = await client.getLogs({
+            address,
+            event,
+            fromBlock,
+            toBlock
+          })
+          break
+        default:
+          const filter = await client.createEventFilter({
+            address,
+            event,
+            fromBlock,
+            toBlock
+          })
+          logs = await client.getFilterLogs({ filter })
+          break
+      }
+
+      const parsedLogs = await parseEventLogs({
+        logs,
+        abi: [event]
       })
-
-      const logs = await client.getFilterLogs({ filter })
-
       result.push(
-        ...logs.map(log => (
+        ...parsedLogs.map(log => (
           {
             blockNumber: log.blockNumber,
             transactionHash: log.transactionHash,

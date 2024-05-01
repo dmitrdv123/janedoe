@@ -108,7 +108,9 @@ NODE_ENV=production pnpm run init --filter=installer
 ```
 
 ## TODO
+
 others:
+
 - testing payment with conversion
 - payment: during conversion payment we can have situation when output amount changed. Currently we are showing error. Probably we need to automatically upgrade conversion card and show only warning
 - api: monitoring api, monitoring payment error, monitoring rango error, monitoring bitcoin core error, monitoring conversion error, performance counters
@@ -126,7 +128,7 @@ others:
 - api: set limits for requests using aws
 - payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
 - protocol: deploy contracts to evm blockchains
-- api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile* methods)
+- api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile\* methods)
 - payment: option to disable conversion globally. Message regarding this for all account
 - account: option to disable conversion.
 - account: global news info message
@@ -137,14 +139,18 @@ others:
 - support, account: submit button is enabled even if form is not valid
 - payment: usdt and usdc is not working (allowance is not found)
 - payment: tx is done on arb but I get error:
+
 ```
 Payment has been failed
 Transaction receipt with hash "0xe9ca64dbb3ad46dc00bb47a907e4355fb9fe526fd0532be771dc844fd4c74dc2" could not be found. The Transaction may not be processed on a block yet. Version: viem@1.20.3
 ```
+
 - account: balance page, do the withdraw. SWitch blockchain in metamask. Wait for a long time. Then error:
+
 ```
 Transaction with hash "0x58425ba4ded7aa2b61504669f49e20a1f4582e6448a3ba538bc6a63d2d6aee10" could not be found. Version: viem@1.20.3
 ```
+
 - account:
   - switch to binance
   - withdraw all for arb
@@ -152,17 +158,18 @@ Transaction with hash "0x58425ba4ded7aa2b61504669f49e20a1f4582e6448a3ba538bc6a63
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - installer: create and reimport all wallet to central wallet
 - protocol, protocol-zksync:
-protocol:deploy: ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-protocol:deploy: │ Warning: It looks like you are using '<address payable>.send/transfer(<X>)' without providing    │
-protocol:deploy: │ the gas amount. Such calls will fail depending on the pubdata costs.                             │
-protocol:deploy: │ This might be a false positive if you are using an interface (like IERC20) instead of the        │
-protocol:deploy: │ native Solidity `send/transfer`.                                                                 │
-protocol:deploy: │ Please use 'payable(<address>).call{value: <X>}("")' instead, but be careful with the reentrancy │
-protocol:deploy: │ attack. `send` and `transfer` send limited amount of gas that prevents reentrancy, whereas       │
-protocol:deploy: │ `<address>.call{value: <X>}` sends all gas to the callee. Learn more on                          │
-protocol:deploy: │ https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
+  protocol:deploy: ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+  protocol:deploy: │ Warning: It looks like you are using '<address payable>.send/transfer(<X>)' without providing │
+  protocol:deploy: │ the gas amount. Such calls will fail depending on the pubdata costs. │
+  protocol:deploy: │ This might be a false positive if you are using an interface (like IERC20) instead of the │
+  protocol:deploy: │ native Solidity `send/transfer`. │
+  protocol:deploy: │ Please use 'payable(<address>).call{value: <X>}("")' instead, but be careful with the reentrancy │
+  protocol:deploy: │ attack. `send` and `transfer` send limited amount of gas that prevents reentrancy, whereas │
+  protocol:deploy: │ `<address>.call{value: <X>}` sends all gas to the callee. Learn more on │
+  protocol:deploy: │ https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
 
 disputable:
+
 - all: start to use bun instead of nodejs - https://bun.sh/guides. Since it should be much faster
 - account: payments - should add page num to url to be resistant to refreshing. From another side maybe we dont need to reload all that data since it can be heavy
 - account, protocol: move logic of withdrawEthTo to withdrawTo (protocol), remove useNativeTokenWithdraw (account), withdrawEthTo (protocol)
@@ -173,6 +180,7 @@ disputable:
 - api: resend ipn should be done based on payment log and not based on saved ipn. Because in other case we can have situation when user can see payment but cannot resend ipn due to missing for some reasons saved ipn
 
 learning:
+
 - account, payment: try to apply react patterns
   - https://github.com/alexis-regnaud/advanced-react-patterns/blob/main/src/patterns/compound-component/Counter.js,
   - https://medium.com/@mr.kashif.samman/design-patterns-for-react-native-applications-630e5eb9e34f
@@ -195,7 +203,9 @@ learning:
 # How to update tron contract
 
 Example of update RangoReceiver contract:
-1) Create file "./apps/protocol-tron/migrations/n_upgrade_rango_receiver_v3":
+
+1. Create file "./apps/protocol-tron/migrations/n_upgrade_rango_receiver_v3":
+
 ```
 const { admin } = require('@openzeppelin/truffle-upgrades')
 const ProxyAdmin = artifacts.require(
@@ -235,7 +245,9 @@ module.exports = async function (deployer) {
   await saveDeployments(deployment)
 }
 ```
-2) Run deployment:
+
+2. Run deployment:
+
 ```
 NODE_ENV=production pnpm run deploy --filter=protocol-tron -- --network tron
 ```
