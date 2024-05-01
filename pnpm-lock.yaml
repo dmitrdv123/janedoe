@@ -222,6 +222,9 @@ importers:
       rango-sdk-basic:
         specifier: ^0.1.47
         version: 0.1.47(bufferutil@4.0.8)(utf-8-validate@6.0.3)
+      rango-types:
+        specifier: ^0.1.62
+        version: 0.1.62
       viem:
         specifier: ^2.9.21
         version: 2.9.21(bufferutil@4.0.8)(typescript@5.4.4)(utf-8-validate@6.0.3)(zod@3.22.4)

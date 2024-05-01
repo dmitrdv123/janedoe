@@ -10,21 +10,21 @@ module.exports = {
       userFeePercentage: 100,
       feeLimit: 9000 * 1e6,
       fullHost: 'https://api.trongrid.io',
-      network_id: '1'
+      network_id: '0x2b6653dc'
     },
     tronShasta: {
       privateKey: process.env.SIGNER,
       userFeePercentage: 50,
       feeLimit: 9000 * 1e6,
       fullHost: 'https://api.shasta.trongrid.io',
-      network_id: '2'
+      network_id: '0x94a9059e'
     },
     tronNile: {
       privateKey: process.env.SIGNER,
       userFeePercentage: 100,
       feeLimit: 9000 * 1e6,
       fullHost: 'https://nile.trongrid.io',
-      network_id: '3'
+      network_id: '0xcd8690dc'
     },
     tronDevelopment: {
       privateKey: process.env.SIGNER,

@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^6.0.0",
+    "@repo/common": "workspace:*",
     "@repo/dao": "workspace:*",
     "@repo/dao-aws": "workspace:*",
     "@repo/evm": "workspace:*",
-    "@repo/common": "workspace:*",
     "abitype": "^1.0.2",
     "axios": "^1.4.0",
     "better-lock": "^2.0.3",
@@ -29,6 +29,7 @@
     "pino-http": "^8.5.0",
     "pino-pretty": "^10.2.0",
     "rango-sdk-basic": "^0.1.47",
+    "rango-types": "^0.1.62",
     "viem": "^2.9.21"
   },
   "devDependencies": {

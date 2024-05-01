@@ -75,5 +75,12 @@
     "transport": "http",
     "rpcUrl": "https://ethereum-rpc.publicnode.com",
     "maxBlockRange": 49999
+  },
+  {
+    "chainId": "0x2b6653dc",
+    "blockchain": "tron",
+    "transport": "http",
+    "rpcUrl": "https://api.trongrid.io/jsonrpc",
+    "maxBlockRange": 49999
   }
 ]

@@ -85,10 +85,6 @@ export class EvmServiceImpl implements EvmService {
 
   private createBlockchainPublicClient(chainId: string, config: BlockchainEvmClientConfig | undefined) {
     const chain = Object.values(chains).find(chain => 'id' in chain && chain.id === Number(chainId))
-    if (!chain) {
-      throw new Error(`Chain not found for ${chainId}`)
-    }
-
     return config
       ? createPublicClient({
         chain,

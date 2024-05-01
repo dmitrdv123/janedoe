@@ -1,5 +1,6 @@
 
 import { EvmBlockchainMeta, Token } from 'rango-sdk-basic'
+import { TronBlockchainMeta } from 'rango-types'
 import { Address, hexToString, parseAbiItem } from 'viem'
 
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
@@ -21,7 +22,7 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
   private paymentEvent: AbiEvent = parseAbiItem('event PayFrom(uint256 dt, address from, address indexed to, address token, uint256 amount, bytes paymentId)')
 
   public constructor(
-    private blockchain: EvmBlockchainMeta,
+    private blockchain: EvmBlockchainMeta | TronBlockchainMeta,
     private janeDoeAddress: Address,
     private wrappedNativeAddress: Address,
     private accountService: AccountService,
