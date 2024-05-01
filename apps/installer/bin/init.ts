@@ -66,10 +66,16 @@ async function saveSettings(): Promise<void> {
       )
   )
 
+  const evmClientConfigFilePath = 'data/blockchain-evm-client-config-settings.json'
+  const evmClientConfigs = await loadFileAsJson<BlockchainEvmClientConfig[]>(evmClientConfigFilePath)
+  if (!evmClientConfigs) {
+    throw new Error(`Cannot find file ${evmClientConfigFilePath}`)
+  }
+
   await Promise.all([
     saveAppSettings(contracts),
-    saveBlockchainSettings(contracts),
-    saveBlockchainBlockchainEvmClientConfigSettings()
+    saveBlockchainSettings(contracts, evmClientConfigs),
+    saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs)
   ])
 
   console.log('End to save settings')
@@ -97,46 +103,46 @@ async function saveAppSettings(contracts: AppSettingsContracts[]): Promise<void>
   await settingsDao.saveSettings(appSettings, APP_SETTINGS_PREFIX)
 }
 
-async function saveBlockchainSettings(contracts: AppSettingsContracts[]): Promise<void> {
+async function saveBlockchainSettings(contracts: AppSettingsContracts[], evmClientConfigs: BlockchainEvmClientConfig[]): Promise<void> {
   const settingsDao = dynamoContainer.resolve<SettingsDao>('settingsDao')
   const evmService = evmContainer.resolve<EvmService>('evmService')
 
   await Promise.all(
     contracts
-      .filter(
-        contract => contract.blockchain.toLocaleLowerCase() !== 'hardhat' && contract.blockchain.toLocaleLowerCase() !== 'localhost'
-      )
       .map(async contract => {
-        const existingSettings = await settingsDao.loadSettings<BlockchainSettings>(BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
-        if (!existingSettings) {
-          const blockNumber = await evmService.blockNumber(undefined, contract.chainId)
+        let shouldSave = false
+        if (process.env.IS_DEV) {
+          shouldSave = true
+        } else {
+          const existingSettings = await settingsDao.loadSettings<BlockchainSettings>(BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
+          shouldSave = !existingSettings
+        }
+
+        if (shouldSave) {
+          const evmClientConfig = evmClientConfigs.find(config => config.blockchain.toLocaleLowerCase() === contract.blockchain.toLocaleLowerCase())
+          const blockNumber = await evmService.blockNumber(evmClientConfig, contract.chainId)
           const blockchainSettings: BlockchainSettings = {
             blockchain: contract.blockchain,
             block: blockNumber.toString()
           }
+
           await settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
         }
       })
   )
 }
 
-async function saveBlockchainBlockchainEvmClientConfigSettings(): Promise<void> {
-  const filePath = 'data/blockchain-evm-client-config-settings.json'
-  const data: BlockchainEvmClientConfig[] | undefined = await loadFileAsJson<BlockchainEvmClientConfig[]>(filePath)
-  if (!data) {
-    throw new Error(`Cannot find file ${filePath}`)
-  }
-
-  console.log(`Start to save blockchain transport settings for ${data.length} blockchains`)
+async function saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs: BlockchainEvmClientConfig[]): Promise<void> {
+  console.log(`Start to save blockchain transport settings for ${evmClientConfigs.length} blockchains`)
 
   const settingsDao = dynamoContainer.resolve<SettingsDao>('settingsDao')
   await Promise.all(
-    data.map(async item => {
+    evmClientConfigs.map(async item => {
       await settingsDao.saveSettings(item, BLOCKCHAIN_EVM_CLIENT_CONFIG_SETTINGS_PREFIX, item.chainId)
     })
   )
 
-  console.log(`End to save blockchain transport settings for ${data.length} blockchains`)
+  console.log(`End to save blockchain transport settings for ${evmClientConfigs.length} blockchains`)
 }
 
 async function createBitcoinCentralWallet(): Promise<void> {
