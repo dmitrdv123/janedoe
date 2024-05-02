@@ -1,5 +1,5 @@
 {
-  "blockchains": ["ETH", "TRON", "BSC", "ARBITRUM", "BASE", "AVALANCHE", "POLYGON", "OPTIMISM", "CRONOS", "ZKSYNC", "LINEA", "BTC"],
+  "blockchains": ["ETH", "TRON", "BSC", "ARBITRUM", "BASE", "AVAX_CCHAIN", "POLYGON", "OPTIMISM", "CRONOS", "ZKSYNC", "LINEA", "BTC"],
   "assets": [
     {
       "blockchain": "ETH",
@@ -67,17 +67,17 @@
       "address": null
     },
     {
-      "blockchain": "AVALANCHE",
+      "blockchain": "AVAX_CCHAIN",
       "symbol": "USDT",
       "address": "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7"
     },
     {
-      "blockchain": "AVALANCHE",
+      "blockchain": "AVAX_CCHAIN",
       "symbol": "USDC",
       "address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e"
     },
     {
-      "blockchain": "AVALANCHE",
+      "blockchain": "AVAX_CCHAIN",
       "symbol": "AVAX",
       "address": null
     },
