@@ -76,7 +76,7 @@ const BlockchainSettings: React.FC<BlockchainSettingsProps> = (props) => {
           )}
         </td>
         <td>
-          {targetBlockchain?.type === TransactionType.EVM && (
+          {(targetBlockchain?.type === TransactionType.EVM || targetBlockchain?.type === TransactionType.TRON) && (
             <>
               <Button variant="link" onClick={() => toggleTokensHandler()}>
                 {showTokens ? t('components.payment_settings.hide_tokens_btn') : t('components.payment_settings.show_tokens_btn')}
@@ -101,7 +101,7 @@ const BlockchainSettings: React.FC<BlockchainSettingsProps> = (props) => {
           } />
         </td>
       </tr>
-      {(targetBlockchain?.type === TransactionType.EVM && showTokens) && (
+      {((targetBlockchain?.type === TransactionType.EVM || targetBlockchain?.type === TransactionType.TRON) && showTokens) && (
         <tr className='border'>
           <td colSpan={5}>
             <div className='mx-3'>

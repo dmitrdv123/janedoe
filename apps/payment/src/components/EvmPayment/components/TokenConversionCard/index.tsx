@@ -60,7 +60,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
     const arr = paymentSettings.assets
       .filter(asset => {
         const blockchain = blockchains?.find(item => item.name.toLocaleLowerCase() === asset.blockchain.toLocaleLowerCase())
-        return blockchain?.type === TransactionType.EVM
+        return blockchain?.type === TransactionType.EVM || blockchain?.type === TransactionType.TRON
       })
       .map(asset => tokens.find(token => isAssetEqualToToken(asset, token)))
       .filter(asset => !!asset) as Token[]

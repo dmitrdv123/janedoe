@@ -14,7 +14,7 @@ const TokenDetails: React.FC<TokenDetailsProps> = (props) => {
 
   return (
     <>
-      {(!blockchain || blockchain.type !== TransactionType.EVM || !tokenAddress) && (
+      {(!blockchain || (blockchain.type !== TransactionType.EVM && blockchain.type !== TransactionType.TRON) || !tokenAddress) && (
         <div className='d-flex align-items-center'>
           {!!tokenImage && (
             <Image srcSet={tokenImage} alt="..." style={{ width: '45px', height: '45px' }} className='me-3' />
@@ -28,7 +28,7 @@ const TokenDetails: React.FC<TokenDetailsProps> = (props) => {
         </div>
       )}
 
-      {(blockchain?.type === TransactionType.EVM && !!tokenAddress) && (
+      {((blockchain?.type === TransactionType.EVM || blockchain?.type === TransactionType.TRON) && !!tokenAddress) && (
         <a href={(blockchain.info as EVMChainInfo).addressUrl.replace('{wallet}', tokenAddress)} target='_blank' className="text-decoration-none">
           <span className='d-flex align-items-center'>
             {!!tokenImage && (

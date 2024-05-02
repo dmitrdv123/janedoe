@@ -186,13 +186,13 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
                         {token.symbol}
                       </div>
 
-                      {(blockchain?.type !== TransactionType.EVM || !token.address) && (
+                      {((blockchain?.type !== TransactionType.EVM && blockchain?.type !== TransactionType.TRON) || !token.address) && (
                         <div className='text-muted'>
                           {token.name}
                         </div>
                       )}
 
-                      {(blockchain?.type === TransactionType.EVM && token.address) && (
+                      {((blockchain?.type === TransactionType.EVM || blockchain?.type === TransactionType.TRON) && token.address) && (
                         <a
                           href={(blockchain.info as EVMChainInfo).addressUrl.replace('{wallet}', token.address)}
                           target='_blank'

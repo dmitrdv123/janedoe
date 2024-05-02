@@ -27,13 +27,13 @@ const Contracts: React.FC = () => {
               <td>{blockchain?.displayName ?? contract.blockchain}</td>
               <td>{key}</td>
               <td>
-                {(blockchain?.type !== TransactionType.EVM) && (
+                {(blockchain?.type !== TransactionType.EVM && blockchain?.type !== TransactionType.TRON) && (
                   <>
                     {contract.contractAddresses[key]}
                   </>
                 )}
 
-                {(blockchain?.type === TransactionType.EVM) && (
+                {(blockchain?.type === TransactionType.EVM || blockchain?.type === TransactionType.TRON) && (
                   <a href={(blockchain.info as EVMChainInfo).addressUrl.replace('{wallet}', contract.contractAddresses[key])} target='_blank' className="text-decoration-none">
                     {contract.contractAddresses[key]}
                   </a>
