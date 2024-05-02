@@ -5,8 +5,9 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { bsc, polygon, mainnet, avalanche, arbitrum, fantom, optimism, okc, cronos, moonriver, zkSync, moonbeam, aurora, harmonyOne, evmos, gnosis, fuse, boba, telos, hardhat } from 'viem/chains'
-import { WagmiProvider } from 'wagmi'
+import { Transport } from 'viem'
+import { Chain, arbitrum, avalanche, base, bsc, cronos, hardhat, linea, mainnet, optimism, polygon, zkSync } from 'viem/chains'
+import { WagmiProvider, http } from 'wagmi'
 
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -22,6 +23,7 @@ import Accounts from './pages/Accounts'
 import Loader from './components/Loader'
 import Main from './pages/Sandbox/Main'
 import ConfigProvider from './context/config/context'
+import { tron } from './types/chains'
 
 if (!import.meta.env.VITE_APP_PROJECT_ID) {
   throw new Error('You need to provide VITE_APP_PROJECT_ID env variable')
@@ -41,16 +43,33 @@ const metadata = {
   icons: []
 }
 
+const chains: [Chain, ...Chain[]] = [
+  hardhat, arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, tron, zkSync
+]
+const transports: {[key: number]: Transport} = {
+  [arbitrum.id]: http(),
+  [avalanche.id]: http(),
+  [base.id]: http(),
+  [bsc.id]: http(),
+  [cronos.id]: http(),
+  [linea.id]: http(),
+  [mainnet.id]: http(),
+  [optimism.id]: http(),
+  [polygon.id]: http(),
+  [tron.id]: http(),
+  [zkSync.id]: http()
+}
+
+if (import.meta.env.VITE_APP_IS_DEV) {
+  chains.push(hardhat)
+  transports[hardhat.id] = http()
+}
+
 const wagmiConfig = defaultWagmiConfig({
-  chains: import.meta.env.VITE_APP_IS_DEV
-    ? [
-      hardhat, bsc, polygon, mainnet, avalanche, arbitrum, fantom, optimism, okc, cronos, moonriver, zkSync, moonbeam, aurora, harmonyOne, evmos, gnosis, fuse, boba, telos
-    ]
-    : [
-      bsc, polygon, mainnet, avalanche, arbitrum, fantom, optimism, okc, cronos, moonriver, zkSync, moonbeam, aurora, harmonyOne, evmos, gnosis, fuse, boba, telos
-    ],
+  chains,
   projectId,
-  metadata
+  metadata,
+  transports
 })
 
 // 3. Create modal

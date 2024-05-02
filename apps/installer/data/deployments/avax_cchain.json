@@ -1,6 +1,6 @@
 {
   "chainId": "0xa86a",
-  "blockchain": "avalanche",
+  "blockchain": "avax_cchain",
   "contractAddresses": {
     "JaneDoe": "0x62c00A7cA11F97306BAA6ff0E7ed53C1504e92BE",
     "WrappedNative": "0x95005A422520Eeac518588365bCD6C383d59cf5a",

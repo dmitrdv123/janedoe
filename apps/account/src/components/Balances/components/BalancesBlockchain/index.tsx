@@ -13,11 +13,11 @@ interface BalancesBlockchainProps {
 }
 
 const BalancesBlockchain: React.FC<BalancesBlockchainProps> = (props) => {
-  const {blockchain, isDisable, isForceRefresh, onForceRefreshEnd, onProcessing, onSuccess} = props
+  const { blockchain, isDisable, isForceRefresh, onForceRefreshEnd, onProcessing, onSuccess } = props
 
   return (
     <>
-      {blockchain.type === TransactionType.EVM && (
+      {(blockchain.type === TransactionType.EVM || blockchain.type === TransactionType.TRON) && (
         <BalancesBlockchainEvm
           blockchain={blockchain}
           isDisable={isDisable}
