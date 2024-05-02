@@ -31,13 +31,7 @@ export class RangoServiceImpl implements RangoService {
   }
 
   public async balance(params: string | undefined): Promise<WalletDetailsResponse> {
-    return this.cacheService.run(
-      'rango#basic/balance',
-      DEFAULT_RANGO_CACHING_SECONDS,
-      async () => {
-        return await this.rangoWrapperService.balance(params)
-      }
-    )
+    return await this.rangoWrapperService.balance(params)
   }
 
   public async quote(params: string | undefined): Promise<QuoteResponse> {
