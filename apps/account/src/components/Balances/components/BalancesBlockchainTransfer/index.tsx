@@ -61,11 +61,11 @@ const BalancesBlockchainTransfer: React.FC<BalancesBlockchainTransferProps> = (p
 
   useEffect(() => {
     if (accountBlockchainBalanceError) {
-      addInfoMessage(convertErrorToMessage(accountBlockchainBalanceError), `${INFO_MESSAGE_BALANCE_ERROR}_${blockchain.name}`, 'danger')
+      addInfoMessage(convertErrorToMessage(accountBlockchainBalanceError, t('common.errors.default')), `${INFO_MESSAGE_BALANCE_ERROR}_${blockchain.name}`, 'danger')
     } else {
       removeInfoMessage(`${INFO_MESSAGE_BALANCE_ERROR}_${blockchain.name}`)
     }
-  }, [blockchain.name, accountBlockchainBalanceError, addInfoMessage, removeInfoMessage])
+  }, [blockchain.name, accountBlockchainBalanceError, t, addInfoMessage, removeInfoMessage])
 
   const successWithdrawHandler = useCallback((hash: string | undefined) => {
     accountBlockchainBalanceRefetch()

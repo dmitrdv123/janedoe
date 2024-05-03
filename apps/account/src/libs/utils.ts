@@ -3,12 +3,13 @@ import { Address, formatUnits, getAddress, isAddress } from 'viem'
 
 import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountTeamSettings } from '../types/account-settings'
 import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
+import { ServiceError } from '../types/service-error'
 
 export function authDataKey(): string {
   return `${import.meta.env.VITE_APP_APP_PREFIX ?? 'janedoe'}:authData`
 }
 
-export function convertErrorToMessage(error: any, curDepth: number = 1, maxDepth: number = 10): string {
+export function convertErrorToMessage(error: any, defaultMessage: string, curDepth: number = 1, maxDepth: number = 10): string {
   if ('string' === typeof error) {
     return error
   }
@@ -18,19 +19,19 @@ export function convertErrorToMessage(error: any, curDepth: number = 1, maxDepth
   }
 
   if (error.errors) {
-    const result: string[] = error.errors.map((item: any) => convertErrorToMessage(item))
+    const result: string[] = error.errors.map((item: any) => convertErrorToMessage(item, defaultMessage))
     return result.join('\n')
   }
 
   if (error.error && curDepth < maxDepth) {
-    return convertErrorToMessage(error.error, ++curDepth)
+    return convertErrorToMessage(error.error, defaultMessage, ++curDepth)
   }
 
-  return 'Unknown error happens'
+  return defaultMessage
 }
 
-export function convertWagmiTransactionErrorToMessage(error: Error, curDepth: number = 1, maxDepth: number = 10): string {
-  return convertErrorToMessage(error, ++curDepth, maxDepth)
+export function convertWagmiTransactionErrorToMessage(error: Error, defaultMessage: string, curDepth: number = 1, maxDepth: number = 10): string {
+  return convertErrorToMessage(error, defaultMessage, ++curDepth, maxDepth)
 }
 
 export function tryParseInt(val: string | null | undefined): number | undefined {
@@ -367,4 +368,20 @@ export function convertPaymentHistoryToPaymentHistoryData(
 
 export function roundNumber(value: number, decimals: number) {
   return parseFloat(value.toFixed(decimals))
+}
+
+export function serializeErrorForRedux(error: unknown): unknown {
+  if (error instanceof ServiceError) {
+    const err = error as ServiceError
+    const { name, message, code, args, stack } = err
+    return { name, message, code, args, stack }
+  } else if (error instanceof Error) {
+    const message = convertErrorToMessage(error, '')
+    const { name, stack } = error
+    return { name, message, stack }
+  } else {
+    const err = new Error(convertErrorToMessage(error, ''))
+    const { name, message } = err
+    return { name, message }
+  }
 }

@@ -53,7 +53,8 @@ const WithdrawBlockchainTransferButton: React.FC<WithdrawBlockchainTransferButto
         addInfoMessage(
           t('components.balances.errors.withdraw_blockchain_error', { blockchain: blockchain.name }),
           `${INFO_MESSAGE_BALANCE_WITHDRAW_ERROR}_${blockchain.name}`,
-          'danger'
+          'danger',
+          error
         )
       } finally {
         onProcessing(false)

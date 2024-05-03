@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Alert, Col, Container, Nav, Navbar } from 'react-bootstrap'
+import { Col, Container, Nav, Navbar } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Envelope, House, Gear, GraphUpArrow, FileText, CurrencyDollar, Wallet } from 'react-bootstrap-icons'
 
@@ -21,12 +21,13 @@ import RbacGuard from '../../components/Guards/RbacGuard'
 import AccountNavbar from '../../components/navbars/AccountNavbar'
 import AccountSupport from '../../components/AccountSupport'
 import { useConfig } from '../../context/config/hook'
+import InfoMessages from '../../components/InfoMessages'
 
 const App: React.FC = () => {
   const { t } = useTranslation()
 
   const { currentPage, setCurrentPage } = useCurrentPage()
-  const { infoMessages, removeInfoMessage, clearInfoMessage } = useInfoMessages()
+  const { clearInfoMessage } = useInfoMessages()
 
   const { hash } = useLocation()
   const config = useConfig()
@@ -60,23 +61,6 @@ const App: React.FC = () => {
         break
     }
   }, [hash, setCurrentPage, clearInfoMessage])
-
-  const getInfoMessages = useCallback(() => {
-    return [...infoMessages]
-      .reverse()
-      .map(item => {
-        return (
-          <Alert
-            key={item.key}
-            variant={item.variant ?? 'info'}
-            onClose={() => removeInfoMessage(item.key)}
-            dismissible
-          >
-            {item.content}
-          </Alert>
-        )
-      })
-  }, [infoMessages, removeInfoMessage])
 
   return (
     <>
@@ -165,7 +149,7 @@ const App: React.FC = () => {
           <AccountNavbar />
 
           <Container fluid className="p-3">
-            {getInfoMessages()}
+            <InfoMessages />
 
             {currentPage === ApplicationPage.HOME && (
               <Home />

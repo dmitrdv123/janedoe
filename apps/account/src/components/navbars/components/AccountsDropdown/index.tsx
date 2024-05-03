@@ -30,11 +30,11 @@ const AccountsDropdown: React.FC = () => {
 
   useEffect(() => {
     if (sharedAccountsError) {
-      addInfoMessage(convertErrorToMessage(sharedAccountsError), `${INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR}`, 'danger')
+      addInfoMessage(convertErrorToMessage(sharedAccountsError, t('common.errors.default')), `${INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR}`, 'danger')
     } else {
       removeInfoMessage(`${INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR}`)
     }
-  }, [sharedAccountsError, addInfoMessage, removeInfoMessage])
+  }, [sharedAccountsError, t, addInfoMessage, removeInfoMessage])
 
   return (
     <NavDropdown

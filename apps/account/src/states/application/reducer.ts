@@ -20,13 +20,14 @@ const applicationSlice = createSlice({
     },
     addInfoMessage(
       state,
-      { payload: { content, key, variant } }: { payload: { content: string; key?: string | undefined; variant?: string | undefined } }
+      { payload: { content, key, variant, error } }: { payload: { content: string; key?: string; variant?: string, error?: unknown } }
     ) {
       state.infoMessages = (key ? state.infoMessages.filter(item => item.key !== key) : state.infoMessages).concat([
         {
           key: key || nanoid(),
           variant,
-          content
+          content,
+          error
         },
       ])
     },

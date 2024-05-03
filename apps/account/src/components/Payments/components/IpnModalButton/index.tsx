@@ -40,7 +40,12 @@ const IpnModalButton: React.FC<IpnModalButtonProps> = (props) => {
         onUpdate(updatedIpnResult)
       }
     } catch (error) {
-      addInfoMessage(t('components.payments.errors.fail_send_notification'), INFO_MESSAGE_PAYMENT_HISTORY_SEND_IPN_ERROR, 'danger')
+      addInfoMessage(
+        t('components.payments.errors.fail_send_notification'),
+        INFO_MESSAGE_PAYMENT_HISTORY_SEND_IPN_ERROR,
+        'danger',
+        error
+      )
     }
   }, [t, ipn, onUpdate, sendIpn, addInfoMessage, removeInfoMessage])
 

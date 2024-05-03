@@ -28,11 +28,16 @@ export class ApiWrapper {
       body: request.body
     })
 
+    const result = await response.json()
     if (!response.ok) {
+      if (result.code && result.message) {
+        throw new ServiceError(result.message, result.code)
+      }
+
       throw new ServiceError('Failed to send request', 'services.errors.request_error')
     }
 
-    return await response.json()
+    return result
   }
 
   public settingsRequest(id: string, paymentId: string, currency: string): ApiRequest {

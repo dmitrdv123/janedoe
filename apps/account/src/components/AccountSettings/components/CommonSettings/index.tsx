@@ -133,7 +133,12 @@ const CommonSettings: React.FC = () => {
         await saveCommonSettings(ApiWrapper.instance.saveAccountCommonSettingsRequest(settingsToSave))
         updateCommonSettings(settingsToSave)
       } catch (error) {
-        addInfoMessage(t('components.account_settings.errors.fail_save_common_settings'), INFO_MESSAGE_ACCOUNT_COMMON_SETTINGS_SAVING_ERROR, 'danger')
+        addInfoMessage(
+          t('components.account_settings.errors.fail_save_common_settings'),
+          INFO_MESSAGE_ACCOUNT_COMMON_SETTINGS_SAVING_ERROR,
+          'danger',
+          error
+        )
       }
     }
 

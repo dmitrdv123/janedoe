@@ -62,7 +62,12 @@ const PaymentSettings: React.FC = () => {
       const defaultAccountPaymentSettings = await loadAccountDefaultPaymentSettings(ApiWrapper.instance.accountDefaultPaymentSettingsRequest())
       setCurrentAccountPaymentSettings(defaultAccountPaymentSettings)
     } catch (error) {
-      addInfoMessage(t('components.payment_settings.errors.fail_restore_default'), INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_ERROR, 'danger')
+      addInfoMessage(
+        t('components.payment_settings.errors.fail_restore_default'),
+        INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_ERROR,
+        'danger',
+        error
+      )
     }
   }, [t, addInfoMessage, loadAccountDefaultPaymentSettings, removeInfoMessage])
 
@@ -95,7 +100,12 @@ const PaymentSettings: React.FC = () => {
         await saveAccountPaymentSettings(ApiWrapper.instance.saveAccountPaymentSettingsRequest(accountPaymentSettingsToSave))
         updateAccountPaymentSettings(accountPaymentSettingsToSave)
       } catch (error) {
-        addInfoMessage(t('components.payment_settings.errors.fail_save'), INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_SAVING_ERROR, 'danger')
+        addInfoMessage(
+          t('components.payment_settings.errors.fail_save'),
+          INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_SAVING_ERROR,
+          'danger',
+          error
+        )
       }
     }
 

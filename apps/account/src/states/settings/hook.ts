@@ -31,7 +31,7 @@ export function useFetchSettingsCallback(): () => Promise<AppSettings | undefine
       }
       return settings
     } catch (error) {
-      dispatch(fetchSettings.rejected({ requestId, errorMessage: convertErrorToMessage(error) }))
+      dispatch(fetchSettings.rejected({ requestId, errorMessage: convertErrorToMessage(error, t('common.errors.default')) }))
       throw error
     }
   }, [t, dispatch, loadSettings])

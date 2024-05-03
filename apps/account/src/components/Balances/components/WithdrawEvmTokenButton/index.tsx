@@ -25,7 +25,7 @@ const WithdrawEvmTokenButton: React.FC<WithdrawEvmTokenButtonProps> = (props) =>
 
   const errorCallback = useCallback((error: Error | undefined) => {
     if (error) {
-      addInfoMessage(convertWagmiTransactionErrorToMessage(error), `${INFO_MESSAGE_BALANCE_WITHDRAW_ERROR}_${blockchain.name}`, 'danger')
+      addInfoMessage(convertWagmiTransactionErrorToMessage(error, t('common.errors.default')), `${INFO_MESSAGE_BALANCE_WITHDRAW_ERROR}_${blockchain.name}`, 'danger')
     } else {
       addInfoMessage(t('components.balances.errors.transaction_error'), `${INFO_MESSAGE_BALANCE_WITHDRAW_ERROR}_${blockchain.name}`, 'danger')
     }

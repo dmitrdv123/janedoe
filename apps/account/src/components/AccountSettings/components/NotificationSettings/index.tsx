@@ -70,7 +70,12 @@ const NotificationSettings: React.FC = () => {
         await saveNotificationSettings(ApiWrapper.instance.saveAccountNotificationSettingsRequest(settingsToSave))
         updateNotificationSettings(settingsToSave)
       } catch (error) {
-        addInfoMessage(t('components.account_settings.errors.fail_save_notification_settings'), INFO_MESSAGE_ACCOUNT_NOTIFICATION_SETTINGS_SAVING_ERROR, 'danger')
+        addInfoMessage(
+          t('components.account_settings.errors.fail_save_notification_settings'),
+          INFO_MESSAGE_ACCOUNT_NOTIFICATION_SETTINGS_SAVING_ERROR,
+          'danger',
+          error
+        )
       }
     }
 

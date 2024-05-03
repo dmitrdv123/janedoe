@@ -54,7 +54,7 @@ const Payments: React.FC = () => {
 
   useEffect(() => {
     if (paymentHistoryError) {
-      addInfoMessage(convertErrorToMessage(paymentHistoryError), INFO_MESSAGE_PAYMENT_HISTORY_ERROR, 'danger')
+      addInfoMessage(convertErrorToMessage(paymentHistoryError, t('common.errors.default')), INFO_MESSAGE_PAYMENT_HISTORY_ERROR, 'danger')
     } else {
       removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
     }

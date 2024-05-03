@@ -69,7 +69,12 @@ const AccountSupport: React.FC = () => {
         setTransaction('')
         setDesc('')
       } catch (error) {
-        addInfoMessage(t('components.support.errors.fail_submit'), INFO_MESSAGE_SUPPORT_SUBMIT_ERROR, 'danger')
+        addInfoMessage(
+          t('components.support.errors.fail_submit'),
+          INFO_MESSAGE_SUPPORT_SUBMIT_ERROR,
+          'danger',
+          error
+        )
       }
     }
 

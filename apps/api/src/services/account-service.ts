@@ -10,6 +10,7 @@ import { AppSettings } from '@repo/dao/dist/src/interfaces/settings'
 import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
 import { WithdrawBitcoinWalletResult } from '@repo/common/dist/src/interfaces/bitcoin'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
+import { BitcoinCoreError } from '@repo/common/dist/src/errors/bitcoin-core-error'
 
 import { BLOCKCHAIN_BTC, COMMON_SETTINGS_DEFAULT_CURRENCY, COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH } from '../constants'
 import { logger } from '../utils/logger'
@@ -22,6 +23,7 @@ import { ExchangeRateApiService } from './exchange-rate-api-service'
 import { MetaService } from './meta-service'
 import { PaymentLogKey } from '../interfaces/payment-log'
 import { SettingsService } from './settings-service'
+import { ServiceError } from '../errors/service-error'
 
 export interface AccountService {
   loadAccount(id: string): Promise<Account | undefined>
@@ -393,7 +395,18 @@ export class AccountServiceImpl implements AccountService {
           throw new Error(`Wallet not found for ${blockchain}`)
         }
 
-        return await this.bitcoinService.withdrawBitcoin(id, address)
+        try {
+          return await this.bitcoinService.withdrawBitcoin(id, address)
+        } catch (err) {
+          if (err instanceof BitcoinCoreError) {
+            const bitcoinCoreError = err as BitcoinCoreError
+            if (bitcoinCoreError.code === -6) {
+              throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.not_enough_funds_error')
+            }
+          }
+
+          throw err
+        }
       default:
         logger.error(`AccountService: unsupported blockchain ${blockchain}`)
         throw new Error(`Unsupported blockchain ${blockchain}`)

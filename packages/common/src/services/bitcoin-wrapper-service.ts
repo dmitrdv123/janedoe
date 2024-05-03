@@ -117,7 +117,7 @@ export class BitcoinWrapperServiceImpl implements BitcoinWrapperService {
   // curl --data-binary '{"jsonrpc": "1.0", "id": "curltest", "method": "sendall", "params": {"recipients": ["bcrt1qs3yav3vlqnckx4pm9mk6lfx550cuq8w67s0jcf"]}}' -H 'content-type: text/plain;' http://bitcoin:bitcoin@127.0.0.1:18443/wallet/uifte6jskp8
   // {"result":{"txid":"99640259bd077899faeabf8ea55c9ffef215f616a53a0ddd39a4b9a2044e9191","complete":true},"error":null,"id":"curltest"}
   public async withdrawBitcoin(walletName: string, address: string): Promise<WithdrawBitcoinWalletResult> {
-    return await this.queryBitcoin<WithdrawBitcoinWalletResult>(`wallet/${walletName}`, 'sendall', { recipients: [address] })
+    return await this.queryBitcoin<WithdrawBitcoinWalletResult>(`wallet/${walletName}`, 'sendall', { recipients: [address], options: { send_max: true } })
   }
 
   public async sendBitcoinTo(walletName: string, address: string, amount: number): Promise<void> {

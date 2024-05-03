@@ -256,7 +256,10 @@
   },
   "services": {
     "errors": {
-      "request_error": "Failed to send request"
+      "request_error": "Failed to send request",
+      "bitcoin_errors": {
+        "not_enough_funds_error": "Not enough funds"
+      }
     }
   },
   "common": {

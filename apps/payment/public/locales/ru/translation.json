@@ -202,7 +202,10 @@
       "request_error": "Не удалось отправить запрос",
       "wallet_not_found": "Не удается найти адрес кошелька для блокчейна {{blockchain}}",
       "contract_not_found": "Не удается найти адрес контракта janedoe для блокчейна {{blockchain}}",
-      "route_not_found": "Не удается найти маршрут для конвертации {{blockchain}} {{token}} в один из токенов"
+      "route_not_found": "Не удается найти маршрут для конвертации {{blockchain}} {{token}} в один из токенов",
+      "bitcoin_errors": {
+        "not_enough_funds_error": "Недостаточно средств"
+      }
     }
   },
   "common": {

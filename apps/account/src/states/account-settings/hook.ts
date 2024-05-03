@@ -51,7 +51,7 @@ export function useFetchAccountSettingsCallback(): () => Promise<AccountSettings
       }
       return accountSettings
     } catch (error) {
-      dispatch(fetchAccountSettings.rejected({ requestId, errorMessage: convertErrorToMessage(error) }))
+      dispatch(fetchAccountSettings.rejected({ requestId, errorMessage: convertErrorToMessage(error, t('common.errors.default')) }))
       throw error
     }
   }, [t, dispatch, loadAccountSettings])

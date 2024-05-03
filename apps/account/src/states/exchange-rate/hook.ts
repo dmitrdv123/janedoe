@@ -43,7 +43,7 @@ export function useFetchExchangeRateCallback(): () => Promise<ExchangeRateRespon
       }
       return exchangeRate
     } catch (error) {
-      dispatch(fetchExchangeRate.rejected({ requestId, errorMessage: convertErrorToMessage(error) }))
+      dispatch(fetchExchangeRate.rejected({ requestId, errorMessage: convertErrorToMessage(error, t('common.errors.default')) }))
       throw error
     }
   }, [t, commonSettings, dispatch, loadExchangeRate])

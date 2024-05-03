@@ -256,7 +256,10 @@
   },
   "services": {
     "errors": {
-      "request_error": "Не удалось отправить запрос"
+      "request_error": "Не удалось отправить запрос",
+      "bitcoin_errors": {
+        "not_enough_funds_error": "Недостаточно средств"
+      }
     }
   },
   "common": {

@@ -49,7 +49,7 @@ const BalancesBlockchainEvm: React.FC<BalancesBlockchainEvmProps> = (props) => {
   useEffect(() => {
     if (balancesStatus === 'error') {
       if (balancesError) {
-        addInfoMessage(convertWagmiTransactionErrorToMessage(balancesError), `${INFO_MESSAGE_BALANCE_ERROR}_${blockchain.name}`, 'danger')
+        addInfoMessage(convertWagmiTransactionErrorToMessage(balancesError, t('common.errors.default')), `${INFO_MESSAGE_BALANCE_ERROR}_${blockchain.name}`, 'danger')
       } else {
         addInfoMessage(t('components.balances.errors.transaction_error'), `${INFO_MESSAGE_BALANCE_ERROR}_${blockchain.name}`, 'danger')
       }

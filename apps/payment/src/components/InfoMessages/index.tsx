@@ -8,6 +8,7 @@ import { convertErrorToMessage, isToken, tokenAmountToCurrency } from '../../lib
 import TokenAmountWithCurrency from '../TokenAmountWithCurrency'
 import usePaymentData from '../../libs/hooks/usePaymentData'
 import { useExchangeRate, useTokens } from '../../states/settings/hook'
+import { useCallback } from 'react'
 
 const InfoMessages: React.FC = () => {
   const { t } = useTranslation()
@@ -17,11 +18,11 @@ const InfoMessages: React.FC = () => {
   const { infoMessages, removeInfoMessage } = useInfoMessages()
   const tokens = useTokens()
 
-  const getServiceError = (error: ServiceError) => {
+  const getServiceError = useCallback((error: ServiceError) => {
     return <>{t(error.code, error.args)}</>
-  }
+  }, [t])
 
-  const getPaymentConversionError = (error: PaymentConversionError) => {
+  const getPaymentConversionError = useCallback((error: PaymentConversionError) => {
     const receivedToken = error.data.output?.receivedToken
     const outputToken = receivedToken ?
       tokens?.find(item => isToken(item, receivedToken.blockchain, receivedToken.symbol, receivedToken.address))
@@ -101,11 +102,11 @@ const InfoMessages: React.FC = () => {
         )}
       </>
     )
-  }
+  }, [currency, exchangeRate, t, tokens])
 
-  const getError = (error: unknown) => {
+  const getError = useCallback((error: unknown) => {
     return <>{convertErrorToMessage(error, t('common.errors.default'))}</>
-  }
+  }, [t])
 
   return (
     <div className='sticky-top'>

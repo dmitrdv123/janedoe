@@ -28,7 +28,12 @@ const ApiSettingsButtons: React.FC<ApiSettingsButtonsProps> = (props) => {
       const settingsToSave = await saveApiSettings(ApiWrapper.instance.generateAccountApiKeyRequest())
       updateApiSettings(settingsToSave)
     } catch (error) {
-      addInfoMessage(t('components.account_settings.errors.fail_generate_api_key'), INFO_MESSAGE_ACCOUNT_API_SETTINGS_SAVING_ERROR, 'danger')
+      addInfoMessage(
+        t('components.account_settings.errors.fail_generate_api_key'),
+        INFO_MESSAGE_ACCOUNT_API_SETTINGS_SAVING_ERROR,
+        'danger',
+        error
+      )
     }
   }, [t, addInfoMessage, removeInfoMessage, saveApiSettings, updateApiSettings])
 

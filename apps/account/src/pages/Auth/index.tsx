@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react'
-import { Alert, Button, Container, Form, Spinner, Row, Col } from 'react-bootstrap'
+import { Button, Container, Form, Spinner, Row, Col } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { useAccount, useWalletClient } from 'wagmi'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
@@ -16,6 +16,7 @@ import { ApiWrapper } from '../../libs/services/api-wrapper'
 import useApiRequest from '../../libs/hooks/useApiRequest'
 import { AccountNonce } from '../../types/account-nonce'
 import AuthNavbar from '../../components/navbars/AuthNavbar'
+import InfoMessages from '../../components/InfoMessages'
 
 const Auth: React.FC = () => {
   const { t } = useTranslation()
@@ -25,7 +26,7 @@ const Auth: React.FC = () => {
   const { data: signer } = useWalletClient()
   const { open } = useWeb3Modal()
 
-  const { infoMessages, addInfoMessage, removeInfoMessage } = useInfoMessages()
+  const { addInfoMessage, removeInfoMessage } = useInfoMessages()
   const [authData, setAuthData, { removeItem: removeAuthData }] = useLocalStorageState<AuthData>(authDataKey())
   const { status: retrieveNonceStatus, process: retrieveNonce } = useApiRequest<AccountNonce>()
   const { status: authStatus, process: auth } = useApiRequest<AuthData>()
@@ -36,31 +37,14 @@ const Auth: React.FC = () => {
     }
   }, [authData, hash, navigate])
 
-  const getInfoMessages = useCallback(() => {
-    return [...infoMessages]
-      .reverse()
-      .map(item => {
-        return (
-          <Alert
-            key={item.key}
-            variant={item.variant ?? 'info'}
-            onClose={() => removeInfoMessage(item.key)}
-            dismissible
-          >
-            {item.content}
-          </Alert>
-        )
-      })
-  }, [infoMessages, removeInfoMessage])
-
   const connectHandler = useCallback(async () => {
     try {
       removeInfoMessage(INFO_MESSAGE_AUTH_ERROR)
       await open()
     } catch (error) {
-      addInfoMessage(convertErrorToMessage(error), INFO_MESSAGE_AUTH_ERROR, 'danger')
+      addInfoMessage(convertErrorToMessage(error, t('common.errors.default')), INFO_MESSAGE_AUTH_ERROR, 'danger')
     }
-  }, [addInfoMessage, open, removeInfoMessage])
+  }, [t, open, addInfoMessage, removeInfoMessage])
 
   const authHandler = useCallback(async () => {
     try {
@@ -90,7 +74,8 @@ const Auth: React.FC = () => {
       addInfoMessage(
         t('pages.auth.errors.fail_retrieve_nonce'),
         INFO_MESSAGE_AUTH_ERROR,
-        'danger'
+        'danger',
+        error
       )
     }
   }, [t, address, signer, hash, auth, navigate, removeAuthData, addInfoMessage, removeInfoMessage, retrieveNonce, setAuthData])
@@ -99,7 +84,7 @@ const Auth: React.FC = () => {
     <div className="d-flex flex-column min-vh-100">
       <AuthNavbar />
 
-      {getInfoMessages()}
+      <InfoMessages />
 
       <main className="flex-grow-1 d-flex align-items-center">
         <Container>

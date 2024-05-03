@@ -201,7 +201,10 @@
       "request_error": "Failed to send request",
       "wallet_not_found": "Cannot find wallet address for blockchain {{blockchain}}",
       "contract_not_found": "Cannot find janedoe contract address for blockchain {{blockchain}}",
-      "route_not_found": "Cannot find route to convert {{blockchain}} {{token}} to one of tokens"
+      "route_not_found": "Cannot find route to convert {{blockchain}} {{token}} to one of tokens",
+      "bitcoin_errors": {
+        "not_enough_funds_error": "Not enough funds"
+      }
     }
   },
   "common": {

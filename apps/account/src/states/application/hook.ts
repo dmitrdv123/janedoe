@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../libs/hooks/useAppDispatch'
 import { addInfoMessage, removeInfoMessage, clearInfoMessage, setOpenModal, setCurrentPage } from './reducer'
 import { AppState } from '../store'
 import { ApplicationPage } from '../../types/page'
+import { serializeErrorForRedux } from '../../libs/utils'
 
 export function useCurrentPage() {
   const dispatch = useAppDispatch()
@@ -42,8 +43,8 @@ export function useInfoMessages() {
   return {
     infoMessages: useAppSelector((state: AppState) => state.application.infoMessages),
     addInfoMessage: useCallback(
-      (content: string, key?: string | undefined, variant?: string | undefined) => {
-        dispatch(addInfoMessage({ content, key, variant }))
+      (content: string, key?: string, variant?: string, error?: unknown) => {
+        dispatch(addInfoMessage({ content, key, variant, error: error ? serializeErrorForRedux(error) : error }))
       },
       [dispatch]
     ),

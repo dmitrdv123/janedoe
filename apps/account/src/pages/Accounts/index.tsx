@@ -15,6 +15,7 @@ import useApiRequestImmediate from '../../libs/hooks/useApiRequestImmediate'
 import { SharedAccountProfileResponse } from '../../types/account-profile'
 import { INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR } from '../../constants'
 import AuthNavbar from '../../components/navbars/AuthNavbar'
+import InfoMessages from '../../components/InfoMessages'
 
 const Accounts: React.FC = () => {
   const { t } = useTranslation()
@@ -22,7 +23,7 @@ const Accounts: React.FC = () => {
   const { hash } = useLocation()
   const [authData] = useLocalStorageState<AuthData>(authDataKey())
 
-  const { infoMessages, addInfoMessage, removeInfoMessage } = useInfoMessages()
+  const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
   const {
     status: sharedAccountsStatus,
@@ -40,11 +41,11 @@ const Accounts: React.FC = () => {
 
   useEffect(() => {
     if (sharedAccountsError) {
-      addInfoMessage(convertErrorToMessage(sharedAccountsError), `${INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR}`, 'danger')
+      addInfoMessage(convertErrorToMessage(sharedAccountsError, t('common.errors.default')), `${INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR}`, 'danger')
     } else {
       removeInfoMessage(`${INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR}`)
     }
-  }, [sharedAccountsError, addInfoMessage, removeInfoMessage])
+  }, [sharedAccountsError, t, addInfoMessage, removeInfoMessage])
 
   return (
     <>
@@ -56,21 +57,7 @@ const Accounts: React.FC = () => {
         <Container className="p-3">
           <Row className="flex-nowrap">
             <Col>
-              {
-                [...infoMessages]
-                  .reverse()
-                  .map(item =>
-                    <Alert
-                      key={item.key}
-                      variant={item.variant ?? 'info'}
-                      onClose={() => removeInfoMessage(item.key)}
-                      dismissible
-                      className='w-100'
-                    >
-                      {item.content}
-                    </Alert>
-                  )
-              }
+              <InfoMessages />
 
               <div className='d-flex'>
                 <div className='m-auto'>

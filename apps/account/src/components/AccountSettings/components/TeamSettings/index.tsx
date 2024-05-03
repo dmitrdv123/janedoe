@@ -133,7 +133,12 @@ const TeamSettings: React.FC = () => {
           updateRbacSettings(rbacSettingsToSave)
         }
       } catch (error) {
-        addInfoMessage(t('components.account_settings.errors.fail_save_team_settings'), INFO_MESSAGE_ACCOUNT_TEAM_SETTINGS_SAVING_ERROR, 'danger')
+        addInfoMessage(
+          t('components.account_settings.errors.fail_save_team_settings'),
+          INFO_MESSAGE_ACCOUNT_TEAM_SETTINGS_SAVING_ERROR,
+          'danger',
+          error
+        )
       }
     }
 
