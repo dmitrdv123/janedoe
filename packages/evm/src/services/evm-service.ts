@@ -41,6 +41,7 @@ export class EvmServiceImpl implements EvmService {
 
       let logs: GetLogsReturnType
       switch (chainId) {
+        case '0x1': // eth
         case '0xe708': // linea
         case '0x144': // zkSync
         case '0x19': // cronos: cronos have method eth_newfilter but not eth_newFilter which is used inside viem

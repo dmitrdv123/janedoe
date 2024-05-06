@@ -701,6 +701,9 @@ importers:
       '@repo/dao-mongoose':
         specifier: workspace:*
         version: link:../../packages/dao-mongoose
+      '@repo/evm':
+        specifier: workspace:*
+        version: link:../../packages/evm
       axios:
         specifier: ^1.4.0
         version: 1.4.0
@@ -716,6 +719,9 @@ importers:
       nanoid:
         specifier: ^3.0.0
         version: 3.3.3
+      viem:
+        specifier: ^2.9.21
+        version: 2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*

@@ -140,6 +140,16 @@ others:
 - payment: usdt and usdc is not working (allowance is not found)
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).
 - payment: need to show balances in blockchain dropdown or in account dropdown in top menu
+- protocol, protocol-zksync:
+  protocol:deploy: ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+  protocol:deploy: │ Warning: It looks like you are using '<address payable>.send/transfer(<X>)' without providing │
+  protocol:deploy: │ the gas amount. Such calls will fail depending on the pubdata costs. │
+  protocol:deploy: │ This might be a false positive if you are using an interface (like IERC20) instead of the │
+  protocol:deploy: │ native Solidity `send/transfer`. │
+  protocol:deploy: │ Please use 'payable(<address>).call{value: <X>}("")' instead, but be careful with the reentrancy │
+  protocol:deploy: │ attack. `send` and `transfer` send limited amount of gas that prevents reentrancy, whereas │
+  protocol:deploy: │ `<address>.call{value: <X>}` sends all gas to the callee. Learn more on │
+  protocol:deploy: │ https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
 - account: withdraw all and withdraw eth not working for zkSync
 - account: balance page, do the withdraw. SWitch blockchain in metamask. Wait for a long time. Then error:
 ```
@@ -156,16 +166,8 @@ Transaction with hash "0x58425ba4ded7aa2b61504669f49e20a1f4582e6448a3ba538bc6a63
   - a lot of errors
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - installer: create and reimport all wallet to central wallet
-- protocol, protocol-zksync:
-  protocol:deploy: ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-  protocol:deploy: │ Warning: It looks like you are using '<address payable>.send/transfer(<X>)' without providing │
-  protocol:deploy: │ the gas amount. Such calls will fail depending on the pubdata costs. │
-  protocol:deploy: │ This might be a false positive if you are using an interface (like IERC20) instead of the │
-  protocol:deploy: │ native Solidity `send/transfer`. │
-  protocol:deploy: │ Please use 'payable(<address>).call{value: <X>}("")' instead, but be careful with the reentrancy │
-  protocol:deploy: │ attack. `send` and `transfer` send limited amount of gas that prevents reentrancy, whereas │
-  protocol:deploy: │ `<address>.call{value: <X>}` sends all gas to the callee. Learn more on │
-  protocol:deploy: │ https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
+- payment: pay in btc. You will be redirected to http://localhost:3001/success/jjf19d10rs9/123/usd/10?txId=undefined. Tx is id undefined
+
 
 disputable:
 
