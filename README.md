@@ -45,7 +45,7 @@ VITE_APP_ENV=local pnpm dev --filter=account --filter=docs --filter=payment --fi
 # run protocol
 NODE_ENV=local pnpm dev --filter=protocol -- --network hardhat
 # run protocol on zksync (optionally)
-NODE_ENV=local pnpm dev --filter=protocol-zksync -- --network zkSyncInMemoryNode
+NODE_ENV=local pnpm dev --filter=protocol-zksync
 # run protocol on tron (optionally)
 NODE_ENV=local pnpm run dev --filter=protocol-tron
 # deploy resources in aws
@@ -53,7 +53,7 @@ NODE_ENV=local pnpm run deploy --filter=installer
 # deploy contracts
 NODE_ENV=local pnpm run deploy --filter=protocol -- --network localhost
 # deploy contracts to zksync (optionally)
-NODE_ENV=local pnpm run deploy --filter=protocol-zksync -- --network zkSyncInMemoryNode
+NODE_ENV=local pnpm run deploy --filter=protocol-zksync -- --network zksyncInMemoryNode
 # deploy contracts to tron (optionally)
 NODE_ENV=local pnpm run deploy --filter=protocol-tron -- --network=tronDevelopment
 # init necessary data into db and bitcoin
@@ -140,16 +140,7 @@ others:
 - payment: usdt and usdc is not working (allowance is not found)
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).
 - payment: need to show balances in blockchain dropdown or in account dropdown in top menu
-- protocol, protocol-zksync:
-  protocol:deploy: ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-  protocol:deploy: │ Warning: It looks like you are using '<address payable>.send/transfer(<X>)' without providing │
-  protocol:deploy: │ the gas amount. Such calls will fail depending on the pubdata costs. │
-  protocol:deploy: │ This might be a false positive if you are using an interface (like IERC20) instead of the │
-  protocol:deploy: │ native Solidity `send/transfer`. │
-  protocol:deploy: │ Please use 'payable(<address>).call{value: <X>}("")' instead, but be careful with the reentrancy │
-  protocol:deploy: │ attack. `send` and `transfer` send limited amount of gas that prevents reentrancy, whereas │
-  protocol:deploy: │ `<address>.call{value: <X>}` sends all gas to the callee. Learn more on │
-  protocol:deploy: │ https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
+- protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
 - account: withdraw all and withdraw eth not working for zkSync
 - account: balance page, do the withdraw. SWitch blockchain in metamask. Wait for a long time. Then error:
 ```

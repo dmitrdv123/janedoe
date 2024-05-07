@@ -10,15 +10,17 @@
     "dev": "npx zksync-cli dev start fork mainnet",
     "deploy": "hardhat deploy-zksync --script deploy.ts",
     "upgrade": "hardhat deploy-zksync --script upgrade.ts",
-    "sandbox": "hardhat deploy-zksync --script sandbox.ts"
+    "sandbox": "hardhat run ./scripts/sandbox.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ethersproject/bignumber": "^5.7.0",
     "@matterlabs/hardhat-zksync": "^1.0.0",
     "@matterlabs/zksync-contracts": "^0.6.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@openzeppelin/contracts": "^4.9.5",
     "@openzeppelin/contracts-upgradeable": "^4.9.5",
     "@openzeppelin/hardhat-upgrades": "^3.0.1",
@@ -28,6 +30,7 @@
     "dotenv": "^16.3.1",
     "ethers": "^6.4.0",
     "hardhat": "2.19.4",
+    "nanoid": "^3.0.0",
     "zksync-ethers": "^6.7.0"
   },
   "devDependencies": {

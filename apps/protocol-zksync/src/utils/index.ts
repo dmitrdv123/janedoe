@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import path from 'path'
 import { Addressable } from 'ethers'
 import { Deployer } from '@matterlabs/hardhat-zksync'
-import { Provider } from "zksync-ethers";
+import { Provider } from 'zksync-ethers'
 
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrapper-service'
@@ -80,19 +80,11 @@ export async function getNetworkInfo(): Promise<NetworkInfo> {
   const chainId = Number(network.chainId)
   const hexChainId = `0x${chainId.toString(16)}`
 
-  let name: string = ''
-  if (network.name.toLocaleLowerCase() === 'localhost' || network.name.toLocaleLowerCase() === 'hardhat') {
-    name = 'hardhat'
-  } else {
-    const rangoWrapperService = commonContainer.resolve<RangoWrapperService>('rangoWrapperService')
-    const meta = await rangoWrapperService.meta()
-    const blockchain = meta.blockchains.find(item => item.chainId === hexChainId)
-    if (!blockchain) {
-      throw new Error(`Cannot find blockchain ${hexChainId} in meta`)
-    }
+  const rangoWrapperService = commonContainer.resolve<RangoWrapperService>('rangoWrapperService')
+  const meta = await rangoWrapperService.meta()
+  const blockchain = meta.blockchains.find(item => item.chainId === hexChainId)
 
-    name = blockchain.name.toLocaleLowerCase()
-  }
+  const name = blockchain?.name.toLocaleLowerCase() ?? hre.network.name.toLocaleLowerCase()
 
   return { name, chainId, hexChainId }
 }

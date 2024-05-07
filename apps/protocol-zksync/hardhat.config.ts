@@ -1,8 +1,11 @@
 import * as dotenv from 'dotenv'
 dotenv.config({ path: `.env.${process.env.NODE_ENV ?? 'local'}`.trim() })
 
+import '@nomicfoundation/hardhat-toolbox'
 import '@matterlabs/hardhat-zksync'
 import { HardhatUserConfig } from 'hardhat/config'
+
+import './src/app-config'
 
 const config: HardhatUserConfig = {
   solidity: '0.8.20',
