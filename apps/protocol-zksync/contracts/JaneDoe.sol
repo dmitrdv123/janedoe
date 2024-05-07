@@ -10,6 +10,10 @@ import './interfaces/IWrappedNative.sol';
 contract JaneDoe is ERC1155Upgradeable, IJaneDoe {
   address private _wrappedNativeAddress;
 
+  constructor() {
+    _disableInitializers();
+  }
+
   function initialize(string memory uri_, address wrappedNativeAddress_) initializer public {
     __ERC1155_init(uri_);
     _wrappedNativeAddress = wrappedNativeAddress_;

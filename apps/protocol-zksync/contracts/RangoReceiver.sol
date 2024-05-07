@@ -11,6 +11,10 @@ import './interfaces/IRangoMessageReceiver.sol';
 contract RangoReceiver is Initializable, ReentrancyGuardUpgradeable, IRangoMessageReceiver {
   address private _janedoeAddress;
 
+  constructor() {
+    _disableInitializers();
+  }
+
   function initialize(address janedoeAddress_) initializer public {
     _janedoeAddress = janedoeAddress_;
   }
