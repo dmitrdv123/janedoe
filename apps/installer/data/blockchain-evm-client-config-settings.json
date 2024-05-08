@@ -67,7 +67,7 @@
     "blockchain": "cronos",
     "transport": "http",
     "rpcUrl": "https://evm.cronos.org",
-    "maxBlockRange": 49999
+    "maxBlockRange": 1999
   },
   {
     "chainId": "0x1",
