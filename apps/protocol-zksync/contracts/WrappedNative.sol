@@ -9,10 +9,6 @@ import './interfaces/IWrappedNative.sol';
 contract WrappedNative is ERC20Upgradeable, ReentrancyGuardUpgradeable, IWrappedNative {
   uint8 private _decimals;
 
-  constructor() {
-    _disableInitializers();
-  }
-
   function initialize(string memory name_, string memory symbol_, uint8 decimals_) initializer public {
     __ERC20_init(name_, symbol_);
     _decimals = decimals_;

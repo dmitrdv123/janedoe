@@ -2,13 +2,13 @@
   "chainId": "0x144",
   "blockchain": "zksync",
   "contractAddresses": {
-    "JaneDoe": "0x7D1c2FE97D331588bad5C0869128280Ae010cEA5",
-    "WrappedNative": "0x5fbdb18005D014b16e45af24eDA7C7aD3F34aeEb",
-    "RangoReceiver": "0xA989EF549233BD2FD8BBaece8C93753285d694a9"
+    "JaneDoe": "0x184e78Ff869E842e8295f949c3c3E93B1E9A3E14",
+    "WrappedNative": "0x8E5684AeC0117917Eb0e717ff5bB81D300EF6373",
+    "RangoReceiver": "0x61aD294245ebe00e76bfCCEcf0aCf2988Cc152b5"
   },
   "contractDetails": {
     "JaneDoe": "JaneDoe",
     "WrappedNative": "WrappedNative",
-    "RangoReceiver": "RangoReceiverV2"
+    "RangoReceiver": "RangoReceiver"
   }
 }
