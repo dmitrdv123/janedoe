@@ -1,5 +1,7 @@
+import { CoreHelperUtil } from '@web3modal/scaffold'
+import { ConstantsUtil, PresetsUtil } from '@web3modal/scaffold-utils'
 import { Asset, BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
-import { Address, encodeAbiParameters, formatUnits, getAddress, isAddress, parseAbiParameters, parseUnits, stringToHex } from 'viem'
+import { Address, encodeAbiParameters, formatUnits, getAddress, http, isAddress, parseAbiParameters, parseUnits, stringToHex } from 'viem'
 
 import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
 import { ServiceError } from '../types/errors/service-error'
@@ -379,4 +381,12 @@ export function serializeErrorForRedux(error: unknown): unknown {
     const { name, message } = err
     return { name, message }
   }
+}
+
+export function getTransport(chainId: number, projectId: string) {
+  const rpc = CoreHelperUtil.getBlockchainApiUrl()
+  if (!PresetsUtil.WalletConnectRpcChainIds.includes(chainId)) {
+      return http()
+  }
+  return http(`${rpc}/v1/?chainId=${ConstantsUtil.EIP155}:${chainId}&projectId=${projectId}`)
 }

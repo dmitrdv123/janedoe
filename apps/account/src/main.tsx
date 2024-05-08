@@ -7,7 +7,7 @@ import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Transport } from 'viem'
 import { Chain, arbitrum, avalanche, base, bsc, cronos, hardhat, linea, mainnet, optimism, polygon, zkSync } from 'viem/chains'
-import { WagmiProvider, http } from 'wagmi'
+import { WagmiProvider } from 'wagmi'
 
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -24,6 +24,7 @@ import Loader from './components/Loader'
 import Main from './pages/Sandbox/Main'
 import ConfigProvider from './context/config/context'
 import { tron } from './types/chains'
+import { getTransport } from './libs/utils'
 
 if (!import.meta.env.VITE_APP_PROJECT_ID) {
   throw new Error('You need to provide VITE_APP_PROJECT_ID env variable')
@@ -44,32 +45,27 @@ const metadata = {
 }
 
 const chains: [Chain, ...Chain[]] = [
-  hardhat, arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, tron, zkSync
+  arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, tron, zkSync
 ]
-const transports: {[key: number]: Transport} = {
-  [arbitrum.id]: http(),
-  [avalanche.id]: http(),
-  [base.id]: http(),
-  [bsc.id]: http(),
-  [cronos.id]: http(),
-  [linea.id]: http(),
-  [mainnet.id]: http(),
-  [optimism.id]: http(),
-  [polygon.id]: http(),
-  [tron.id]: http(),
-  [zkSync.id]: http()
-}
-
 if (import.meta.env.VITE_APP_IS_DEV) {
   chains.push(hardhat)
-  transports[hardhat.id] = http()
 }
+
+const transports: {[key: number]: Transport} = chains.reduce((acc, chain) => {
+  acc[chain.id] = getTransport(chain.id, projectId)
+  return acc
+}, {} as {[key: number]: Transport})
 
 const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
-  transports
+  transports,
+  enableInjected: true,
+  enableEIP6963: true,
+  enableCoinbase: true,
+  enableWalletConnect: true,
+  enableEmail: false
 })
 
 // 3. Create modal

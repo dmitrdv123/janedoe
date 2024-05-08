@@ -32,6 +32,15 @@ importers:
       '@web3modal/common':
         specifier: ^4.1.9
         version: 4.1.9
+      '@web3modal/scaffold':
+        specifier: 4.1.9
+        version: 4.1.9(@types/react@18.2.79)(react@18.2.0)
+      '@web3modal/scaffold-react':
+        specifier: 4.1.9
+        version: 4.1.9(@types/react@18.2.79)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@web3modal/scaffold-utils':
+        specifier: 4.1.9
+        version: 4.1.9(@types/react@18.2.79)(react@18.2.0)
       '@web3modal/wagmi':
         specifier: ^4.1.9
         version: 4.1.9(@types/react@18.2.79)(@wagmi/connectors@4.1.26(@react-native-async-storage/async-storage@1.23.1(react-native@0.73.6(@babel/core@7.23.9)(@babel/preset-env@7.24.4(@babel/core@7.23.9))(bufferutil@4.0.8)(react@18.2.0)(utf-8-validate@6.0.3)))(@types/react@18.2.79)(@wagmi/core@2.6.17(@tanstack/query-core@5.29.0)(@types/react@18.2.79)(bufferutil@4.0.8)(immer@10.0.4)(react@18.2.0)(typescript@5.4.5)(utf-8-validate@6.0.3)(viem@2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4))(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-native@0.73.6(@babel/core@7.23.9)(@babel/preset-env@7.24.4(@babel/core@7.23.9))(bufferutil@4.0.8)(react@18.2.0)(utf-8-validate@6.0.3))(react@18.2.0)(rollup@4.14.1)(typescript@5.4.5)(utf-8-validate@6.0.3)(viem@2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4))(@wagmi/core@2.6.17(@tanstack/query-core@5.29.0)(@types/react@18.2.79)(bufferutil@4.0.8)(immer@10.0.4)(react@18.2.0)(typescript@5.4.5)(utf-8-validate@6.0.3)(viem@2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(viem@2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(vue@3.4.23(typescript@5.4.5))
@@ -550,6 +559,15 @@ importers:
       '@web3modal/common':
         specifier: ^4.1.9
         version: 4.1.9
+      '@web3modal/scaffold':
+        specifier: 4.1.9
+        version: 4.1.9(@types/react@18.2.79)(react@18.2.0)
+      '@web3modal/scaffold-react':
+        specifier: 4.1.9
+        version: 4.1.9(@types/react@18.2.79)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@web3modal/scaffold-utils':
+        specifier: 4.1.9
+        version: 4.1.9(@types/react@18.2.79)(react@18.2.0)
       '@web3modal/wagmi':
         specifier: ^4.1.9
         version: 4.1.9(@types/react@18.2.79)(@wagmi/connectors@4.1.26(@react-native-async-storage/async-storage@1.23.1(react-native@0.73.6(@babel/core@7.23.9)(@babel/preset-env@7.24.4(@babel/core@7.23.9))(bufferutil@4.0.8)(react@18.2.0)(utf-8-validate@6.0.3)))(@types/react@18.2.79)(@wagmi/core@2.6.17(@tanstack/query-core@5.29.0)(@types/react@18.2.79)(bufferutil@4.0.8)(immer@10.0.4)(react@18.2.0)(typescript@5.4.5)(utf-8-validate@6.0.3)(viem@2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4))(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-native@0.73.6(@babel/core@7.23.9)(@babel/preset-env@7.24.4(@babel/core@7.23.9))(bufferutil@4.0.8)(react@18.2.0)(utf-8-validate@6.0.3))(react@18.2.0)(rollup@4.14.1)(typescript@5.4.5)(utf-8-validate@6.0.3)(viem@2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4))(@wagmi/core@2.6.17(@tanstack/query-core@5.29.0)(@types/react@18.2.79)(bufferutil@4.0.8)(immer@10.0.4)(react@18.2.0)(typescript@5.4.5)(utf-8-validate@6.0.3)(viem@2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(zod@3.22.4))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(viem@2.9.21(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4))(vue@3.4.23(typescript@5.4.5))

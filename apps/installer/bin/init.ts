@@ -52,6 +52,9 @@ async function saveSettings(): Promise<void> {
           && file.toLocaleLowerCase() !== 'zksyncinmemorynode.json'
           && file.toLocaleLowerCase() !== 'zksyncdockerizednode.json'
           && file.toLocaleLowerCase() !== 'zksyncsepoliatestnet.json'
+          && file.toLocaleLowerCase() !== 'tronshasta.json'
+          && file.toLocaleLowerCase() !== 'tronnile.json'
+          && file.toLocaleLowerCase() !== 'trondevelopment.json'
       })
       .map(
         async file => {
