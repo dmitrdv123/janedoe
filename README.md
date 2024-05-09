@@ -127,12 +127,10 @@ others:
 - landing, docs: replace N and K with real values of tokens and blockchains
 - api: set limits for requests using aws
 - payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
-- protocol: deploy contracts to evm blockchains
 - api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile\* methods)
 - payment: option to disable conversion globally. Message regarding this for all account
 - account: option to disable conversion.
 - account: global news info message
-- payment: token without conversion should have higher priority in dropdown
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
 - payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page
 - aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
@@ -159,6 +157,7 @@ disputable:
 - api: pass key in url like https://v6.exchangerate-api.com/v6/905e72b5b182efdf60cea9b1/latest/USD instead of headers
 - account: sign in form, button should be blocked even when modal is open and not only when api request is processing
 - api: resend ipn should be done based on payment log and not based on saved ipn. Because in other case we can have situation when user can see payment but cannot resend ipn due to missing for some reasons saved ipn
+- payment: token without conversion should have higher priority in dropdown
 
 learning:
 
