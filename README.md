@@ -157,7 +157,6 @@ Transaction with hash "0x58425ba4ded7aa2b61504669f49e20a1f4582e6448a3ba538bc6a63
   - a lot of errors
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - installer: create and reimport all wallet to central wallet
-- payment: pay in btc. You will be redirected to http://localhost:3001/success/jjf19d10rs9/123/usd/10?txId=undefined. Tx is id undefined
 
 disputable:
 

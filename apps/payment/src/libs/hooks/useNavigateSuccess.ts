@@ -37,7 +37,7 @@ export default function useNavigateSuccess(blockchain: string | undefined, email
         addInfoMessage(t('hooks.navigate_success.errors.send_error'), INFO_MESSAGE_PAYMENT_SUCCESS_ERROR, 'danger', error)
       }
 
-      navigate(`/success/${id}/${paymentId}/${currency}/${amount}?${`txId=${txId}`}`)
+      navigate(`/success/${id}/${paymentId}/${currency}/${amount}${txId ? `?txId=${txId}` : ''}`)
     }
 
     handler()
