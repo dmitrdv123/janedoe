@@ -52,10 +52,10 @@ if (import.meta.env.VITE_APP_IS_DEV) {
   chains.push(hardhat)
 }
 
-const transports: {[key: number]: Transport} = chains.reduce((acc, chain) => {
+const transports: { [key: number]: Transport } = chains.reduce((acc, chain) => {
   acc[chain.id] = getTransport(chain.id, projectId)
   return acc
-}, {} as {[key: number]: Transport})
+}, {} as { [key: number]: Transport })
 
 
 const wagmiConfig = defaultWagmiConfig({

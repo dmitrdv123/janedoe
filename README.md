@@ -137,26 +137,17 @@ others:
 - payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page
 - aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
 - support, account: submit button is enabled even if form is not valid
-- payment: usdt and usdc is not working (allowance is not found)
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).
 - payment: need to show balances in blockchain dropdown or in account dropdown in top menu
 - protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
-- account: withdraw all and withdraw eth not working for zkSync
-- account: balance page, do the withdraw. SWitch blockchain in metamask. Wait for a long time. Then error:
-```
-Transaction with hash "0x58425ba4ded7aa2b61504669f49e20a1f4582e6448a3ba538bc6a63d2d6aee10" could not be found. Version: viem@1.20.3
-```
 - payment:
   - do the payment
   - redirect to success page
   - click back button on browser
   - you will return back to payment form with timer > 600 seconds
-- account:
-  - switch to binance
-  - withdraw all for arb
-  - a lot of errors
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - installer: create and reimport all wallet to central wallet
+- payment: done success pay - redirect to success form - return back to pay form by clicking on browser button - pay again. Error that not enough allowance
 
 disputable:
 
