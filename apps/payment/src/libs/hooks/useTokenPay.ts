@@ -1,7 +1,7 @@
-import { BlockchainMeta, Token } from 'rango-sdk-basic'
+import { BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
 
 import { ContractCallResult } from '../../types/contract-call-result'
-import { encodeStringToBytes, getAddressOrDefault, tryParseInt } from '../utils'
+import { encodeStringToBytes, getAddressOrDefault, getTronAddressOrDefault, tryParseInt } from '../utils'
 import useWriteAndWaitContract from './useWriteAndWaitContract'
 
 export default function useTokenPay(
@@ -57,7 +57,7 @@ export default function useTokenPay(
     [
       getAddressOrDefault(from),
       getAddressOrDefault(to),
-      getAddressOrDefault(token.address),
+      blockchain.type === TransactionType.TRON ? getTronAddressOrDefault(token.address) : getAddressOrDefault(token.address),
       BigInt(amount),
       encodeStringToBytes(paymentId)
     ],

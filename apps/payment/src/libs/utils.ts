@@ -2,6 +2,7 @@ import { CoreHelperUtil } from '@web3modal/scaffold'
 import { ConstantsUtil, PresetsUtil } from '@web3modal/scaffold-utils'
 import { Asset, BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
 import { Address, encodeAbiParameters, formatUnits, getAddress, http, isAddress, parseAbiParameters, parseUnits, stringToHex } from 'viem'
+import { TronWeb } from 'tronweb'
 
 import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
 import { ServiceError } from '../types/errors/service-error'
@@ -83,7 +84,20 @@ export function stringComparator(a: string, b: string) {
 
 export function getAddressOrDefault(value: string | null | undefined, defaultValue: Address = '0x0'): Address {
   try {
-    return !!value && isAddress(value) ? getAddress(value) : defaultValue
+    return value && isAddress(value) ? getAddress(value) : defaultValue
+  } catch {
+    return defaultValue
+  }
+}
+
+export function getTronAddressOrDefault(value: string | null | undefined, defaultValue: Address = '0x0'): Address | undefined {
+  try {
+    if (!value) {
+      return defaultValue
+    }
+
+    const hex = TronWeb.address.toHex(value)
+    return getAddressOrDefault(`0x${hex.substring(2)}`, defaultValue)
   } catch {
     return defaultValue
   }
@@ -386,7 +400,7 @@ export function serializeErrorForRedux(error: unknown): unknown {
 export function getTransport(chainId: number, projectId: string) {
   const rpc = CoreHelperUtil.getBlockchainApiUrl()
   if (!PresetsUtil.WalletConnectRpcChainIds.includes(chainId)) {
-      return http()
+    return http()
   }
   return http(`${rpc}/v1/?chainId=${ConstantsUtil.EIP155}:${chainId}&projectId=${projectId}`)
 }

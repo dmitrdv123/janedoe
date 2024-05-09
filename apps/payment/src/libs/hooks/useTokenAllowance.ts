@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BlockchainMeta, Token } from 'rango-sdk-basic'
+import { BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
 import { erc20Abi } from 'viem'
 import { useReadContract } from 'wagmi'
 
-import { getAddressOrDefault, tryParseInt } from '../utils'
+import { getAddressOrDefault, getTronAddressOrDefault, tryParseInt } from '../utils'
 import { ApiRequestStatus } from '../../types/api-request'
 
 export default function useTokenAllowance(
@@ -29,7 +29,9 @@ export default function useTokenAllowance(
     refetch: handle
   } = useReadContract({
     chainId: tryParseInt(blockchain.chainId),
-    address: getAddressOrDefault(token.address),
+    address: blockchain.type === TransactionType.TRON
+      ? getTronAddressOrDefault(token.address)
+      : getAddressOrDefault(token.address),
     functionName: 'allowance',
     abi: erc20Abi,
     args: [

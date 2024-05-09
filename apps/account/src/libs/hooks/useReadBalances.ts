@@ -2,9 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useReadContracts } from 'wagmi'
 import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
 import { AbiFunction } from 'viem'
-import { TronWeb } from 'tronweb'
 
-import { getAddressOrDefault, isBlockchainToken } from '../utils'
+import { convertTronAddress, getAddressOrDefault, isBlockchainToken } from '../utils'
 import { useSettings } from '../../states/settings/hook'
 import { useTokens } from '../../states/meta/hook'
 import { TokenWithId } from '../../types/token-with-id'
@@ -44,7 +43,7 @@ export default function useReadBalances(blockchain: BlockchainMeta): ReadBalance
       .map(token => {
         if (token.address) {
           const id = blockchain.type === TransactionType.TRON
-            ? `0x${TronWeb.address.toHex(token.address)}`
+            ? convertTronAddress(token.address)
             : token.address
 
           return {

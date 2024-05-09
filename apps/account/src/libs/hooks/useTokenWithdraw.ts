@@ -1,9 +1,9 @@
 import { useCallback } from 'react'
-import { BlockchainMeta, Token } from 'rango-sdk-basic'
+import { BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
 import { useAccount } from 'wagmi'
 
 import { ContractCallResult } from '../../types/contract-call-result'
-import { getAddressOrDefault } from '../utils'
+import { getAddressOrDefault, getTronAddressOrDefault } from '../utils'
 import useJanedoeContractWrite from './useJanedoeContractWrite'
 
 export default function useTokenWithdraw(
@@ -27,7 +27,7 @@ export default function useTokenWithdraw(
     'withdrawTo',
     [
       address, // to
-      getAddressOrDefault(token.address), // token
+      (blockchain.type === TransactionType.TRON ? getTronAddressOrDefault(token.address) : getAddressOrDefault(token.address)), // token
       amount // amount
     ],
     undefined,
