@@ -54,7 +54,7 @@
       "conversion_error_alert": "Failed to calculate сonversion path for token",
       "pay_processing": "Payment transaction processing",
       "errors": {
-        "failed_pay": "Payment has been failed",
+        "failed_pay": "Payment error",
         "token_required": "Select a token",
         "conversion_failed": "Failed to calculate conversion path for token"
       }
@@ -204,6 +204,9 @@
       "route_not_found": "Cannot find route to convert {{blockchain}} {{token}} to one of tokens",
       "bitcoin_errors": {
         "not_enough_funds_error": "Not enough funds"
+      },
+      "payment_errors": {
+        "read_allowance_error": "Reading token spending permissions error"
       }
     }
   },

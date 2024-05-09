@@ -6,6 +6,7 @@ import { useReadContract } from 'wagmi'
 
 import { getAddressOrDefault, getTronAddressOrDefault, tryParseInt } from '../utils'
 import { ApiRequestStatus } from '../../types/api-request'
+import { ServiceError } from '../../types/errors/service-error'
 
 export default function useTokenAllowance(
   blockchain: BlockchainMeta,
@@ -48,7 +49,7 @@ export default function useTokenAllowance(
     }
 
     if (tokenAllowanceStatus === 'error') {
-      setError(tokenAllowanceError)
+      setError(new ServiceError(tokenAllowanceError?.shortMessage ?? '', 'services.errors.payment_errors.read_allowance_error'))
       setStatus('error')
       return
     }

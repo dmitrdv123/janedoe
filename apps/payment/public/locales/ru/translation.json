@@ -54,7 +54,7 @@
       "conversion_error_alert": "Не удалось вычислить конвертацию для токена",
       "pay_processing": "Обработка транзакции платежа",
       "errors": {
-        "failed_pay": "Оплата завершилась ошибкой",
+        "failed_pay": "Ошибка при оплате",
         "token_required": "Выберете токен",
         "conversion_failed": "Не удалось вычислить конвертацию для токена"
       }
@@ -205,6 +205,9 @@
       "route_not_found": "Не удается найти маршрут для конвертации {{blockchain}} {{token}} в один из токенов",
       "bitcoin_errors": {
         "not_enough_funds_error": "Недостаточно средств"
+      },
+      "payment_errors": {
+        "read_allowance_error": "Ошибка чтения разрешений на траты токена"
       }
     }
   },

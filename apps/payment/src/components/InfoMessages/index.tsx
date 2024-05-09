@@ -19,7 +19,11 @@ const InfoMessages: React.FC = () => {
   const tokens = useTokens()
 
   const getServiceError = useCallback((error: ServiceError) => {
-    return <>{t(error.code, error.args)}</>
+    return (
+      <>
+        {t(error.code, error.args)}{error.message ? `: ${error.message}` : ''}
+      </>
+    )
   }, [t])
 
   const getPaymentConversionError = useCallback((error: PaymentConversionError) => {
