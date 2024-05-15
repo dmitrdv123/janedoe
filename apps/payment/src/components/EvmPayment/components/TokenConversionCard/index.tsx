@@ -148,7 +148,13 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
               <TokenShortDetails blockchain={blockchain} token={token} /> {t('components.evm_payment.conversion_desc')}
             </div>
             <div>
-              <Button variant="link" className="text-decoration-none me-2" size='sm' disabled={disabled} onClick={() => paymentConversionHandler(token, paymentConversionData?.quote.to, amount, slippage)}>
+              <Button
+                variant="link"
+                className="text-decoration-none me-2"
+                size='sm'
+                disabled={disabled || paymentConversionStatus === 'processing'}
+                onClick={() => paymentConversionHandler(token, paymentConversionData?.quote.to, amount, slippage)}
+              >
                 {t('common.refresh_btn')}
               </Button>
             </div>
@@ -161,7 +167,12 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
                     {t('components.evm_payment.conversion_token')}
                   </Form.Label>
                   <Col sm={8}>
-                    <Button className="dropdown-toggle" variant="outline-link" disabled={disabled} onClick={openHandler}>
+                    <Button
+                      className="dropdown-toggle"
+                      variant="outline-link"
+                      disabled={disabled || paymentConversionStatus === 'processing'}
+                      onClick={openHandler}
+                    >
                       {(!paymentConversionData?.quote.to) && (
                         <>
                           {t('components.evm_payment.conversion_select_token')}
@@ -185,11 +196,11 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
                     {t('components.evm_payment.conversion_slippage')}
                   </Form.Label>
                   <Col sm={4}>
-                    {disabled && (
+                    {(disabled || paymentConversionStatus === 'processing') && (
                       <Form.Control type="text" value={`${slippage}%`} disabled />
                     )}
 
-                    {!disabled && (
+                    {(!disabled && paymentConversionStatus !== 'processing') && (
                       <Dropdown>
                         <Dropdown.Toggle variant="outline-link">
                           {slippage}%
