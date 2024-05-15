@@ -12,10 +12,10 @@ const UpdateTimer: React.FC = () => {
 
   useEffect(() => {
     const val = settings.dt
-      ? Math.floor((Date.now() - (settings.dt - SETTINGS_UPDATE_INTERVAL_MS)) / 1000)
+      ? Math.floor((settings.dt + SETTINGS_UPDATE_INTERVAL_MS - Date.now()) / 1000)
       : undefined
 
-    setSeconds(val)
+    setSeconds(val && val > 0 ? val : undefined)
   }, [settings.dt])
 
   // Timer effect
