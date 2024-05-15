@@ -127,7 +127,7 @@ others:
 - landing, docs: replace N and K with real values of tokens and blockchains
 - api: set limits for requests using aws
 - payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
-- api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile\* methods)
+- api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile methods)
 - payment: option to disable conversion globally. Message regarding this for all account
 - account: option to disable conversion.
 - account: global news info message
@@ -140,7 +140,6 @@ others:
 - protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - installer: create and reimport all wallet to central wallet
-- payment: need to block conversion token dropdown button when is processing
 - payment: need to block payment form in case of transaction processing
 
 disputable:
