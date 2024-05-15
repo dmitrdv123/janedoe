@@ -1,6 +1,7 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { S3 } from '@aws-sdk/client-s3'
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager'
+import { CloudWatch } from '@aws-sdk/client-cloudwatch'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 
@@ -19,15 +20,25 @@ import { S3Service, S3ServiceImpl } from '../services/s3.service'
 import { EmailTemplateDaoImpl } from '../dao/email-template.dao'
 import { SecretService, SecretServiceImpl } from '../services/secret.service'
 import { SecretDaoImpl } from '../dao/secret.dao'
+import { CloudwatchService, CloudwatchServiceImpl } from '../services/cloudwatch.service'
+import { MetricDaoImpl } from '../dao/metric.dao'
 
 export const daoContainer = new Container()
 
 // Services
+daoContainer.register('cloudwatchService', new CloudwatchServiceImpl(new CloudWatch()))
 daoContainer.register('dynamoService', new DynamoServiceImpl(new DynamoDB()))
 daoContainer.register('s3Service', new S3ServiceImpl(new S3()))
 daoContainer.register('secretService', new SecretServiceImpl(new SecretsManagerClient()))
 
 // DAO
+daoContainer.register(
+  'metricDao',
+  new MetricDaoImpl(
+    daoContainer.resolve<CloudwatchService>('cloudwatchService')
+  )
+)
+
 daoContainer.register(
   'accountDao',
   new AccountDaoImpl(

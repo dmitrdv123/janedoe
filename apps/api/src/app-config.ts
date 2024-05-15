@@ -73,6 +73,30 @@ export function createAppConfig() {
     throw new Error('BUCKET_NAME_DATA is not set')
   }
 
+  if (!process.env.METRIC_RANGO_NAMESPACE) {
+    throw new Error('METRIC_RANGO_NAMESPACE is not set')
+  }
+
+  if (!process.env.METRIC_RANGO_NAME) {
+    throw new Error('METRIC_RANGO_NAME is not set')
+  }
+
+  if (!process.env.METRIC_RANGO_CONVERSION_NAMESPACE) {
+    throw new Error('METRIC_RANGO_CONVERSION_NAMESPACE is not set')
+  }
+
+    if (!process.env.METRIC_RANGO_CONVERSION_NAME) {
+    throw new Error('METRIC_RANGO_CONVERSION_NAME is not set')
+  }
+
+  if (!process.env.METRIC_BITCOIN_NAMESPACE) {
+    throw new Error('METRIC_BITCOIN_NAMESPACE is not set')
+  }
+
+  if (!process.env.METRIC_BITCOIN_NAME) {
+    throw new Error('METRIC_BITCOIN_NAME is not set')
+  }
+
   const NODE_ENV = process.env.NODE_ENV ?? 'local'
 
   initAppConfig({
@@ -96,6 +120,12 @@ export function createAppConfig() {
     TABLE_NAME_TIME_SERIES: process.env.TABLE_NAME_TIME_SERIES,
     TABLE_NAME_NOTIFICATION: process.env.TABLE_NAME_NOTIFICATION,
     BUCKET_NAME_DATA: process.env.BUCKET_NAME_DATA,
+    METRIC_RANGO_NAMESPACE: process.env.METRIC_RANGO_NAMESPACE,
+    METRIC_RANGO_NAME: process.env.METRIC_RANGO_NAME,
+    METRIC_RANGO_CONVERSION_NAMESPACE: process.env.METRIC_RANGO_CONVERSION_NAMESPACE,
+    METRIC_RANGO_CONVERSION_NAME: process.env.METRIC_RANGO_CONVERSION_NAME,
+    METRIC_BITCOIN_NAMESPACE: process.env.METRIC_BITCOIN_NAMESPACE,
+    METRIC_BITCOIN_NAME: process.env.METRIC_BITCOIN_NAME
   })
 }
 

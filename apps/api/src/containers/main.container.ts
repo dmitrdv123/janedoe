@@ -1,3 +1,4 @@
+import { MetricDao } from '@repo/dao/dist/src/dao/metric.dao'
 import { SupportDao } from '@repo/dao/dist/src/dao/support.dao'
 import { IpnDao } from '@repo/dao/dist/src/dao/ipn.dao'
 import { NotificationDao } from '@repo/dao/dist/src/dao/notification.dao'
@@ -12,12 +13,12 @@ import { EmailTemplateDao } from '@repo/dao/dist/src/dao/email-template.dao'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
 import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
 import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrapper-service'
+import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
-import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 
 import { AccountController } from '../controllers/account-controller'
 import { AuthController } from '../controllers/auth-controller'
@@ -49,10 +50,18 @@ import { SupportService, SupportServiceImpl } from '../services/support-service'
 import { DocController } from '../controllers/doc-controller'
 import { MetaTask } from '../tasks/meta-task'
 import { RangoService, RangoServiceImpl } from '../services/rango-service'
+import { BitcoinServiceProxyImpl } from '../services/bitcoin-proxy-service'
 
 const container = new Container()
 
 // Services
+container.register(
+  'bitcoinServiceProxy',
+  new BitcoinServiceProxyImpl(
+    commonContainer.resolve<BitcoinService>('bitcoinService'),
+    awsContainer.resolve<MetricDao>('metricDao')
+  )
+)
 container.register(
   'supportService', new SupportServiceImpl(
     awsContainer.resolve<SupportDao>('supportDao')
@@ -113,7 +122,7 @@ container.register(
   'accountService',
   new AccountServiceImpl(
     container.resolve<SettingsService>('settingsService'),
-    commonContainer.resolve<BitcoinService>('bitcoinService'),
+    container.resolve<BitcoinService>('bitcoinServiceProxy'),
     container.resolve<CryptoService>('cryptoService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<PaymentLogService>('paymentLogService'),
@@ -126,7 +135,7 @@ container.register(
   'paymentService',
   new PaymentServiceImpl(
     container.resolve<AccountService>('accountService'),
-    commonContainer.resolve<BitcoinService>('bitcoinService'),
+    container.resolve<BitcoinService>('bitcoinServiceProxy'),
     container.resolve<PaymentLogService>('paymentLogService'),
     awsContainer.resolve<PaymentDao>('paymentDao')
   )
@@ -216,7 +225,7 @@ container.register(
   new PaymentTask(
     container.resolve<AccountService>('accountService'),
     evmContainer.resolve<EvmService>('evmService'),
-    commonContainer.resolve<BitcoinService>('bitcoinService'),
+    container.resolve<BitcoinService>('bitcoinServiceProxy'),
     container.resolve<MetaService>('metaService'),
     container.resolve<NotificationService>('notificationService'),
     container.resolve<PaymentLogService>('paymentLogService'),

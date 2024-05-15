@@ -31,8 +31,9 @@ export class BitcoinServiceImpl implements BitcoinService {
 
   public async createBitcoinAddress(walletName: string, label: string): Promise<string> {
     return await this.lock.acquire(async () => {
+      await this.loadBitcoinWallet(walletName)
+
       try {
-        await this.loadBitcoinWallet(walletName)
         const addressByLabel = await this.bitcoinWrapperService.getAddressByLabel(walletName, label)
 
         if (addressByLabel) {
@@ -44,61 +45,65 @@ export class BitcoinServiceImpl implements BitcoinService {
 
         return await this.bitcoinWrapperService.createBitcoinAddress(walletName, label)
       } finally {
-        await this.unloadBitcoinWallet(walletName)
+        await this.tryUnloadBitcoinWallet(walletName)
       }
     })
   }
 
   public async importBitcoinAddress(walletName: string, address: string, label: string): Promise<void> {
     return await this.lock.acquire(async () => {
+      await this.loadBitcoinWallet(walletName)
+
       try {
-        await this.loadBitcoinWallet(walletName)
         const descriptor = await this.bitcoinWrapperService.getBitcoinAddressDescriptorInfo(address)
         return await this.bitcoinWrapperService.importBitcoinDescriptor(walletName, descriptor.descriptor, label)
       } finally {
-        await this.unloadBitcoinWallet(walletName)
+        await this.tryUnloadBitcoinWallet(walletName)
       }
     })
   }
 
   public async getBitcoinBalance(walletName: string): Promise<number> {
     return await this.lock.acquire(async () => {
+      await this.loadBitcoinWallet(walletName)
+
       try {
-        await this.loadBitcoinWallet(walletName)
         return await this.bitcoinWrapperService.getBitcoinBalance(walletName, BITCOIN_MINCONF)
       } finally {
-        await this.unloadBitcoinWallet(walletName)
+        await this.tryUnloadBitcoinWallet(walletName)
       }
     })
   }
 
   public async receivedBitcoinByLabel(walletName: string, label: string): Promise<number> {
     return await this.lock.acquire(async () => {
+      await this.loadBitcoinWallet(walletName)
+
       try {
-        await this.loadBitcoinWallet(walletName)
         return await this.bitcoinWrapperService.receivedBitcoinByLabel(walletName, label, BITCOIN_MINCONF, BITCOIN_INCLUDE_IMMATURE)
       } finally {
-        await this.unloadBitcoinWallet(walletName)
+        await this.tryUnloadBitcoinWallet(walletName)
       }
     })
   }
 
   public async withdrawBitcoin(walletName: string, address: string): Promise<WithdrawBitcoinWalletResult> {
     return await this.lock.acquire(async () => {
+      await this.loadBitcoinWallet(walletName)
+
       try {
-        await this.loadBitcoinWallet(walletName)
         return await this.bitcoinWrapperService.withdrawBitcoin(walletName, address)
       } finally {
-        await this.unloadBitcoinWallet(walletName)
+        await this.tryUnloadBitcoinWallet(walletName)
       }
     })
   }
 
   public async listBitcoinTransactionsSinceBlock(walletName: string, blockhash: string): Promise<ListBitcoinWalletTransactionsSinceBlockResult> {
     return await this.lock.acquire(async () => {
-      try {
-        await this.loadBitcoinWallet(walletName)
+      await this.loadBitcoinWallet(walletName)
 
+      try {
         const result = await this.bitcoinWrapperService.listTransactionsSinceBlock(walletName, blockhash)
 
         return {
@@ -111,7 +116,7 @@ export class BitcoinServiceImpl implements BitcoinService {
           lastblock: result.lastblock
         }
       } finally {
-        await this.unloadBitcoinWallet(walletName)
+        await this.tryUnloadBitcoinWallet(walletName)
       }
     })
   }
@@ -125,7 +130,9 @@ export class BitcoinServiceImpl implements BitcoinService {
     await this.bitcoinWrapperService.loadBitcoinWallet(walletName)
   }
 
-  private async unloadBitcoinWallet(walletName: string): Promise<void> {
-    await this.bitcoinWrapperService.unloadBitcoinWallet(walletName)
+  private async tryUnloadBitcoinWallet(walletName: string): Promise<void> {
+    try {
+      await this.bitcoinWrapperService.unloadBitcoinWallet(walletName)
+    } catch { }
   }
 }

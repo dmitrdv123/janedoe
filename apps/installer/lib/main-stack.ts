@@ -1,7 +1,8 @@
 import * as apprunner from '@aws-cdk/aws-apprunner-alpha'
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront'
+import { Alarm, Metric, TreatMissingData, ComparisonOperator, Stats } from 'aws-cdk-lib/aws-cloudwatch'
 
-import { Stack, StackProps, RemovalPolicy, CfnOutput } from 'aws-cdk-lib'
+import { Stack, StackProps, RemovalPolicy, CfnOutput, Duration } from 'aws-cdk-lib'
 import { Table, AttributeType, BillingMode, ProjectionType, ITable } from 'aws-cdk-lib/aws-dynamodb'
 import { Bucket, BucketAccessControl, IBucket } from 'aws-cdk-lib/aws-s3'
 import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, IHttpApi } from 'aws-cdk-lib/aws-apigatewayv2'
@@ -46,6 +47,10 @@ interface MainStackOutput {
   bitcoinCoreInstanceElasticIp?: CfnEIP
   bitcoinCoreInstance?: IInstance
   service?: apprunner.Service
+
+  alarmMetricRango?: Metric
+  alarmMetricRangoConversion?: Metric
+  alarmMetricBitcoin?: Metric
 }
 
 export class MainStack extends Stack {
@@ -64,6 +69,7 @@ export class MainStack extends Stack {
       this.deployFrontend(output)
     }
 
+    this.deployBackendAlarms(output)
     this.deployBackend(output)
     this.deployBackendSettings(output)
 
@@ -171,6 +177,57 @@ function handler(event) {
         destinationBucket: output.bucketData
       })
     }
+  }
+
+  private deployBackendAlarms(output: MainStackOutput) {
+    const alarmMetricRango = new Metric({
+      namespace: withEnv('API/RANGO'),
+      metricName: withEnv('RangoErrors'),
+      statistic: Stats.SUM,
+      period: Duration.minutes(5),
+    })
+
+    new Alarm(this, withEnv('RangoAlarm'), {
+      metric: alarmMetricRango,
+      threshold: 1,
+      evaluationPeriods: 1,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+    })
+
+    const alarmMetricRangoConversion = new Metric({
+      namespace: withEnv('API/RANGO_CONVERSION'),
+      metricName: withEnv('RangoConversionErrors'),
+      statistic: Stats.SUM,
+      period: Duration.minutes(5),
+    })
+
+    new Alarm(this, withEnv('RangoConversionAlarm'), {
+      metric: alarmMetricRangoConversion,
+      threshold: 1,
+      evaluationPeriods: 1,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+    })
+
+    const alarmMetricBitcoin = new Metric({
+      namespace: withEnv('API/BITCOIN'),
+      metricName: withEnv('BitcoinErrors'),
+      statistic: Stats.SUM,
+      period: Duration.minutes(5),
+    })
+
+    new Alarm(this, withEnv('BitcoinAlarm'), {
+      metric: alarmMetricBitcoin,
+      threshold: 1,
+      evaluationPeriods: 1,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+    })
+
+    output.alarmMetricRango = alarmMetricRango
+    output.alarmMetricRangoConversion = alarmMetricRangoConversion
+    output.alarmMetricBitcoin = alarmMetricBitcoin
   }
 
   private deployFrontendSettings(output: MainStackOutput) {
@@ -562,7 +619,13 @@ function handler(event) {
             TABLE_NAME: output.tableData?.tableName ?? '',
             TABLE_NAME_TIME_SERIES: output.tableTimeSeries?.tableName ?? '',
             TABLE_NAME_NOTIFICATION: output.tableNotification?.tableName ?? '',
-            BUCKET_NAME_DATA: output.bucketData?.bucketName ?? ''
+            BUCKET_NAME_DATA: output.bucketData?.bucketName ?? '',
+            METRIC_RANGO_NAMESPACE: output.alarmMetricRango?.namespace ?? '',
+            METRIC_RANGO_NAME: output.alarmMetricRango?.metricName ?? '',
+            METRIC_RANGO_CONVERSION_NAMESPACE: output.alarmMetricRangoConversion?.namespace ?? '',
+            METRIC_RANGO_CONVERSION_NAME: output.alarmMetricRangoConversion?.metricName ?? '',
+            METRIC_BITCOIN_NAMESPACE: output.alarmMetricBitcoin?.namespace ?? '',
+            METRIC_BITCOIN_NAME: output.alarmMetricBitcoin?.metricName ?? ''
           },
           environmentSecrets: {
             EXCHANGERATE_API_KEY: apprunner.Secret.fromSecretsManager(exchangeRateApiKey, 'data'),
