@@ -63,7 +63,7 @@ export default function useTokenConversionTransactionApproval(
     }
   }, [config.config, requestId, status, t, txId, doUntilHandler, onError, onSuccess])
 
-  const handle = useCallback((requestIdToUse: string | undefined, evmTx: EvmTransaction | undefined) => {
+  const handle = useCallback(async (requestIdToUse: string | undefined, evmTx: EvmTransaction | undefined) => {
     setTxId(undefined)
     setData(undefined)
     setError(undefined)
@@ -75,29 +75,31 @@ export default function useTokenConversionTransactionApproval(
       return
     }
 
-    const chain = CHAINS.find(chain => chain.id === tryParseInt(evmTx.blockChain.chainId))
-    const account = evmTx?.from ? getAddressOrDefault(evmTx.from) : undefined
-    const to = evmTx?.from ? getAddressOrDefault(evmTx.approveTo) : undefined
-    const approveData = evmTx?.approveData ? evmTx.approveData as `0x${string}` : undefined
+    try {
+      const chain = CHAINS.find(chain => chain.id === tryParseInt(evmTx.blockChain.chainId))
+      const account = evmTx?.from ? getAddressOrDefault(evmTx.from) : undefined
+      const to = evmTx?.from ? getAddressOrDefault(evmTx.approveTo) : undefined
+      const approveData = evmTx?.approveData ? evmTx.approveData as `0x${string}` : undefined
 
-    setData(t('hooks.token_conversion_approval.transaction_confirming', { requestIdToUse }))
-    setRequestId(requestIdToUse)
-    setStatus('processing')
+      setData(t('hooks.token_conversion_approval.transaction_confirming', { requestIdToUse }))
+      setRequestId(requestIdToUse)
+      setStatus('processing')
 
-    signer.sendTransaction({ chain, account, to, data: approveData })
-      .then(response => {
-        setTxId(response)
-        setData(t('hooks.token_conversion_approval.transaction_confirmed', { requestId: requestIdToUse, txId: response }))
-        setError(undefined)
-        setStatus('processing')
-      })
-      .catch(error => {
-        setTxId(undefined)
-        setError(error as Error)
-        setStatus('error')
+      const response = await signer.sendTransaction({ chain, account, to, data: approveData })
 
-        onError?.(error)
-      })
+      setTxId(response)
+      setData(t('hooks.token_conversion_approval.transaction_confirmed', { requestId: requestIdToUse, txId: response }))
+      setError(undefined)
+      setStatus('processing')
+    } catch (err) {
+      const error = err as Error
+
+      setTxId(undefined)
+      setError(error)
+      setStatus('error')
+
+      onError?.(error)
+    }
   }, [signer, t, onError])
 
   return {
