@@ -98,9 +98,6 @@ importers:
       redux-localstorage-simple:
         specifier: ^2.5.1
         version: 2.5.1
-      tronweb:
-        specifier: ^6.0.0-beta.2
-        version: 6.0.0-beta.2(bufferutil@4.0.8)(eslint@8.57.0)(utf-8-validate@6.0.3)
       use-local-storage-state:
         specifier: ^19.2.0
         version: 19.2.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -622,9 +619,6 @@ importers:
       redux-localstorage-simple:
         specifier: ^2.5.1
         version: 2.5.1
-      tronweb:
-        specifier: ^6.0.0-beta.2
-        version: 6.0.0-beta.2(bufferutil@4.0.8)(eslint@8.57.0)(utf-8-validate@6.0.3)
       use-local-storage-state:
         specifier: ^19.2.0
         version: 19.2.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)

@@ -1,7 +1,7 @@
-import { BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
+import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
 import { ContractCallResult } from '../../types/contract-call-result'
-import { getAddressOrDefault, getTronAddressOrDefault, tryParseInt } from '../utils'
+import { getAddressOrDefault, tryParseInt } from '../utils'
 import useWriteAndWaitContract from './useWriteAndWaitContract'
 
 export default function useTokenApprove(
@@ -14,7 +14,7 @@ export default function useTokenApprove(
 ): ContractCallResult {
   const { status, data, txId, error, handle } = useWriteAndWaitContract(
     tryParseInt(blockchain.chainId),
-    blockchain.type === TransactionType.TRON ? getTronAddressOrDefault(token.address) : getAddressOrDefault(token.address),
+    getAddressOrDefault(token.address),
     'approve',
     [
       {

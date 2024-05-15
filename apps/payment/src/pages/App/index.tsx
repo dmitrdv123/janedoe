@@ -65,7 +65,7 @@ const App: React.FC = () => {
                 <BlockchainButton blockchain={fromBlockchain} disabled={isProcessing} onUpdate={selectBlockchainHandler}/>
               </div>
 
-              {(fromBlockchain?.type === TransactionType.EVM || fromBlockchain?.type === TransactionType.TRON) && (
+              {(fromBlockchain?.type === TransactionType.EVM) && (
                 <EvmPayment blockchain={fromBlockchain} onProcessing={processingHandler}/>
               )}
 
