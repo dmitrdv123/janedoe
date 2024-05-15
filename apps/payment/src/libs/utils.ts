@@ -194,6 +194,10 @@ export function convertErrorToMessage(error: any, defaultMessage: string, curDep
     return error
   }
 
+  if (error.shortMessage) {
+    return error.shortMessage
+  }
+
   if (error.message) {
     return error.message
   }

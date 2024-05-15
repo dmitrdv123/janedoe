@@ -1,3 +1,6 @@
+import { Chain, arbitrum, avalanche, base, bsc, cronos, hardhat, linea, mainnet, optimism, polygon, zkSync } from 'viem/chains'
+import { tron } from './types/chains'
+
 export const DEFAULT_BLOCKCHAIN_ID = 1
 export const DEFAULT_CURRENCY_DECIMAL_PLACES = 2
 export const DEFAULT_TOKEN_DECIMAL_PLACES = 4
@@ -35,3 +38,11 @@ export const BLOCKCHAIN_BTC = 'btc'
 export const SUPPORTED_LANGUAGES = ['en', 'ru']
 export const SLIPPAGES = [0.5, 1, 3, 5, 8, 13, 20]
 export const DEFAULT_SLIPPAGE = 0.5
+
+export const CHAINS: [Chain, ...Chain[]] = import.meta.env.VITE_APP_IS_DEV
+  ? [
+    hardhat, arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, tron, zkSync
+  ]
+  : [
+    arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, tron, zkSync
+  ]

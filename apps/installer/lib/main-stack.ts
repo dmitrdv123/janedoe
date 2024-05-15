@@ -502,6 +502,14 @@ function handler(event) {
       }
     })
 
+    const rangoApiKeySwap = new Secret(this, withEnv('secret_rango_api_key_swap'), {
+      secretName: withEnv('rango_api_key_swap'),
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ data: env('RANGO_API_KEY_SWAP'), pwd: '' }),
+        generateStringKey: 'pwd'
+      }
+    })
+
     const bitcoinRpc = new Secret(this, withEnv('secret_bitcoin_rpc'), {
       secretName: withEnv('bitcoin_rpc'),
       generateSecretString: {
@@ -559,6 +567,7 @@ function handler(event) {
           environmentSecrets: {
             EXCHANGERATE_API_KEY: apprunner.Secret.fromSecretsManager(exchangeRateApiKey, 'data'),
             RANGO_API_KEY: apprunner.Secret.fromSecretsManager(rangoApiKey, 'data'),
+            RANGO_API_KEY_SWAP: apprunner.Secret.fromSecretsManager(rangoApiKeySwap, 'data'),
             JWT_ENCRYPTION_KEY: apprunner.Secret.fromSecretsManager(jwtEncryptionKey, 'data'),
             JWT_INIT_VECTOR: apprunner.Secret.fromSecretsManager(jwtInitVector, 'data'),
             EMAIL_CONFIG: apprunner.Secret.fromSecretsManager(emailConfig, 'data'),

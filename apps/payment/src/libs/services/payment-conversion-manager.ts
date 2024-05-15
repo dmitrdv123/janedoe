@@ -1,8 +1,7 @@
 import { QuoteResponse, RoutingResultType, Token } from 'rango-sdk-basic'
 
-import { AppSettings, PaymentSettings } from '../../types/settings'
 import { ApiWrapper } from './api-wrapper'
-import { isNullOrEmptyOrWhitespaces, tokenAmountToUsd, usdToTokenAmount } from '../utils'
+import { createImMessage, isNullOrEmptyOrWhitespaces, tokenAmountToUsd, usdToTokenAmount } from '../utils'
 import { ALLOWED_DELTA, MAX_QUOTE_ITERATIONS } from '../../constants'
 import { PaymentConversionData } from '../../types/payment-conversion-result'
 
@@ -21,43 +20,46 @@ export class PaymentConversionManager {
 
   public async calculateQuote(
     baseUrlApi: string,
-    appSettings: AppSettings,
-    paymentSettings: PaymentSettings,
-    from: Token,
-    to: Token,
+    id: string,
+    paymentId: string,
+
+    fromContract: string,
+    toContract: string,
+
+    fromAddress: string,
+    toAddress: string,
+
+    fromToken: Token,
+    toToken: Token,
+
     amountUsd: number,
     slippage: number
   ): Promise<PaymentConversionData | undefined> {
-    const toWallet = paymentSettings.wallets.find(item => item.blockchain.toLocaleLowerCase() === to.blockchain.toLocaleLowerCase())
-    if (!toWallet) {
+    if (!fromToken.usdPrice) {
       return undefined
     }
 
-    const fromRangoReceiverContract = appSettings.contracts.find(item => item.blockchain.toLocaleLowerCase() === from.blockchain.toLocaleLowerCase())?.contractAddresses.RangoReceiver
-    if (!fromRangoReceiverContract) {
-      return undefined
-
-    }
-
-    const toRangoReceiverContract = appSettings.contracts.find(item => item.blockchain.toLocaleLowerCase() === to.blockchain.toLocaleLowerCase())?.contractAddresses.RangoReceiver
-    if (toRangoReceiverContract === undefined) {
-      return undefined
-    }
-
-    if (!from.usdPrice) {
-      return undefined
-    }
-
-    if (!to.usdPrice) {
+    if (!toToken.usdPrice) {
       return undefined
     }
 
     let totalAmountUsd = amountUsd
     let i = 0
 
+    const imMessage = createImMessage(fromAddress, toAddress, id + paymentId)
+
     do {
-      const tokenAmount = usdToTokenAmount(totalAmountUsd, from.usdPrice, from.decimals)
-      const request = ApiWrapper.instance.quoteRequest(fromRangoReceiverContract, toRangoReceiverContract, from, to, tokenAmount, slippage)
+      const tokenAmount = usdToTokenAmount(totalAmountUsd, fromToken.usdPrice, fromToken.decimals)
+      const request = ApiWrapper.instance.quoteRequest({
+        imMessage,
+        sourceContract: fromContract,
+        destinationContract: toContract,
+        from: fromToken,
+        to: toToken,
+        amount: tokenAmount,
+        contractCall: true,
+        enableCentralizedSwappers: true
+      }, slippage)
       const quote = await ApiWrapper.instance.send<QuoteResponse>({
         ...request,
         url: request.url.replace('{baseUrlApi}', baseUrlApi)
@@ -77,7 +79,7 @@ export class PaymentConversionManager {
         return undefined
       }
 
-      const outputAmountUsd = tokenAmountToUsd(outputAmount, to.usdPrice, to.decimals)
+      const outputAmountUsd = tokenAmountToUsd(outputAmount, toToken.usdPrice, toToken.decimals)
       const amountDeltaUsd = amountUsd - outputAmountUsd
       if (outputAmountUsd >= amountUsd && Math.abs(amountDeltaUsd) / amountUsd < ALLOWED_DELTA) {
         return {

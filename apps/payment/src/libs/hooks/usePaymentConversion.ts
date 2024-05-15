@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Asset, Token } from 'rango-sdk-basic'
+import { useParams } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 
 import { PaymentConversionData, PaymentConversionResult } from '../../types/payment-conversion-result'
 import { useAppSettings, useExchangeRate, usePaymentSettings, useTokens } from '../../states/settings/hook'
@@ -19,6 +21,8 @@ export default function usePaymentConversion(): PaymentConversionResult {
   const tokens = useTokens()
   const exchangeRate = useExchangeRate()
   const config = useConfig()
+  const { id, paymentId } = useParams()
+  const { address: fromAddress } = useAccount()
 
   const process = useCallback(async (
     from: Token,
@@ -29,20 +33,49 @@ export default function usePaymentConversion(): PaymentConversionResult {
     const calculateQuote = async (
       appSettingsToUse: AppSettings,
       paymentSettingsToUse: PaymentSettings,
-      tokens: Token[],
+      baseUrlApi: string,
+      idToUse: string,
+      paymentIdToUse: string,
+      tokensToUse: Token[],
+      fromAddressToUse: string,
       fromTokenToUse: Token,
       toAssetToUse: Asset,
       amountUsd: number
     ): Promise<PaymentConversionData | undefined> => {
-      const toToken = tokens.find(token => isToken(token, toAssetToUse.blockchain, toAssetToUse.symbol, toAssetToUse.address))
+      const fromContract = appSettingsToUse.contracts.find(
+        item => item.blockchain.toLocaleLowerCase() === fromTokenToUse.blockchain.toLocaleLowerCase()
+      )?.contractAddresses.RangoReceiver
+      if (!fromContract) {
+        return undefined
+      }
+
+      const toContract = appSettingsToUse.contracts.find(
+        item => item.blockchain.toLocaleLowerCase() === toAssetToUse.blockchain.toLocaleLowerCase()
+      )?.contractAddresses.RangoReceiver
+      if (!toContract) {
+        return undefined
+      }
+
+      const toAddress = paymentSettingsToUse.wallets.find(
+        item => item.blockchain.toLocaleLowerCase() === toAssetToUse.blockchain.toLocaleLowerCase()
+      )?.address
+      if (!toAddress) {
+        return undefined
+      }
+
+      const toToken = tokensToUse.find(token => isToken(token, toAssetToUse.blockchain, toAssetToUse.symbol, toAssetToUse.address))
       if (!toToken) {
         return undefined
       }
 
       const result = await PaymentConversionManager.instance.calculateQuote(
-        config.config?.baseUrlApi ?? '',
-        appSettingsToUse,
-        paymentSettingsToUse,
+        baseUrlApi,
+        idToUse,
+        paymentIdToUse,
+        fromContract,
+        toContract,
+        fromAddressToUse,
+        toAddress,
         fromTokenToUse,
         toToken,
         amountUsd,
@@ -55,7 +88,11 @@ export default function usePaymentConversion(): PaymentConversionResult {
     const calculateQuotes = async (
       appSettingsToUse: AppSettings,
       paymentSettingsToUse: PaymentSettings,
+      baseUrlApi: string,
+      idToUse: string,
+      paymentIdToUse: string,
       tokensToUse: Token[],
+      fromAddressToUse: string,
       fromTokenToUse: Token,
       amountUsd: number
     ): Promise<PaymentConversionData | undefined> => {
@@ -83,7 +120,18 @@ export default function usePaymentConversion(): PaymentConversionResult {
         })
 
       for (const asset of assets) {
-        const result = await calculateQuote(appSettingsToUse, paymentSettingsToUse, tokensToUse, fromTokenToUse, asset, amountUsd)
+        const result = await calculateQuote(
+          appSettingsToUse,
+          paymentSettingsToUse,
+          baseUrlApi,
+          idToUse,
+          paymentIdToUse,
+          tokensToUse,
+          fromAddressToUse,
+          fromTokenToUse,
+          asset,
+          amountUsd
+        )
         if (result) {
           return result
         }
@@ -97,13 +145,13 @@ export default function usePaymentConversion(): PaymentConversionResult {
 
     try {
       let result: PaymentConversionData | undefined
-      if (!appSettings || !paymentSettings || !tokens || !exchangeRate) {
+      if (!appSettings || !paymentSettings || !tokens || !exchangeRate || !config.config?.baseUrlApi || !fromAddress || !id || !paymentId) {
         result = undefined
       } else {
         const amountUsd = exchangeRate === 1 ? amountCurrency : amountCurrency / exchangeRate
         result = to
-          ? await calculateQuote(appSettings, paymentSettings, tokens, from, to, amountUsd)
-          : await calculateQuotes(appSettings, paymentSettings, tokens, from, amountUsd)
+          ? await calculateQuote(appSettings, paymentSettings, config.config?.baseUrlApi, id, paymentId,  tokens, fromAddress, from, to, amountUsd)
+          : await calculateQuotes(appSettings, paymentSettings, config.config?.baseUrlApi, id, paymentId, tokens, fromAddress, from, amountUsd)
       }
 
       setData(result)
@@ -117,8 +165,7 @@ export default function usePaymentConversion(): PaymentConversionResult {
 
       throw error
     }
-
-  }, [config.config?.baseUrlApi, appSettings, exchangeRate, paymentSettings, tokens])
+  }, [appSettings, paymentSettings, tokens, exchangeRate, config.config?.baseUrlApi, fromAddress, id, paymentId])
 
   return { status, data, error, process }
 }

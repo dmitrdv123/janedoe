@@ -7,10 +7,15 @@ export function createAppConfig() {
     throw new Error('RANGO_API_KEY is not set')
   }
 
+  if (!process.env.RANGO_API_KEY_SWAP) {
+    throw new Error('RANGO_API_KEY_SWAP is not set')
+  }
+
   initAppConfig({
     NODE_ENV,
     IS_DEV: process.env.IS_DEV ?? 'false',
-    RANGO_API_KEY: process.env.RANGO_API_KEY
+    RANGO_API_KEY: process.env.RANGO_API_KEY,
+    RANGO_API_KEY_SWAP: process.env.RANGO_API_KEY_SWAP
   })
 }
 

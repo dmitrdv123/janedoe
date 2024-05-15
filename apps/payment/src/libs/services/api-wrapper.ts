@@ -1,4 +1,4 @@
-import { Asset, BlockchainMeta, assetToString } from 'rango-sdk-basic'
+import { BlockchainMeta, QuoteRequest, SwapRequest, assetToString } from 'rango-sdk-basic'
 
 import { ApiRequest } from '../../types/api-request'
 import { ServiceError } from '../../types/errors/service-error'
@@ -52,54 +52,92 @@ export class ApiWrapper {
     }
   }
 
-  public quoteRequest(
-    sourceContract: string,
-    destinationContract: string,
-    from: Asset,
-    to: Asset,
-    amount: string,
-    slippage: number
-  ): ApiRequest {
-    const params = new URLSearchParams({
-      sourceContract,
-      destinationContract,
-      amount,
-      from: assetToString(from),
-      to: assetToString(to),
-      slippage: slippage.toString(),
-      contractCall: 'true',
-    })
+  public quoteRequest(quoteRequest: QuoteRequest, slippage: number): ApiRequest {
+    const params: { [key: string]: string } = {
+      slippage: slippage.toString()
+    }
+
+    if (quoteRequest.sourceContract) {
+      params['sourceContract'] = quoteRequest.sourceContract
+    }
+
+    if (quoteRequest.destinationContract) {
+      params['destinationContract'] = quoteRequest.destinationContract
+    }
+
+    if (quoteRequest.imMessage) {
+      params['imMessage'] = quoteRequest.imMessage
+    }
+
+    if (quoteRequest.amount) {
+      params['amount'] = quoteRequest.amount
+    }
+
+    if (quoteRequest.from) {
+      params['from'] = assetToString(quoteRequest.from)
+    }
+
+    if (quoteRequest.to) {
+      params['to'] = assetToString(quoteRequest.to)
+    }
+
+    if (quoteRequest.contractCall) {
+      params['contractCall'] = 'true'
+    } else {
+      params['contractCall'] = 'false'
+    }
+
+    if (quoteRequest.enableCentralizedSwappers) {
+      params['enableCentralizedSwappers'] = 'true'
+    } else {
+      params['enableCentralizedSwappers'] = 'false'
+    }
 
     return {
-      url: this.getQuoteUrl(params),
+      url: this.getQuoteUrl(
+        new URLSearchParams(params)
+      )
     }
   }
 
-  public swapRequest(
-    fromAddress: string,
-    toAddress: string,
-    sourceContract: string,
-    destinationContract: string,
-    imMessage: string,
-    from: Asset,
-    to: Asset,
-    amount: string,
-    slippage: number | undefined
-  ): ApiRequest {
+  public swapRequest(request: SwapRequest): ApiRequest {
     const params: { [key: string]: string } = {
-      fromAddress,
-      toAddress,
-      sourceContract,
-      destinationContract,
-      imMessage,
-      amount,
-      from: assetToString(from),
-      to: assetToString(to),
-      disableEstimate: 'false',
-      contractCall: 'true'
+      fromAddress: request.fromAddress,
+      toAddress: request.toAddress,
+      from: assetToString(request.from),
+      to: assetToString(request.to),
+      amount: request.amount,
+      slippage: request.slippage
     }
-    if (slippage) {
-      params['slippage'] = slippage.toString()
+
+    if (request.sourceContract) {
+      params['sourceContract'] = request.sourceContract
+    }
+
+    if (request.destinationContract) {
+      params['destinationContract'] = request.destinationContract
+    }
+
+    if (request.imMessage) {
+      params['imMessage'] = request.imMessage
+    }
+
+    if (request.contractCall) {
+      params['contractCall'] = 'true'
+    } else {
+      params['contractCall'] = 'false'
+    }
+
+    if (request.enableCentralizedSwappers) {
+      params['enableCentralizedSwappers'] = 'true'
+    } else {
+      params['enableCentralizedSwappers'] = 'false'
+    }
+
+    if (request.disableEstimate) {
+      params['disableEstimate'] = 'true'
+    } else {
+      params['disableEstimate'] = 'false'
     }
 
     return {

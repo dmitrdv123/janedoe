@@ -1,4 +1,4 @@
-import { EvmTransaction } from 'rango-sdk-basic'
+import { EvmTransaction, SwapResponse } from 'rango-sdk-basic'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -8,6 +8,8 @@ import { ApiRequestStatus } from '../../types/api-request'
 import useTokenConversionSwap from './useTokenConversionSwap'
 import useTokenConversionTransactionApproval from './useTokenConversionTransactionApproval'
 import useTokenConversionTransactionMain from './useTokenConversionTransactionMain'
+import { useAccount, useSwitchChain } from 'wagmi'
+import { tryParseInt } from '../utils'
 
 export default function useTokenConversionPay(
   paymentDetails: PaymentDetails,
@@ -21,54 +23,68 @@ export default function useTokenConversionPay(
   const [evmTx, setEvmTx] = useState<EvmTransaction | undefined>(undefined)
 
   const { t } = useTranslation()
+  const { status: switchChainStatus, error: switchChainError, switchChain } = useSwitchChain()
+  const { chainId: currentChainId } = useAccount()
 
   const {
     status: mainStatus,
     error: mainError,
     handle: mainHandle
   } = useTokenConversionTransactionMain(
-    requestId,
-    evmTx,
     onError,
     onSuccess
   )
+
+  const approveSuccessHandler = useCallback(() => {
+    mainHandle(requestId, evmTx)
+  }, [requestId, evmTx, mainHandle])
 
   const {
     status: approveStatus,
     error: approveError,
     handle: approveHandle
   } = useTokenConversionTransactionApproval(
-    requestId,
-    evmTx,
     onError,
-    mainHandle
+    approveSuccessHandler
   )
+
+  const swapSuccessHandler = useCallback((data: SwapResponse) => {
+    const execTx = (requestIdToUse: string | undefined, evmTxToUse: EvmTransaction | undefined) => {
+      if (evmTxToUse?.approveTo && evmTxToUse.approveData) {
+        approveHandle(requestIdToUse, evmTxToUse)
+      } else {
+        mainHandle(requestIdToUse, evmTxToUse)
+      }
+    }
+
+    const evmTransaction = data.tx as EvmTransaction
+
+    setRequestId(data.requestId)
+    setEvmTx(evmTransaction)
+
+    const chainId = tryParseInt(evmTransaction.blockChain.chainId)
+    if (chainId && currentChainId !== chainId) {
+      switchChain({ chainId }, { onSuccess: () => execTx(data.requestId, evmTransaction)})
+    } else {
+      execTx(data.requestId, evmTransaction)
+    }
+  }, [currentChainId, approveHandle, mainHandle, switchChain])
 
   const {
     status: swapStatus,
     error: swapError,
-    data: swapData,
     handle: swapHandle
-  } = useTokenConversionSwap(paymentDetails, onError, approveHandle)
+  } = useTokenConversionSwap(paymentDetails, onError, swapSuccessHandler)
 
   const handle = useCallback(() => {
     setError(undefined)
     setData(undefined)
+    setEvmTx(undefined)
+    setRequestId(undefined)
     setStatus('idle')
 
-    if (!evmTx) {
-      swapHandle()
-    } else if (evmTx.approveTo && evmTx.approveData) {
-      approveHandle()
-    } else {
-      mainHandle()
-    }
-  }, [evmTx, approveHandle, mainHandle, swapHandle])
-
-  useEffect(() => {
-    setRequestId(swapData?.requestId)
-    setEvmTx(swapData?.tx as EvmTransaction | undefined)
-  }, [swapData?.requestId, swapData?.tx])
+    swapHandle()
+  }, [swapHandle])
 
   useEffect(() => {
     switch (swapStatus) {
@@ -119,6 +135,21 @@ export default function useTokenConversionPay(
         break
     }
   }, [mainError, mainStatus, t])
+
+  useEffect(() => {
+    switch (switchChainStatus) {
+      case 'pending':
+        setError(undefined)
+        setData(t('hooks.token_conversion_pay.token_pay_processing'))
+        setStatus('processing')
+        break
+      case 'error':
+        setError(switchChainError ? new Error(switchChainError.message) : undefined)
+        setData(undefined)
+        setStatus('error')
+        break
+    }
+  }, [switchChainError, switchChainStatus, t])
 
   return {
     status,

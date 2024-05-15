@@ -12,7 +12,7 @@ import { useExchangeRate, useTokens } from '../../states/settings/hook'
 export default function useTokenConversionSwap(
   paymentDetails: PaymentDetails,
   onError?: (error: Error | undefined) => void,
-  onSuccess?: (data: SwapResponse | undefined) => void
+  onSuccess?: (data: SwapResponse) => void
 ) {
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [data, setData] = useState<SwapResponse | undefined>(undefined)
@@ -38,17 +38,20 @@ export default function useTokenConversionSwap(
     setStatus('processing')
 
     loadSwap(
-      ApiWrapper.instance.swapRequest(
-        paymentDetails.fromAddress,
-        paymentDetails.toAddress,
-        paymentDetails.fromContracts.RangoReceiver,
-        paymentDetails.toContracts.RangoReceiver,
-        createImMessage(paymentDetails.fromAddress, paymentDetails.toAddress, paymentDetails.protocolPaymentId),
-        paymentDetails.fromToken,
-        paymentDetails.toAsset,
-        paymentDetails.tokenAmount,
-        paymentDetails.slippage
-      )
+      ApiWrapper.instance.swapRequest({
+        fromAddress: paymentDetails.fromAddress,
+        toAddress: paymentDetails.toAddress,
+        sourceContract: paymentDetails.fromContracts.RangoReceiver,
+        destinationContract: paymentDetails.toContracts.RangoReceiver,
+        imMessage: createImMessage(paymentDetails.fromAddress, paymentDetails.toAddress, paymentDetails.protocolPaymentId),
+        from: paymentDetails.fromToken,
+        to: paymentDetails.toAsset,
+        amount: paymentDetails.tokenAmount,
+        slippage: paymentDetails.slippage ? paymentDetails.slippage.toString() : '',
+        contractCall: true,
+        disableEstimate: false,
+        enableCentralizedSwappers: true
+      })
     )
       .then((response): void => {
         if (!response) {

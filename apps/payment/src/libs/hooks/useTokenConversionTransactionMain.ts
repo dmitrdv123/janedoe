@@ -7,18 +7,17 @@ import { ApiRequestStatus } from '../../types/api-request'
 import { ApiManager } from '../services/api-manager'
 import { useConfig } from '../../context/config/hook'
 import useDoUntil from './useDoUntil'
-import { ContractCallResult } from '../../types/contract-call-result'
-import { getAddressOrDefault } from '../utils'
+import { getAddressOrDefault, tryParseInt } from '../utils'
+import { CHAINS } from '../../constants'
 
 export default function useTokenConversionTransactionMain(
-  requestId: string | undefined,
-  evmTx: EvmTransaction | undefined,
   onError?: (error: Error | undefined) => void,
   onSuccess?: (txId: string | undefined) => void
-): ContractCallResult {
+) {
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [data, setData] = useState<string | undefined>(undefined)
   const [txId, setTxId] = useState<string | undefined>(undefined)
+  const [requestId, setRequestId] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
 
   const config = useConfig()
@@ -64,12 +63,19 @@ export default function useTokenConversionTransactionMain(
     }
   }, [config.config, requestId, status, t, txId, doUntilHandler, onSuccess])
 
-  const handle = useCallback(() => {
+  const handle = useCallback((requestIdToUse: string | undefined, evmTx: EvmTransaction | undefined) => {
     setTxId(undefined)
     setData(undefined)
     setError(undefined)
     setStatus('idle')
 
+    if (!signer || !requestIdToUse || !evmTx) {
+      setStatus('error')
+      onError?.(undefined)
+      return
+    }
+
+    const chain = CHAINS.find(chain => chain.id === tryParseInt(evmTx.blockChain.chainId))
     const account = evmTx?.from ? getAddressOrDefault(evmTx?.from) : undefined
     const to = evmTx?.txTo ? getAddressOrDefault(evmTx?.txTo) : undefined
     const txData = evmTx?.txData ? evmTx.txData as `0x${string}` : undefined
@@ -77,10 +83,8 @@ export default function useTokenConversionTransactionMain(
 
     const gasPriceStr = evmTx?.gasPrice && !evmTx?.gasPrice.startsWith('0x')
       ? '0x' + parseInt(evmTx?.gasPrice).toString(evmTx?.blockChain.defaultDecimals) : null
-    const maxFeePerGasStr = evmTx?.maxFeePerGas && !evmTx?.maxFeePerGas.startsWith('0x')
-      ? '0x' + parseInt(evmTx?.maxFeePerGas).toString(evmTx?.blockChain.defaultDecimals) : null
-    const maxPriorityFeePerGasStr = evmTx?.maxPriorityFeePerGas && !evmTx?.maxPriorityFeePerGas.startsWith('0x')
-      ? '0x' + parseInt(evmTx?.maxPriorityFeePerGas).toString(evmTx?.blockChain.defaultDecimals) : null
+    const maxFeePerGasStr = evmTx?.maxFeePerGas
+    const maxPriorityFeePerGasStr = evmTx?.maxPriorityFeePerGas
 
     const gasPrice = gasPriceStr ? BigInt(gasPriceStr) : undefined
     let maxFeePerGas: bigint | undefined = undefined
@@ -91,15 +95,13 @@ export default function useTokenConversionTransactionMain(
       maxPriorityFeePerGas = BigInt(maxPriorityFeePerGasStr)
     }
 
-    if (!requestId || !account || !to || !txData || !signer) {
-      return
-    }
-
-    setData(t('hooks.token_conversion_main.transaction_confirming', { requestId }))
+    setData(t('hooks.token_conversion_main.transaction_confirming', { requestId: requestIdToUse }))
+    setRequestId(requestIdToUse)
     setStatus('processing')
 
     signer.sendTransaction(gasPrice
       ? {
+        chain,
         gasPrice,
         account,
         to,
@@ -107,6 +109,7 @@ export default function useTokenConversionTransactionMain(
         value: txValue
       }
       : {
+        chain,
         maxFeePerGas,
         maxPriorityFeePerGas,
         account,
@@ -117,7 +120,7 @@ export default function useTokenConversionTransactionMain(
     )
       .then(response => {
         setTxId(response)
-        setData(t('hooks.token_conversion_main.transaction_confirmed', { requestId, txId: response }))
+        setData(t('hooks.token_conversion_main.transaction_confirmed', { requestId: requestIdToUse, txId: response }))
         setError(undefined)
         setStatus('processing')
       })
@@ -128,7 +131,7 @@ export default function useTokenConversionTransactionMain(
 
         onError?.(error)
       })
-  }, [requestId, evmTx?.from, evmTx?.txTo, evmTx?.txData, evmTx?.value, evmTx?.gasPrice, evmTx?.maxFeePerGas, evmTx?.maxPriorityFeePerGas, evmTx?.blockChain.defaultDecimals, signer, t, onError])
+  }, [signer, t, onError])
 
   return {
     status,
