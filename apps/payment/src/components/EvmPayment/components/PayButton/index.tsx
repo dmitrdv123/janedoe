@@ -1,5 +1,5 @@
 import { FormEvent, useCallback } from 'react'
-import { Alert, Button, Spinner } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
 import { tokenAmountToCurrency } from '../../../../libs/utils'
@@ -9,6 +9,9 @@ import { PaymentDetails } from '../../../../types/payment-details'
 import TokenAmount from '../../../TokenAmount'
 import CurrencyAmount from '../../../CurrencyAmount'
 import usePaymentData from '../../../../libs/hooks/usePaymentData'
+import { ApplicationModal } from '../../../../types/application-modal'
+import { useToggleModal } from '../../../../states/application/hook'
+import PaymentProcessingModal from '../../../modals/PaymentProcessingModal'
 
 interface PayButtonProps {
   paymentDetails: PaymentDetails
@@ -26,17 +29,32 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
 
   const { t } = useTranslation()
 
+  const toggle = useToggleModal(ApplicationModal.PAYMENT_PROCESSING)
   const { currency } = usePaymentData()
   const exchangeRate = useExchangeRate()
-  const { status, data, handle } = usePay(paymentDetails, onError, onSuccess )
+
+  const errorHandler = useCallback((error: Error | undefined) => {
+    toggle()
+    onError?.(error)
+  }, [toggle, onError])
+
+  const successHandler = useCallback((txId: string | undefined) => {
+    toggle()
+    onSuccess?.(txId)
+  }, [toggle, onSuccess])
+
+  const { status, data, handle } = usePay(paymentDetails, errorHandler, successHandler)
 
   const handlePay = useCallback(async (e: FormEvent) => {
     e.preventDefault()
+    toggle()
     handle()
-  }, [handle])
+  }, [toggle, handle])
 
   return (
     <>
+      <PaymentProcessingModal data={data} />
+
       <Button
         variant="primary"
         size="lg"
@@ -65,19 +83,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
               )} />)
           </>
         )}
-
-        {(status === 'processing') && (
-          <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
-            <span className="visually-hidden">{t('common.processing')}</span>
-          </Spinner>
-        )}
       </Button>
-
-      {!!data && (
-        <Alert variant='light' className='mt-2'>
-          {data}
-        </Alert>
-      )}
     </>
   )
 }

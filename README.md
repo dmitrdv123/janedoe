@@ -140,7 +140,6 @@ others:
 - protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - installer: create and reimport all wallet to central wallet
-- payment: need to block payment form in case of transaction processing
 
 disputable:
 

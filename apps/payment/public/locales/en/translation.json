@@ -72,6 +72,9 @@
       "conversion_checkbox": "without conversion",
       "conversion_checkbox_desc": "Conversion is possible if the store does not accept payment with the selected token."
     },
+    "payment_processing_modal": {
+      "title": "Payment is in progress"
+    },
     "payment_navbar": {
       "connected_in": "Connected in as: {{address}}",
       "disconnect": "Disconnect",

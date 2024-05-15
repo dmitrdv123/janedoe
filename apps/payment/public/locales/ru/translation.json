@@ -73,6 +73,9 @@
       "conversion_checkbox": "без конвертации",
       "conversion_checkbox_desc": "Конвертация возможна, если магазин не принимает оплату выбранным токеном."
     },
+    "payment_processing_modal": {
+      "title": "Оплата в процессе выполнения"
+    },
     "payment_navbar": {
       "connected_in": "Подключено как: {{address}}",
       "disconnect": "Отключиться",
