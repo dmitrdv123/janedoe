@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react'
-import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
+import { BlockchainMeta } from 'rango-sdk-basic'
 import { useAccount } from 'wagmi'
 
 import { ContractCallResult } from '../../types/contract-call-result'
-import { getAddressOrDefault, getTronAddressOrDefault, isBlockchainNativeToken } from '../utils'
+import { getAddressOrDefault, isBlockchainNativeToken } from '../utils'
 import { useSettings } from '../../states/settings/hook'
 import { TokenWithBalance } from '../../types/token-with-balance'
 import useJanedoeContractWrite from './useJanedoeContractWrite'
@@ -34,7 +34,7 @@ export default function useTokensWithdraw(
       ?.map(token => {
         const tokenAddress = isBlockchainNativeToken(blockchain, token)
           ? getAddressOrDefault(wrappedNativeAddress)
-          : (blockchain.type === TransactionType.TRON ? getTronAddressOrDefault(token.address) : getAddressOrDefault(token.address))
+          : getAddressOrDefault(token.address)
 
         if (!tokenAddress) {
           return undefined

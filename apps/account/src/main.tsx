@@ -23,7 +23,6 @@ import Accounts from './pages/Accounts'
 import Loader from './components/Loader'
 import Main from './pages/Sandbox/Main'
 import ConfigProvider from './context/config/context'
-import { tron } from './types/chains'
 import { getTransport } from './libs/utils'
 
 if (!import.meta.env.VITE_APP_PROJECT_ID) {
@@ -45,7 +44,7 @@ const metadata = {
 }
 
 const chains: [Chain, ...Chain[]] = [
-  arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, tron, zkSync
+  arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, zkSync
 ]
 if (import.meta.env.VITE_APP_IS_DEV) {
   chains.push(hardhat)

@@ -17,7 +17,7 @@ const BalancesBlockchain: React.FC<BalancesBlockchainProps> = (props) => {
 
   return (
     <>
-      {(blockchain.type === TransactionType.EVM || blockchain.type === TransactionType.TRON) && (
+      {(blockchain.type === TransactionType.EVM) && (
         <BalancesBlockchainEvm
           blockchain={blockchain}
           isDisable={isDisable}
