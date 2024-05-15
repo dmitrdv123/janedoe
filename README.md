@@ -121,7 +121,6 @@ others:
 - api: create and use email to send notification
 - account: Remove yourself from team settings. All tabs are not visible and page are empty. Probably should be redirected to auth automatically. Or removing yourself should not be possible.
 - account: similar to previous. Open page http://localhost:3002/app/#balances. Then disable share access for balances. Refresh page, empty page are visible.
-- account: periodically update payments by timer
 - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
 - landing, docs: replace N and K with real values of tokens and blockchains
