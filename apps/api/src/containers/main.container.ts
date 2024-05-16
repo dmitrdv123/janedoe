@@ -84,7 +84,8 @@ container.register(
   'rangoService',
   new RangoServiceImpl(
     commonContainer.resolve<RangoWrapperService>('rangoWrapperService'),
-    commonContainer.resolve<CacheService>('cacheService')
+    commonContainer.resolve<CacheService>('cacheService'),
+    awsContainer.resolve<MetricDao>('metricDao')
   )
 )
 container.register('exchangeRateApiWrapperService', new ExchangeRateApiWrapperServiceImpl(commonContainer.resolve<CacheService>('cacheService')))

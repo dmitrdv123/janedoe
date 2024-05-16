@@ -113,7 +113,7 @@ others:
 
 - testing payment with conversion
 - payment: during conversion payment we can have situation when output amount changed. Currently we are showing error. Probably we need to automatically upgrade conversion card and show only warning
-- api: monitoring api, monitoring payment error, monitoring rango error, monitoring rango conversion error, performance counters
+- api: monitoring api, performance counters
 - api: we are saving tokens into db with address and blockchain as pk. However we have multiple tokens with the same such pk. Need to investigate it
 - aws: make appservice private to access only from api gateway
 - aws: configure cloudformation logs to delete when stack destroyed and retain
