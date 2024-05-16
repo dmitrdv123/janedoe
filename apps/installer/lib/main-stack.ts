@@ -181,10 +181,10 @@ function handler(event) {
 
   private deployBackendAlarms(output: MainStackOutput) {
     const alarmMetricRango = new Metric({
-      namespace: withEnv('API/RANGO'),
-      metricName: withEnv('RangoErrors'),
+      namespace: envName(),
+      metricName: withEnv('rango_errors'),
       statistic: Stats.SUM,
-      period: Duration.minutes(5),
+      period: Duration.minutes(1),
     })
 
     new Alarm(this, withEnv('RangoAlarm'), {
@@ -196,10 +196,10 @@ function handler(event) {
     })
 
     const alarmMetricRangoConversion = new Metric({
-      namespace: withEnv('API/RANGO_CONVERSION'),
-      metricName: withEnv('RangoConversionErrors'),
+      namespace: envName(),
+      metricName: withEnv('rango_conversion_errors'),
       statistic: Stats.SUM,
-      period: Duration.minutes(5),
+      period: Duration.minutes(1),
     })
 
     new Alarm(this, withEnv('RangoConversionAlarm'), {
@@ -211,10 +211,10 @@ function handler(event) {
     })
 
     const alarmMetricBitcoin = new Metric({
-      namespace: withEnv('API/BITCOIN'),
-      metricName: withEnv('BitcoinErrors'),
+      namespace: envName(),
+      metricName: withEnv('bitcoin_errors'),
       statistic: Stats.SUM,
-      period: Duration.minutes(5),
+      period: Duration.minutes(1),
     })
 
     new Alarm(this, withEnv('BitcoinAlarm'), {

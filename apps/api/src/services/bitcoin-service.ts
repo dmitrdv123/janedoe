@@ -96,6 +96,7 @@ export class BitcoinServiceImpl implements BitcoinService {
         await this.loadBitcoinWallet(walletName)
         return await this.bitcoinWrapperService.receivedBitcoinByLabel(walletName, label, BITCOIN_MINCONF, BITCOIN_INCLUDE_IMMATURE)
       } catch (error) {
+        await this.metricDao.putBitcoinErrorMetric(1)
         throw error
       } finally {
         await this.tryUnloadBitcoinWallet(walletName)
