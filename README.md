@@ -113,8 +113,6 @@ others:
 
 - testing payment with conversion
 - payment: during conversion payment we can have situation when output amount changed. Currently we are showing error. Probably we need to automatically upgrade conversion card and show only warning
-- api: monitoring api, performance counters
-- api: we are saving tokens into db with address and blockchain as pk. However we have multiple tokens with the same such pk. Need to investigate it
 - aws: make appservice private to access only from api gateway
 - aws: configure cloudformation logs to delete when stack destroyed and retain
 - protocol: hide shop address using https://railgun.org/wallets.html or something based on zksync alg
@@ -138,7 +136,6 @@ others:
 - payment: need to show balances in blockchain dropdown or in account dropdown in top menu
 - protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
-- installer: create and reimport all wallet to central wallet
 
 disputable:
 

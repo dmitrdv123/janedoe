@@ -6,6 +6,7 @@ export interface AccountDao {
   loadAccount(id: string): Promise<Account | undefined>
   saveAccount(account: Account): Promise<void>
 
+  listAccountProfiles(): Promise<AccountProfile[]>
   loadAccountProfile(id: string): Promise<AccountProfile | undefined>
   loadAccountProfileByAddress(address: string): Promise<AccountProfile | undefined>
   loadAccountProfileByApiKey(apiKey: string): Promise<AccountProfile | undefined>

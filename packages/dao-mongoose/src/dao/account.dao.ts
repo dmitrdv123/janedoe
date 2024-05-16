@@ -22,6 +22,10 @@ export class AccountDaoImpl implements AccountDao {
     await AccountModel.create(accountWithId)
   }
 
+  public async listAccountProfiles(): Promise<AccountProfile[]> {
+    throw new Error('Unimplemented method')
+  }
+
   public async loadAccountProfile(id: string): Promise<AccountProfile | undefined> {
     const account = await AccountModel.findOne({ _id: id }).select('profile')
     return account?.profile

@@ -43,6 +43,28 @@ export class AccountDaoImpl implements AccountDao {
     })
   }
 
+  public async listAccountProfiles(): Promise<AccountProfile[]> {
+    const result = await this.dynamoService.scanItems({
+      TableName: appConfig.TABLE_NAME,
+      FilterExpression: 'begins_with(pk, :pk_prefix)',
+      ExpressionAttributeValues: marshall({
+        ':pk_prefix': `${AccountDaoImpl.PK_PREFIX}#`
+      }),
+      ProjectionExpression: 'account.profile'
+    })
+
+    const profiles = result.Items
+      ? result.Items
+        .map(item => {
+          const account = unmarshall(item).account as Account
+          return account.profile
+        })
+        .filter(item => !!item) as AccountProfile[]
+      : []
+
+    return profiles
+  }
+
   public async loadAccountProfile(id: string): Promise<AccountProfile | undefined> {
     const result = await this.dynamoService.readItem({
       TableName: appConfig.TABLE_NAME,

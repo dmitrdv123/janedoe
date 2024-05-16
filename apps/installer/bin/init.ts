@@ -10,13 +10,17 @@ import { AppSettings, AppSettingsBlockchain, AppSettingsContracts, AppSettingsCu
 import { SettingsDao } from '@repo/dao/dist/src/dao/settings.dao'
 import { AccountPaymentSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 import { daoContainer as dynamoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
-import { commonContainer } from '@repo/common/dist/src/containers/common.container'
-import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
 import { BitcoinWrapperService } from '@repo/common/dist/src/services/bitcoin-wrapper-service'
 import { initAppConfig } from '@repo/common/dist/src/app-config'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 import { BlockchainSettings } from '@repo/dao/dist/src/interfaces/blockchain-settings'
 import { BlockchainEvmClientConfig } from '@repo/dao/dist/src/interfaces/blockchain-evm-client-config'
+import { PaymentLogDao } from '@repo/dao/dist/src/dao/payment-log.dao'
+import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
+
+import { commonContainer } from '@repo/common/dist/src/containers/common.container'
+import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
+import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 
 import { env, loadFileAsJson, withEnv } from '../lib/utils'
 import { APP_SETTINGS_PREFIX, BLOCKCHAIN_EVM_CLIENT_CONFIG_SETTINGS_PREFIX, BLOCKCHAIN_SETTINGS_PREFIX, DEFAULT_ACCOUNT_PAYMENT_SETTINGS_PREFIX } from '../lib/constants'
@@ -151,10 +155,46 @@ async function saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs:
 async function createBitcoinCentralWallet(): Promise<void> {
   console.log('Start to create bitcoin central wallet')
 
+  const bitcoinCentralWallet = withEnv(env('BITCOIN_CENTRAL_WALLET'))
   const bitcoinService = commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService')
-  await bitcoinService.createBitcoinWallet(withEnv(env('BITCOIN_CENTRAL_WALLET')), true)
+  await bitcoinService.createBitcoinWallet(bitcoinCentralWallet, true)
 
   console.log('End to create bitcoin central wallet')
+
+  console.log(`Start to import addresses to ${bitcoinCentralWallet}`)
+  const paymentLogDao = awsContainer.resolve<PaymentLogDao>('paymentLogDao')
+  const accountDao = awsContainer.resolve<AccountDao>('accountDao')
+
+  const profiles = await accountDao.listAccountProfiles()
+  console.log(`Found ${profiles.length} profiles`)
+
+  await bitcoinService.loadBitcoinWallet(bitcoinCentralWallet)
+
+  for (let i = 0; i < profiles.length; i++) {
+    const profile = profiles[i]
+    console.log(`Start to import address to ${bitcoinCentralWallet} for profile Id ${profile.id}`)
+
+    const logs = await paymentLogDao.listPaymentLogs(profile.id)
+    const logsBtc = logs.filter(log => log.blockchain.toLocaleLowerCase() === 'btc')
+    console.log(`Found ${logsBtc.length} btc payment logs for profile Id ${profile.id}`)
+
+    for (let j = 0; j < logsBtc.length; j++) {
+      const log = logsBtc[j]
+
+      const protocolPaymentId = log.accountId + log.paymentId
+      const address = log.to
+      console.log(`debug >> address ${address}`)
+      const descriptor = await bitcoinService.getBitcoinAddressDescriptorInfo(address)
+
+      console.log(`Start to import descriptor ${descriptor.descriptor} with label ${protocolPaymentId} to wallet ${bitcoinCentralWallet}`)
+      await bitcoinService.importBitcoinDescriptor(bitcoinCentralWallet, descriptor.descriptor, protocolPaymentId)
+      console.log(`End to import descriptor ${descriptor.descriptor} with label ${protocolPaymentId} to wallet ${bitcoinCentralWallet}`)
+    }
+
+    console.log(`End to import address to ${bitcoinCentralWallet} for profile Id ${profile.id}`)
+  }
+
+  console.log(`End to import addresses to ${bitcoinCentralWallet}`)
 }
 
 async function init(): Promise<void> {
