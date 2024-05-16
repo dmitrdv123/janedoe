@@ -1,8 +1,8 @@
 import BetterLock from 'better-lock'
 
-import { ListBitcoinWalletTransactionsSinceBlockResult, WithdrawBitcoinWalletResult } from '@repo/common/src/interfaces/bitcoin'
-import { ACCOUNT_ID_LENGTH, BITCOIN_INCLUDE_IMMATURE, BITCOIN_MINCONF } from '@repo/common/src/constants'
-import { BitcoinWrapperService } from '@repo/common/src/services/bitcoin-wrapper-service'
+import { ListBitcoinWalletTransactionsSinceBlockResult, WithdrawBitcoinWalletResult } from '@repo/common/dist/src/interfaces/bitcoin'
+import { ACCOUNT_ID_LENGTH, BITCOIN_INCLUDE_IMMATURE, BITCOIN_MINCONF } from '@repo/common/dist/src/constants'
+import { BitcoinWrapperService } from '@repo/common/dist/src/services/bitcoin-wrapper-service'
 import { MetricDao } from '@repo/dao/dist/src/dao/metric.dao'
 
 export interface BitcoinService {

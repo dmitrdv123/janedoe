@@ -73,7 +73,7 @@ container.register(
     awsContainer.resolve<SettingsDao>('settingsDao')
   )
 )
-commonContainer.register(
+container.register(
   'bitcoinService',
   new BitcoinServiceImpl(
     commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService'),
