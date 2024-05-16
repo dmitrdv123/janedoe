@@ -939,9 +939,6 @@ importers:
 
   packages/common:
     dependencies:
-      '@repo/dao':
-        specifier: workspace:^
-        version: link:../dao
       abitype:
         specifier: ^1.0.2
         version: 1.0.2(typescript@5.4.4)(zod@3.22.4)
