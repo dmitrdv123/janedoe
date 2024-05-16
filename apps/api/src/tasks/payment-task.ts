@@ -2,7 +2,6 @@ import { BlockchainMeta } from 'rango-sdk-basic'
 
 import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
-import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 
 import { logger } from '../utils/logger'
@@ -14,6 +13,7 @@ import { AccountService } from '../services/account-service'
 import { MetaService } from '../services/meta-service'
 import { CryptoService } from '../services/crypto-service'
 import { SettingsService } from '../services/settings-service'
+import { BitcoinService } from '../services/bitcoin-service'
 
 export class PaymentTask implements Task {
   public constructor(

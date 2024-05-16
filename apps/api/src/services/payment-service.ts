@@ -3,7 +3,6 @@ import { PaymentDao } from '@repo/dao/dist/src/dao/payment.dao'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { PaymentSuccessInfo } from '@repo/dao/dist/src/interfaces/payment-success-info'
 
-import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
 import appConfig from '@repo/common/dist/src/app-config'
 
 import { BLOCKCHAIN_BTC } from '../constants'
@@ -13,6 +12,7 @@ import { Wallet } from '../interfaces/wallet'
 import { PaymentHistory } from '../interfaces/payment-history'
 import { PaymentLogService } from './payment-log-service'
 import { AccountService } from './account-service'
+import { BitcoinService } from './bitcoin-service'
 
 export interface PaymentService {
   paymentSettings(id: string, paymentId: string): Promise<PaymentSettings>

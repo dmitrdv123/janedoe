@@ -1,6 +1,5 @@
 import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
 
-import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 
 import { SettingsService } from '../settings-service'
@@ -11,6 +10,7 @@ import { BitcoinPaymentLogsIterator } from './bitcoin-payment-logs-iterator'
 import { BLOCKCHAIN_BTC } from '../../constants'
 import { AccountService } from '../account-service'
 import { MetaService } from '../meta-service'
+import { BitcoinService } from '../bitcoin-service'
 
 export class PaymentLogsIteratorBuilder {
   private lastProcessed: string | undefined = undefined

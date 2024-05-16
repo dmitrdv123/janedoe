@@ -12,7 +12,7 @@ import { AccountPaymentSettings } from '@repo/dao/dist/src/interfaces/account-se
 import { daoContainer as dynamoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
-import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
+import { BitcoinWrapperService } from '@repo/common/dist/src/services/bitcoin-wrapper-service'
 import { initAppConfig } from '@repo/common/dist/src/app-config'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 import { BlockchainSettings } from '@repo/dao/dist/src/interfaces/blockchain-settings'
@@ -151,7 +151,7 @@ async function saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs:
 async function createBitcoinCentralWallet(): Promise<void> {
   console.log('Start to create bitcoin central wallet')
 
-  const bitcoinService = commonContainer.resolve<BitcoinService>('bitcoinService')
+  const bitcoinService = commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService')
   await bitcoinService.createBitcoinWallet(withEnv(env('BITCOIN_CENTRAL_WALLET')), true)
 
   console.log('End to create bitcoin central wallet')

@@ -7,7 +7,6 @@ import { AccountApiSettings, AccountCommonSettings, AccountNotificationSettings,
 import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
 import { AppSettings } from '@repo/dao/dist/src/interfaces/settings'
 
-import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
 import { WithdrawBitcoinWalletResult } from '@repo/common/dist/src/interfaces/bitcoin'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 import { BitcoinCoreError } from '@repo/common/dist/src/errors/bitcoin-core-error'
@@ -24,6 +23,7 @@ import { MetaService } from './meta-service'
 import { PaymentLogKey } from '../interfaces/payment-log'
 import { SettingsService } from './settings-service'
 import { ServiceError } from '../errors/service-error'
+import { BitcoinService } from './bitcoin-service'
 
 export interface AccountService {
   loadAccount(id: string): Promise<Account | undefined>

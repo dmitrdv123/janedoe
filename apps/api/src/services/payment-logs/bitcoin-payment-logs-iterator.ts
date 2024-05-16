@@ -2,7 +2,6 @@
 import { BlockchainMeta } from 'rango-sdk-basic'
 
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
-import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 import appConfig from '@repo/common/dist/src/app-config'
 
@@ -11,6 +10,7 @@ import { PaymentLogsIterator } from './payment-logs-iterator'
 import { logger } from '../../utils/logger'
 import { parseToBigNumber, tokenAmountToUsd } from '../../utils/utils'
 import { MetaService } from '../meta-service'
+import { BitcoinService } from '../bitcoin-service'
 
 export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
   private blockhash: string = ''

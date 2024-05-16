@@ -11,9 +11,9 @@ import { AuthDao } from '@repo/dao/dist/src/dao/auth.dao'
 import { SettingsDao } from '@repo/dao/dist/src/dao/settings.dao'
 import { EmailTemplateDao } from '@repo/dao/dist/src/dao/email-template.dao'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
-import { BitcoinService } from '@repo/common/dist/src/services/bitcoin-service'
 import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrapper-service'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
+import { BitcoinWrapperService } from '@repo/common/src/services/bitcoin-wrapper-service'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
@@ -50,18 +50,11 @@ import { SupportService, SupportServiceImpl } from '../services/support-service'
 import { DocController } from '../controllers/doc-controller'
 import { MetaTask } from '../tasks/meta-task'
 import { RangoService, RangoServiceImpl } from '../services/rango-service'
-import { BitcoinServiceProxyImpl } from '../services/bitcoin-proxy-service'
+import { BitcoinService, BitcoinServiceImpl } from '../services/bitcoin-service'
 
 const container = new Container()
 
 // Services
-container.register(
-  'bitcoinServiceProxy',
-  new BitcoinServiceProxyImpl(
-    commonContainer.resolve<BitcoinService>('bitcoinService'),
-    awsContainer.resolve<MetricDao>('metricDao')
-  )
-)
 container.register(
   'supportService', new SupportServiceImpl(
     awsContainer.resolve<SupportDao>('supportDao')
@@ -78,6 +71,13 @@ container.register(
   'settingsService',
   new SettingsServiceImpl(
     awsContainer.resolve<SettingsDao>('settingsDao')
+  )
+)
+commonContainer.register(
+  'bitcoinService',
+  new BitcoinServiceImpl(
+    commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService'),
+    awsContainer.resolve<MetricDao>('metricDao')
   )
 )
 container.register(
@@ -122,7 +122,7 @@ container.register(
   'accountService',
   new AccountServiceImpl(
     container.resolve<SettingsService>('settingsService'),
-    container.resolve<BitcoinService>('bitcoinServiceProxy'),
+    container.resolve<BitcoinService>('bitcoinService'),
     container.resolve<CryptoService>('cryptoService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<PaymentLogService>('paymentLogService'),
@@ -135,7 +135,7 @@ container.register(
   'paymentService',
   new PaymentServiceImpl(
     container.resolve<AccountService>('accountService'),
-    container.resolve<BitcoinService>('bitcoinServiceProxy'),
+    container.resolve<BitcoinService>('bitcoinService'),
     container.resolve<PaymentLogService>('paymentLogService'),
     awsContainer.resolve<PaymentDao>('paymentDao')
   )
@@ -225,7 +225,7 @@ container.register(
   new PaymentTask(
     container.resolve<AccountService>('accountService'),
     evmContainer.resolve<EvmService>('evmService'),
-    container.resolve<BitcoinService>('bitcoinServiceProxy'),
+    container.resolve<BitcoinService>('bitcoinService'),
     container.resolve<MetaService>('metaService'),
     container.resolve<NotificationService>('notificationService'),
     container.resolve<PaymentLogService>('paymentLogService'),
