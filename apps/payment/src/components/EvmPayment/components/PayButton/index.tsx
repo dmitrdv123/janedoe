@@ -10,7 +10,7 @@ import TokenAmount from '../../../TokenAmount'
 import CurrencyAmount from '../../../CurrencyAmount'
 import usePaymentData from '../../../../libs/hooks/usePaymentData'
 import { ApplicationModal } from '../../../../types/application-modal'
-import { useToggleModal } from '../../../../states/application/hook'
+import { useCloseModal, useOpenModal } from '../../../../states/application/hook'
 import PaymentProcessingModal from '../../../modals/PaymentProcessingModal'
 
 interface PayButtonProps {
@@ -29,27 +29,28 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
 
   const { t } = useTranslation()
 
-  const toggle = useToggleModal(ApplicationModal.PAYMENT_PROCESSING)
+  const open = useOpenModal(ApplicationModal.PAYMENT_PROCESSING)
+  const close = useCloseModal()
   const { currency } = usePaymentData()
   const exchangeRate = useExchangeRate()
 
   const errorHandler = useCallback((error: Error | undefined) => {
-    toggle()
+    close()
     onError?.(error)
-  }, [toggle, onError])
+  }, [close, onError])
 
   const successHandler = useCallback((txId: string | undefined) => {
-    toggle()
+    open()
     onSuccess?.(txId)
-  }, [toggle, onSuccess])
+  }, [open, onSuccess])
 
   const { status, data, handle } = usePay(paymentDetails, errorHandler, successHandler)
 
   const handlePay = useCallback(async (e: FormEvent) => {
     e.preventDefault()
-    toggle()
+    open()
     handle()
-  }, [toggle, handle])
+  }, [open, handle])
 
   return (
     <>

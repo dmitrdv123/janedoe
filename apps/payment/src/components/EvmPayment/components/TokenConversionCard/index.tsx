@@ -20,11 +20,13 @@ interface TokenConversionCardProps {
   token: Token
   amount: number
   disabled?: boolean
+  isForceRefresh: boolean
+  onForceRefreshEnd: () => void
   onUpdate: (asset: Asset | undefined, amount: string | undefined, slippage: number) => void
 }
 
 const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
-  const { blockchain, token, amount, disabled, onUpdate } = props
+  const { blockchain, token, amount, disabled, isForceRefresh, onForceRefreshEnd, onUpdate } = props
 
   const tokenRef = useRef<Token>(token)
   const toRef = useRef<Token | undefined>(undefined)
@@ -90,12 +92,33 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
 
       try {
         await paymentConversionHandler(token, to, amount, slippage)
+        onForceRefreshEnd()
       } finally {
         isProcessingRef.current = false
       }
     }
 
-    if (isProcessingRef.current && isEqual(tokenRef.current, token) && isEqual(toRef.current, to) && amountRef.current === amount && slippageRef.current === slippage) {
+    if (isForceRefresh && !isProcessingRef.current) {
+      process()
+    }
+  }, [amount, isForceRefresh, slippage, to, token, onForceRefreshEnd, paymentConversionHandler])
+
+  useEffect(() => {
+    const process = async () => {
+      isProcessingRef.current = true
+      tokenRef.current = token
+      amountRef.current = amount
+      slippageRef.current = slippage
+      toRef.current = to
+
+      try {
+        await paymentConversionHandler(token, to, amount, slippage)
+      } finally {
+        isProcessingRef.current = false
+      }
+    }
+
+    if (!isProcessingRef.current && isEqual(tokenRef.current, token) && isEqual(toRef.current, to) && amountRef.current === amount && slippageRef.current === slippage) {
       return
     }
 

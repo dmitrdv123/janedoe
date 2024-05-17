@@ -5,7 +5,7 @@ import BalancesBlockchainTransfer from '../BalancesBlockchainTransfer'
 
 interface BalancesBlockchainProps {
   blockchain: BlockchainMeta
-  isDisable: boolean,
+  isDisable: boolean
   isForceRefresh: boolean
   onForceRefreshEnd: () => void
   onProcessing: (isProcessing: boolean) => void
