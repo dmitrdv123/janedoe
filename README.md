@@ -112,7 +112,7 @@ NODE_ENV=production pnpm run init --filter=installer
 others:
 
 - payment: testing payment with conversion
-- payment: during conversion payment we can have situation when output amount changed. Currently we are showing error. Probably we need to automatically upgrade conversion card and show only warning
+- payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
 - protocol: hide shop address using https://railgun.org/wallets.html or something based on zksync alg
 - account: Remove yourself from team settings. All tabs are not visible and page are empty. Probably should be redirected to auth automatically. Or removing yourself should not be possible.
 - account: similar to previous. Open page http://localhost:3002/app/#balances. Then disable share access for balances. Refresh page, empty page are visible.
