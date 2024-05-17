@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Button, Form, Col, Row } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { X } from 'react-bootstrap-icons'
+import { useAccount } from 'wagmi'
 
 import { AccountTeamSettings, AccountTeamUserSettings, Permission } from '../../../../types/account-settings'
 import { PERMISSION_KEYS } from '../../../../constants'
@@ -17,13 +18,14 @@ interface TeamSettingsUserProps {
 }
 
 const TeamSettingsUser: React.FC<TeamSettingsUserProps> = (props) => {
+  const { settings, userSettings, onUpdate, onRemove } = props
+
   const [showPermissions, setShowPermissions] = useState<boolean>(false)
   const [addressErrors, setAddressErrors] = useState<string[]>([])
 
   const { t } = useTranslation()
+  const { address } = useAccount()
   const rbacSettings = useAccountRbacSettings()
-
-  const { settings, userSettings, onUpdate, onRemove } = props
 
   useEffect(() => {
     const arr = assertAddress(userSettings.address, rbacSettings?.ownerAddress, settings.users.map(user => user.address))
@@ -81,13 +83,15 @@ const TeamSettingsUser: React.FC<TeamSettingsUserProps> = (props) => {
           </Button>
         </td>
         <td>
-          <RbacGuard requiredKeys={['team_settings']} requiredPermission='Modify' element={
-            <div className='d-flex justify-content-end'>
-              <Button variant="light" onClick={() => onRemove()}>
-                <X />
-              </Button>
-            </div>
-          } />
+          {(userSettings.address.toLocaleLowerCase() !== address?.toLocaleLowerCase()) && (
+            <RbacGuard requiredKeys={['team_settings']} requiredPermission='Modify' element={
+              <div className='d-flex justify-content-end'>
+                <Button variant="light" onClick={() => onRemove()}>
+                  <X />
+                </Button>
+              </div>
+            } />
+          )}
         </td>
       </tr>
       {(showPermissions) && (

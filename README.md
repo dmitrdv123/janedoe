@@ -113,13 +113,11 @@ others:
 
 - payment: testing payment with conversion
 - payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
+- payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
 - protocol: hide shop address using https://railgun.org/wallets.html or something based on zksync alg
-- account: Remove yourself from team settings. All tabs are not visible and page are empty. Probably should be redirected to auth automatically. Or removing yourself should not be possible.
 - account: similar to previous. Open page http://localhost:3002/app/#balances. Then disable share access for balances. Refresh page, empty page are visible.
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
-- api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile methods)
 - account: global news info message
-- payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
 - payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page
 - support, account: submit button is enabled even if form is not valid
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).

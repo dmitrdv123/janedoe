@@ -56,8 +56,11 @@ const TeamSettings: React.FC = () => {
   }, [])
 
   const removeAllTeamsSettingsHandler = () => {
-    setCurrentTeamSettings({
-      users: []
+    setCurrentTeamSettings(settings => {
+      return {
+        ...settings,
+        users: settings?.users.filter(item => item.address.toLocaleLowerCase() === address?.toLocaleLowerCase()) ?? []
+      }
     })
   }
 
@@ -194,7 +197,6 @@ const TeamSettings: React.FC = () => {
           </Table>
 
           <RbacGuard requiredKeys={['team_settings']} requiredPermission='Modify' element={
-
             <>
               <Button variant="primary" type="submit" disabled={saveTeamSettingsStatus === 'processing' || !isTeamSettingsSaveEnabled}>
                 {t('common.save_btn')}
@@ -211,7 +213,6 @@ const TeamSettings: React.FC = () => {
                 {t('components.account_settings.team_settings_remove_users')}
               </Button>
             </>
-
           } />
         </Form>
       </Card.Body>
