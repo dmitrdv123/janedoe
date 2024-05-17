@@ -16,6 +16,7 @@ export interface AppSettingsCurrency {
 }
 
 export interface AppSettings {
+  disableConversion: boolean
   paymentBlockchains: AppSettingsBlockchain[]
   contracts: AppSettingsContracts[]
   currencies: AppSettingsCurrency[]

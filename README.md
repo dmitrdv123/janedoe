@@ -118,7 +118,6 @@ others:
 - account: similar to previous. Open page http://localhost:3002/app/#balances. Then disable share access for balances. Refresh page, empty page are visible.
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
 - api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile methods)
-- payment: option to disable conversion globally. Message regarding this for all account
 - account: global news info message
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
 - payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page

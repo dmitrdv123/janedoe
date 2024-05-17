@@ -11,7 +11,7 @@ import useTokenWithBalanceDb from '../../../libs/hooks/useTokenWithBalanceDb'
 import { PAGE_SIZE } from '../../../constants'
 import { isAsset, isNullOrEmptyOrWhitespaces, sameToken, tokenAmountToCurrency, tokenAmountToUsd, tokenResultComparator } from '../../../libs/utils'
 import TokenAmountWithCurrency from '../../../components/TokenAmountWithCurrency'
-import { useExchangeRate, usePaymentSettings } from '../../../states/settings/hook'
+import { useAppSettings, useExchangeRate, usePaymentSettings } from '../../../states/settings/hook'
 import usePaymentData from '../../../libs/hooks/usePaymentData'
 import { tokenWithBalanceSchema } from '../../../types/orama'
 import { TokenWithBalance } from '../../../types/token-with-balance'
@@ -38,6 +38,7 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
 
   const modalOpen = useModalIsOpen(ApplicationModal.TOKEN)
   const toggleModal = useToggleModal(ApplicationModal.TOKEN)
+  const appSettings = useAppSettings()
   const paymentSettings = usePaymentSettings()
   const exchangeRate = useExchangeRate()
   const { currency } = usePaymentData()
@@ -65,7 +66,7 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
       })
       .sort((a, b) => tokenResultComparator(a, b))
 
-    return paymentSettings?.disableConversion
+    return appSettings?.disableConversion || paymentSettings?.disableConversion
       ? tokenWithBalances
           .filter(token => paymentSettings?.assets.find(
             asset => isAsset(asset, token.blockchain, token.symbol, token.address ? token.address : null)
@@ -73,7 +74,7 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
           .sort((a, b) => tokenResultComparator(a, b))
       : tokenWithBalances
           .sort((a, b) => tokenResultComparator(a, b))
-  }, [currency, exchangeRate, paymentSettings?.assets, paymentSettings?.disableConversion, tokens, walletDetails?.balances])
+  }, [appSettings?.disableConversion, currency, exchangeRate, paymentSettings?.assets, paymentSettings?.disableConversion, tokens, walletDetails?.balances])
 
   const tokensDb = useTokenWithBalanceDb(preparedTokens)
 
@@ -177,7 +178,7 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
             <InputGroup.Text><Search /></InputGroup.Text>
           </InputGroup>
 
-          {!paymentSettings?.disableConversion && (
+          {(!appSettings?.disableConversion && !paymentSettings?.disableConversion) && (
             <Form.Group>
               <Form.Check type='checkbox' label={t('components.tokens_modal.conversion_checkbox')} checked={withoutConversion} onChange={e => setWithoutConversion(e.target.checked)} />
               <Form.Text className="text-muted">

@@ -11,6 +11,7 @@ export interface AppSettingsContracts {
 }
 
 export interface AppSettings {
+  disableConversion: boolean
   paymentBlockchains: AppSettingsBlockchain[]
   contracts: AppSettingsContracts[]
 }

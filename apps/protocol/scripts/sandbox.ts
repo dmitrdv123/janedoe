@@ -85,7 +85,7 @@ async function main() {
   //   BigInt('19788011')
   // )
 
-  console.log(`debug >> found ${events.length} events`)
+  console.log(`found ${events.length} events`)
 }
 
 main()

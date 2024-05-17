@@ -103,7 +103,8 @@ async function saveAppSettings(contracts: AppSettingsContracts[]): Promise<void>
   const appSettings: AppSettings = {
     paymentBlockchains,
     contracts,
-    currencies
+    currencies,
+    disableConversion: false
   }
 
   const settingsDao = dynamoContainer.resolve<SettingsDao>('settingsDao')
@@ -183,7 +184,6 @@ async function createBitcoinCentralWallet(): Promise<void> {
 
       const protocolPaymentId = log.accountId + log.paymentId
       const address = log.to
-      console.log(`debug >> address ${address}`)
       const descriptor = await bitcoinService.getBitcoinAddressDescriptorInfo(address)
 
       console.log(`Start to import descriptor ${descriptor.descriptor} with label ${protocolPaymentId} to wallet ${bitcoinCentralWallet}`)

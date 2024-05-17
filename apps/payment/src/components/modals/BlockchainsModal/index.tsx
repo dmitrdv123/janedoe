@@ -9,7 +9,7 @@ import { useModalIsOpen, useToggleModal } from '../../../states/application/hook
 import { ApplicationModal } from '../../../types/application-modal'
 import { findBlockchainByName, isNullOrEmptyOrWhitespaces, stringComparator } from '../../../libs/utils'
 import useBlockchainsDb from '../../../libs/hooks/useBlockchainsDB'
-import { usePaymentSettings } from '../../../states/settings/hook'
+import { useAppSettings, usePaymentSettings } from '../../../states/settings/hook'
 import { blockchainSchema } from '../../../types/orama'
 
 interface BlockchainsModalProps {
@@ -31,9 +31,10 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
   const modalOpen = useModalIsOpen(ApplicationModal.BLOCKCHAIN)
   const toggleModal = useToggleModal(ApplicationModal.BLOCKCHAIN)
   const paymentSettings = usePaymentSettings()
+  const appSettings = useAppSettings()
 
   const preparedBlockchains = useMemo(() => {
-    return paymentSettings?.disableConversion
+    return appSettings?.disableConversion || paymentSettings?.disableConversion
       ? blockchains
         .filter(blockchain => paymentSettings?.wallets.find(
           wallet => wallet.blockchain.toLocaleLowerCase() === blockchain.name.toLocaleLowerCase()
@@ -41,7 +42,7 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
         .sort((a, b) => stringComparator(a.displayName, b.displayName))
       : blockchains
         .sort((a, b) => stringComparator(a.displayName, b.displayName))
-  }, [blockchains, paymentSettings?.disableConversion, paymentSettings?.wallets])
+  }, [appSettings?.disableConversion, blockchains, paymentSettings?.disableConversion, paymentSettings?.wallets])
 
   const blockchainsDb = useBlockchainsDb(blockchains)
 
@@ -123,7 +124,7 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
             <InputGroup.Text><Search /></InputGroup.Text>
           </InputGroup>
 
-          {!paymentSettings?.disableConversion && (
+          {(!appSettings?.disableConversion && !paymentSettings?.disableConversion) && (
             <Form.Group>
               <Form.Check type='checkbox' label={t('components.blockchain_modal.conversion_checkbox')} checked={withoutConversion} onChange={e => setWithoutConversion(e.target.checked)} />
               <Form.Text className="text-muted">
