@@ -33,8 +33,15 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
   const paymentSettings = usePaymentSettings()
 
   const preparedBlockchains = useMemo(() => {
-    return blockchains.sort((a, b) => stringComparator(a.displayName, b.displayName))
-  }, [blockchains])
+    return paymentSettings?.disableConversion
+      ? blockchains
+        .filter(blockchain => paymentSettings?.wallets.find(
+          wallet => wallet.blockchain.toLocaleLowerCase() === blockchain.name.toLocaleLowerCase()
+        ))
+        .sort((a, b) => stringComparator(a.displayName, b.displayName))
+      : blockchains
+        .sort((a, b) => stringComparator(a.displayName, b.displayName))
+  }, [blockchains, paymentSettings?.disableConversion, paymentSettings?.wallets])
 
   const blockchainsDb = useBlockchainsDb(blockchains)
 
@@ -116,12 +123,14 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
             <InputGroup.Text><Search /></InputGroup.Text>
           </InputGroup>
 
-          <Form.Group>
-            <Form.Check type='checkbox' label={t('components.blockchain_modal.conversion_checkbox')} checked={withoutConversion} onChange={e => setWithoutConversion(e.target.checked)} />
-            <Form.Text className="text-muted">
-              {t('components.blockchain_modal.conversion_checkbox_desc')}
-            </Form.Text>
-          </Form.Group>
+          {!paymentSettings?.disableConversion && (
+            <Form.Group>
+              <Form.Check type='checkbox' label={t('components.blockchain_modal.conversion_checkbox')} checked={withoutConversion} onChange={e => setWithoutConversion(e.target.checked)} />
+              <Form.Text className="text-muted">
+                {t('components.blockchain_modal.conversion_checkbox_desc')}
+              </Form.Text>
+            </Form.Group>
+          )}
         </div>
 
         <ListGroup className="overflow-auto rounded-0 modal-list-group">

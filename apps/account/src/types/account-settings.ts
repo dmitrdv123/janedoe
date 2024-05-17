@@ -22,6 +22,7 @@ export interface AccountApiSettings {
 }
 
 export interface AccountPaymentSettings {
+  disableConversion: boolean
   blockchains: string[]
   assets: Asset[]
 }

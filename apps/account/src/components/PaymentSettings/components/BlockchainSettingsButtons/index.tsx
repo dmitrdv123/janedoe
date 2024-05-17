@@ -31,8 +31,9 @@ const BlockchainSettingsButtons: React.FC<BlockchainSettingsButtonsProps> = (pro
     })
 
     onUpdate({
+      ...settings,
       blockchains,
-      assets,
+      assets
     })
   }, [index, settings, onUpdate])
 
@@ -61,6 +62,7 @@ const BlockchainSettingsButtons: React.FC<BlockchainSettingsButtonsProps> = (pro
 
   const removeHandler = useCallback(() => {
     onUpdate({
+      ...settings,
       blockchains: settings.blockchains.filter(
         item => item.toLocaleLowerCase() !== blockchain.toLocaleLowerCase()
       ),
@@ -68,7 +70,7 @@ const BlockchainSettingsButtons: React.FC<BlockchainSettingsButtonsProps> = (pro
         item => item.blockchain.toLocaleLowerCase() !== blockchain.toLocaleLowerCase()
       )
     })
-  }, [blockchain, settings.assets, settings.blockchains, onUpdate])
+  }, [blockchain, settings, onUpdate])
 
   return (
     <>

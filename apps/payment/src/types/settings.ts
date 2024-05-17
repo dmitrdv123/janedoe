@@ -21,6 +21,7 @@ export interface Wallet {
 }
 
 export interface PaymentSettings {
+  disableConversion: boolean
   description: string | undefined
   wallets: Wallet[]
   assets: Asset[]

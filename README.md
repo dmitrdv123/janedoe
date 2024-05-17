@@ -119,7 +119,6 @@ others:
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
 - api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile methods)
 - payment: option to disable conversion globally. Message regarding this for all account
-- account: option to disable conversion.
 - account: global news info message
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
 - payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page
@@ -132,7 +131,6 @@ others:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
   - api: create and use email to send notification using sns and proper domain
 - aws:
-  - aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
   - aws: make appservice private to access only from api gateway
   - aws: configure cloudformation logs to delete when stack destroyed and retain
   - api: set limits for requests using aws
@@ -148,6 +146,7 @@ disputable:
 - account: sign in form, button should be blocked even when modal is open and not only when api request is processing
 - api: resend ipn should be done based on payment log and not based on saved ipn. Because in other case we can have situation when user can see payment but cannot resend ipn due to missing for some reasons saved ipn
 - payment: token without conversion should have higher priority in dropdown
+- aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
 
 learning:
 

@@ -9,7 +9,7 @@ import { useInfoMessages, useToggleModal } from '../../states/application/hook'
 import { ApplicationModal } from '../../types/application-modal'
 import BlockchainsModal from '../modals/BlockchainsModal'
 import TokensModal from '../modals/TokensModal'
-import { useAccountPaymentSettings, useUpdateAccountPaymentSettingsCallback } from '../../states/account-settings/hook'
+import { useAccountPaymentSettings, useAccountRbacSettings, useUpdateAccountPaymentSettingsCallback } from '../../states/account-settings/hook'
 import { INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_ERROR, INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_SAVING_ERROR } from '../../constants'
 import { AccountPaymentSettings } from '../../types/account-settings'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
@@ -27,6 +27,7 @@ const PaymentSettings: React.FC = () => {
   const openTokenModal = useToggleModal(ApplicationModal.TOKEN)
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
   const updateAccountPaymentSettings = useUpdateAccountPaymentSettingsCallback()
+  const rbacSettings = useAccountRbacSettings()
 
   const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainMeta | undefined>(undefined)
   const [validated, setValidated] = useState(true)
@@ -87,6 +88,7 @@ const PaymentSettings: React.FC = () => {
     event.preventDefault()
 
     const accountPaymentSettingsToSave: AccountPaymentSettings = {
+      disableConversion: currentAccountPaymentSettings?.disableConversion ?? false,
       blockchains: currentAccountPaymentSettings?.blockchains ?? [],
       assets: currentAccountPaymentSettings?.assets ?? []
     }
@@ -110,7 +112,7 @@ const PaymentSettings: React.FC = () => {
     }
 
     setValidated(true)
-  }, [t, currentAccountPaymentSettings?.assets, currentAccountPaymentSettings?.blockchains, addInfoMessage, removeInfoMessage, saveAccountPaymentSettings, updateAccountPaymentSettings, validateAccountPaymentSettings])
+  }, [t, currentAccountPaymentSettings?.disableConversion, currentAccountPaymentSettings?.assets, currentAccountPaymentSettings?.blockchains, addInfoMessage, removeInfoMessage, saveAccountPaymentSettings, updateAccountPaymentSettings, validateAccountPaymentSettings])
 
   const updateAccountPaymentSettingsHandler = useCallback((accountPaymentSettingsToUpdate: AccountPaymentSettings) => {
     setCurrentAccountPaymentSettings(accountPaymentSettingsToUpdate)
@@ -153,6 +155,22 @@ const PaymentSettings: React.FC = () => {
               {t('components.payment_settings.no_blockchains_alert')}
             </Alert>
           )}
+
+          <Form.Group className="mb-3">
+            <Form.Check
+              type="checkbox"
+              label={t('components.payment_settings.disable_conversion')}
+              checked={currentAccountPaymentSettings.disableConversion}
+              onChange={e => setCurrentAccountPaymentSettings({
+                ...currentAccountPaymentSettings,
+                disableConversion: e.target.checked
+              })}
+              readOnly={!rbacSettings?.isOwner && rbacSettings?.permissions['payment_settings'] !== 'Modify'}
+            />
+            <Form.Text className="text-muted">
+              {t('components.payment_settings.disable_conversion_desc')}
+            </Form.Text>
+          </Form.Group>
 
           {(currentAccountBlockchains.length > 0) && (
             <Table borderless>

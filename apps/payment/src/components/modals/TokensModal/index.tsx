@@ -43,7 +43,7 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
   const { currency } = usePaymentData()
 
   const preparedTokens: TokenWithBalance[] = useMemo(() => {
-    return tokens
+    const tokenWithBalances = tokens
       .map(token => {
         const assetAndAmount = walletDetails?.balances?.find(
           item => isAsset(item.asset, token.blockchain, token.symbol, token.address)
@@ -64,7 +64,16 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
         }
       })
       .sort((a, b) => tokenResultComparator(a, b))
-  }, [currency, exchangeRate, tokens, walletDetails])
+
+    return paymentSettings?.disableConversion
+      ? tokenWithBalances
+          .filter(token => paymentSettings?.assets.find(
+            asset => isAsset(asset, token.blockchain, token.symbol, token.address ? token.address : null)
+          ))
+          .sort((a, b) => tokenResultComparator(a, b))
+      : tokenWithBalances
+          .sort((a, b) => tokenResultComparator(a, b))
+  }, [currency, exchangeRate, paymentSettings?.assets, paymentSettings?.disableConversion, tokens, walletDetails?.balances])
 
   const tokensDb = useTokenWithBalanceDb(preparedTokens)
 
@@ -168,12 +177,14 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
             <InputGroup.Text><Search /></InputGroup.Text>
           </InputGroup>
 
-          <Form.Group>
-            <Form.Check type='checkbox' label={t('components.tokens_modal.conversion_checkbox')} checked={withoutConversion} onChange={e => setWithoutConversion(e.target.checked)} />
-            <Form.Text className="text-muted">
-              {t('components.tokens_modal.conversion_checkbox_desc')}
-            </Form.Text>
-          </Form.Group>
+          {!paymentSettings?.disableConversion && (
+            <Form.Group>
+              <Form.Check type='checkbox' label={t('components.tokens_modal.conversion_checkbox')} checked={withoutConversion} onChange={e => setWithoutConversion(e.target.checked)} />
+              <Form.Text className="text-muted">
+                {t('components.tokens_modal.conversion_checkbox_desc')}
+              </Form.Text>
+            </Form.Group>
+          )}
         </div>
 
         <ListGroup className="overflow-auto rounded-0 modal-list-group">

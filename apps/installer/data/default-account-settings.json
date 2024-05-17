@@ -1,4 +1,5 @@
 {
+  "disableConversion": false,
   "blockchains": ["ETH", "TRON", "BSC", "ARBITRUM", "BASE", "AVAX_CCHAIN", "POLYGON", "OPTIMISM", "CRONOS", "ZKSYNC", "LINEA", "BTC"],
   "assets": [
     {

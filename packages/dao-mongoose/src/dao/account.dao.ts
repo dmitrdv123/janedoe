@@ -81,6 +81,7 @@ export class AccountDaoImpl implements AccountDao {
           }))
         },
         paymentSettings: {
+          disableConversion: account.settings.paymentSettings.disableConversion,
           blockchains: account.settings.paymentSettings.blockchains,
           assets: account.settings.paymentSettings.assets.map(item => ({
             blockchain: item.blockchain,

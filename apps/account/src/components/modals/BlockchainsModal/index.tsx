@@ -114,6 +114,7 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
     }
 
     props.onUpdateAccountPaymentSettings({
+      ...props.accountPaymentSettings,
       blockchains: [
         ...(props.accountPaymentSettings.blockchains).filter(item => item.toLocaleLowerCase() !== blockchain.name.toLocaleLowerCase()),
         blockchain.name

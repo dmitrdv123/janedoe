@@ -48,7 +48,12 @@ export class PaymentServiceImpl implements PaymentService {
     logger.debug('PaymentService: end to process wallets')
     logger.debug(wallets)
 
-    return { wallets, assets: account.settings.paymentSettings.assets, description: account.settings.commonSettings.description }
+    return {
+      wallets,
+      assets: account.settings.paymentSettings.assets,
+      description: account.settings.commonSettings.description,
+      disableConversion: account.settings.paymentSettings.disableConversion
+    }
   }
 
   public async received(id: string, paymentId: string, blockchain: string): Promise<number> {

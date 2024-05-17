@@ -31,10 +31,11 @@ const TokenSettingsButtons: React.FC<TokenSettingsButtonsProps> = (props) => {
     arr.splice(index, 1)
 
     onUpdate({
+      ...settings,
       blockchains: settings.blockchains,
       assets: arr
     })
-  }, [settings.assets, settings.blockchains, asset, onUpdate])
+  }, [settings, asset, onUpdate])
 
   const orderUpHandler = useCallback(() => {
     const arr = [...settings.assets]
@@ -60,10 +61,11 @@ const TokenSettingsButtons: React.FC<TokenSettingsButtonsProps> = (props) => {
     arr[index] = temp
 
     onUpdate({
+      ...settings,
       blockchains: settings.blockchains,
       assets: arr
     })
-  }, [settings.assets, settings.blockchains, asset, onUpdate])
+  }, [settings, asset, onUpdate])
 
   const orderDownHandler = useCallback(() => {
     const arr = [...settings.assets]
@@ -85,10 +87,11 @@ const TokenSettingsButtons: React.FC<TokenSettingsButtonsProps> = (props) => {
     arr[index] = temp
 
     onUpdate({
+      ...settings,
       blockchains: settings.blockchains,
       assets: arr
     })
-  }, [settings.assets, settings.blockchains, onUpdate, asset])
+  }, [settings, asset, onUpdate])
 
   return (
     <div className='d-flex justify-content-end'>

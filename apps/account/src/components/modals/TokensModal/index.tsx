@@ -110,6 +110,7 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
 
     if (isExist) {
       onUpdateAccountPaymentSettings({
+        ...accountPaymentSettings,
         blockchains: accountPaymentSettings.blockchains,
         assets: accountPaymentSettings.assets.filter(item => !sameTokenAndAsset(item, token))
       })
@@ -121,11 +122,12 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
       }
 
       onUpdateAccountPaymentSettings({
+        ...accountPaymentSettings,
         blockchains: accountPaymentSettings.blockchains,
         assets: [...accountPaymentSettings.assets, asset]
       })
     }
-  }, [accountPaymentSettings.assets, accountPaymentSettings.blockchains, onUpdateAccountPaymentSettings])
+  }, [accountPaymentSettings, onUpdateAccountPaymentSettings])
 
   return (
     <Modal show={searchModalOpen} onHide={toggleSearchModal} className="modal-list">

@@ -178,6 +178,8 @@
       "blockchain_modal_search_placeholder": "Поиск по имени блокчейна",
       "token_modal_title": "Выберите токен",
       "token_modal_search_placeholder": "Поиск по имени токена или адресу",
+      "disable_conversion": "Отключить автоматическую конвертацию токенов",
+      "disable_conversion_desc": "Оплата станет возможной только в блокчейнах и токенах, указанных в настройках платежей",
       "errors": {
         "fail_restore_default": "Не удалось восстановить настройки по умолчанию",
         "fail_save": "Не удалось сохранить настройки платежей",

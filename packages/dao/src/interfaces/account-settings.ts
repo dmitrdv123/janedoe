@@ -18,6 +18,7 @@ export interface AccountApiSettings {
 export type Permission = 'Disable' | 'View' | 'Modify'
 
 export interface AccountPaymentSettings {
+  disableConversion: boolean
   blockchains: string[]
   assets: Asset[]
 }
