@@ -115,7 +115,6 @@ others:
 - payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
 - protocol: hide shop address using https://railgun.org/wallets.html or something based on zksync alg
-- account: similar to previous. Open page http://localhost:3002/app/#balances. Then disable share access for balances. Refresh page, empty page are visible.
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
 - account: global news info message
 - payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page

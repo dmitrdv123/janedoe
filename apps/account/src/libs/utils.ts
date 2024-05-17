@@ -3,9 +3,10 @@ import { ConstantsUtil, PresetsUtil } from '@web3modal/scaffold-utils'
 import { Asset, BlockchainMeta, Token } from 'rango-sdk-basic'
 import { Address, Transport, fallback, formatUnits, getAddress, http, isAddress } from 'viem'
 
-import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountTeamSettings } from '../types/account-settings'
+import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountRbacSettings, AccountTeamSettings, Permission, PermissionKey } from '../types/account-settings'
 import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
 import { ServiceError } from '../types/service-error'
+import { PERMISSION_PRIORITY } from '../constants'
 
 export function authDataKey(): string {
   return `${import.meta.env.VITE_APP_APP_PREFIX ?? 'janedoe'}:authData`
@@ -398,4 +399,20 @@ export function getTransport(chainId: number, projectId: string): Transport {
     http(),
     http(`${rpc}/v1/?chainId=${ConstantsUtil.EIP155}:${chainId}&projectId=${projectId}`)
   ])
+}
+
+export function hasPermission(rbacSettings: AccountRbacSettings | undefined, requiredKeys: PermissionKey[], requiredPermission: Permission): boolean {
+  if (!rbacSettings) {
+    return false
+  }
+
+  if (rbacSettings.isOwner) {
+    return true
+  }
+
+  return requiredKeys
+    .map(requiredKey => rbacSettings?.permissions[requiredKey] ?? 'Disable')
+    .findIndex(
+      existedPermission => PERMISSION_PRIORITY[existedPermission] >= PERMISSION_PRIORITY[requiredPermission]
+    ) !== -1
 }

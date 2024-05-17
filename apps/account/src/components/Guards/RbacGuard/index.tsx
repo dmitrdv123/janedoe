@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
 
-import { Permission } from '../../../types/account-settings'
-import { PERMISSION_PRIORITY } from '../../../constants'
+import { Permission, PermissionKey } from '../../../types/account-settings'
 import { useAccountRbacSettings } from '../../../states/account-settings/hook'
+import { hasPermission } from '../../../libs/utils'
 
 interface RbacGuardProps {
   element: React.ReactElement
-  requiredKeys: string[]
+  requiredKeys: PermissionKey[]
   requiredPermission: Permission
 }
 
@@ -14,19 +14,7 @@ const RbacGuard: React.FC<RbacGuardProps> = (props) => {
   const rbacSettings = useAccountRbacSettings()
 
   const shouldRender = useCallback(() => {
-    if (!rbacSettings) {
-      return false
-    }
-
-    if (rbacSettings.isOwner) {
-      return true
-    }
-
-    return props.requiredKeys
-      .map(requiredKey => rbacSettings?.permissions[requiredKey] ?? 'Disable')
-      .findIndex(
-        existedPermission => PERMISSION_PRIORITY[existedPermission] >= PERMISSION_PRIORITY[props.requiredPermission]
-      ) !== -1
+    return hasPermission(rbacSettings, props.requiredKeys, props.requiredPermission)
   }, [props.requiredKeys, props.requiredPermission, rbacSettings])
 
   return <>{shouldRender() && props.element}</>

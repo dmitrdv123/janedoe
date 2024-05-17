@@ -47,3 +47,4 @@ export interface AccountSettings {
 }
 
 export type Permission = 'Disable' | 'View' | 'Modify'
+export type PermissionKey = 'balances' | 'payments' | 'common_settings' | 'notification_settings' | 'api_settings' | 'team_settings' | 'payment_settings'

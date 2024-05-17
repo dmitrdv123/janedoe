@@ -22,6 +22,9 @@ import AccountNavbar from '../../components/navbars/AccountNavbar'
 import AccountSupport from '../../components/AccountSupport'
 import { useConfig } from '../../context/config/hook'
 import InfoMessages from '../../components/InfoMessages'
+import { useAccountRbacSettings } from '../../states/account-settings/hook'
+import { hasPermission } from '../../libs/utils'
+import { PermissionKey } from '../../types/account-settings'
 
 const App: React.FC = () => {
   const { t } = useTranslation()
@@ -31,36 +34,50 @@ const App: React.FC = () => {
 
   const { hash } = useLocation()
   const config = useConfig()
+  const rbacSettings = useAccountRbacSettings()
 
   useEffect(() => {
     clearInfoMessage()
+
+    let page = ApplicationPage.HOME
+    let rbacKeys: PermissionKey[] = []
     switch (hash.toLocaleLowerCase()) {
       case '':
       case '#':
       case '#home':
-        setCurrentPage(ApplicationPage.HOME)
+        page = ApplicationPage.HOME
         break
       case '#balances':
-        setCurrentPage(ApplicationPage.BALANCES)
+        rbacKeys = ['balances']
+        page = ApplicationPage.BALANCES
         break
       case '#payments':
-        setCurrentPage(ApplicationPage.PAYMENTS)
+        rbacKeys = ['payments']
+        page = ApplicationPage.PAYMENTS
         break
       case '#account_settings':
-        setCurrentPage(ApplicationPage.ACCOUNT_SETTINGS)
+        rbacKeys = ['common_settings', 'notification_settings', 'api_settings', 'team_settings', 'payment_settings']
+        page = ApplicationPage.ACCOUNT_SETTINGS
         break
       case '#payment_settings':
-        setCurrentPage(ApplicationPage.PAYMENT_SETTINGS)
+        rbacKeys = ['payment_settings']
+        page = ApplicationPage.PAYMENT_SETTINGS
         break
 
       case '#support':
-        setCurrentPage(ApplicationPage.SUPPORT)
+        page = ApplicationPage.SUPPORT
         break
       default:
-        setCurrentPage(ApplicationPage.HOME)
+        page = ApplicationPage.HOME
         break
     }
-  }, [hash, setCurrentPage, clearInfoMessage])
+
+    if (rbacKeys.length === 0 || hasPermission(rbacSettings, rbacKeys, 'View')) {
+      setCurrentPage(page)
+    } else {
+      setCurrentPage(ApplicationPage.HOME)
+    }
+  }, [rbacSettings, hash, setCurrentPage, clearInfoMessage])
 
   return (
     <>
