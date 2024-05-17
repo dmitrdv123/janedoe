@@ -150,12 +150,6 @@ const PaymentSettings: React.FC = () => {
 
       {(!!currentAccountPaymentSettings && !!currentAccountBlockchains) && (
         <Form noValidate validated={validated} onSubmit={saveChangesHandler} onBlur={(event) => event.currentTarget.checkValidity()}>
-          {(currentAccountBlockchains.length === 0) && (
-            <Alert variant="warning">
-              {t('components.payment_settings.no_blockchains_alert')}
-            </Alert>
-          )}
-
           <Form.Group className="mb-3">
             <Form.Check
               type="checkbox"
@@ -171,6 +165,12 @@ const PaymentSettings: React.FC = () => {
               {t('components.payment_settings.disable_conversion_desc')}
             </Form.Text>
           </Form.Group>
+
+          {(currentAccountBlockchains.length === 0) && (
+            <Alert variant="warning">
+              {t('components.payment_settings.no_blockchains_alert')}
+            </Alert>
+          )}
 
           {(currentAccountBlockchains.length > 0) && (
             <Table borderless>

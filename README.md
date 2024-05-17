@@ -112,12 +112,12 @@ NODE_ENV=production pnpm run init --filter=installer
 others:
 
 - payment: testing payment with conversion
-- payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
+- payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
+- payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
 - protocol: hide shop address using https://railgun.org/wallets.html or something based on zksync alg
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
 - account: global news info message
-- payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page
 - support, account: submit button is enabled even if form is not valid
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).
 - payment: need to show balances in blockchain dropdown or in account dropdown in top menu
