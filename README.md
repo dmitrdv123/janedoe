@@ -111,31 +111,32 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- testing payment with conversion
+- payment: testing payment with conversion
+- payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
 - payment: during conversion payment we can have situation when output amount changed. Currently we are showing error. Probably we need to automatically upgrade conversion card and show only warning
-- aws: make appservice private to access only from api gateway
-- aws: configure cloudformation logs to delete when stack destroyed and retain
 - protocol: hide shop address using https://railgun.org/wallets.html or something based on zksync alg
-- api: create and use email to send notification
 - account: Remove yourself from team settings. All tabs are not visible and page are empty. Probably should be redirected to auth automatically. Or removing yourself should not be possible.
 - account: similar to previous. Open page http://localhost:3002/app/#balances. Then disable share access for balances. Refresh page, empty page are visible.
-- docs: Screenshot contains links to localhost, after starting to use domains we need to change images
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
-- landing, docs: replace N and K with real values of tokens and blockchains
-- api: set limits for requests using aws
-- payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
 - api: faced with situation when account is exist but wallet is not. We can try to create wallet each time trying to load account (AccountService - loadAccountProfile methods)
 - payment: option to disable conversion globally. Message regarding this for all account
 - account: option to disable conversion.
 - account: global news info message
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
 - payment: for evm we can find events with payment id and check whether it is success or not to redirect to success page
-- aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
 - support, account: submit button is enabled even if form is not valid
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).
 - payment: need to show balances in blockchain dropdown or in account dropdown in top menu
 - protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
+- after production deployment:
+  - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
+  - api: create and use email to send notification using sns and proper domain
+- aws:
+  - aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
+  - aws: make appservice private to access only from api gateway
+  - aws: configure cloudformation logs to delete when stack destroyed and retain
+  - api: set limits for requests using aws
 
 disputable:
 
