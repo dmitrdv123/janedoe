@@ -40,9 +40,9 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
   }, [close, onError])
 
   const successHandler = useCallback((txId: string | undefined) => {
-    open()
+    close()
     onSuccess?.(txId)
-  }, [open, onSuccess])
+  }, [close, onSuccess])
 
   const { status, data, handle } = usePay(paymentDetails, errorHandler, successHandler)
 
