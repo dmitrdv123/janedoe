@@ -10,24 +10,17 @@ interface StatusButtonProps {
   currency: string
   tokenAmount: string
   currencyAmount: number
-  receivedTokenAmount: string
-  receivedCurrencyAmount: number
 }
 
 const StatusButton: React.FC<StatusButtonProps> = (props) => {
-  const { token, currency, tokenAmount, currencyAmount, receivedTokenAmount, receivedCurrencyAmount } = props
+  const { token, currency, tokenAmount, currencyAmount } = props
+
   const { t } = useTranslation()
 
   return (
     <Button variant="primary" disabled size='lg'>
-      <TokenAmount symbol={token.symbol} decimals={token.decimals} amount={tokenAmount} />
+      <TokenAmount amount={tokenAmount} symbol={token.symbol} decimals={token.decimals} />
       &nbsp;(= <CurrencyAmount currency={currency} amount={currencyAmount} />)
-
-      <br />
-
-      {t('components.transfer_payment.received')}
-      &nbsp;<TokenAmount symbol={token.symbol} decimals={token.decimals} amount={receivedTokenAmount} />
-      &nbsp;(= <CurrencyAmount currency={currency} amount={receivedCurrencyAmount} />)
 
       <Spinner as="span" animation="border" role="status" aria-hidden="true" className='ms-1' size='sm'>
         <span className="visually-hidden">{t('common.processing')}</span>

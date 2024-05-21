@@ -1,28 +1,36 @@
+import { useEffect, useState } from 'react'
+
 import { DEFAULT_TOKEN_DECIMAL_PLACES } from '../../constants'
 import { formatToFixed } from '../../libs/utils'
 
 interface TokenAmountProps {
+  amount: string
   symbol: string | null
   decimals: number | null
-  amount: string
 }
 
 const TokenAmount: React.FC<TokenAmountProps> = (props) => {
-  const { symbol, decimals, amount } = props
+  const { amount, symbol, decimals } = props
+
+  const [amountFormatted, setAmountFormatted] = useState('')
+
+  useEffect(() => {
+    if (decimals === null) {
+      setAmountFormatted(amount)
+      return
+    }
+
+    let amountFormattedTmp = formatToFixed(amount, decimals, DEFAULT_TOKEN_DECIMAL_PLACES)
+    if (!parseFloat(amountFormattedTmp)) {
+      amountFormattedTmp = formatToFixed(amount, decimals)
+    }
+
+    setAmountFormatted(amountFormattedTmp)
+  }, [amount, decimals])
 
   return (
     <>
-      {(decimals !== null) && (
-        <>
-          {formatToFixed(amount, decimals, DEFAULT_TOKEN_DECIMAL_PLACES)} {symbol}
-        </>
-      )}
-
-      {(decimals === null) && (
-        <>
-          {amount} {symbol}
-        </>
-      )}
+      {amountFormatted} {symbol?.toLocaleUpperCase()}
     </>
   )
 }

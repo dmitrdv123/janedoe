@@ -22,10 +22,11 @@ import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
 
 interface EvmPaymentProps {
   blockchain: BlockchainMeta
+  currencyAmount: number
 }
 
 const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
-  const { blockchain } = props
+  const { blockchain, currencyAmount } = props
 
   const [fromToken, setFromToken] = useState<Token | undefined>(undefined)
   const [toAsset, setToAsset] = useState<Asset | undefined>(undefined)
@@ -37,9 +38,9 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const { t } = useTranslation()
   const { isConnected } = useAccount()
 
-  const { amount, currency } = usePaymentData()
+  const { currency } = usePaymentData()
   const paymentSettings = usePaymentSettings()
-  const paymentDetails = usePaymentDetails(blockchain, fromToken, toAsset, tokenAmount, slippage, amount, currency)
+  const paymentDetails = usePaymentDetails(blockchain, fromToken, toAsset, tokenAmount, slippage, currencyAmount, currency)
   const exchangeRate = useExchangeRate()
   const navigateSuccessHandler = useNavigateSuccess(blockchain?.name, email)
   const { addInfoMessage, clearInfoMessage, removeInfoMessage } = useInfoMessages()
@@ -53,14 +54,14 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
       return
     }
 
-    const requiredTokenAmount = fromToken?.usdPrice && exchangeRate
-      ? currencyToTokenAmount(amount, fromToken.usdPrice, fromToken.decimals, exchangeRate)
+    const tokenAmountTmp = fromToken?.usdPrice && exchangeRate
+      ? currencyToTokenAmount(currencyAmount, fromToken.usdPrice, fromToken.decimals, exchangeRate)
       : undefined
 
     setToAsset(fromToken)
-    setTokenAmount(requiredTokenAmount)
+    setTokenAmount(tokenAmountTmp)
     setSlippage(undefined)
-  }, [amount, exchangeRate, fromToken, needConversion])
+  }, [currencyAmount, exchangeRate, fromToken, needConversion])
 
   const selectTokenHandler = useCallback((tokenToUpdate: Token | undefined) => {
     clearInfoMessage()
@@ -99,7 +100,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
       {(!!fromToken && !!paymentSettings && needConversion) && (
         <div className="mb-2">
-          <TokenConversionCard blockchain={blockchain} token={fromToken} amount={amount} isForceRefresh={isForceRefresh} onForceRefreshEnd={forceRefreshEndHandler} onUpdate={updateConversionHandler} />
+          <TokenConversionCard blockchain={blockchain} token={fromToken} amount={currencyAmount} isForceRefresh={isForceRefresh} onForceRefreshEnd={forceRefreshEndHandler} onUpdate={updateConversionHandler} />
         </div>
       )}
 

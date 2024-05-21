@@ -221,6 +221,9 @@ export function usdToTokenAmount(amountUsd: number, usdPrice: number, decimals: 
 }
 
 export function currencyToTokenAmount(amountCurrency: number, usdPrice: number, decimals: number, exchangeRate: number): string {
+  if (amountCurrency === 0) {
+    return '0'
+  }
   return parseToBigNumber(amountCurrency / (exchangeRate * usdPrice), decimals).toString()
 }
 

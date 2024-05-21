@@ -67,9 +67,9 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
         <br />
 
         <TokenAmount
+          amount={paymentDetails.tokenAmount}
           symbol={paymentDetails.fromToken.symbol}
           decimals={paymentDetails.fromToken.decimals}
-          amount={paymentDetails.tokenAmount}
         />
 
         {(!!paymentDetails.tokenAmount && !!paymentDetails.fromToken?.usdPrice && !!exchangeRate) && (

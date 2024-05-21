@@ -25,7 +25,11 @@ const TokenAmountWithCurrency: React.FC<TokenAmountProps> = (props) => {
 
       {(tokenAmount && BigInt(tokenAmount) > BigInt(0)) && (
         <>
-          <TokenAmount symbol={tokenSymbol} decimals={tokenDecimals} amount={tokenAmount}/> {currencyAmount !== null &&(
+          <TokenAmount
+            amount={tokenAmount}
+            symbol={tokenSymbol}
+            decimals={tokenDecimals}
+          /> {currencyAmount !== null &&(
             <>
               (= <CurrencyAmount currency={currency} amount={currencyAmount} />)
             </>

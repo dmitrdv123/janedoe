@@ -105,7 +105,11 @@ const PaymentStatus: React.FC = () => {
           )}
         </td>
         <td>
-          <TokenAmount amount={item.amount} decimals={item.tokenDecimals} symbol={item.tokenSymbol} />
+          <TokenAmount
+            amount={item.amount}
+            symbol={item.tokenSymbol}
+            decimals={item.tokenDecimals}
+          />
 
           {(item.amountCurrencyAtPaymentTime && item.currency && item.currency.toLocaleLowerCase() !== CURRENCY_USD_SYMBOL) && (
             <div>

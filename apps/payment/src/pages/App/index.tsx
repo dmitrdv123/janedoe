@@ -19,11 +19,13 @@ import InfoMessages from '../../components/InfoMessages'
 import usePaymentHistory from '../../libs/hooks/usePaymentHistory'
 import useNavigateSuccess from '../../libs/hooks/useNavigateSuccess'
 import usePaymentData from '../../libs/hooks/usePaymentData'
-import { INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
+import { DEFAULT_CURRENCY_DECIMAL_PLACES, INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
+import { roundNumber } from '../../libs/utils'
 
 const App: React.FC = () => {
   const [fromBlockchain, setFromBlockchain] = useState<BlockchainMeta | undefined>(undefined)
   const [isPaymentHistoryChecked, setIsPaymentHistoryChecked] = useState(false)
+  const [restCurrencyAmount, setRestCurrencyAmount] = useState<number>(0)
   const [receivedCurrencyAmount, setReceivedCurrencyAmount] = useState(0)
   const isPaymentHistoryLoadingRef = useRef(false)
 
@@ -57,9 +59,15 @@ const App: React.FC = () => {
         isPaymentHistoryLoadingRef.current = true
         const result = await loadPaymentHistory(blockchains, tokens)
         const amountUsd = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
-        const amountCurrency = exchangeRate * amountUsd
-        setReceivedCurrencyAmount(amountCurrency)
-        if (amountCurrency >= requiredCurrencyAmount) {
+        const receivedCurrencyAmountTmp = exchangeRate * amountUsd
+
+        const delta = requiredCurrencyAmount - receivedCurrencyAmountTmp
+        const restCurrencyAmountTmp = delta <= 0 ? 0 : delta
+
+        setReceivedCurrencyAmount(receivedCurrencyAmountTmp)
+        setRestCurrencyAmount(restCurrencyAmountTmp)
+
+        if (roundNumber(restCurrencyAmountTmp, DEFAULT_CURRENCY_DECIMAL_PLACES) === 0) {
           navigateSuccessHandler()
         }
       } catch (error) {
@@ -102,11 +110,11 @@ const App: React.FC = () => {
               </div>
 
               {(fromBlockchain?.type === TransactionType.EVM) && (
-                <EvmPayment blockchain={fromBlockchain} />
+                <EvmPayment blockchain={fromBlockchain} currencyAmount={restCurrencyAmount} />
               )}
 
               {(fromBlockchain?.type === TransactionType.TRANSFER) && (
-                <TransferPayment blockchain={fromBlockchain} />
+                <TransferPayment blockchain={fromBlockchain} currencyAmount={restCurrencyAmount} />
               )}
             </Form>
           )}
