@@ -22,11 +22,10 @@ import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
 
 interface EvmPaymentProps {
   blockchain: BlockchainMeta
-  onProcessing: (isProcessing: boolean) => void
 }
 
 const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
-  const { blockchain, onProcessing } = props
+  const { blockchain } = props
 
   const [fromToken, setFromToken] = useState<Token | undefined>(undefined)
   const [toAsset, setToAsset] = useState<Asset | undefined>(undefined)
@@ -80,15 +79,13 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
   const errorHandler = useCallback((error: Error | undefined) => {
     addInfoMessage(t('components.evm_payment.errors.failed_pay'), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger', error)
-    onProcessing(false)
     setIsForceRefresh(true)
-  }, [t, onProcessing, addInfoMessage])
+  }, [t, addInfoMessage])
 
   const successHandler = useCallback((txId: string | undefined) => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_PROCESSING_ERROR)
-    onProcessing(false)
     navigateSuccessHandler(txId)
-  }, [onProcessing, navigateSuccessHandler, removeInfoMessage])
+  }, [navigateSuccessHandler, removeInfoMessage])
 
   const forceRefreshEndHandler = useCallback(() => {
     setIsForceRefresh(false)

@@ -12,7 +12,7 @@ import { useAppSettings, useBlockchains, usePaymentSettings } from '../../states
 
 interface BlockchainButtonProps {
   blockchain: BlockchainMeta | undefined
-  disabled: boolean
+  disabled?: boolean | undefined
   onUpdate: (blockchain: BlockchainMeta | undefined) => void
 }
 

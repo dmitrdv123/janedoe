@@ -23,7 +23,6 @@ import { INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
 
 const App: React.FC = () => {
   const [fromBlockchain, setFromBlockchain] = useState<BlockchainMeta | undefined>(undefined)
-  const [isProcessing, setIsProcessing] = useState(false)
   const [isPaymentHistoryChecked, setIsPaymentHistoryChecked] = useState(false)
   const isPaymentHistoryCheckedRef = useRef<boolean>(false)
 
@@ -43,10 +42,6 @@ const App: React.FC = () => {
     clearInfoMessage()
     setFromBlockchain(blockchainToUpdate)
   }, [clearInfoMessage])
-
-  const processingHandler = useCallback((processing: boolean) => {
-    setIsProcessing(processing)
-  }, [])
 
   useEffect(() => {
     const load = async () => {
@@ -101,11 +96,11 @@ const App: React.FC = () => {
           {(settings.current && isPaymentHistoryChecked) && (
             <Form>
               <div className="mb-2">
-                <BlockchainButton blockchain={fromBlockchain} disabled={isProcessing} onUpdate={selectBlockchainHandler} />
+                <BlockchainButton blockchain={fromBlockchain} onUpdate={selectBlockchainHandler} />
               </div>
 
               {(fromBlockchain?.type === TransactionType.EVM) && (
-                <EvmPayment blockchain={fromBlockchain} onProcessing={processingHandler} />
+                <EvmPayment blockchain={fromBlockchain} />
               )}
 
               {(fromBlockchain?.type === TransactionType.TRANSFER) && (
