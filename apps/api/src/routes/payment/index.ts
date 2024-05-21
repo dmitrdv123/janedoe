@@ -22,9 +22,6 @@ paymentRouter.route('/balance').get(
 paymentRouter.route('/settings/:id/:paymentId/:currency').get(
   cacheMiddleware(DEFAULT_ROUTE_PAYMENT_CACHING_SECONDS), controller.settings.bind(controller)
 )
-paymentRouter.route('/received/:id/:paymentId/:blockchain').get(
-  cacheMiddleware(DEFAULT_ROUTE_PAYMENT_CACHING_SECONDS), controller.received.bind(controller)
-)
 paymentRouter.route('/history/:id/:paymentId').get(
   cacheMiddleware(DEFAULT_ROUTE_PAYMENT_CACHING_SECONDS), controller.payments.bind(controller)
 )

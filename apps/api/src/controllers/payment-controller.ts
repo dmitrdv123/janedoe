@@ -115,19 +115,6 @@ export class PaymentController {
     }
   }
 
-  public async received(req: Request, res: Response, next: NextFunction) {
-    try {
-      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
-      assertParam('payment id', req.params.paymentId, PAYMENT_ID_MAX_LENGTH)
-      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
-
-      const received = await this.paymentService.received(req.params.id, req.params.paymentId, req.params.blockchain)
-      res.send({ received })
-    } catch (err) {
-      processControllerError(res, err as Error)
-    }
-  }
-
   public async balance(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await this.rangoService.balance(paramsFromUrl(req.url))

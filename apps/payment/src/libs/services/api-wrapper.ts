@@ -162,12 +162,6 @@ export class ApiWrapper {
     }
   }
 
-  public receivedAmountRequest(id: string, paymentId: string, blockchain: string): ApiRequest {
-    return {
-      url: this.getReceivedAmountUrl(id, paymentId, blockchain)
-    }
-  }
-
   public successRequest(id: string, paymentId: string, currency: string, amount: number, language: string, email: string | null, blockchain: string | null): ApiRequest {
     return {
       url: this.getSuccessUrl(id, paymentId, currency, amount, language),
@@ -223,10 +217,6 @@ export class ApiWrapper {
 
   private getStatusUrl(params: URLSearchParams) {
     return `{baseUrlApi}/api/payment/zap/status?${params}`
-  }
-
-  private getReceivedAmountUrl(id: string, paymentId: string, blockchain: string): string {
-    return `{baseUrlApi}/api/payment/received/${id}/${paymentId}/${blockchain}`
   }
 
   private getSuccessUrl(id: string, paymentId: string, currency: string, amountCurrency: number, language: string): string {

@@ -16,7 +16,6 @@ import { BitcoinService } from './bitcoin-service'
 
 export interface PaymentService {
   paymentSettings(id: string, paymentId: string): Promise<PaymentSettings>
-  received(id: string, paymentId: string, blockchain: string): Promise<number>
   loadPaymentHistory(id: string, paymentId: string): Promise<PaymentHistory[]>
 
   saveSuccess(accountId: string, paymentId: string, currency: string, amountCurrency: number, blockchain: string, email: string, language: string): Promise<void>
@@ -54,24 +53,6 @@ export class PaymentServiceImpl implements PaymentService {
       description: account.settings.commonSettings.description,
       disableConversion: account.settings.paymentSettings.disableConversion
     }
-  }
-
-  public async received(id: string, paymentId: string, blockchain: string): Promise<number> {
-    logger.debug(`PaymentService: start to get received for id ${id}, payment id ${paymentId} and blockchain ${blockchain}`)
-
-    let result = 0
-    switch (blockchain.toLocaleLowerCase()) {
-      case BLOCKCHAIN_BTC:
-        result = await this.bitcoinService.receivedBitcoinByLabel(id, id + paymentId)
-        break
-      default:
-        logger.error(`PaymentService: unsupported blockchain ${blockchain}`)
-        throw new Error(`Unsupported blockchain ${blockchain}`)
-    }
-
-    logger.debug(`PaymentService: received ${result} for id ${id}, payment id ${paymentId} and blockchain ${blockchain}`)
-
-    return result
   }
 
   public async saveSuccess(accountId: string, paymentId: string, currency: string, amountCurrency: number, blockchain: string, email: string, language: string): Promise<void> {
