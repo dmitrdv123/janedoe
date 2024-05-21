@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useIsWindowVisible } from './useIsWindowVisible'
 
 /**
  * Invokes callback repeatedly over an interval defined by the delay
@@ -8,6 +9,7 @@ import { useEffect, useRef } from 'react'
  */
 export function useInterval(callback: () => void, delay: null | number, leading = true) {
   const savedCallback = useRef<() => void>()
+  const isWindowVisible = useIsWindowVisible()
 
   // Remember the latest callback.
   useEffect(() => {
@@ -18,14 +20,18 @@ export function useInterval(callback: () => void, delay: null | number, leading 
   useEffect(() => {
     function tick() {
       const { current } = savedCallback
-      current && current()
+      if (isWindowVisible && current) {
+        current()
+      }
     }
 
     if (delay !== null) {
-      if (leading) tick()
+      if (leading) {
+        tick()
+      }
+
       const id = setInterval(tick, delay)
       return () => clearInterval(id)
     }
-    return
-  }, [delay, leading])
+  }, [isWindowVisible, delay, leading])
 }

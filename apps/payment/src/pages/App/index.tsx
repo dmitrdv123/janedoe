@@ -21,6 +21,7 @@ import useNavigateSuccess from '../../libs/hooks/useNavigateSuccess'
 import usePaymentData from '../../libs/hooks/usePaymentData'
 import { DEFAULT_CURRENCY_DECIMAL_PLACES, INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
 import { roundNumber } from '../../libs/utils'
+import { useInterval } from '../../libs/hooks/useInterval'
 
 const App: React.FC = () => {
   const [fromBlockchain, setFromBlockchain] = useState<BlockchainMeta | undefined>(undefined)
@@ -46,39 +47,46 @@ const App: React.FC = () => {
     setFromBlockchain(blockchainToUpdate)
   }, [clearInfoMessage])
 
-  useEffect(() => {
-    const load = async () => {
-      removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
-      setIsPaymentHistoryChecked(false)
+  const fetchReceivedAmountHandler = useCallback(async () => {
+    removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
 
-      if (!blockchains || !tokens || !exchangeRate || isPaymentHistoryLoadingRef.current) {
-        return
-      }
-
-      try {
-        isPaymentHistoryLoadingRef.current = true
-        const result = await loadPaymentHistory(blockchains, tokens)
-        const amountUsd = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
-        const receivedCurrencyAmountTmp = exchangeRate * amountUsd
-
-        const delta = requiredCurrencyAmount - receivedCurrencyAmountTmp
-        const restCurrencyAmountTmp = delta <= 0 ? 0 : delta
-
-        setReceivedCurrencyAmount(receivedCurrencyAmountTmp)
-        setRestCurrencyAmount(restCurrencyAmountTmp)
-
-        if (roundNumber(restCurrencyAmountTmp, DEFAULT_CURRENCY_DECIMAL_PLACES) === 0) {
-          navigateSuccessHandler()
-        }
-      } catch (error) {
-        addInfoMessage(t('pages.payment_status.errors.payment_history_load_error'), INFO_MESSAGE_PAYMENT_HISTORY_ERROR, 'warning', error)
-      } finally {
-        setIsPaymentHistoryChecked(true)
-      }
+    if (!blockchains || !tokens || !exchangeRate) {
+      return
     }
 
-    load()
+    try {
+      console.log(`debug >> fetchReceivedAmountHandler`)
+      isPaymentHistoryLoadingRef.current = true
+      const result = await loadPaymentHistory(blockchains, tokens)
+      const amountUsd = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
+      const receivedCurrencyAmountTmp = exchangeRate * amountUsd
+
+      const delta = requiredCurrencyAmount - receivedCurrencyAmountTmp
+      const restCurrencyAmountTmp = delta <= 0 ? 0 : delta
+
+      setReceivedCurrencyAmount(receivedCurrencyAmountTmp)
+      setRestCurrencyAmount(restCurrencyAmountTmp)
+
+      if (roundNumber(restCurrencyAmountTmp, DEFAULT_CURRENCY_DECIMAL_PLACES) === 0) {
+        navigateSuccessHandler()
+      }
+    } catch (error) {
+      setReceivedCurrencyAmount(0)
+      setRestCurrencyAmount(requiredCurrencyAmount)
+
+      addInfoMessage(t('pages.payment_status.errors.payment_history_load_error'), INFO_MESSAGE_PAYMENT_HISTORY_ERROR, 'warning', error)
+    } finally {
+      setIsPaymentHistoryChecked(true)
+    }
   }, [blockchains, tokens, exchangeRate, requiredCurrencyAmount, t, loadPaymentHistory, navigateSuccessHandler, removeInfoMessage, addInfoMessage])
+
+  useEffect(() => {
+    if (!isPaymentHistoryLoadingRef.current) {
+      fetchReceivedAmountHandler()
+    }
+  }, [fetchReceivedAmountHandler])
+
+  useInterval(fetchReceivedAmountHandler, 1000 * 10)
 
   return (
     <>
