@@ -8,7 +8,7 @@ import { useInfoMessages } from '../../states/application/hook'
 import { INFO_MESSAGE_PAYMENT_SUCCESS_ERROR } from '../../constants'
 import usePaymentData from './usePaymentData'
 
-export default function useNavigateSuccess(blockchain: string | undefined, email: string | undefined) {
+export default function useNavigateSuccess(blockchain?: string | undefined, email?: string | undefined) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
 
