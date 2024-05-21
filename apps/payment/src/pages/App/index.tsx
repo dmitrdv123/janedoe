@@ -55,7 +55,6 @@ const App: React.FC = () => {
     }
 
     try {
-      console.log(`debug >> fetchReceivedAmountHandler`)
       isPaymentHistoryLoadingRef.current = true
       const result = await loadPaymentHistory(blockchains, tokens)
       const amountUsd = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
