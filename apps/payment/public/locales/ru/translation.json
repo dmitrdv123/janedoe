@@ -84,7 +84,8 @@
     },
     "payment_summary": {
       "company_id": "ID компании",
-      "payment_id": "ID платежа"
+      "payment_id": "ID платежа",
+      "received_currency": "Получено"
     },
     "transfer_payment": {
       "send_address": "Отправить на этот адрес",

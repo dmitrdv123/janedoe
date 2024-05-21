@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Alert, Button, Container, Spinner, Table } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
@@ -19,12 +19,14 @@ import PaymentNavbar from '../../components/PaymentNavbar'
 import usePaymentData from '../../libs/hooks/usePaymentData'
 import PaymentSummary from '../../components/PaymentSummary'
 import InfoMessages from '../../components/InfoMessages'
-import { useBlockchains, useTokens } from '../../states/settings/hook'
+import { useBlockchains, useExchangeRate, useTokens } from '../../states/settings/hook'
 import { ApiRequestStatus } from '../../types/api-request'
 
 const PaymentStatus: React.FC = () => {
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryData[] | undefined>(undefined)
+  const [receivedCurrencyAmount, setReceivedCurrencyAmount] = useState(0)
+  const isPaymentHistoryLoadingRef = useRef(false)
 
   const { amount } = usePaymentData()
   const { t } = useTranslation()
@@ -32,28 +34,36 @@ const PaymentStatus: React.FC = () => {
   const load = usePaymentHistory()
   const blockchains = useBlockchains()
   const tokens = useTokens()
+  const exchangeRate = useExchangeRate()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
   const reload = useCallback(async () => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
     setStatus('processing')
 
-    if (!blockchains || !tokens) {
+    if (!blockchains || !tokens || !exchangeRate) {
       return
     }
 
     try {
+      isPaymentHistoryLoadingRef.current = true
       const result = await load(blockchains, tokens)
+      const amountUsd = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
+      const amountCurrency = exchangeRate * amountUsd
+
+      setReceivedCurrencyAmount(amountCurrency)
       setPaymentHistory(result)
       setStatus('success')
     } catch (error) {
       addInfoMessage(t('pages.payment_status.errors.payment_history_load_error'), INFO_MESSAGE_PAYMENT_HISTORY_ERROR, 'danger', error)
       setStatus('error')
     }
-  }, [blockchains, tokens, t, load, addInfoMessage, removeInfoMessage])
+  }, [blockchains, tokens, exchangeRate, t, load, addInfoMessage, removeInfoMessage])
 
   useEffect(() => {
-    reload()
+    if (!isPaymentHistoryLoadingRef.current) {
+      reload()
+    }
   }, [reload])
 
   const getPaymentHistory = (item: PaymentHistoryData) => {
@@ -146,7 +156,7 @@ const PaymentStatus: React.FC = () => {
           <InfoMessages />
 
           <div className='mb-2 mt-2'>
-            <PaymentSummary />
+            <PaymentSummary receivedCurrencyAmount={receivedCurrencyAmount} />
           </div>
 
           {(status === 'success' && paymentHistory && isDone(paymentHistory, amount)) && (

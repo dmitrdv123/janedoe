@@ -4,7 +4,13 @@ import { usePaymentSettings } from '../../states/settings/hook'
 import CurrencyAmount from '../CurrencyAmount'
 import usePaymentData from '../../libs/hooks/usePaymentData'
 
-const PaymentSummary: React.FC = () => {
+interface PaymentSummaryProps {
+  receivedCurrencyAmount: number
+}
+
+const PaymentSummary: React.FC<PaymentSummaryProps> = (props) => {
+  const { receivedCurrencyAmount } = props
+
   const { t } = useTranslation()
 
   const { id, paymentId, amount, currency } = usePaymentData()
@@ -23,6 +29,12 @@ const PaymentSummary: React.FC = () => {
 
       {!!paymentSettings?.description && (
         <div>{paymentSettings?.description}</div>
+      )}
+
+      {(!!receivedCurrencyAmount) && (
+        <div>
+          {t('components.payment_summary.received_currency')}: <CurrencyAmount amount={receivedCurrencyAmount} currency={currency} />
+        </div>
       )}
     </>
   )

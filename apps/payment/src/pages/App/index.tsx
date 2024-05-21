@@ -24,7 +24,8 @@ import { INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
 const App: React.FC = () => {
   const [fromBlockchain, setFromBlockchain] = useState<BlockchainMeta | undefined>(undefined)
   const [isPaymentHistoryChecked, setIsPaymentHistoryChecked] = useState(false)
-  const isPaymentHistoryCheckedRef = useRef<boolean>(false)
+  const [receivedCurrencyAmount, setReceivedCurrencyAmount] = useState(0)
+  const isPaymentHistoryLoadingRef = useRef(false)
 
   const { t } = useTranslation()
 
@@ -48,16 +49,17 @@ const App: React.FC = () => {
       removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
       setIsPaymentHistoryChecked(false)
 
-      if (!blockchains || !tokens || !exchangeRate || isPaymentHistoryCheckedRef.current) {
+      if (!blockchains || !tokens || !exchangeRate || isPaymentHistoryLoadingRef.current) {
         return
       }
 
       try {
-        isPaymentHistoryCheckedRef.current = true
+        isPaymentHistoryLoadingRef.current = true
         const result = await loadPaymentHistory(blockchains, tokens)
-        const totalUsdAmount = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
-        const totalCurrencyAmount = exchangeRate * totalUsdAmount
-        if (totalCurrencyAmount >= requiredCurrencyAmount) {
+        const amountUsd = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
+        const amountCurrency = exchangeRate * amountUsd
+        setReceivedCurrencyAmount(amountCurrency)
+        if (amountCurrency >= requiredCurrencyAmount) {
           navigateSuccessHandler()
         }
       } catch (error) {
@@ -68,7 +70,7 @@ const App: React.FC = () => {
     }
 
     load()
-  }, [blockchains, tokens, exchangeRate, requiredCurrencyAmount, loadPaymentHistory, navigateSuccessHandler, removeInfoMessage, addInfoMessage, t])
+  }, [blockchains, tokens, exchangeRate, requiredCurrencyAmount, t, loadPaymentHistory, navigateSuccessHandler, removeInfoMessage, addInfoMessage])
 
   return (
     <>
@@ -82,7 +84,7 @@ const App: React.FC = () => {
           <InfoMessages />
 
           <div className='mb-2 mt-2'>
-            <PaymentSummary />
+            <PaymentSummary receivedCurrencyAmount={receivedCurrencyAmount} />
           </div>
 
           {(!settings.current || !isPaymentHistoryChecked) && (

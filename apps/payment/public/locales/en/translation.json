@@ -83,7 +83,8 @@
     },
     "payment_summary": {
       "company_id": "Company ID",
-      "payment_id": "Payment ID"
+      "payment_id": "Payment ID",
+      "received_currency": "Received"
     },
     "transfer_payment": {
       "send_address": "Send to this address",
