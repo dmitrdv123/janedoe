@@ -112,7 +112,6 @@ NODE_ENV=production pnpm run init --filter=installer
 others:
 
 - payment: testing payment with conversion
-- api: api log is not rotating at least locally
 - protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
