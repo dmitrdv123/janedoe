@@ -25,7 +25,6 @@ import { ApiRequestStatus } from '../../types/api-request'
 const PaymentStatus: React.FC = () => {
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryData[] | undefined>(undefined)
-  const [receivedCurrencyAmount, setReceivedCurrencyAmount] = useState(0)
   const isPaymentHistoryLoadingRef = useRef(false)
 
   const { amount } = usePaymentData()
@@ -48,10 +47,7 @@ const PaymentStatus: React.FC = () => {
     try {
       isPaymentHistoryLoadingRef.current = true
       const result = await load(blockchains, tokens)
-      const amountUsd = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
-      const amountCurrency = exchangeRate * amountUsd
 
-      setReceivedCurrencyAmount(amountCurrency)
       setPaymentHistory(result)
       setStatus('success')
     } catch (error) {
@@ -160,7 +156,7 @@ const PaymentStatus: React.FC = () => {
           <InfoMessages />
 
           <div className='mb-2 mt-2'>
-            <PaymentSummary receivedCurrencyAmount={receivedCurrencyAmount} />
+            <PaymentSummary />
           </div>
 
           {(status === 'success' && paymentHistory && isDone(paymentHistory, amount)) && (

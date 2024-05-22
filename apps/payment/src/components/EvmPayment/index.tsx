@@ -22,12 +22,12 @@ import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
 
 interface EvmPaymentProps {
   blockchain: BlockchainMeta
-  currencyAmount: number
-  onEmailUpdate: (emailToUpdate: string) => void
+  restCurrencyAmount: number
+  receivedCurrencyAmount: number
 }
 
 const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
-  const { blockchain, currencyAmount, onEmailUpdate } = props
+  const { blockchain, restCurrencyAmount, receivedCurrencyAmount } = props
 
   const [fromToken, setFromToken] = useState<Token | undefined>(undefined)
   const [toAsset, setToAsset] = useState<Asset | undefined>(undefined)
@@ -41,7 +41,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
   const { currency } = usePaymentData()
   const paymentSettings = usePaymentSettings()
-  const paymentDetails = usePaymentDetails(blockchain, fromToken, toAsset, tokenAmount, slippage, currencyAmount, currency)
+  const paymentDetails = usePaymentDetails(blockchain, fromToken, toAsset, tokenAmount, slippage, restCurrencyAmount, currency)
   const exchangeRate = useExchangeRate()
 
   const navigateSuccessHandler = useNavigateSuccess(blockchain?.name, email)
@@ -57,13 +57,13 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     }
 
     const tokenAmountTmp = fromToken?.usdPrice && exchangeRate
-      ? currencyToTokenAmount(currencyAmount, fromToken.usdPrice, fromToken.decimals, exchangeRate)
+      ? currencyToTokenAmount(restCurrencyAmount, fromToken.usdPrice, fromToken.decimals, exchangeRate)
       : undefined
 
     setToAsset(fromToken)
     setTokenAmount(tokenAmountTmp)
     setSlippage(undefined)
-  }, [currencyAmount, exchangeRate, fromToken, needConversion])
+  }, [restCurrencyAmount, exchangeRate, fromToken, needConversion])
 
   const selectTokenHandler = useCallback((tokenToUpdate: Token | undefined) => {
     clearInfoMessage()
@@ -78,8 +78,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
   const changeEmailHandler = useCallback((emailToUpdate: string) => {
     setEmail(emailToUpdate)
-    onEmailUpdate(emailToUpdate)
-  }, [onEmailUpdate])
+  }, [])
 
   const errorHandler = useCallback((error: Error | undefined) => {
     addInfoMessage(t('components.evm_payment.errors.failed_pay'), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger', error)
@@ -106,7 +105,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
           <TokenConversionCard
             blockchain={blockchain}
             token={fromToken}
-            amount={currencyAmount}
+            amount={restCurrencyAmount}
             isForceRefresh={isForceRefresh}
             onForceRefreshEnd={forceRefreshEndHandler}
             onUpdate={updateConversionHandler}
@@ -136,6 +135,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         <div className="d-grid mb-2">
           <PayButton
             paymentDetails={paymentDetails}
+            receivedCurrencyAmount={receivedCurrencyAmount}
             usePay={useTokenConversionPay}
             onError={errorHandler}
             onSuccess={successHandler}
@@ -147,6 +147,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         <div className="d-grid mb-2">
           <PayButton
             paymentDetails={paymentDetails}
+            receivedCurrencyAmount={receivedCurrencyAmount}
             usePay={useNativePay}
             onError={errorHandler}
             onSuccess={successHandler}
@@ -158,6 +159,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         <div className="d-grid mb-2">
           <PayButton
             paymentDetails={paymentDetails}
+            receivedCurrencyAmount={receivedCurrencyAmount}
             usePay={useTokenApproveAndPay}
             onError={errorHandler}
             onSuccess={successHandler}

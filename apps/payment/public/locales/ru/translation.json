@@ -38,6 +38,7 @@
       "send_details": "отправить детали платежа",
       "email_placeholder": "email@email.com",
       "pay": "Оплатить",
+      "received": "Получено",
       "select_token": "Выберете токен",
       "no_balance": "Не хватает баланса",
       "conversion_desc": "будет cконвертирован",
@@ -84,8 +85,7 @@
     },
     "payment_summary": {
       "company_id": "ID компании",
-      "payment_id": "ID платежа",
-      "received_currency": "Получено"
+      "payment_id": "ID платежа"
     },
     "transfer_payment": {
       "send_address": "Отправить на этот адрес",
@@ -96,6 +96,7 @@
       "send_details": "отправить детали платежа",
       "email_placeholder": "email@email.com",
       "pay": "Оплатить",
+      "received": "Получено",
       "errors": {
         "wallet_not_found": "Адрес для платежа не найден",
         "native_token_not_found": "Нативный токен для блокчейна не найден",
@@ -198,6 +199,11 @@
       "transaction_confirming": "Ожидание подтверждения транзакции",
       "switch_chain_confirmed": "Блокчейн переключился",
       "switch_chain_confirming": "Ожидание переключения блокчейна"
+    },
+    "payment_rest_amount": {
+      "errors": {
+        "load_error": "Не удалось загрузить полученную сумму"
+      }
     }
   },
   "services": {

@@ -13,19 +13,23 @@ import PayLink from './components/PayLink'
 import StatusButton from './components/StatusButton'
 import { useInfoMessages } from '../../states/application/hook'
 import { INFO_MESSAGE_NATIVE_TOKEN_NOT_FOUND_ERROR, INFO_MESSAGE_TOKEN_PRICE_NOT_DEFINED_ERROR, INFO_MESSAGE_WALLET_NOT_FOUND_ERROR } from '../../constants'
+import { useInterval } from '../../libs/hooks/useInterval'
+import usePaymentRestAmount from '../../libs/hooks/usePaymentRestAmount'
 
 interface TransferPaymentProps {
   blockchain: BlockchainMeta
-  currencyAmount: number
-  onEmailUpdate: (emailToUpdate: string) => void
+  restCurrencyAmount: number
+  receivedCurrencyAmount: number
 }
 
 const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
-  const { blockchain, currencyAmount, onEmailUpdate } = props
+  const { blockchain } = props
 
-  const [tokenAmount, setTokenAmount] = useState<string>('0')
-  const [email, setEmail] = useState<string>('')
-  const [address, setAddress] = useState<string>('')
+  const [restCurrencyAmount, setRestCurrencyAmount] = useState(props.restCurrencyAmount)
+  const [receivedCurrencyAmount, setReceivedCurrencyAmount] = useState(props.receivedCurrencyAmount)
+  const [tokenAmount, setTokenAmount] = useState('0')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
   const [token, setToken] = useState<Token | null>(null)
 
   const { t } = useTranslation()
@@ -34,6 +38,12 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
   const paymentSettings = usePaymentSettings()
   const exchangeRate = useExchangeRate()
   const tokens = useTokens()
+  const {
+    restCurrencyAmount: restCurrencyAmountUpdated,
+    receivedCurrencyAmount: receivedCurrencyAmountUpdated,
+    status: reloadReceivedAmountStatus,
+    reload: reloadReceivedAmount
+  } = usePaymentRestAmount()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
   useEffect(() => {
@@ -75,18 +85,31 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
   }, [blockchain, tokens, t, addInfoMessage, removeInfoMessage])
 
   useEffect(() => {
+    if (['success', 'error'].includes(reloadReceivedAmountStatus)) {
+      setReceivedCurrencyAmount(receivedCurrencyAmountUpdated)
+    }
+  }, [reloadReceivedAmountStatus, receivedCurrencyAmountUpdated])
+
+  useEffect(() => {
+    if (['success', 'error'].includes(reloadReceivedAmountStatus)) {
+      setRestCurrencyAmount(restCurrencyAmountUpdated)
+    }
+  }, [reloadReceivedAmountStatus, restCurrencyAmountUpdated])
+
+  useEffect(() => {
     if (!token?.usdPrice || !exchangeRate) {
       return
     }
 
-    const tokenAmountTmp =  currencyToTokenAmount(currencyAmount, token.usdPrice, token.decimals, exchangeRate)
+    const tokenAmountTmp = currencyToTokenAmount(restCurrencyAmount, token.usdPrice, token.decimals, exchangeRate)
     setTokenAmount(tokenAmountTmp)
-  }, [currencyAmount, exchangeRate, token?.decimals, token?.usdPrice])
+  }, [restCurrencyAmount, exchangeRate, token?.decimals, token?.usdPrice])
 
   const changeEmailHandler = useCallback((emailToUpdate: string) => {
     setEmail(emailToUpdate)
-    onEmailUpdate(emailToUpdate)
-  }, [onEmailUpdate])
+  }, [])
+
+  useInterval(reloadReceivedAmount, 1000 * 10, false)
 
   return (
     <>
@@ -106,7 +129,7 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
             </Col>
             <Col sm={6}>
               <div className='mb-2'>
-                <AmountInput token={token} tokenAmount={tokenAmount} currencyAmount={currencyAmount} currency={currency} />
+                <AmountInput token={token} tokenAmount={tokenAmount} currencyAmount={restCurrencyAmount} currency={currency} />
               </div>
 
               <div className='mb-2'>
@@ -124,7 +147,8 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
               token={token}
               currency={currency}
               tokenAmount={tokenAmount}
-              currencyAmount={currencyAmount}
+              restCurrencyAmount={restCurrencyAmount}
+              receivedCurrencyAmount={receivedCurrencyAmount}
             />
           </div>
         </>

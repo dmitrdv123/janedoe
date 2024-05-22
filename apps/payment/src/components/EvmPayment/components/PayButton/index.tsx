@@ -15,6 +15,7 @@ import PaymentProcessingModal from '../../../modals/PaymentProcessingModal'
 
 interface PayButtonProps {
   paymentDetails: PaymentDetails
+  receivedCurrencyAmount: number,
   usePay: (
     paymentDetails: PaymentDetails,
     onError?: (error: Error | undefined) => void,
@@ -25,7 +26,7 @@ interface PayButtonProps {
 }
 
 const PayButton: React.FC<PayButtonProps> = (props) => {
-  const { paymentDetails, usePay, onError, onSuccess } = props
+  const { paymentDetails, receivedCurrencyAmount, usePay, onError, onSuccess } = props
 
   const { t } = useTranslation()
 
@@ -79,6 +80,14 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
                 paymentDetails.fromToken.decimals,
                 exchangeRate
               )} />)
+          </>
+        )}
+
+        {!!receivedCurrencyAmount && (
+          <>
+            <br />
+            {t('components.evm_payment.received')}
+            &nbsp;<CurrencyAmount currency={currency} amount={receivedCurrencyAmount} />
           </>
         )}
       </Button>

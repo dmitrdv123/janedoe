@@ -38,6 +38,7 @@
       "send_details": "to send the payment details",
       "email_placeholder": "email@email.com",
       "pay": "Pay",
+      "received": "Received",
       "select_token": "Select a token",
       "no_balance": "Not enough balance",
       "conversion_desc": "will be converted",
@@ -83,8 +84,7 @@
     },
     "payment_summary": {
       "company_id": "Company ID",
-      "payment_id": "Payment ID",
-      "received_currency": "Received"
+      "payment_id": "Payment ID"
     },
     "transfer_payment": {
       "send_address": "Send to this address",
@@ -95,6 +95,7 @@
       "send_details": "to send the payment details",
       "email_placeholder": "email@email.com",
       "pay": "Pay",
+      "received": "Received",
       "errors": {
         "wallet_not_found": "Address for payment not found",
         "native_token_not_found": "Native token for blockchain not found",
@@ -197,6 +198,11 @@
       "transaction_confirming": "Waiting for transaction confirmation",
       "switch_chain_confirmed": "Blockchain switched",
       "switch_chain_confirming": "Waiting for the blockchain switch"
+    },
+    "payment_rest_amount": {
+      "errors": {
+        "load_error": "Failed to load received amount"
+      }
     }
   },
   "services": {
