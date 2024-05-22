@@ -111,8 +111,9 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- payment: testing payment with conversion
-- protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
+- payment: payment blocked modal should show stages - reading allowance, reset allowance, set allowance, payment
+- payment: change conversion implementation to not use rango receiver contract. Allow to exchange token to another token from the same chain only. Show only chains from payment settings in blockchain dropdown on payment page. Converted token should be transferred to the client wallet. After that it should be transferred to janedoe smartcontract. Need to have some capacity to eliminate exchange rate changes. Add conversion stage to payment blocked modal
+- protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
   - api: create and use email to send notification using sns and proper domain
@@ -133,6 +134,8 @@ long term backlog:
 
 - account: news page
 - protocol: hide shop address using https://railgun.org/wallets.html or something based on zksync alg
+- account, payment, api: support tron, upgrade wrapped-native and rango-receiver to v2
+- payment, protocol*: change conversion algorithm to use rango-receiver (Martin, 2024-05-22: `They mentioned in our new smart-contract that will be released in two months, we can whitelist your contract`). Add refund and refundNative functions to rango-receiver (https://docs.rango.exchange/api-integration/rango-api/basic-api-single-tx/message-passing-api). Update rango-receiver contract.
 
 disputable backlog:
 
