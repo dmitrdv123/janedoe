@@ -23,10 +23,11 @@ import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
 interface EvmPaymentProps {
   blockchain: BlockchainMeta
   currencyAmount: number
+  onEmailUpdate: (emailToUpdate: string) => void
 }
 
 const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
-  const { blockchain, currencyAmount } = props
+  const { blockchain, currencyAmount, onEmailUpdate } = props
 
   const [fromToken, setFromToken] = useState<Token | undefined>(undefined)
   const [toAsset, setToAsset] = useState<Asset | undefined>(undefined)
@@ -77,7 +78,8 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
   const changeEmailHandler = useCallback((emailToUpdate: string) => {
     setEmail(emailToUpdate)
-  }, [])
+    onEmailUpdate(emailToUpdate)
+  }, [onEmailUpdate])
 
   const errorHandler = useCallback((error: Error | undefined) => {
     addInfoMessage(t('components.evm_payment.errors.failed_pay'), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger', error)

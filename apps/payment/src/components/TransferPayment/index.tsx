@@ -17,10 +17,11 @@ import { INFO_MESSAGE_NATIVE_TOKEN_NOT_FOUND_ERROR, INFO_MESSAGE_TOKEN_PRICE_NOT
 interface TransferPaymentProps {
   blockchain: BlockchainMeta
   currencyAmount: number
+  onEmailUpdate: (emailToUpdate: string) => void
 }
 
 const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
-  const { blockchain, currencyAmount } = props
+  const { blockchain, currencyAmount, onEmailUpdate } = props
 
   const [tokenAmount, setTokenAmount] = useState<string>('0')
   const [email, setEmail] = useState<string>('')
@@ -84,7 +85,8 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
 
   const changeEmailHandler = useCallback((emailToUpdate: string) => {
     setEmail(emailToUpdate)
-  }, [])
+    onEmailUpdate(emailToUpdate)
+  }, [onEmailUpdate])
 
   return (
     <>

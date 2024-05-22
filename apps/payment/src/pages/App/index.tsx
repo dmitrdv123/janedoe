@@ -25,8 +25,9 @@ import { useInterval } from '../../libs/hooks/useInterval'
 
 const App: React.FC = () => {
   const [fromBlockchain, setFromBlockchain] = useState<BlockchainMeta | undefined>(undefined)
+  const [email, setEmail] = useState('')
   const [isPaymentHistoryChecked, setIsPaymentHistoryChecked] = useState(false)
-  const [restCurrencyAmount, setRestCurrencyAmount] = useState<number>(0)
+  const [restCurrencyAmount, setRestCurrencyAmount] = useState(0)
   const [receivedCurrencyAmount, setReceivedCurrencyAmount] = useState(0)
   const isPaymentHistoryLoadingRef = useRef(false)
 
@@ -38,7 +39,7 @@ const App: React.FC = () => {
   const exchangeRate = useExchangeRate()
   const { amount: requiredCurrencyAmount } = usePaymentData()
 
-  const navigateSuccessHandler = useNavigateSuccess()
+  const navigateSuccessHandler = useNavigateSuccess(fromBlockchain?.name, email)
   const loadPaymentHistory = usePaymentHistory()
   const { addInfoMessage, removeInfoMessage, clearInfoMessage } = useInfoMessages()
 
@@ -46,6 +47,10 @@ const App: React.FC = () => {
     clearInfoMessage()
     setFromBlockchain(blockchainToUpdate)
   }, [clearInfoMessage])
+
+  const emailHandler = useCallback((emailToUpdate: string) => {
+    setEmail(emailToUpdate)
+  }, [])
 
   const fetchReceivedAmountHandler = useCallback(async () => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
@@ -117,11 +122,11 @@ const App: React.FC = () => {
               </div>
 
               {(fromBlockchain?.type === TransactionType.EVM) && (
-                <EvmPayment blockchain={fromBlockchain} currencyAmount={restCurrencyAmount} />
+                <EvmPayment blockchain={fromBlockchain} currencyAmount={restCurrencyAmount} onEmailUpdate={emailHandler}/>
               )}
 
               {(fromBlockchain?.type === TransactionType.TRANSFER) && (
-                <TransferPayment blockchain={fromBlockchain} currencyAmount={restCurrencyAmount} />
+                <TransferPayment blockchain={fromBlockchain} currencyAmount={restCurrencyAmount} onEmailUpdate={emailHandler}/>
               )}
             </Form>
           )}
