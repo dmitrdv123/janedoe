@@ -112,8 +112,7 @@ NODE_ENV=production pnpm run init --filter=installer
 others:
 
 - payment: testing payment with conversion
-- payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success.
-- payment: if conversion transaction is succeded then we still need to check whether expected amount is the same as actual in other case we need to show error
+- api: api log is not rotating at least locally
 - protocol, protocol-tron: upgrade wrapped-native and rango-receiver contracts based on contracts in protocol-zksync
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
@@ -148,6 +147,7 @@ disputable backlog:
 - api: resend ipn should be done based on payment log and not based on saved ipn. Because in other case we can have situation when user can see payment but cannot resend ipn due to missing for some reasons saved ipn
 - payment: token without conversion should have higher priority in dropdown
 - aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
+- payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success. Disputable since user should wait until tx will be processed. It could take longer than expected and bring additional unnecessary dependency of user from backend.
 
 learning:
 

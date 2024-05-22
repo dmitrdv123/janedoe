@@ -19,7 +19,8 @@ const StatusButton: React.FC<StatusButtonProps> = (props) => {
 
   return (
     <Button variant="primary" disabled size='lg'>
-      <TokenAmount amount={tokenAmount} symbol={token.symbol} decimals={token.decimals} />
+      {t('components.transfer_payment.pay')}
+      &nbsp;<TokenAmount amount={tokenAmount} symbol={token.symbol} decimals={token.decimals} />
       &nbsp;(= <CurrencyAmount currency={currency} amount={currencyAmount} />)
 
       <Spinner as="span" animation="border" role="status" aria-hidden="true" className='ms-1' size='sm'>

@@ -63,10 +63,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
         onClick={handlePay}>
 
         {t('components.evm_payment.pay')}
-
-        <br />
-
-        <TokenAmount
+        &nbsp;<TokenAmount
           amount={paymentDetails.tokenAmount}
           symbol={paymentDetails.fromToken.symbol}
           decimals={paymentDetails.fromToken.decimals}

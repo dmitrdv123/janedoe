@@ -95,6 +95,7 @@
       "email": "Email",
       "send_details": "отправить детали платежа",
       "email_placeholder": "email@email.com",
+      "pay": "Оплатить",
       "errors": {
         "wallet_not_found": "Адрес для платежа не найден",
         "native_token_not_found": "Нативный токен для блокчейна не найден",

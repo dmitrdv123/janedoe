@@ -94,6 +94,7 @@
       "email": "Email",
       "send_details": "to send the payment details",
       "email_placeholder": "email@email.com",
+      "pay": "Pay",
       "errors": {
         "wallet_not_found": "Address for payment not found",
         "native_token_not_found": "Native token for blockchain not found",
