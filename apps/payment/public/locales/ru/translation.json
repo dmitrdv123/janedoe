@@ -193,11 +193,14 @@
       }
     },
     "write_and_wait_contract": {
+      "transaction_waiting_success": "Транзакция прошла успешно {{txId}}",
       "transaction_waiting_error": "Ошибка ожидания транзакции {{txId}}",
       "transaction_waiting": "Ожидание транзакции {{txId}}",
       "transaction_confirmed": "Транзакция подтверждена",
+      "transaction_confirming_error": "Ошибка подтверждения транзакции",
       "transaction_confirming": "Ожидание подтверждения транзакции",
       "switch_chain_confirmed": "Блокчейн переключился",
+      "switch_chain_error": "Ошибка переключения блокчейна",
       "switch_chain_confirming": "Ожидание переключения блокчейна"
     },
     "payment_rest_amount": {
