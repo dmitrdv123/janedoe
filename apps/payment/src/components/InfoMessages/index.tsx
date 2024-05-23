@@ -122,6 +122,7 @@ const InfoMessages: React.FC = () => {
             variant={item.variant ?? 'info'}
             onClose={() => removeInfoMessage(item.key)}
             dismissible
+            className='text-wrap text-truncate'
           >
             <div className="mb-2">
               {item.content}
