@@ -19,6 +19,7 @@ import TokenButton from './components/TokenButton'
 import { useInfoMessages } from '../../states/application/hook'
 import { INFO_MESSAGE_PAYMENT_PROCESSING_ERROR } from '../../constants'
 import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
+import { NativePayStage, TokenConversionPayStage, TokenPayStage } from '../../types/contract-call-result'
 
 interface EvmPaymentProps {
   blockchain: BlockchainMeta
@@ -136,6 +137,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
           <PayButton
             paymentDetails={paymentDetails}
             receivedCurrencyAmount={receivedCurrencyAmount}
+            stages={Object.values(TokenConversionPayStage)}
             usePay={useTokenConversionPay}
             onError={errorHandler}
             onSuccess={successHandler}
@@ -148,6 +150,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
           <PayButton
             paymentDetails={paymentDetails}
             receivedCurrencyAmount={receivedCurrencyAmount}
+            stages={Object.values(NativePayStage)}
             usePay={useNativePay}
             onError={errorHandler}
             onSuccess={successHandler}
@@ -160,6 +163,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
           <PayButton
             paymentDetails={paymentDetails}
             receivedCurrencyAmount={receivedCurrencyAmount}
+            stages={Object.values(TokenPayStage)}
             usePay={useTokenApproveAndPay}
             onError={errorHandler}
             onSuccess={successHandler}

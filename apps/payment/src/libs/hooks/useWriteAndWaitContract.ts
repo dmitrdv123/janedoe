@@ -17,7 +17,8 @@ export default function useWriteAndWaitContract(
   onSuccess?: (txId: string | undefined) => void,
 ): ContractCallResult {
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
-  const [data, setData] = useState<string | undefined>(undefined)
+  const [stage, setStage] = useState<string | undefined>(undefined)
+  const [details, setDetails] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
 
   const { isConnected, chainId: currentChainId } = useAccount()
@@ -27,77 +28,10 @@ export default function useWriteAndWaitContract(
   const { data: txId, status: writeContractStatus, error: writeContractError, writeContract } = useWriteContract()
   const { status: waitForTransactionReceiptStatus, error: waitForTransactionReceiptError } = useWaitForTransactionReceipt({ chainId, hash: txId })
 
-  useEffect(() => {
-    const err = waitForTransactionReceiptError ? new Error(waitForTransactionReceiptError.message) : undefined
-    switch (waitForTransactionReceiptStatus) {
-      case 'success':
-        setError(undefined)
-        setData(t('hooks.write_and_wait_contract.transaction_waiting_success', { txId }))
-        setStatus('success')
-
-        onSuccess?.(txId)
-        break
-      case 'error':
-        setError(err)
-        setData(t('hooks.write_and_wait_contract.transaction_waiting_error', { txId }))
-        setStatus('error')
-
-        onError?.(err)
-        break
-      case 'pending':
-        setError(undefined)
-        setData(t('hooks.write_and_wait_contract.transaction_waiting', { txId }))
-        break
-    }
-  }, [t, txId, waitForTransactionReceiptError, waitForTransactionReceiptStatus, onError, onSuccess])
-
-  useEffect(() => {
-    const err = writeContractError ? new Error(writeContractError.message) : undefined
-
-    switch (writeContractStatus) {
-      case 'success':
-        setError(undefined)
-        setData(t('hooks.write_and_wait_contract.transaction_confirmed'))
-        break
-      case 'error':
-        setError(err)
-        setData(t('hooks.write_and_wait_contract.transaction_confirming_error'))
-        setStatus('error')
-
-        onError?.(err)
-        break
-      case 'pending':
-        setError(undefined)
-        setData(t('hooks.write_and_wait_contract.transaction_confirming'))
-        break
-    }
-  }, [t, writeContractError, writeContractStatus, onError])
-
-  useEffect(() => {
-    const err = switchChainError ? new Error(switchChainError.message) : undefined
-
-    switch (switchChainStatus) {
-      case 'success':
-        setError(undefined)
-        setData(t('hooks.write_and_wait_contract.switch_chain_confirmed'))
-        break
-      case 'error':
-        setError(err)
-        setData(t('hooks.write_and_wait_contract.switch_chain_error'))
-        setStatus('error')
-
-        onError?.(err)
-        break
-      case 'pending':
-        setError(undefined)
-        setData(t('hooks.write_and_wait_contract.switch_chain_confirming'))
-        break
-    }
-  }, [switchChainError, switchChainStatus, t, onError])
-
   const handle = useCallback(() => {
     setError(undefined)
-    setData(undefined)
+    setStage(undefined)
+    setDetails(undefined)
     setStatus('idle')
 
     if (!isConnected || chainId === undefined || !address) {
@@ -129,9 +63,79 @@ export default function useWriteAndWaitContract(
     }
   }, [abi, address, args, chainId, currentChainId, functionName, isConnected, value, switchChain, writeContract])
 
+  useEffect(() => {
+    const err = switchChainError ? new Error(switchChainError.message) : undefined
+    switch (switchChainStatus) {
+      case 'pending':
+        setError(undefined)
+        setDetails(t('hooks.write_and_wait_contract.switch_chain_processing'))
+        setStage('hooks.write_and_wait_contract.switch_chain')
+        break
+      case 'error':
+        setError(err)
+        setDetails(t('hooks.write_and_wait_contract.switch_chain_error'))
+        setStatus('error')
+
+        onError?.(err)
+        break
+      case 'success':
+        setError(undefined)
+        setDetails(t('hooks.write_and_wait_contract.switch_chain_success'))
+        break
+    }
+  }, [switchChainError, switchChainStatus, t, onError])
+
+  useEffect(() => {
+    const err = writeContractError ? new Error(writeContractError.message) : undefined
+    switch (writeContractStatus) {
+      case 'pending':
+        setError(undefined)
+        setDetails(t('hooks.write_and_wait_contract.transaction_confirm_processing'))
+        setStage('hooks.write_and_wait_contract.transaction_confirm')
+        break
+      case 'error':
+        setError(err)
+        setDetails(t('hooks.write_and_wait_contract.transaction_confirm_error'))
+        setStatus('error')
+
+        onError?.(err)
+        break
+      case 'success':
+        setError(undefined)
+        setDetails(t('hooks.write_and_wait_contract.transaction_confirm_success'))
+        break
+    }
+  }, [t, writeContractError, writeContractStatus, onError])
+
+  useEffect(() => {
+    const err = waitForTransactionReceiptError ? new Error(waitForTransactionReceiptError.message) : undefined
+    switch (waitForTransactionReceiptStatus) {
+      case 'pending':
+        setError(undefined)
+        setDetails(t('hooks.write_and_wait_contract.transaction_wait_processing', { txId }))
+        setStage('hooks.write_and_wait_contract.transaction_wait')
+        break
+      case 'error':
+        setError(err)
+        setDetails(t('hooks.write_and_wait_contract.transaction_wait_error', { txId }))
+        setStatus('error')
+
+        onError?.(err)
+        break
+      case 'success':
+        setError(undefined)
+        setDetails(t('hooks.write_and_wait_contract.transaction_wait_success', { txId }))
+        setStatus('success')
+
+        onSuccess?.(txId)
+        break
+    }
+  }, [t, txId, waitForTransactionReceiptError, waitForTransactionReceiptStatus, onError, onSuccess])
+
   return {
     status,
-    data,
+    stage,
+    details,
     txId,
     error,
     handle

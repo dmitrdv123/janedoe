@@ -1,5 +1,7 @@
+import { useCallback, useState } from 'react'
+
 import { PaymentDetails } from '../../types/payment-details'
-import { ContractCallResult } from '../../types/contract-call-result'
+import { ContractCallResult, NativePayStage } from '../../types/contract-call-result'
 import { encodeStringToBytes, getAddressOrDefault, tryParseInt } from '../utils'
 import useWriteAndWaitContract from './useWriteAndWaitContract'
 
@@ -8,7 +10,9 @@ export default function useNativePay(
   onError?: (error: Error | undefined) => void,
   onSuccess?: (txId: string | undefined) => void
 ): ContractCallResult {
-  const { status, data, txId, error, handle } = useWriteAndWaitContract(
+  const [stage, setStage] = useState<string | undefined>(undefined)
+
+  const { status, details, txId, error, handle: contractHandler } = useWriteAndWaitContract(
     tryParseInt(paymentDetails.fromBlockchain.chainId),
     getAddressOrDefault(paymentDetails.fromContracts.JaneDoe),
     'payNativeFrom',
@@ -47,9 +51,15 @@ export default function useNativePay(
     onSuccess
   )
 
+  const handle = useCallback(() => {
+    setStage(NativePayStage.NativePay)
+    contractHandler()
+  }, [contractHandler])
+
   return {
     status,
-    data,
+    stage,
+    details,
     txId,
     error,
     handle

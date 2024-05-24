@@ -154,9 +154,22 @@
       }
     },
     "token_conversion_pay": {
-      "token_swap_processing": "Creating transaction",
-      "token_approve_processing": "Processing transaction to set token spending permissions",
-      "token_pay_processing": "Processing payment transaction"
+      "switch_chain": "Blockchain switching",
+      "switch_chain_processing": "Blockchain switching is in progress",
+      "switch_chain_error": "Blockchain switching failed",
+      "switch_chain_success": "Blockchain switching was successful",
+      "token_swap": "Creating token swap transaction",
+      "token_swap_processing": "Creating token swap transaction is in progress",
+      "token_swap_error": "Creating token swap transaction failed",
+      "token_swap_success": "Creating token swap transaction was successful",
+      "token_approve": "Token spending permissions",
+      "token_approve_processing": "Setting token spending permissions is in progress",
+      "token_approve_error": "Setting token spending permissions failed",
+      "token_approve_success": "Setting token spending permissions was successful",
+      "token_pay": "Payment transaction",
+      "token_pay_processing": "Payment transaction is in progress",
+      "token_pay_error": "Payment transaction failed",
+      "token_pay_success": "Payment transaction was successful"
     },
     "token_conversion_swap": {
       "errors": {
@@ -177,14 +190,26 @@
       "transaction_confirming": "Waiting for transaction confirmation: request {{requestId}}",
       "transaction_confirmed": "Transaction confirmed: request {{requestId}}, hash {{txId}}"
     },
+    "token_allowance": {
+      "read_allowance": "Token spending permissions",
+      "read_allowance_processing": "Reading token spending permissions",
+      "read_allowance_error": "Reading token spending permissions failed",
+      "read_allowance_success": "Reading token spending permissions was successful"
+    },
+    "token_approve": {
+      "token_approve": "Token spending permissions"
+    },
+    "token_pay": {
+      "token_pay": "Payment transaction"
+    },
     "token_approve_and_pay": {
-      "token_allowance_processing": "Reading token spending permissions",
-      "token_reset_approve_processing": "Processing transaction to reset token spending permissions",
-      "token_approve_processing": "Processing transaction to set token spending permissions",
-      "token_pay_processing": "Processing payment transaction"
+      "token_allowance": "Token spending permissions",
+      "token_reset_approve": "Reset token spending permissions",
+      "token_approve": "Set token spending permissions",
+      "token_pay": "Payment transaction"
     },
     "native_pay": {
-      "native_pay_processing": "Payment transaction processing"
+      "native_pay": "Payment transaction"
     },
     "wallet_details": {
       "errors": {
@@ -192,15 +217,18 @@
       }
     },
     "write_and_wait_contract": {
-      "transaction_waiting_success": "Transaction successed {{txId}}",
-      "transaction_waiting_error": "Transaction waiting error {{txId}}",
-      "transaction_waiting": "Waiting for the transaction {{txId}}",
-      "transaction_confirmed": "Transaction confirmed",
-      "transaction_confirming_error": "Transaction confirmation error",
-      "transaction_confirming": "Waiting for transaction confirmation",
-      "switch_chain_confirmed": "Blockchain switched",
-      "switch_chain_error": "Blockchain switching error",
-      "switch_chain_confirming": "Waiting for the blockchain switch"
+      "switch_chain": "Blockchain switching",
+      "switch_chain_processing": "Blockchain switching is in progress",
+      "switch_chain_error": "Blockchain switching failed",
+      "switch_chain_success": "Blockchain switching was successful",
+      "transaction_confirm": "Transaction confirmation",
+      "transaction_confirm_processing": "Waiting for transaction confirmation",
+      "transaction_confirm_error": "Transaction confirmation failed",
+      "transaction_confirm_success": "Transaction confirmation was successful",
+      "transaction_wait": "Waiting for the transaction",
+      "transaction_wait_processing": "Waiting for the transaction {{txId}}",
+      "transaction_wait_error": "Transaction failed {{txId}}",
+      "transaction_wait_success": "Transaction was successful {{txId}}"
     },
     "payment_rest_amount": {
       "errors": {

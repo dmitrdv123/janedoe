@@ -111,7 +111,6 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- payment: payment blocked modal should show stages - reading allowance, reset allowance, set allowance, payment
 - payment: change conversion implementation to not use rango receiver contract. Allow to exchange token to another token from the same chain only. Show only chains from payment settings in blockchain dropdown on payment page. Converted token should be transferred to the client wallet. After that it should be transferred to janedoe smartcontract. Need to have some capacity to eliminate exchange rate changes. Add conversion stage to payment blocked modal
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:

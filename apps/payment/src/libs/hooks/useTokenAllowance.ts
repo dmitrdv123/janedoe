@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { erc20Abi } from 'viem'
@@ -16,9 +16,11 @@ export default function useTokenAllowance(
   onError?: (error: Error | undefined) => void,
   onSuccess?: (allowance: bigint | undefined) => void
 ) {
-  const currentStatus = useRef<ApiRequestStatus>('idle')
+  const isProcessing = useRef(false)
 
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
+  const [stage, setStage] = useState<string | undefined>(undefined)
+  const [details, setDetails] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
 
   const { t } = useTranslation()
@@ -27,7 +29,7 @@ export default function useTokenAllowance(
     status: tokenAllowanceStatus,
     data: allowance,
     error: tokenAllowanceError,
-    refetch: handle
+    refetch: readHandler
   } = useReadContract({
     chainId: tryParseInt(blockchain.chainId),
     address: getAddressOrDefault(token.address),
@@ -39,46 +41,58 @@ export default function useTokenAllowance(
     ]
   })
 
-  useEffect(() => {
-    if (tokenAllowanceStatus === 'success') {
-      setError(undefined)
-      setStatus('success')
+  const handle = useCallback(() => {
+    if (isProcessing.current) {
       return
     }
 
-    if (tokenAllowanceStatus === 'error') {
-      setError(new ServiceError(tokenAllowanceError?.shortMessage ?? '', 'services.errors.payment_errors.read_allowance_error'))
-      setStatus('error')
-      return
-    }
+    isProcessing.current = true
 
-    if (tokenAllowanceStatus === 'pending') {
-      setError(undefined)
-      setStatus('processing')
-      return
-    }
-  }, [t, tokenAllowanceError, tokenAllowanceStatus])
+    setError(undefined)
+    setStage(undefined)
+    setDetails(undefined)
+    setStatus('idle')
+
+    readHandler()
+  }, [readHandler])
 
   useEffect(() => {
-    if (currentStatus.current === status) {
-      return
-    }
+    const err = new ServiceError(tokenAllowanceError?.shortMessage ?? '', 'services.errors.payment_errors.read_allowance_error')
 
-    currentStatus.current = status
+    switch (tokenAllowanceStatus) {
+      case 'pending':
+        setError(undefined)
+        setDetails(t('hooks.token_allowance.read_allowance_processing'))
+        setStage('hooks.token_allowance.read_allowance')
+        setStatus('processing')
+        break
+      case 'error':
+        isProcessing.current = false
 
-    if (status === 'error') {
-      onError?.(error)
-    }
+        setError(err)
+        setDetails(t('hooks.token_allowance.read_allowance_error'))
+        setStatus('error')
 
-    if (status === 'success') {
-      onSuccess?.(allowance)
+        onError?.(err)
+        break
+      case 'success':
+        isProcessing.current = false
+
+        setError(undefined)
+        setDetails(t('hooks.token_allowance.read_allowance_success'))
+        setStatus('success')
+
+        onSuccess?.(allowance)
+        break
     }
-  }, [status, allowance, error, onError, onSuccess])
+  }, [allowance, tokenAllowanceError, tokenAllowanceStatus, t, onError, onSuccess])
 
   return {
     status,
-    allowance,
+    stage,
+    details,
     error,
+    allowance,
     handle
   }
 }

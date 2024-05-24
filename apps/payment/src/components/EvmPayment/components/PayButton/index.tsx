@@ -16,6 +16,7 @@ import PaymentProcessingModal from '../../../modals/PaymentProcessingModal'
 interface PayButtonProps {
   paymentDetails: PaymentDetails
   receivedCurrencyAmount: number,
+  stages: string[],
   usePay: (
     paymentDetails: PaymentDetails,
     onError?: (error: Error | undefined) => void,
@@ -26,7 +27,7 @@ interface PayButtonProps {
 }
 
 const PayButton: React.FC<PayButtonProps> = (props) => {
-  const { paymentDetails, receivedCurrencyAmount, usePay, onError, onSuccess } = props
+  const { paymentDetails, receivedCurrencyAmount, stages, usePay, onError, onSuccess } = props
 
   const { t } = useTranslation()
 
@@ -45,7 +46,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
     onSuccess?.(txId)
   }, [close, onSuccess])
 
-  const { status, data, handle } = usePay(paymentDetails, errorHandler, successHandler)
+  const { stage, status, details, handle } = usePay(paymentDetails, errorHandler, successHandler)
 
   const handlePay = useCallback(async (e: FormEvent) => {
     e.preventDefault()
@@ -55,7 +56,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
 
   return (
     <>
-      <PaymentProcessingModal data={data} />
+      <PaymentProcessingModal stages={stages} status={status} stage={stage} details={details}/>
 
       <Button
         variant="primary"

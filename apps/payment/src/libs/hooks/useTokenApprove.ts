@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
 import { ContractCallResult } from '../../types/contract-call-result'
@@ -12,7 +13,9 @@ export default function useTokenApprove(
   onError?: (error: Error | undefined) => void,
   onSuccess?: (txId: string | undefined) => void
 ): ContractCallResult {
-  const { status, data, txId, error, handle } = useWriteAndWaitContract(
+  const [stage, setStage] = useState<string | undefined>(undefined)
+
+  const { status, details, txId, error, handle: contractHandler } = useWriteAndWaitContract(
     tryParseInt(blockchain.chainId),
     getAddressOrDefault(token.address),
     'approve',
@@ -41,9 +44,15 @@ export default function useTokenApprove(
     onSuccess
   )
 
+  const handle = useCallback(() => {
+    setStage('hooks.token_approve.token_approve')
+    contractHandler()
+  }, [contractHandler])
+
   return {
     status,
-    data,
+    stage,
+    details,
     txId,
     error,
     handle

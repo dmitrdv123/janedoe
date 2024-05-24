@@ -65,7 +65,6 @@
       "search_placeholder": "Поиск по имени блокчейна",
       "conversion_checkbox": "без конвертации",
       "conversion_checkbox_desc": "Конвертация возможна, если магазин не принимает оплату для выбранного блокчейна."
-
     },
     "tokens_modal": {
       "title": "Выберите токен",
@@ -155,9 +154,22 @@
       }
     },
     "token_conversion_pay": {
-      "token_swap_processing": "Создание транзакции",
-      "token_approve_processing": "Обработка транзакции на установку разрешений на траты токена",
-      "token_pay_processing": "Обработка транзакции платежа"
+      "switch_chain": "Переключение блокчейна",
+      "switch_chain_processing": "Выполняется переключение блокчейна",
+      "switch_chain_error": "Переключение блокчейна завершилось с ошибкой",
+      "switch_chain_success": "Переключение блокчейна завершилось успешно",
+      "token_swap": "Создание транзакции на обмен токенов",
+      "token_swap_processing": "Выполняется создание транзакции обмена токенов",
+      "token_swap_error": "Создание транзакции на обмен токенов завершилось с ошибкой",
+      "token_swap_success": "Создание транзакции на обмен токенов завершилось успешно",
+      "token_approve": "Транзакция на установку разрешений на траты токена",
+      "token_approve_processing": "Выполняется транзакция на установку разрешений на траты токена",
+      "token_approve_error": "Транзакция на установку разрешений на траты токена завершилось с ошибкой",
+      "token_approve_success": "Транзакция на установку разрешений на траты токена завершилось успешно",
+      "token_pay": "Транзакция платежа",
+      "token_pay_processing": "Выполняется транзакция платежа",
+      "token_pay_error": "Транзакция платежа завершилось с ошибкой",
+      "token_pay_success": "Транзакция платежа завершилось успешно"
     },
     "token_conversion_swap": {
       "errors": {
@@ -178,14 +190,26 @@
       "transaction_confirming": "Ожидание подтверждения транзакции: запрос {{requestId}}",
       "transaction_confirmed": "Транзакция подтверждена: запрос {{requestId}}, хэш {{txId}}"
     },
+    "token_allowance": {
+      "read_allowance": "Чтение разрешений на траты токена",
+      "read_allowance_processing": "Выполняется чтение разрешений на траты токена",
+      "read_allowance_error": "Чтение разрешений на траты токена завершилось с ошибкой",
+      "read_allowance_success": "Чтение разрешений на траты токена was successful"
+    },
+    "token_approve": {
+      "token_approve": "Обработка транзакции на установку разрешений на траты токена"
+    },
+    "token_pay": {
+      "token_pay": "Транзакция платежа"
+    },
     "token_approve_and_pay": {
-      "token_allowance_processing": "Чтение разрешений на траты токена",
-      "token_reset_approve_processing": "Обработка транзакции на сброс разрешений на траты токена",
-      "token_approve_processing": "Обработка транзакции на установку разрешений на траты токена",
-      "token_pay_processing": "Обработка транзакции платежа"
+      "token_allowance": "Чтение разрешений на траты токена",
+      "token_reset_approve": "Транзакция на сброс разрешений на траты токена",
+      "token_approve": "Транзакция на установку разрешений на траты токена",
+      "token_pay": "Транзакция платежа"
     },
     "native_pay": {
-      "native_pay_processing": "Обработка транзакции платежа"
+      "native_pay": "Обработка транзакции платежа"
     },
     "wallet_details": {
       "errors": {
@@ -193,15 +217,18 @@
       }
     },
     "write_and_wait_contract": {
-      "transaction_waiting_success": "Транзакция прошла успешно {{txId}}",
-      "transaction_waiting_error": "Ошибка ожидания транзакции {{txId}}",
-      "transaction_waiting": "Ожидание транзакции {{txId}}",
-      "transaction_confirmed": "Транзакция подтверждена",
-      "transaction_confirming_error": "Ошибка подтверждения транзакции",
-      "transaction_confirming": "Ожидание подтверждения транзакции",
-      "switch_chain_confirmed": "Блокчейн переключился",
-      "switch_chain_error": "Ошибка переключения блокчейна",
-      "switch_chain_confirming": "Ожидание переключения блокчейна"
+      "switch_chain": "Переключение блокчейна",
+      "switch_chain_processing": "Выполняется переключение блокчейна",
+      "switch_chain_error": "Переключение блокчейна завершилось с ошибкой",
+      "switch_chain_success": "Переключение блокчейна завершилось успешно",
+      "transaction_confirm": "Подтверждение транзакции",
+      "transaction_confirm_processing": "Ожидание подтверждения транзакции",
+      "transaction_confirm_error": "Подтверждение транзакции завершилось с ошибкой",
+      "transaction_confirm_success": "Подтверждение транзакции завершилось успешно",
+      "transaction_wait": "Ожидание транзакции",
+      "transaction_wait_processing": "Ожидание транзакции {{txId}}",
+      "transaction_wait_error": "Транзакция завершилась с ошибкой {{txId}}",
+      "transaction_wait_success": "Транзакция завершилась успешно {{txId}}"
     },
     "payment_rest_amount": {
       "errors": {

@@ -4,9 +4,8 @@ import useTokenPay from './useTokenPay'
 import useTokenApprove from './useTokenApprove'
 import useTokenAllowance from './useTokenAllowance'
 import { PaymentDetails } from '../../types/payment-details'
-import { ContractCallResult } from '../../types/contract-call-result'
+import { ContractCallResult, TokenPayStage } from '../../types/contract-call-result'
 import { ApiRequestStatus } from '../../types/api-request'
-import { useTranslation } from 'react-i18next'
 
 export default function useTokenApproveAndPay(
   paymentDetails: PaymentDetails,
@@ -14,14 +13,14 @@ export default function useTokenApproveAndPay(
   onSuccess?: (txId: string | undefined) => void,
 ): ContractCallResult {
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
-  const [data, setData] = useState<string | undefined>(undefined)
+  const [stage, setStage] = useState<string | undefined>(undefined)
+  const [details, setDetails] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
-
-  const { t } = useTranslation()
 
   const {
     error: tokenAllowanceError,
     status: tokenAllowanceStatus,
+    details: tokenAllowanceDetails,
     allowance: tokenAllowance,
     handle: tokenAllowanceHandle
   } = useTokenAllowance(
@@ -45,6 +44,7 @@ export default function useTokenApproveAndPay(
   const {
     error: tokenPayError,
     status: tokenPayStatus,
+    details: tokenPayDetails,
     txId: txId,
     handle: tokenPayHandle
   } = useTokenPay(
@@ -67,6 +67,7 @@ export default function useTokenApproveAndPay(
   const {
     error: tokenApproveError,
     status: tokenApproveStatus,
+    details: tokenApproveDetails,
     handle: tokenApproveHandle
   } = useTokenApprove(
     paymentDetails.fromBlockchain,
@@ -85,6 +86,7 @@ export default function useTokenApproveAndPay(
   const {
     error: tokenResetApproveError,
     status: tokenResetApproveStatus,
+    details: tokenResetApproveDetails,
     handle: tokenResetApproveHandle
   } = useTokenApprove(
     paymentDetails.fromBlockchain,
@@ -95,79 +97,10 @@ export default function useTokenApproveAndPay(
     tokenResetApproveSuccessHandle
   )
 
-  useEffect(() => {
-    switch (tokenAllowanceStatus) {
-      case 'processing':
-        setError(undefined)
-        setData(t('hooks.token_approve_and_pay.token_allowance_processing'))
-        setStatus('processing')
-        break
-      case 'error':
-        setError(tokenAllowanceError)
-        setData(undefined)
-        setStatus('error')
-        break
-      case 'success':
-        setError(undefined)
-        setData(undefined)
-        setStatus('idle')
-        break
-    }
-  }, [tokenAllowanceError, tokenAllowanceStatus, t])
-
-  useEffect(() => {
-    switch (tokenResetApproveStatus) {
-      case 'processing':
-        setError(undefined)
-        setData(t('hooks.token_approve_and_pay.token_reset_approve_processing'))
-        setStatus('processing')
-        break
-      case 'error':
-        setError(tokenResetApproveError)
-        setData(undefined)
-        setStatus('error')
-        break
-    }
-  }, [tokenResetApproveError, tokenResetApproveStatus, t])
-
-  useEffect(() => {
-    switch (tokenApproveStatus) {
-      case 'processing':
-        setError(undefined)
-        setData(t('hooks.token_approve_and_pay.token_approve_processing'))
-        setStatus('processing')
-        break
-      case 'error':
-        setError(tokenApproveError)
-        setData(undefined)
-        setStatus('error')
-        break
-    }
-  }, [tokenApproveError, tokenApproveStatus, t])
-
-  useEffect(() => {
-    switch (tokenPayStatus) {
-      case 'processing':
-        setError(undefined)
-        setData(t('hooks.token_approve_and_pay.token_pay_processing'))
-        setStatus('processing')
-        break
-      case 'error':
-        setError(tokenPayError)
-        setData(undefined)
-        setStatus('error')
-        break
-      case 'success':
-        setError(undefined)
-        setData(undefined)
-        setStatus('success')
-        break
-    }
-  }, [tokenPayError, tokenPayStatus, t])
-
   const handle = useCallback(() => {
     setError(undefined)
-    setData(undefined)
+    setDetails(undefined)
+    setStage(undefined)
     setStatus('idle')
 
     if (tokenAllowance !== undefined && tokenAllowance >= BigInt(paymentDetails.tokenAmount)) {
@@ -179,9 +112,92 @@ export default function useTokenApproveAndPay(
     }
   }, [paymentDetails, tokenAllowance, tokenApproveHandle, tokenPayHandle, tokenResetApproveHandle])
 
+  useEffect(() => {
+    switch (tokenAllowanceStatus) {
+      case 'processing':
+        setError(undefined)
+        setStage(TokenPayStage.TokenAllowance)
+        setDetails(tokenAllowanceDetails)
+        setStatus('processing')
+        break
+      case 'error':
+        setError(tokenAllowanceError)
+        setDetails(tokenAllowanceDetails)
+        setStatus('error')
+        break
+      case 'success':
+        setError(undefined)
+        setDetails(tokenAllowanceDetails)
+        setStatus('idle')
+        break
+    }
+  }, [tokenAllowanceError, tokenAllowanceStatus, tokenAllowanceDetails])
+
+  useEffect(() => {
+    switch (tokenResetApproveStatus) {
+      case 'processing':
+        setError(undefined)
+        setDetails(tokenResetApproveDetails)
+        setStage(TokenPayStage.TokenResetApprove)
+        setStatus('processing')
+        break
+      case 'error':
+        setError(tokenResetApproveError)
+        setDetails(tokenResetApproveDetails)
+        setStatus('error')
+        break
+      case 'success':
+        setError(undefined)
+        setDetails(tokenResetApproveDetails)
+        break
+    }
+  }, [tokenResetApproveError, tokenResetApproveStatus, tokenResetApproveDetails])
+
+  useEffect(() => {
+    switch (tokenApproveStatus) {
+      case 'processing':
+        setError(undefined)
+        setDetails(tokenApproveDetails)
+        setStage(TokenPayStage.TokenApprove)
+        setStatus('processing')
+        break
+      case 'error':
+        setError(tokenApproveError)
+        setDetails(tokenApproveDetails)
+        setStatus('error')
+        break
+      case 'success':
+        setError(undefined)
+        setDetails(tokenApproveDetails)
+        break
+    }
+  }, [tokenApproveError, tokenApproveStatus, tokenApproveDetails])
+
+  useEffect(() => {
+    switch (tokenPayStatus) {
+      case 'processing':
+        setError(undefined)
+        setDetails(tokenPayDetails)
+        setStage(TokenPayStage.TokenPay)
+        setStatus('processing')
+        break
+      case 'error':
+        setError(tokenPayError)
+        setDetails(tokenPayDetails)
+        setStatus('error')
+        break
+      case 'success':
+        setError(undefined)
+        setDetails(tokenPayDetails)
+        setStatus('success')
+        break
+    }
+  }, [tokenPayError, tokenPayStatus, tokenPayDetails])
+
   return {
     status,
-    data,
+    stage,
+    details,
     txId,
     error,
     handle
