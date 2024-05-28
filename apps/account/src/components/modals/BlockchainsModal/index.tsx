@@ -2,7 +2,7 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'rea
 import { Form, InputGroup, ListGroup, Modal, Image, Spinner } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Search } from 'react-bootstrap-icons'
-import { BlockchainMeta } from 'rango-sdk-basic'
+import { Asset, BlockchainMeta } from 'rango-sdk-basic'
 import { Orama, search } from '@orama/orama'
 
 import { useInfoMessages, useModalIsOpen, useToggleModal } from '../../../states/application/hook'
@@ -94,34 +94,37 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
     }
 
     const blockchain = findBlockchainByName(blockchains, name)
-    if (blockchain === undefined) {
+    if (!blockchain) {
       addInfoMessage(t('components.payment_settings.errors.cannot_find_blockchain', { blockchain: name }), INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_ERROR, 'danger')
-      return
-    }
-
-    const token = findNativeToken(blockchain, tokens)
-    if (token === undefined) {
-      addInfoMessage(t('components.payment_settings.errors.cannot_find_native_token', { blockchain: blockchain.name }), INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_ERROR, 'danger')
       return
     }
 
     removeInfoMessage(INFO_MESSAGE_ACCOUNT_PAYMENT_SETTINGS_ERROR)
 
-    const asset = {
-      blockchain: blockchain.name,
-      address: isNullOrEmptyOrWhitespaces(token.address) ? null : token.address,
-      symbol: token.symbol
+    const token = findNativeToken(blockchain, tokens)
+    let assets: Asset[]
+    if (!token) {
+      assets = [...props.accountPaymentSettings.assets]
+    } else {
+      const asset = {
+        blockchain: blockchain.name,
+        address: isNullOrEmptyOrWhitespaces(token.address) ? null : token.address,
+        symbol: token.symbol
+      }
+
+      assets = [
+        ...(props.accountPaymentSettings.assets).filter(item => !sameTokenAndAsset(item, token)),
+        asset
+      ]
     }
+
 
     props.onUpdateAccountPaymentSettings({
       ...props.accountPaymentSettings,
+      assets,
       blockchains: [
         ...(props.accountPaymentSettings.blockchains).filter(item => item.toLocaleLowerCase() !== blockchain.name.toLocaleLowerCase()),
         blockchain.name
-      ],
-      assets: [
-        ...(props.accountPaymentSettings.assets).filter(item => !sameTokenAndAsset(item, token)),
-        asset
       ]
     })
   }, [props, t, blockchains, tokens, addInfoMessage, removeInfoMessage])

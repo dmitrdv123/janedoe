@@ -183,8 +183,7 @@
       "errors": {
         "fail_restore_default": "Не удалось восстановить настройки по умолчанию",
         "fail_save": "Не удалось сохранить настройки платежей",
-        "cannot_find_blockchain": "Не удается найти детали блокчейна {{blockchain}}",
-        "cannot_find_native_token": "Не удается найти родной токен для блокчейна {{blockchain}}"
+        "cannot_find_blockchain": "Не удается найти детали блокчейна {{blockchain}}"
       }
     },
     "support": {

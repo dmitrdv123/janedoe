@@ -37,8 +37,8 @@
       "connect_wallet": "Подключить кошелек",
       "send_details": "отправить детали платежа",
       "email_placeholder": "email@email.com",
-      "pay": "Оплатить",
-      "received": "Получено",
+      "pay": "ОПЛАТИТЬ",
+      "received": "уже оплачено",
       "select_token": "Выберете токен",
       "no_balance": "Не хватает баланса",
       "conversion_desc": "будет cконвертирован",
@@ -153,7 +153,7 @@
         "contract_not_found": "Не удается найти адрес контракта janedoe для блокчейна {{blockchain}}"
       }
     },
-    "token_conversion_pay": {
+    "token_convert": {
       "switch_chain": "Переключение блокчейна",
       "switch_chain_processing": "Выполняется переключение блокчейна",
       "switch_chain_error": "Переключение блокчейна завершилось с ошибкой",
@@ -166,16 +166,16 @@
       "token_approve_processing": "Выполняется транзакция на установку разрешений на траты токена",
       "token_approve_error": "Транзакция на установку разрешений на траты токена завершилось с ошибкой",
       "token_approve_success": "Транзакция на установку разрешений на траты токена завершилось успешно",
-      "token_pay": "Транзакция платежа",
-      "token_pay_processing": "Выполняется транзакция платежа",
-      "token_pay_error": "Транзакция платежа завершилось с ошибкой",
-      "token_pay_success": "Транзакция платежа завершилось успешно"
+      "token_convert": "Транзакция платежа",
+      "token_convert_processing": "Выполняется транзакция обмена токенов",
+      "token_convert_error": "Транзакция обмена токенов завершилась с ошибкой",
+      "token_convert_success": "Транзакция обмена токенов завершилась успешно"
     },
     "token_conversion_swap": {
       "errors": {
         "swap_not_defined": "Транзакция обмена токенов не определена",
         "swap_transaction_not_defined": "Транзакция обмена токенов не определена",
-        "token_output_amount_less_than_required": "Выходная сумма {{amountCurrency}} {{currency}} меньше требуемой {{amountCurrencyRequired}} {{currency}}. Пожалуйста, обновите данные о конвертации токенов и повторите попытку оплаты или выберете другой токен."
+        "token_output_amount_less_than_required": "Выходная сумма {{amountCurrency}} {{currency}} меньше требуемой {{amountCurrency}} {{currency}}. Пожалуйста, обновите данные о конвертации токенов и повторите попытку оплаты или выберете другой токен."
       }
     },
     "token_conversion_approval": {
@@ -197,7 +197,7 @@
       "read_allowance_success": "Чтение разрешений на траты токена was successful"
     },
     "token_approve": {
-      "token_approve": "Обработка транзакции на установку разрешений на траты токена"
+      "token_approve": "Транзакция на установку разрешений на траты токена"
     },
     "token_pay": {
       "token_pay": "Транзакция платежа"

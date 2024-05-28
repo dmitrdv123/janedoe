@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback, useMemo, useDeferredValue } from 'react'
+import { useEffect, useState, useRef, useCallback, useDeferredValue } from 'react'
 import { Form, InputGroup, ListGroup, Modal, Image, Spinner, Alert } from 'react-bootstrap'
 import { Search } from 'react-bootstrap-icons'
 import { useTranslation } from 'react-i18next'
@@ -34,12 +34,7 @@ const ConversionTokensModal: React.FC<ConversionTokensModalProps> = (props) => {
   const [lastElement, setLastElement] = useState<HTMLDivElement | null>(null)
 
   const blockchains = useBlockchains()
-
-  const preparedTokens = useMemo(() => {
-    return tokens.sort(tokenDefaultResultComparator)
-  }, [tokens])
-
-  const tokensDb = useTokenDb(preparedTokens)
+  const tokensDb = useTokenDb(tokens)
 
   useEffect(() => {
     const searchTokens = async (tokensDb: Orama<typeof tokenSchema>, query: string) => {
@@ -71,11 +66,11 @@ const ConversionTokensModal: React.FC<ConversionTokensModalProps> = (props) => {
     if (tokensDb && !isNullOrEmptyOrWhitespaces(deferredQuery)) {
       searchTokens(tokensDb, deferredQuery)
     } else {
-      setResults(preparedTokens)
+      setResults(tokens)
     }
 
     setPageNum(1)
-  }, [preparedTokens, deferredQuery, tokensDb])
+  }, [tokens, deferredQuery, tokensDb])
 
   const observer = useRef(
     new IntersectionObserver(entries => {

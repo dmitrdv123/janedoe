@@ -1,4 +1,4 @@
-import { Asset, BlockchainMeta, Token } from 'rango-sdk-basic'
+import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
 export interface PaymentFeeDetails {
   name: string
@@ -10,13 +10,15 @@ export interface PaymentDetails {
   protocolPaymentId: string
   fromBlockchain: BlockchainMeta
   fromToken: Token
-  toAsset: Asset
+  toBlockchain: BlockchainMeta
+  toToken: Token
   fromAddress: string
   toAddress: string
   fromContracts: { [key: string]: string }
   toContracts: { [key: string]: string }
-  tokenAmount: string
-  amountCurrencyRequired: number
+  fromTokenAmount: string
+  toTokenAmount: string
+  currencyAmount: number
   currency: string
   slippage: number | undefined
 }

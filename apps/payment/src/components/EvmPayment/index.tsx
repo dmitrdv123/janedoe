@@ -1,17 +1,16 @@
-import { Asset, BlockchainMeta, Token } from 'rango-sdk-basic'
+import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { useAccount } from 'wagmi'
 
-import { currencyToTokenAmount, isAssetEqualToToken, isNativeToken } from '../../libs/utils'
+import { currencyToTokenAmount, isAssetEqualToToken, isNativeAsset, isNativeToken } from '../../libs/utils'
 import TokenConversionCard from './components/TokenConversionCard'
 import EmailInput from './components/EmailInput'
 import ConnectButton from './components/ConnectButton'
 import PayButton from './components/PayButton'
 import usePaymentDetails from '../../libs/hooks/usePaymentDetails'
 import { useExchangeRate, usePaymentSettings } from '../../states/settings/hook'
-import useTokenConversionPay from '../../libs/hooks/useTokenConversionPay'
 import useNavigateSuccess from '../../libs/hooks/useNavigateSuccess'
 import useNativePay from '../../libs/hooks/useNativePay'
 import usePaymentData from '../../libs/hooks/usePaymentData'
@@ -19,7 +18,9 @@ import TokenButton from './components/TokenButton'
 import { useInfoMessages } from '../../states/application/hook'
 import { INFO_MESSAGE_PAYMENT_PROCESSING_ERROR } from '../../constants'
 import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
-import { NativePayStage, TokenConversionPayStage, TokenPayStage } from '../../types/contract-call-result'
+import { NativePayStage, TokenConvertStage, TokenPayStage } from '../../types/contract-call-result'
+import useTokenConvertAndNativePay from '../../libs/hooks/useTokenConvertAndNativePay'
+import useTokenConvertAndTokenPay from '../../libs/hooks/useTokenConvertAndTokenPay'
 
 interface EvmPaymentProps {
   blockchain: BlockchainMeta
@@ -31,8 +32,9 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const { blockchain, restCurrencyAmount, receivedCurrencyAmount } = props
 
   const [fromToken, setFromToken] = useState<Token | undefined>(undefined)
-  const [toAsset, setToAsset] = useState<Asset | undefined>(undefined)
-  const [tokenAmount, setTokenAmount] = useState<string | undefined>(undefined)
+  const [toToken, setToToken] = useState<Token | undefined>(undefined)
+  const [fromTokenAmount, setFromTokenAmount] = useState<string | undefined>(undefined)
+  const [toTokenAmount, setToTokenAmount] = useState<string | undefined>(undefined)
   const [slippage, setSlippage] = useState<number | undefined>(undefined)
   const [email, setEmail] = useState('')
   const [isForceRefresh, setIsForceRefresh] = useState(false)
@@ -42,7 +44,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
   const { currency } = usePaymentData()
   const paymentSettings = usePaymentSettings()
-  const paymentDetails = usePaymentDetails(blockchain, fromToken, toAsset, tokenAmount, slippage, restCurrencyAmount, currency)
+  const paymentDetails = usePaymentDetails(blockchain, fromToken, blockchain, toToken, fromTokenAmount, toTokenAmount, slippage, restCurrencyAmount, currency)
   const exchangeRate = useExchangeRate()
 
   const navigateSuccessHandler = useNavigateSuccess(blockchain?.name, email)
@@ -57,25 +59,36 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
       return
     }
 
-    const tokenAmountTmp = fromToken?.usdPrice && exchangeRate
+    const fromTokenAmountTmp = fromToken?.usdPrice && exchangeRate
       ? currencyToTokenAmount(restCurrencyAmount, fromToken.usdPrice, fromToken.decimals, exchangeRate)
       : undefined
 
-    setToAsset(fromToken)
-    setTokenAmount(tokenAmountTmp)
+    const toTokenAmountTmp = toToken?.usdPrice && exchangeRate
+      ? currencyToTokenAmount(restCurrencyAmount, toToken.usdPrice, toToken.decimals, exchangeRate)
+      : undefined
+
+    setToToken(fromToken)
+    setFromTokenAmount(fromTokenAmountTmp)
+    setToTokenAmount(toTokenAmountTmp)
     setSlippage(undefined)
-  }, [restCurrencyAmount, exchangeRate, fromToken, needConversion])
+  }, [restCurrencyAmount, exchangeRate, fromToken, toToken, needConversion])
 
   const selectTokenHandler = useCallback((tokenToUpdate: Token | undefined) => {
     clearInfoMessage()
     setFromToken(tokenToUpdate)
   }, [clearInfoMessage])
 
-  const updateConversionHandler = useCallback((toAssetToUpdate: Asset | undefined, tokenAmountToUpdate: string | undefined, slippageToUpdate: number) => {
-    setToAsset(toAssetToUpdate)
-    setTokenAmount(tokenAmountToUpdate)
+  const updateConversionHandler = useCallback((toTokenToUpdate: Token | undefined, tokenAmountToUpdate: string | undefined, slippageToUpdate: number) => {
+    setFromTokenAmount(tokenAmountToUpdate)
+
+    const toTokenAmountTmp = toTokenToUpdate?.usdPrice && exchangeRate
+      ? currencyToTokenAmount(restCurrencyAmount, toTokenToUpdate.usdPrice, toTokenToUpdate.decimals, exchangeRate)
+      : undefined
+    setToToken(toTokenToUpdate)
+    setToTokenAmount(toTokenAmountTmp)
+
     setSlippage(slippageToUpdate)
-  }, [])
+  }, [restCurrencyAmount, exchangeRate])
 
   const changeEmailHandler = useCallback((emailToUpdate: string) => {
     setEmail(emailToUpdate)
@@ -98,7 +111,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   return (
     <>
       <div className="mb-2">
-        <TokenButton blockchain={blockchain} token={fromToken} tokenAmount={tokenAmount} onUpdate={selectTokenHandler} />
+        <TokenButton blockchain={blockchain} token={fromToken} tokenAmount={fromTokenAmount} onUpdate={selectTokenHandler} />
       </div>
 
       {(!!fromToken && !!paymentSettings && needConversion) && (
@@ -132,20 +145,37 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetails && !isAssetEqualToToken(paymentDetails.toAsset, paymentDetails.fromToken)) && (
+      {(isConnected && !!paymentDetails && !isAssetEqualToToken(paymentDetails.toToken, paymentDetails.fromToken) && isNativeAsset(paymentDetails.toBlockchain, paymentDetails.toToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             paymentDetails={paymentDetails}
             receivedCurrencyAmount={receivedCurrencyAmount}
-            stages={Object.values(TokenConversionPayStage)}
-            usePay={useTokenConversionPay}
+            stages={
+              [...Object.values(TokenConvertStage), ...Object.values(NativePayStage)]
+            }
+            usePay={useTokenConvertAndNativePay}
             onError={errorHandler}
             onSuccess={successHandler}
           />
         </div>
       )}
 
-      {(isConnected && !!paymentDetails && !!blockchain && isAssetEqualToToken(paymentDetails.toAsset, paymentDetails.fromToken) && isNativeToken(blockchain, paymentDetails.fromToken)) && (
+      {(isConnected && !!paymentDetails && !isAssetEqualToToken(paymentDetails.toToken, paymentDetails.fromToken) && !isNativeAsset(paymentDetails.toBlockchain, paymentDetails.toToken)) && (
+        <div className="d-grid mb-2">
+          <PayButton
+            paymentDetails={paymentDetails}
+            receivedCurrencyAmount={receivedCurrencyAmount}
+            stages={
+              [...Object.values(TokenConvertStage), ...Object.values(TokenPayStage)]
+            }
+            usePay={useTokenConvertAndTokenPay}
+            onError={errorHandler}
+            onSuccess={successHandler}
+          />
+        </div>
+      )}
+
+      {(isConnected && !!paymentDetails && !!blockchain && isAssetEqualToToken(paymentDetails.toToken, paymentDetails.fromToken) && isNativeToken(blockchain, paymentDetails.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             paymentDetails={paymentDetails}
@@ -158,7 +188,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetails && !!blockchain && isAssetEqualToToken(paymentDetails.toAsset, paymentDetails.fromToken) && !isNativeToken(blockchain, paymentDetails.fromToken)) && (
+      {(isConnected && !!paymentDetails && !!blockchain && isAssetEqualToToken(paymentDetails.toToken, paymentDetails.fromToken) && !isNativeToken(blockchain, paymentDetails.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             paymentDetails={paymentDetails}

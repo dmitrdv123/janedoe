@@ -33,9 +33,9 @@ const BlockchainButton: React.FC<BlockchainButtonProps> = (props) => {
       return []
     }
 
-    return appSettings.paymentBlockchains
+    return paymentSettings.wallets
       .map(
-        paymentBlockchain => blockchains.find(item => item.name.toLocaleLowerCase() === paymentBlockchain.blockchain.toLocaleLowerCase())
+        item => blockchains.find(blockchain => blockchain.name.toLocaleLowerCase() === item.blockchain.toLocaleLowerCase())
       )
       .filter(paymentBlockchain => {
         if (!paymentBlockchain) {

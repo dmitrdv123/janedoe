@@ -1,8 +1,8 @@
 import { QuoteResponse, RoutingResultType, Token } from 'rango-sdk-basic'
 
 import { ApiWrapper } from './api-wrapper'
-import { createImMessage, isNullOrEmptyOrWhitespaces, tokenAmountToUsd, usdToTokenAmount } from '../utils'
-import { ALLOWED_DELTA, MAX_QUOTE_ITERATIONS } from '../../constants'
+import { isNullOrEmptyOrWhitespaces, tokenAmountToUsd, usdToTokenAmount } from '../utils'
+import { ALLOWED_DELTA, DELTA_COEF, MAX_QUOTE_ITERATIONS } from '../../constants'
 import { PaymentConversionData } from '../../types/payment-conversion-result'
 
 export class PaymentConversionManager {
@@ -20,18 +20,8 @@ export class PaymentConversionManager {
 
   public async calculateQuote(
     baseUrlApi: string,
-    id: string,
-    paymentId: string,
-
-    fromContract: string,
-    toContract: string,
-
-    fromAddress: string,
-    toAddress: string,
-
     fromToken: Token,
     toToken: Token,
-
     amountUsd: number,
     slippage: number
   ): Promise<PaymentConversionData | undefined> {
@@ -46,18 +36,13 @@ export class PaymentConversionManager {
     let totalAmountUsd = amountUsd
     let i = 0
 
-    const imMessage = createImMessage(fromAddress, toAddress, id + paymentId)
-
     do {
       const tokenAmount = usdToTokenAmount(totalAmountUsd, fromToken.usdPrice, fromToken.decimals)
       const request = ApiWrapper.instance.quoteRequest({
-        imMessage,
-        sourceContract: fromContract,
-        destinationContract: toContract,
         from: fromToken,
         to: toToken,
         amount: tokenAmount,
-        contractCall: true,
+        contractCall: false,
         enableCentralizedSwappers: true
       }, slippage)
       const quote = await ApiWrapper.instance.send<QuoteResponse>({
@@ -81,14 +66,14 @@ export class PaymentConversionManager {
 
       const outputAmountUsd = tokenAmountToUsd(outputAmount, toToken.usdPrice, toToken.decimals)
       const amountDeltaUsd = amountUsd - outputAmountUsd
-      if (outputAmountUsd >= amountUsd && Math.abs(amountDeltaUsd) / amountUsd < ALLOWED_DELTA) {
+      if (outputAmountUsd >= amountUsd && Math.abs(amountDeltaUsd) / amountUsd <= ALLOWED_DELTA) {
         return {
           amount: tokenAmount,
           quote: quote.route
         }
       }
 
-      totalAmountUsd += amountDeltaUsd
+      totalAmountUsd += DELTA_COEF * amountDeltaUsd
       if (totalAmountUsd <= 0) {
         return undefined
       }

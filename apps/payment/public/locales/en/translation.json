@@ -37,8 +37,8 @@
       "connect_wallet": "Connect Wallet",
       "send_details": "to send the payment details",
       "email_placeholder": "email@email.com",
-      "pay": "Pay",
-      "received": "Received",
+      "pay": "PAY",
+      "received": "already paid",
       "select_token": "Select a token",
       "no_balance": "Not enough balance",
       "conversion_desc": "will be converted",
@@ -153,7 +153,7 @@
         "contract_not_found": "Cannot find janedoe contract address for blockchain {{blockchain}}"
       }
     },
-    "token_conversion_pay": {
+    "token_convert": {
       "switch_chain": "Blockchain switching",
       "switch_chain_processing": "Blockchain switching is in progress",
       "switch_chain_error": "Blockchain switching failed",
@@ -162,20 +162,20 @@
       "token_swap_processing": "Creating token swap transaction is in progress",
       "token_swap_error": "Creating token swap transaction failed",
       "token_swap_success": "Creating token swap transaction was successful",
-      "token_approve": "Token spending permissions",
+      "token_approve": "Setting token spending permissions",
       "token_approve_processing": "Setting token spending permissions is in progress",
       "token_approve_error": "Setting token spending permissions failed",
       "token_approve_success": "Setting token spending permissions was successful",
-      "token_pay": "Payment transaction",
-      "token_pay_processing": "Payment transaction is in progress",
-      "token_pay_error": "Payment transaction failed",
-      "token_pay_success": "Payment transaction was successful"
+      "token_convert": "Swap transaction",
+      "token_convert_processing": "Swap transaction is in progress",
+      "token_convert_error": "Swap transaction failed",
+      "token_convert_success": "Swap transaction was successful"
     },
     "token_conversion_swap": {
       "errors": {
         "swap_not_defined": "Token swap transaction is undefined",
         "swap_transaction_not_defined": "Token swap transaction is undefined",
-        "token_output_amount_less_than_required": "The output amount {{amountCurrency}} {{currency}} is less than the required amount {{amountCurrencyRequired}} {{currency}}. Please update your token conversion information and try payment again or select a different token."
+        "token_output_amount_less_than_required": "The output amount {{amountCurrency}} {{currency}} is less than the required amount {{amountCurrency}} {{currency}}. Please update your token conversion information and try payment again or select a different token."
       }
     },
     "token_conversion_approval": {
@@ -191,19 +191,19 @@
       "transaction_confirmed": "Transaction confirmed: request {{requestId}}, hash {{txId}}"
     },
     "token_allowance": {
-      "read_allowance": "Token spending permissions",
+      "read_allowance": "Reading token spending permissions",
       "read_allowance_processing": "Reading token spending permissions",
       "read_allowance_error": "Reading token spending permissions failed",
       "read_allowance_success": "Reading token spending permissions was successful"
     },
     "token_approve": {
-      "token_approve": "Token spending permissions"
+      "token_approve": "Setting token spending permissions"
     },
     "token_pay": {
       "token_pay": "Payment transaction"
     },
     "token_approve_and_pay": {
-      "token_allowance": "Token spending permissions",
+      "token_allowance": "Reading token spending permissions",
       "token_reset_approve": "Reset token spending permissions",
       "token_approve": "Set token spending permissions",
       "token_pay": "Payment transaction"

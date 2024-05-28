@@ -2,16 +2,16 @@ import { EvmTransaction, SwapResponse } from 'rango-sdk-basic'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ContractCallResult, TokenConversionPayStage } from '../../types/contract-call-result'
+import { ContractCallResult, TokenConvertStage } from '../../types/contract-call-result'
 import { PaymentDetails } from '../../types/payment-details'
 import { ApiRequestStatus } from '../../types/api-request'
-import useTokenConversionSwap from './useTokenConversionSwap'
-import useTokenConversionTransactionApproval from './useTokenConversionTransactionApproval'
-import useTokenConversionTransactionMain from './useTokenConversionTransactionMain'
+import useTokenConvertSwap from './useTokenConvertSwap'
+import useTokenConvertTransactionApproval from './useTokenConvertTransactionApproval'
+import useTokenConvertTransactionMain from './useTokenConvertTransactionMain'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { tryParseInt } from '../utils'
 
-export default function useTokenConversionPay(
+export default function useTokenConvert(
   paymentDetails: PaymentDetails,
   onError?: (error: Error | undefined) => void,
   onSuccess?: (txId: string | undefined) => void
@@ -31,7 +31,7 @@ export default function useTokenConversionPay(
     status: mainStatus,
     error: mainError,
     handle: mainHandle
-  } = useTokenConversionTransactionMain(
+  } = useTokenConvertTransactionMain(
     onError,
     onSuccess
   )
@@ -44,7 +44,7 @@ export default function useTokenConversionPay(
     status: approveStatus,
     error: approveError,
     handle: approveHandle
-  } = useTokenConversionTransactionApproval(
+  } = useTokenConvertTransactionApproval(
     onError,
     approveSuccessHandler
   )
@@ -75,7 +75,7 @@ export default function useTokenConversionPay(
     status: swapStatus,
     error: swapError,
     handle: swapHandle
-  } = useTokenConversionSwap(paymentDetails, onError, swapSuccessHandler)
+  } = useTokenConvertSwap(paymentDetails, onError, swapSuccessHandler)
 
   const handle = useCallback(() => {
     setError(undefined)
@@ -89,21 +89,45 @@ export default function useTokenConversionPay(
   }, [swapHandle])
 
   useEffect(() => {
+    const err = switchChainError ? new Error(switchChainError.message) : undefined
+
+    switch (switchChainStatus) {
+      case 'pending':
+        setError(undefined)
+        setDetails(t('hooks.token_convert.switch_chain_processing'))
+        setStage(TokenConvertStage.SwitchChain)
+        setStatus('processing')
+        break
+      case 'error':
+        setError(err)
+        setDetails(t('hooks.token_convert.switch_chain_error'))
+        setStatus('error')
+
+        onError?.(err)
+        break
+      case 'success':
+        setError(undefined)
+        setDetails(t('hooks.token_convert.switch_chain_success'))
+        break
+    }
+  }, [switchChainError, switchChainStatus, t, onError])
+
+  useEffect(() => {
     switch (swapStatus) {
       case 'processing':
         setError(undefined)
-        setDetails(t('hooks.token_conversion_pay.token_swap_processing'))
-        setStage(TokenConversionPayStage.TokenSwap)
+        setDetails(t('hooks.token_convert.token_swap_processing'))
+        setStage(TokenConvertStage.TokenSwap)
         setStatus('processing')
         break
       case 'error':
         setError(swapError)
-        setDetails(t('hooks.token_conversion_pay.token_swap_error'))
+        setDetails(t('hooks.token_convert.token_swap_error'))
         setStatus('error')
         break
       case 'success':
         setError(undefined)
-        setDetails(t('hooks.token_conversion_pay.token_swap_success'))
+        setDetails(t('hooks.token_convert.token_swap_success'))
         break
     }
   }, [swapError, swapStatus, t])
@@ -112,18 +136,18 @@ export default function useTokenConversionPay(
     switch (approveStatus) {
       case 'processing':
         setError(undefined)
-        setDetails(t('hooks.token_conversion_pay.token_approve_processing'))
-        setStage(TokenConversionPayStage.TokenApprove)
+        setDetails(t('hooks.token_convert.token_approve_processing'))
+        setStage(TokenConvertStage.TokenApprove)
         setStatus('processing')
         break
       case 'error':
         setError(approveError)
-        setDetails(t('hooks.token_conversion_pay.token_approve_error'))
+        setDetails(t('hooks.token_convert.token_approve_error'))
         setStatus('error')
         break
       case 'success':
         setError(undefined)
-        setDetails(t('hooks.token_conversion_pay.token_approve_success'))
+        setDetails(t('hooks.token_convert.token_approve_success'))
         break
     }
   }, [approveError, approveStatus, t])
@@ -132,44 +156,22 @@ export default function useTokenConversionPay(
     switch (mainStatus) {
       case 'processing':
         setError(undefined)
-        setDetails(t('hooks.token_conversion_pay.token_pay_processing'))
-        setStage(TokenConversionPayStage.TokenPay)
+        setDetails(t('hooks.token_convert.token_convert_processing'))
+        setStage(TokenConvertStage.TokenConvert)
         setStatus('processing')
         break
       case 'error':
         setError(mainError)
-        setDetails(t('hooks.token_conversion_pay.token_pay_error'))
+        setDetails(t('hooks.token_convert.token_convert_error'))
         setStatus('error')
         break
       case 'success':
         setError(undefined)
-        setDetails(t('hooks.token_conversion_pay.token_pay_success'))
+        setDetails(t('hooks.token_convert.token_convert_success'))
         setStatus('success')
         break
     }
   }, [mainError, mainStatus, t])
-
-  useEffect(() => {
-    const err = switchChainError ? new Error(switchChainError.message) : undefined
-
-    switch (switchChainStatus) {
-      case 'pending':
-        setError(undefined)
-        setDetails(t('hooks.token_conversion_pay.switch_chain_processing'))
-        setStage(TokenConversionPayStage.SwitchChain)
-        setStatus('processing')
-        break
-      case 'error':
-        setError(err)
-        setDetails(t('hooks.token_conversion_pay.switch_chain_error'))
-        setStatus('error')
-        break
-      case 'success':
-        setError(undefined)
-        setDetails(t('hooks.token_conversion_pay.switch_chain_success'))
-        break
-    }
-  }, [switchChainError, switchChainStatus, t, onError])
 
   return {
     status,

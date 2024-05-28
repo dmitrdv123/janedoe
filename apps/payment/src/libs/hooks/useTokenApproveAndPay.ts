@@ -53,7 +53,7 @@ export default function useTokenApproveAndPay(
     paymentDetails.fromContracts.JaneDoe,
     paymentDetails.fromAddress,
     paymentDetails.toAddress,
-    paymentDetails.tokenAmount,
+    paymentDetails.fromTokenAmount,
     paymentDetails.protocolPaymentId,
     errorPayHandler,
     tokenPaySuccessHandle
@@ -73,7 +73,7 @@ export default function useTokenApproveAndPay(
     paymentDetails.fromBlockchain,
     paymentDetails.fromToken,
     paymentDetails.fromContracts.JaneDoe,
-    paymentDetails.tokenAmount,
+    paymentDetails.fromTokenAmount,
     errorPayHandler,
     tokenApproveSuccessHandle
   )
@@ -103,7 +103,7 @@ export default function useTokenApproveAndPay(
     setStage(undefined)
     setStatus('idle')
 
-    if (tokenAllowance !== undefined && tokenAllowance >= BigInt(paymentDetails.tokenAmount)) {
+    if (tokenAllowance !== undefined && tokenAllowance >= BigInt(paymentDetails.fromTokenAmount)) {
       tokenPayHandle()
     } else if (tokenAllowance !== undefined && tokenAllowance === BigInt(0)) {
       tokenApproveHandle()

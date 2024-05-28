@@ -108,6 +108,10 @@ export function isNativeToken(blockchain: BlockchainMeta, token: Token): boolean
   return blockchain.feeAssets.findIndex(asset => isAssetEqualToToken(asset, token)) !== -1
 }
 
+export function isNativeAsset(blockchain: BlockchainMeta, asset: Asset): boolean {
+  return blockchain.feeAssets.findIndex(feeAsset => sameAsset(feeAsset, asset)) !== -1
+}
+
 export function findToken(tokens: Token[], blockchain: BlockchainMeta, symbol: string, address: string | null): Token | undefined {
   return tokens.find(token => isToken(token, blockchain.name, symbol, address))
 }
@@ -233,6 +237,10 @@ export function tokenAmountToTokenAmount(fromAmount: string, fromUsdPrice: numbe
 }
 
 export function sameToken(a: Token, b: Token): boolean {
+  return sameAsset(a, b)
+}
+
+export function sameAsset(a: Asset, b: Asset): boolean {
   return a.blockchain.toLocaleLowerCase() === b.blockchain.toLocaleLowerCase()
     && a.symbol.toLocaleLowerCase() === b.symbol.toLocaleLowerCase()
     && (

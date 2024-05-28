@@ -3,7 +3,8 @@ import { Chain, arbitrum, avalanche, base, bsc, cronos, hardhat, linea, mainnet,
 export const DEFAULT_BLOCKCHAIN_ID = 1
 export const DEFAULT_CURRENCY_DECIMAL_PLACES = 2
 export const DEFAULT_TOKEN_DECIMAL_PLACES = 4
-export const ALLOWED_DELTA = 0.005
+export const ALLOWED_DELTA = 0.01
+export const DELTA_COEF = 1.2
 export const MAX_QUOTE_ITERATIONS = 10
 export const ACCOUNT_ID_LENGTH = 11
 export const SETTINGS_UPDATE_INTERVAL_MS = 600000

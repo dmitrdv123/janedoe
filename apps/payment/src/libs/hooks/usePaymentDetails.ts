@@ -1,4 +1,4 @@
-import { Asset, BlockchainMeta, Token } from 'rango-sdk-basic'
+import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAccount } from 'wagmi'
@@ -6,14 +6,16 @@ import { useAccount } from 'wagmi'
 import { PaymentDetails } from '../../types/payment-details'
 import { useAppSettings, usePaymentSettings } from '../../states/settings/hook'
 import { useInfoMessages } from '../../states/application/hook'
-import { INFO_MESSAGE_PAYMENT_PROCESSING_ERROR } from '../../constants'
+import { INFO_MESSAGE_PAYMENT_DETAILS_ERROR } from '../../constants'
 import { useParams } from 'react-router-dom'
 
 export default function usePaymentDetails(
   fromBlockchain: BlockchainMeta,
   fromToken: Token | undefined,
-  toAsset: Asset | undefined,
-  tokenAmount: string | undefined,
+  toBlockchain: BlockchainMeta,
+  toToken: Token | undefined,
+  fromTokenAmount: string | undefined,
+  toTokenAmount: string | undefined,
   slippage: number | undefined,
   amount: number,
   currency: string
@@ -36,26 +38,16 @@ export default function usePaymentDetails(
       || !paymentId
       || !fromToken?.usdPrice
       || !fromAddress
-      || !toAsset
-      || !tokenAmount
+      || !toToken?.usdPrice
+      || !fromTokenAmount
+      || !toTokenAmount
     ) {
       setPaymentDetails(undefined)
       return
     }
 
     const protocolPaymentId = id + paymentId
-
-    const toAddress = paymentSettings.wallets.find(
-      item => item.blockchain.toLocaleLowerCase() === toAsset.blockchain.toLocaleLowerCase()
-    )?.address
-    if (!toAddress) {
-      setPaymentDetails(undefined)
-      addInfoMessage(t('hooks.payment_details.errors.wallet_not_found', {
-        blockchain: toAsset.blockchain
-      }), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger')
-
-      return
-    }
+    const toAddress = fromAddress
 
     const fromContracts = appSettings.contracts.find(
       item => item.blockchain.toLocaleLowerCase() === fromToken.blockchain.toLocaleLowerCase()
@@ -64,46 +56,50 @@ export default function usePaymentDetails(
       setPaymentDetails(undefined)
       addInfoMessage(t('hooks.payment_details.errors.contract_not_found', {
         blockchain: fromToken.blockchain
-      }), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger')
+      }), INFO_MESSAGE_PAYMENT_DETAILS_ERROR, 'danger')
 
       return
     }
 
     const toContracts = appSettings.contracts.find(
-      item => item.blockchain.toLocaleLowerCase() === toAsset.blockchain.toLocaleLowerCase()
+      item => item.blockchain.toLocaleLowerCase() === toToken.blockchain.toLocaleLowerCase()
     )?.contractAddresses
     if (!toContracts) {
       setPaymentDetails(undefined)
       addInfoMessage(t('hooks.payment_details.errors.contract_not_found', {
-        blockchain: toAsset.blockchain
-      }), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger')
+        blockchain: toToken.blockchain
+      }), INFO_MESSAGE_PAYMENT_DETAILS_ERROR, 'danger')
 
       return
     }
 
-    removeInfoMessage(INFO_MESSAGE_PAYMENT_PROCESSING_ERROR)
+    removeInfoMessage(INFO_MESSAGE_PAYMENT_DETAILS_ERROR)
     setPaymentDetails({
       fromBlockchain,
       protocolPaymentId,
       fromToken,
-      toAsset,
+      toBlockchain,
+      toToken,
       fromAddress,
       toAddress,
       fromContracts,
       toContracts,
       slippage,
       currency,
-      amountCurrencyRequired: amount,
-      tokenAmount: tokenAmount
+      fromTokenAmount,
+      toTokenAmount,
+      currencyAmount: amount,
     })
   }, [
     id,
     paymentId,
     fromBlockchain,
     fromToken,
-    toAsset,
+    toBlockchain,
+    toToken,
     fromAddress,
-    tokenAmount,
+    fromTokenAmount,
+    toTokenAmount,
     slippage,
     appSettings,
     paymentSettings,

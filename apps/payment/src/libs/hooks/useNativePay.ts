@@ -46,7 +46,7 @@ export default function useNativePay(
       getAddressOrDefault(paymentDetails.toAddress), // to
       encodeStringToBytes(paymentDetails.protocolPaymentId) // paymentId
     ],
-    BigInt(paymentDetails.tokenAmount),
+    BigInt(paymentDetails.fromTokenAmount),
     onError,
     onSuccess
   )

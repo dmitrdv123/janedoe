@@ -183,8 +183,7 @@
       "errors": {
         "fail_restore_default": "Failed to restore default settings",
         "fail_save": "Failed to save payment settings",
-        "cannot_find_blockchain": "Cannot find blockchain {{blockchain}} details",
-        "cannot_find_native_token": "Cannot find native token for blockchain {{blockchain}}"
+        "cannot_find_blockchain": "Cannot find blockchain {{blockchain}} details"
       }
     },
     "support": {

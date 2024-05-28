@@ -9,11 +9,11 @@ export enum TokenPayStage {
   TokenPay = 'hooks.token_approve_and_pay.token_pay'
 }
 
-export enum TokenConversionPayStage {
-  SwitchChain = 'hooks.token_conversion_pay.switch_chain',
-  TokenSwap = 'hooks.token_conversion_pay.token_swap',
-  TokenApprove = 'hooks.token_conversion_pay.token_approve',
-  TokenPay = 'hooks.token_conversion_pay.token_pay'
+export enum TokenConvertStage {
+  TokenSwap = 'hooks.token_convert.token_swap',
+  SwitchChain = 'hooks.token_convert.switch_chain',
+  TokenApprove = 'hooks.token_convert.token_approve',
+  TokenConvert = 'hooks.token_convert.token_convert'
 }
 
 export interface ContractCallResult {

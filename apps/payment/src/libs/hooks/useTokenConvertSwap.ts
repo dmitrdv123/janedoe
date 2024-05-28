@@ -2,14 +2,14 @@ import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SwapResponse } from 'rango-sdk-basic'
 
-import { createImMessage, sameToken, tokenAmountToCurrency } from '../utils'
+import { sameToken, tokenAmountToCurrency } from '../utils'
 import useApiRequest from './useApiRequest'
 import { PaymentDetails } from '../../types/payment-details'
 import { ApiWrapper } from '../services/api-wrapper'
 import { ApiRequestStatus } from '../../types/api-request'
 import { useExchangeRate, useTokens } from '../../states/settings/hook'
 
-export default function useTokenConversionSwap(
+export default function useTokenConvertSwap(
   paymentDetails: PaymentDetails,
   onError?: (error: Error | undefined) => void,
   onSuccess?: (data: SwapResponse) => void
@@ -41,14 +41,11 @@ export default function useTokenConversionSwap(
       ApiWrapper.instance.swapRequest({
         fromAddress: paymentDetails.fromAddress,
         toAddress: paymentDetails.toAddress,
-        sourceContract: paymentDetails.fromContracts.RangoReceiver,
-        destinationContract: paymentDetails.toContracts.RangoReceiver,
-        imMessage: createImMessage(paymentDetails.fromAddress, paymentDetails.toAddress, paymentDetails.protocolPaymentId),
         from: paymentDetails.fromToken,
-        to: paymentDetails.toAsset,
-        amount: paymentDetails.tokenAmount,
+        to: paymentDetails.toToken,
+        amount: paymentDetails.fromTokenAmount,
         slippage: paymentDetails.slippage ? paymentDetails.slippage.toString() : '',
-        contractCall: true,
+        contractCall: false,
         disableEstimate: false,
         enableCentralizedSwappers: true
       })
@@ -97,11 +94,11 @@ export default function useTokenConversionSwap(
         const amountCurrency = response.route && toToken?.usdPrice
           ? tokenAmountToCurrency(response.route.outputAmountMin, toToken.usdPrice, toToken.decimals, exchangeRate)
           : undefined
-        if (!amountCurrency || amountCurrency < paymentDetails.amountCurrencyRequired) {
+        if (!amountCurrency || amountCurrency < paymentDetails.currencyAmount) {
           const error = new Error(t('hooks.token_conversion_swap.errors.token_output_amount_less_than_required', {
             currency: paymentDetails.currency.toLocaleUpperCase(),
             amountCurrency: amountCurrency ?? 'undefined',
-            amountCurrencyRequired: paymentDetails.amountCurrencyRequired
+            currencyAmount: paymentDetails.currencyAmount
           }))
 
           setTxId(undefined)
@@ -131,17 +128,14 @@ export default function useTokenConversionSwap(
       })
   }, [
     t,
-    paymentDetails.amountCurrencyRequired,
+    paymentDetails.currencyAmount,
     paymentDetails.currency,
     paymentDetails.fromAddress,
-    paymentDetails.fromContracts.RangoReceiver,
     paymentDetails.fromToken,
-    paymentDetails.protocolPaymentId,
     paymentDetails.slippage,
     paymentDetails.toAddress,
-    paymentDetails.toAsset,
-    paymentDetails.toContracts.RangoReceiver,
-    paymentDetails.tokenAmount,
+    paymentDetails.toToken,
+    paymentDetails.fromTokenAmount,
     exchangeRate,
     tokens,
     loadSwap,

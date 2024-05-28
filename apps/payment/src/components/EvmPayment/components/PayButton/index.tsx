@@ -56,7 +56,7 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
 
   return (
     <>
-      <PaymentProcessingModal stages={stages} status={status} stage={stage} details={details}/>
+      <PaymentProcessingModal stages={stages} status={status} stage={stage} details={details} />
 
       <Button
         variant="primary"
@@ -66,17 +66,17 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
 
         {t('components.evm_payment.pay')}
         &nbsp;<TokenAmount
-          amount={paymentDetails.tokenAmount}
+          amount={paymentDetails.fromTokenAmount}
           symbol={paymentDetails.fromToken.symbol}
           decimals={paymentDetails.fromToken.decimals}
         />
 
-        {(!!paymentDetails.tokenAmount && !!paymentDetails.fromToken?.usdPrice && !!exchangeRate) && (
+        {(!!paymentDetails.fromTokenAmount && !!paymentDetails.fromToken?.usdPrice && !!exchangeRate) && (
           <>
             &nbsp;(= <CurrencyAmount
               currency={currency}
               amount={tokenAmountToCurrency(
-                paymentDetails.tokenAmount,
+                paymentDetails.fromTokenAmount,
                 paymentDetails.fromToken.usdPrice,
                 paymentDetails.fromToken.decimals,
                 exchangeRate
@@ -87,8 +87,10 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
         {!!receivedCurrencyAmount && (
           <>
             <br />
-            {t('components.evm_payment.received')}
-            &nbsp;<CurrencyAmount currency={currency} amount={receivedCurrencyAmount} />
+            <small>
+              {t('components.evm_payment.received')}
+              &nbsp;<CurrencyAmount currency={currency} amount={receivedCurrencyAmount} />
+            </small>
           </>
         )}
       </Button>

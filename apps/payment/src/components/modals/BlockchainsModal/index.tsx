@@ -24,7 +24,6 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
   const [results, setResults] = useState<BlockchainMeta[] | undefined>(undefined)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const deferredQuery = useDeferredValue(searchQuery)
-  const [withoutConversion, setWithoutConversion] = useState<boolean>(false)
 
   const { t } = useTranslation()
 
@@ -71,12 +70,6 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
             return false
           }
 
-          if (withoutConversion) {
-            return paymentSettings?.wallets.find(
-              wallet => wallet.blockchain.toLocaleLowerCase() === item.name.toLocaleLowerCase()
-            )
-          }
-
           return true
         }) as BlockchainMeta[]
 
@@ -86,15 +79,9 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
     if (blockchainsDb && !isNullOrEmptyOrWhitespaces(deferredQuery)) {
       searchBlockchains(blockchainsDb, deferredQuery)
     } else {
-      const preparedResults = withoutConversion
-        ? preparedBlockchains.filter(
-          item => paymentSettings?.wallets.find(wallet => wallet.blockchain.toLocaleLowerCase() === item.name.toLocaleLowerCase())
-        )
-        : preparedBlockchains
-
-      setResults(preparedResults)
+      setResults(preparedBlockchains)
     }
-  }, [preparedBlockchains, blockchainsDb, deferredQuery, paymentSettings?.wallets, withoutConversion])
+  }, [preparedBlockchains, blockchainsDb, deferredQuery, paymentSettings?.wallets])
 
   const blockchainSelectHandler = useCallback((blockchain: BlockchainMeta) => {
     toggleModal()
@@ -123,15 +110,6 @@ const BlockchainsModal: React.FC<BlockchainsModalProps> = (props) => {
             />
             <InputGroup.Text><Search /></InputGroup.Text>
           </InputGroup>
-
-          {(!appSettings?.disableConversion && !paymentSettings?.disableConversion) && (
-            <Form.Group>
-              <Form.Check type='checkbox' label={t('components.blockchain_modal.conversion_checkbox')} checked={withoutConversion} onChange={e => setWithoutConversion(e.target.checked)} />
-              <Form.Text className="text-muted">
-                {t('components.blockchain_modal.conversion_checkbox_desc')}
-              </Form.Text>
-            </Form.Group>
-          )}
         </div>
 
         <ListGroup className="overflow-auto rounded-0 modal-list-group">

@@ -22,7 +22,7 @@ interface TokenConversionCardProps {
   disabled?: boolean
   isForceRefresh: boolean
   onForceRefreshEnd: () => void
-  onUpdate: (asset: Asset | undefined, amount: string | undefined, slippage: number) => void
+  onUpdate: (token: Token | undefined, tokenAmount: string | undefined, slippage: number) => void
 }
 
 const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
@@ -59,15 +59,21 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
       return []
     }
 
-    const arr = paymentSettings.assets
-      .filter(asset => {
-        const blockchain = blockchains?.find(item => item.name.toLocaleLowerCase() === asset.blockchain.toLocaleLowerCase())
-        return blockchain?.type === TransactionType.EVM
+    return paymentSettings.assets
+      .map(asset => {
+        if (asset.blockchain.toLocaleLowerCase() !== blockchain.name.toLocaleLowerCase()) {
+          return undefined
+        }
+
+        const assetBlockchain = blockchains?.find(item => item.name.toLocaleLowerCase() === asset.blockchain.toLocaleLowerCase())
+        if (assetBlockchain?.type !== TransactionType.EVM) {
+          return undefined
+        }
+
+        return tokens.find(token => isAssetEqualToToken(asset, token))
       })
-      .map(asset => tokens.find(token => isAssetEqualToToken(asset, token)))
       .filter(asset => !!asset) as Token[]
-    return arr
-  }, [paymentSettings, blockchains, tokens])
+  }, [paymentSettings, blockchains, blockchain.name, tokens])
 
   const paymentConversionHandler = useCallback(async (from: Token, to: Asset | undefined, amountCurrency: number, slippageToUse: number) => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_CONVERSION_ERROR)
@@ -92,9 +98,9 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
 
       try {
         await paymentConversionHandler(token, to, amount, slippage)
-        onForceRefreshEnd()
       } finally {
         isProcessingRef.current = false
+        onForceRefreshEnd()
       }
     }
 
@@ -118,7 +124,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
       }
     }
 
-    if (!isProcessingRef.current && isEqual(tokenRef.current, token) && isEqual(toRef.current, to) && amountRef.current === amount && slippageRef.current === slippage) {
+    if (isProcessingRef.current && isEqual(tokenRef.current, token) && isEqual(toRef.current, to) && amountRef.current === amount && slippageRef.current === slippage) {
       return
     }
 
