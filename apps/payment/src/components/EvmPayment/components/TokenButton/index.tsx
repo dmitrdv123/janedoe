@@ -18,11 +18,13 @@ interface TokenButtonProps {
   token: Token | undefined
   tokenAmount: string | undefined
   disabled?: boolean
+  isForceRefresh: boolean
+  onForceRefreshEnd: () => void
   onUpdate: (token: Token | undefined) => void
 }
 
 const TokenButton: React.FC<TokenButtonProps> = (props) => {
-  const { blockchain, token, tokenAmount, disabled, onUpdate } = props
+  const { blockchain, token, tokenAmount, disabled, isForceRefresh, onForceRefreshEnd, onUpdate } = props
 
   const { address } = useAccount()
   const { t } = useTranslation()
@@ -32,7 +34,7 @@ const TokenButton: React.FC<TokenButtonProps> = (props) => {
   const { currency } = usePaymentData()
   const exchangeRate = useExchangeRate()
   const tokens = useTokens()
-  const { data: walletDetails } = useWalletDetails(blockchain, address)
+  const { handle: loadWalletDetailsHandler, data: walletDetails } = useWalletDetails(blockchain, address)
 
   const [selectedToken, setSelectedToken] = useState<Token | undefined>(token)
 
@@ -79,6 +81,13 @@ const TokenButton: React.FC<TokenButtonProps> = (props) => {
   useEffect(() => {
     onUpdate(selectedToken)
   }, [selectedToken, onUpdate])
+
+  useEffect(() => {
+    if (isForceRefresh) {
+      loadWalletDetailsHandler()
+      onForceRefreshEnd()
+    }
+  }, [isForceRefresh, loadWalletDetailsHandler, onForceRefreshEnd])
 
   const openHandler = useCallback((e: FormEvent) => {
     e.preventDefault()

@@ -37,7 +37,8 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const [toTokenAmount, setToTokenAmount] = useState<string | undefined>(undefined)
   const [slippage, setSlippage] = useState<number | undefined>(undefined)
   const [email, setEmail] = useState('')
-  const [isForceRefresh, setIsForceRefresh] = useState(false)
+  const [isForceRefreshConversion, setIsForceRefreshConversion] = useState(false)
+  const [isForceRefreshToken, setIsForceRefreshToken] = useState(false)
 
   const { t } = useTranslation()
   const { isConnected } = useAccount()
@@ -96,7 +97,8 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
   const errorHandler = useCallback((error: Error | undefined) => {
     addInfoMessage(t('components.evm_payment.errors.failed_pay'), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger', error)
-    setIsForceRefresh(true)
+    setIsForceRefreshConversion(true)
+    setIsForceRefreshToken(true)
   }, [t, addInfoMessage])
 
   const successHandler = useCallback((txId: string | undefined) => {
@@ -104,14 +106,25 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     navigateSuccessHandler(txId)
   }, [navigateSuccessHandler, removeInfoMessage])
 
-  const forceRefreshEndHandler = useCallback(() => {
-    setIsForceRefresh(false)
+  const forceRefreshConversionEndHandler = useCallback(() => {
+    setIsForceRefreshConversion(false)
+  }, [])
+
+  const forceRefreshTokenEndHandler = useCallback(() => {
+    setIsForceRefreshToken(false)
   }, [])
 
   return (
     <>
       <div className="mb-2">
-        <TokenButton blockchain={blockchain} token={fromToken} tokenAmount={fromTokenAmount} onUpdate={selectTokenHandler} />
+        <TokenButton
+          blockchain={blockchain}
+          token={fromToken}
+          tokenAmount={fromTokenAmount}
+          isForceRefresh={isForceRefreshToken}
+          onForceRefreshEnd={forceRefreshTokenEndHandler}
+          onUpdate={selectTokenHandler}
+        />
       </div>
 
       {(!!fromToken && !!paymentSettings && needConversion) && (
@@ -120,8 +133,8 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
             blockchain={blockchain}
             token={fromToken}
             amount={restCurrencyAmount}
-            isForceRefresh={isForceRefresh}
-            onForceRefreshEnd={forceRefreshEndHandler}
+            isForceRefresh={isForceRefreshConversion}
+            onForceRefreshEnd={forceRefreshConversionEndHandler}
             onUpdate={updateConversionHandler}
           />
         </div>

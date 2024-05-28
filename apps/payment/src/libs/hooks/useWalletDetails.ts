@@ -1,5 +1,5 @@
 import { BlockchainMeta, WalletDetailsResponse } from 'rango-sdk-basic'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useInfoMessages } from '../../states/application/hook'
@@ -13,28 +13,31 @@ export default function useWalletDetails(blockchain: BlockchainMeta | undefined,
   const { data: walletDetailsResponse, status, process: loadWalletDetails } = useApiRequest<WalletDetailsResponse>()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
-  useEffect(() => {
-    const fetch = async (walletBlockchain: BlockchainMeta, walletAddress: string) => {
-      removeInfoMessage(INFO_MESSAGE_WALLET_DETAILS_ERROR)
-      try {
-        await loadWalletDetails(ApiWrapper.instance.walletDetailsRequest(walletBlockchain, walletAddress))
-      } catch (error) {
-        addInfoMessage(
-          t('hooks.wallet_details.errors.load_error', { blockchain: walletBlockchain.name }),
-          INFO_MESSAGE_WALLET_DETAILS_ERROR,
-          'warning',
-          error
-        )
-      }
+  const handle = useCallback(async () => {
+    if (!blockchain || !address) {
+      return
     }
 
-    if (blockchain && address) {
-      fetch(blockchain, address)
+    removeInfoMessage(INFO_MESSAGE_WALLET_DETAILS_ERROR)
+    try {
+      await loadWalletDetails(ApiWrapper.instance.walletDetailsRequest(blockchain, address))
+    } catch (error) {
+      addInfoMessage(
+        t('hooks.wallet_details.errors.load_error', { blockchain: blockchain.name }),
+        INFO_MESSAGE_WALLET_DETAILS_ERROR,
+        'warning',
+        error
+      )
     }
-  }, [blockchain, address, t, loadWalletDetails, addInfoMessage, removeInfoMessage])
+  }, [address, blockchain, t, loadWalletDetails, addInfoMessage, removeInfoMessage])
+
+  useEffect(() => {
+    handle()
+  }, [handle])
 
   return {
     status,
+    handle,
     data: walletDetailsResponse && walletDetailsResponse.wallets.length > 0 ? walletDetailsResponse.wallets[0]: undefined
   }
 }
