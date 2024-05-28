@@ -113,8 +113,6 @@ others:
 
 - payment: blocked modal can be closed and reopening with unknown state if meta was updated
 - payment: we need to recalculate token amount based on current token prices during convert and pay
-- payment: if error happens during convert and pay on payment stage then we need to show that conversion is done and we dont need to convert again
-- payment: update wallet balances after convert and pay
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
@@ -126,6 +124,7 @@ improvement backlog:
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
 - payment: need to show balances in blockchain dropdown or in account dropdown in top menu
+- payment: if error happens during convert and pay on payment stage then we need to show that conversion is done and we dont need to convert again
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - aws:
   - aws: make appservice private to access only from api gateway
