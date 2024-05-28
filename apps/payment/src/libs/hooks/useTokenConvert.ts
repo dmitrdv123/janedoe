@@ -1,5 +1,5 @@
 import { EvmTransaction, SwapResponse } from 'rango-sdk-basic'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ContractCallResult, TokenConvertStage } from '../../types/contract-call-result'
@@ -22,6 +22,7 @@ export default function useTokenConvert(
   const [error, setError] = useState<Error | undefined>(undefined)
   const [requestId, setRequestId] = useState<string | undefined>(undefined)
   const [evmTx, setEvmTx] = useState<EvmTransaction | undefined>(undefined)
+  const isDoneRef = useRef(false)
 
   const { status: switchChainStatus, error: switchChainError, switchChain } = useSwitchChain()
   const { chainId: currentChainId } = useAccount()
@@ -84,6 +85,7 @@ export default function useTokenConvert(
     setEvmTx(undefined)
     setRequestId(undefined)
     setStatus('idle')
+    isDoneRef.current = false
 
     swapHandle()
   }, [swapHandle])
@@ -103,7 +105,10 @@ export default function useTokenConvert(
         setDetails(t('hooks.token_convert.switch_chain_error'))
         setStatus('error')
 
-        onError?.(err)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onError?.(err)
+        }
         break
       case 'success':
         setError(undefined)

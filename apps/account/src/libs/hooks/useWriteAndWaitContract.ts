@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Abi, Address } from 'viem'
 import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
@@ -20,6 +20,7 @@ export default function useWriteAndWaitContract(
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [data, setData] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
+  const isDoneRef = useRef(false)
 
   const { isConnected, chainId: currentChainId } = useAccount()
   const { t } = useTranslation()
@@ -37,13 +38,19 @@ export default function useWriteAndWaitContract(
         setData(t('hooks.write_and_wait_contract.transaction_waiting_success', { txId }))
         setStatus('success')
 
-        onSuccess?.(txId)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onSuccess?.(txId)
+        }
         break
       case 'error':
         setError(err)
         setData(t('hooks.write_and_wait_contract.transaction_waiting_error', { txId }))
 
-        onError?.(err)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onError?.(err)
+        }
         break
       case 'pending':
         setError(undefined)
@@ -65,7 +72,10 @@ export default function useWriteAndWaitContract(
         setData(t('hooks.write_and_wait_contract.transaction_confirming_error'))
         setStatus('error')
 
-        onError?.(err)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onError?.(err)
+        }
         break
       case 'pending':
         setError(undefined)
@@ -87,7 +97,10 @@ export default function useWriteAndWaitContract(
         setData(t('hooks.write_and_wait_contract.switch_chain_error'))
         setStatus('error')
 
-        onError?.(err)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onError?.(err)
+        }
         break
       case 'pending':
         setError(undefined)
@@ -100,6 +113,7 @@ export default function useWriteAndWaitContract(
     setError(undefined)
     setData(undefined)
     setStatus('idle')
+    isDoneRef.current = false
 
     if (!isConnected || chainId === undefined || !address) {
       return

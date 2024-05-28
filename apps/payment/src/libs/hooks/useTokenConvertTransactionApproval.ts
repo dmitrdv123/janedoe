@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EvmTransaction, TransactionStatus } from 'rango-sdk-basic'
 import { useWalletClient } from 'wagmi'
@@ -19,6 +19,7 @@ export default function useTokenConvertTransactionApproval(
   const [txId, setTxId] = useState<string | undefined>(undefined)
   const [requestId, setRequestId] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
+  const isDoneRef = useRef(false)
 
   const config = useConfig()
   const { t } = useTranslation()
@@ -38,13 +39,20 @@ export default function useTokenConvertTransactionApproval(
               setData(undefined)
               setError(undefined)
               setStatus('success')
-              onSuccess?.(txId)
+              if (!isDoneRef.current) {
+                isDoneRef.current = true
+                onSuccess?.(txId)
+              }
               return true
             case TransactionStatus.FAILED:
               setData(t('hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
               setError(undefined)
               setStatus('processing')
-              return false
+              if (!isDoneRef.current) {
+                isDoneRef.current = true
+                onError?.(undefined)
+              }
+              return true
             default:
               setData(t('hooks.token_conversion_approval.transaction_waiting', { requestId, txId }))
               setError(undefined)
@@ -68,6 +76,7 @@ export default function useTokenConvertTransactionApproval(
     setData(undefined)
     setError(undefined)
     setStatus('idle')
+    isDoneRef.current = false
 
     if (!signer || !requestIdToUse || !evmTx) {
       setStatus('error')
@@ -98,6 +107,7 @@ export default function useTokenConvertTransactionApproval(
       setError(error)
       setStatus('error')
 
+      isDoneRef.current = true
       onError?.(error)
     }
   }, [signer, t, onError])

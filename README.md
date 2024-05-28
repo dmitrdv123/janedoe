@@ -111,7 +111,10 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- payment: change conversion implementation to not use rango receiver contract. Converted token should be transferred to the client wallet. After that it should be transferred to janedoe smartcontract. Need to have some capacity to eliminate exchange rate changes. Add conversion stage to payment blocked modal
+- payment: blocked modal can be closed and reopening with unknown state if meta was updated
+- payment: we need to recalculate token amount based on current token prices during convert and pay
+- payment: if error happens during convert and pay on payment stage then we need to show that conversion is done and we dont need to convert again
+- payment: update wallet balances after convert and pay
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images

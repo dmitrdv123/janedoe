@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Abi, Address } from 'viem'
 import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
@@ -20,6 +20,7 @@ export default function useWriteAndWaitContract(
   const [stage, setStage] = useState<string | undefined>(undefined)
   const [details, setDetails] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
+  const isDoneRef = useRef(false)
 
   const { isConnected, chainId: currentChainId } = useAccount()
   const { t } = useTranslation()
@@ -33,6 +34,7 @@ export default function useWriteAndWaitContract(
     setStage(undefined)
     setDetails(undefined)
     setStatus('idle')
+    isDoneRef.current = false
 
     if (!isConnected || chainId === undefined || !address) {
       return
@@ -76,7 +78,10 @@ export default function useWriteAndWaitContract(
         setDetails(t('hooks.write_and_wait_contract.switch_chain_error'))
         setStatus('error')
 
-        onError?.(err)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onError?.(err)
+        }
         break
       case 'success':
         setError(undefined)
@@ -98,7 +103,10 @@ export default function useWriteAndWaitContract(
         setDetails(t('hooks.write_and_wait_contract.transaction_confirm_error'))
         setStatus('error')
 
-        onError?.(err)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onError?.(err)
+        }
         break
       case 'success':
         setError(undefined)
@@ -120,14 +128,20 @@ export default function useWriteAndWaitContract(
         setDetails(t('hooks.write_and_wait_contract.transaction_wait_error', { txId }))
         setStatus('error')
 
-        onError?.(err)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onError?.(err)
+        }
         break
       case 'success':
         setError(undefined)
         setDetails(t('hooks.write_and_wait_contract.transaction_wait_success', { txId }))
         setStatus('success')
 
-        onSuccess?.(txId)
+        if (!isDoneRef.current) {
+          isDoneRef.current = true
+          onSuccess?.(txId)
+        }
         break
     }
   }, [t, txId, waitForTransactionReceiptError, waitForTransactionReceiptStatus, onError, onSuccess])
