@@ -205,7 +205,7 @@
     "token_approve_and_pay": {
       "token_allowance": "Reading token spending permissions",
       "token_reset_approve": "Reset token spending permissions",
-      "token_approve": "Set token spending permissions",
+      "token_approve": "Setting token spending permissions",
       "token_pay": "Payment transaction"
     },
     "native_pay": {
