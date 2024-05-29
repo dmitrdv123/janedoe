@@ -16,7 +16,7 @@ export default function useTokenAllowance(
   onError?: (error: Error | undefined) => void,
   onSuccess?: (allowance: bigint | undefined) => void
 ) {
-  const isProcessing = useRef(false)
+  const statusRef = useRef<ApiRequestStatus>('idle')
 
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [stage, setStage] = useState<string | undefined>(undefined)
@@ -42,11 +42,11 @@ export default function useTokenAllowance(
   })
 
   const handle = useCallback(() => {
-    if (isProcessing.current) {
+    if (statusRef.current === 'processing') {
       return
     }
 
-    isProcessing.current = true
+    statusRef.current = 'processing'
 
     setError(undefined)
     setStage(undefined)
@@ -67,22 +67,25 @@ export default function useTokenAllowance(
         setStatus('processing')
         break
       case 'error':
-        isProcessing.current = false
 
         setError(err)
         setDetails(t('hooks.token_allowance.read_allowance_error'))
         setStatus('error')
 
-        onError?.(err)
+        if (statusRef.current !== 'error') {
+          statusRef.current = 'error'
+          onError?.(err)
+        }
         break
       case 'success':
-        isProcessing.current = false
-
         setError(undefined)
         setDetails(t('hooks.token_allowance.read_allowance_success'))
         setStatus('success')
 
-        onSuccess?.(allowance)
+        if (statusRef.current !== 'success') {
+          statusRef.current = 'success'
+          onSuccess?.(allowance)
+        }
         break
     }
   }, [allowance, tokenAllowanceError, tokenAllowanceStatus, t, onError, onSuccess])
