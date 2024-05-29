@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SwapResponse } from 'rango-sdk-basic'
 
@@ -14,6 +14,8 @@ export default function useTokenConvertSwap(
   onError?: (error: Error | undefined) => void,
   onSuccess?: (data: SwapResponse) => void
 ) {
+  const statusRef = useRef<ApiRequestStatus>('idle')
+
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [data, setData] = useState<SwapResponse | undefined>(undefined)
   const [txId, setTxId] = useState<string | undefined>(undefined)
@@ -26,16 +28,23 @@ export default function useTokenConvertSwap(
   const exchangeRate = useExchangeRate()
 
   const handle = useCallback(async () => {
+    if (statusRef.current === 'processing') {
+      return
+    }
+
     setTxId(undefined)
     setData(undefined)
     setError(undefined)
-    setStatus('idle')
 
     if (!exchangeRate || !tokens) {
+      setStatus('idle')
+      statusRef.current = 'idle'
+
       return
     }
 
     setStatus('processing')
+    statusRef.current = 'processing'
 
     loadSwap(
       ApiWrapper.instance.swapRequest({
@@ -59,6 +68,8 @@ export default function useTokenConvertSwap(
           setError(error)
           setStatus('error')
 
+          statusRef.current = 'error'
+
           onError?.(error)
 
           return
@@ -72,6 +83,8 @@ export default function useTokenConvertSwap(
           setError(error)
           setStatus('error')
 
+          statusRef.current = 'error'
+
           onError?.(error)
 
           return
@@ -84,6 +97,8 @@ export default function useTokenConvertSwap(
           setData(undefined)
           setError(error)
           setStatus('error')
+
+          statusRef.current = 'error'
 
           onError?.(error)
 
@@ -106,6 +121,8 @@ export default function useTokenConvertSwap(
           setError(error)
           setStatus('error')
 
+          statusRef.current = 'error'
+
           onError?.(error)
 
           return
@@ -116,6 +133,8 @@ export default function useTokenConvertSwap(
         setError(undefined)
         setStatus('success')
 
+        statusRef.current = 'success'
+
         onSuccess?.(response)
       })
       .catch(error => {
@@ -123,6 +142,8 @@ export default function useTokenConvertSwap(
         setData(undefined)
         setError(error as Error)
         setStatus('error')
+
+        statusRef.current = 'error'
 
         onError?.(error)
       })
