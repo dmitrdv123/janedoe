@@ -16,11 +16,12 @@ export default function useWriteAndWaitContract(
   onError?: (error: Error | undefined) => void,
   onSuccess?: (txId: string | undefined) => void,
 ): ContractCallResult {
+  const statusRef = useRef<ApiRequestStatus>('idle')
+
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [stage, setStage] = useState<string | undefined>(undefined)
   const [details, setDetails] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
-  const isDoneRef = useRef(false)
 
   const { isConnected, chainId: currentChainId } = useAccount()
   const { t } = useTranslation()
@@ -30,17 +31,23 @@ export default function useWriteAndWaitContract(
   const { status: waitForTransactionReceiptStatus, error: waitForTransactionReceiptError } = useWaitForTransactionReceipt({ chainId, hash: txId })
 
   const handle = useCallback(() => {
+    if (statusRef.current === 'processing') {
+      return
+    }
+
     setError(undefined)
     setStage(undefined)
     setDetails(undefined)
-    setStatus('idle')
-    isDoneRef.current = false
 
     if (!isConnected || chainId === undefined || !address) {
+      setStatus('idle')
+      statusRef.current = 'idle'
+
       return
     }
 
     setStatus('processing')
+    statusRef.current = 'processing'
 
     if (chainId !== currentChainId) {
       switchChain({ chainId }, {
@@ -78,8 +85,8 @@ export default function useWriteAndWaitContract(
         setDetails(t('hooks.write_and_wait_contract.switch_chain_error'))
         setStatus('error')
 
-        if (!isDoneRef.current) {
-          isDoneRef.current = true
+        if (statusRef.current !== 'error') {
+          statusRef.current = 'error'
           onError?.(err)
         }
         break
@@ -103,8 +110,8 @@ export default function useWriteAndWaitContract(
         setDetails(t('hooks.write_and_wait_contract.transaction_confirm_error'))
         setStatus('error')
 
-        if (!isDoneRef.current) {
-          isDoneRef.current = true
+        if (statusRef.current !== 'error') {
+          statusRef.current = 'error'
           onError?.(err)
         }
         break
@@ -128,8 +135,8 @@ export default function useWriteAndWaitContract(
         setDetails(t('hooks.write_and_wait_contract.transaction_wait_error', { txId }))
         setStatus('error')
 
-        if (!isDoneRef.current) {
-          isDoneRef.current = true
+        if (statusRef.current !== 'error') {
+          statusRef.current = 'error'
           onError?.(err)
         }
         break
@@ -138,8 +145,8 @@ export default function useWriteAndWaitContract(
         setDetails(t('hooks.write_and_wait_contract.transaction_wait_success', { txId }))
         setStatus('success')
 
-        if (!isDoneRef.current) {
-          isDoneRef.current = true
+        if (statusRef.current !== 'success') {
+          statusRef.current = 'success'
           onSuccess?.(txId)
         }
         break
