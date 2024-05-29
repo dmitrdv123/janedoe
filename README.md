@@ -113,6 +113,7 @@ others:
 
 - payment: blocked modal can be closed and reopening with unknown state if meta was updated
 - payment: we need to recalculate token amount based on current token prices during convert and pay
+- account: if we open some account page in new tab then user will be unauthenticated in all tabs
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images

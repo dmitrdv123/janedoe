@@ -166,10 +166,10 @@
       "token_approve_processing": "Setting token spending permissions is in progress",
       "token_approve_error": "Setting token spending permissions failed",
       "token_approve_success": "Setting token spending permissions was successful",
-      "token_convert": "Swap transaction",
-      "token_convert_processing": "Swap transaction is in progress",
-      "token_convert_error": "Swap transaction failed",
-      "token_convert_success": "Swap transaction was successful"
+      "token_convert": "Token swap transaction",
+      "token_convert_processing": "Token swap transaction is in progress",
+      "token_convert_error": "Token swap transaction failed",
+      "token_convert_success": "Token swap transaction was successful"
     },
     "token_conversion_swap": {
       "errors": {
