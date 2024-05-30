@@ -32,7 +32,7 @@
     "ethers": "^6.4.0",
     "hardhat": "2.19.4",
     "nanoid": "^3.0.0",
-    "viem": "^2.9.21"
+    "viem": "^2.13.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

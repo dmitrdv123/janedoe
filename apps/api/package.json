@@ -30,7 +30,7 @@
     "pino-pretty": "^10.2.0",
     "rango-sdk-basic": "^0.1.47",
     "rango-types": "^0.1.62",
-    "viem": "^2.9.21"
+    "viem": "^2.13.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
