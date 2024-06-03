@@ -1,15 +1,17 @@
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAccount } from 'wagmi'
+import { Address } from 'viem'
 
 import { PaymentDetails } from '../../types/payment-details'
-import { useAppSettings, usePaymentSettings } from '../../states/settings/hook'
+import { useAppSettings } from '../../states/settings/hook'
 import { useInfoMessages } from '../../states/application/hook'
 import { INFO_MESSAGE_PAYMENT_DETAILS_ERROR } from '../../constants'
-import { useParams } from 'react-router-dom'
 
 export default function usePaymentDetails(
+  id: string,
+  paymentId : string,
+  address: Address | undefined,
   fromBlockchain: BlockchainMeta,
   fromToken: Token | undefined,
   toBlockchain: BlockchainMeta,
@@ -23,22 +25,16 @@ export default function usePaymentDetails(
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | undefined>(undefined)
 
   const { t } = useTranslation()
-  const { address: fromAddress } = useAccount()
-  const { id, paymentId } = useParams()
 
   const appSettings = useAppSettings()
-  const paymentSettings = usePaymentSettings()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
   useEffect(() => {
     if (
       !appSettings
-      || !paymentSettings
-      || !id
-      || !paymentId
-      || !fromToken?.usdPrice
-      || !fromAddress
-      || !toToken?.usdPrice
+      || !address
+      || !fromToken
+      || !toToken
       || !fromTokenAmount
       || !toTokenAmount
     ) {
@@ -47,7 +43,6 @@ export default function usePaymentDetails(
     }
 
     const protocolPaymentId = id + paymentId
-    const toAddress = fromAddress
 
     const fromContracts = appSettings.contracts.find(
       item => item.blockchain.toLocaleLowerCase() === fromToken.blockchain.toLocaleLowerCase()
@@ -80,14 +75,14 @@ export default function usePaymentDetails(
       fromToken,
       toBlockchain,
       toToken,
-      fromAddress,
-      toAddress,
       fromContracts,
       toContracts,
       slippage,
       currency,
       fromTokenAmount,
       toTokenAmount,
+      fromAddress: address,
+      toAddress: address,
       currencyAmount: amount,
     })
   }, [
@@ -97,12 +92,11 @@ export default function usePaymentDetails(
     fromToken,
     toBlockchain,
     toToken,
-    fromAddress,
+    address,
     fromTokenAmount,
     toTokenAmount,
     slippage,
     appSettings,
-    paymentSettings,
     amount,
     currency,
     t,
