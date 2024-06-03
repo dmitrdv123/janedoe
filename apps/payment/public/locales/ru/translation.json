@@ -41,8 +41,8 @@
       "received": "уже оплачено",
       "select_token": "Выберете токен",
       "no_balance": "Не хватает баланса",
-      "conversion_desc": "будет cконвертирован",
-      "conversion_token": "в токен",
+      "conversion_desc": "будет обменян",
+      "conversion_token": "на токен",
       "conversion_select_token": "Выберете токен",
       "conversion_slippage": "с проскальзыванием",
       "conversion_custom_slippage_placeholder": "другое",
@@ -250,7 +250,7 @@
       "request_error": "Не удалось отправить запрос",
       "wallet_not_found": "Не удается найти адрес кошелька для блокчейна {{blockchain}}",
       "contract_not_found": "Не удается найти адрес контракта janedoe для блокчейна {{blockchain}}",
-      "route_not_found": "Не удается найти маршрут для конвертации {{blockchain}} {{token}} в один из токенов",
+      "route_not_found": "Не удается найти маршрут для обмена {{blockchain}} {{token}} в один из токенов",
       "bitcoin_errors": {
         "not_enough_funds_error": "Недостаточно средств"
       },

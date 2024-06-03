@@ -41,8 +41,8 @@
       "received": "already paid",
       "select_token": "Select a token",
       "no_balance": "Not enough balance",
-      "conversion_desc": "will be converted",
-      "conversion_token": "into token",
+      "conversion_desc": "will be swapped",
+      "conversion_token": "for token",
       "conversion_select_token": "Select a token",
       "conversion_slippage": "with slippage",
       "conversion_custom_slippage_placeholder": "custom",
@@ -250,7 +250,7 @@
       "request_error": "Failed to send request",
       "wallet_not_found": "Cannot find wallet address for blockchain {{blockchain}}",
       "contract_not_found": "Cannot find janedoe contract address for blockchain {{blockchain}}",
-      "route_not_found": "Cannot find route to convert {{blockchain}} {{token}} to one of tokens",
+      "route_not_found": "Cannot find route to swap {{blockchain}} {{token}} for one of tokens",
       "bitcoin_errors": {
         "not_enough_funds_error": "Not enough funds"
       },
