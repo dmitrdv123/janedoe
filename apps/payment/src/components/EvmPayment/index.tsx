@@ -16,7 +16,7 @@ import useNativePay from '../../libs/hooks/useNativePay'
 import usePaymentData from '../../libs/hooks/usePaymentData'
 import TokenButton from './components/TokenButton'
 import { useInfoMessages } from '../../states/application/hook'
-import { INFO_MESSAGE_PAYMENT_PROCESSING_ERROR } from '../../constants'
+import { DEFAULT_SLIPPAGE, INFO_MESSAGE_PAYMENT_PROCESSING_ERROR } from '../../constants'
 import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
 import { NativePayStage, TokenConvertStage, TokenPayStage } from '../../types/contract-call-result'
 import useTokenConvertAndNativePay from '../../libs/hooks/useTokenConvertAndNativePay'
@@ -38,7 +38,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const [toToken, setToToken] = useState<Token | undefined>(undefined)
   const [fromTokenAmount, setFromTokenAmount] = useState<string | undefined>(undefined)
   const [toTokenAmount, setToTokenAmount] = useState<string | undefined>(undefined)
-  const [slippage, setSlippage] = useState<number | undefined>(undefined)
+  const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE)
   const [email, setEmail] = useState('')
   const [isForceRefreshConversion, setIsForceRefreshConversion] = useState(false)
   const [isForceRefreshToken, setIsForceRefreshToken] = useState(false)
@@ -82,7 +82,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     setToToken(fromToken)
     setFromTokenAmount(fromTokenAmountTmp)
     setToTokenAmount(toTokenAmountTmp)
-    setSlippage(undefined)
+    setSlippage(DEFAULT_SLIPPAGE)
   }, [restCurrencyAmount, exchangeRate, fromToken, toToken, needConversion])
 
   const selectTokenHandler = useCallback((tokenToUpdate: Token | undefined) => {
@@ -147,9 +147,11 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
       {(!!fromToken && needConversion) && (
         <div className="mb-2">
           <TokenConversionCard
-            blockchain={blockchain}
-            token={fromToken}
-            amount={restCurrencyAmount}
+            fromBlockchain={blockchain}
+            fromToken={fromToken}
+            toToken={toToken}
+            slippage={slippage}
+            currencyAmount={restCurrencyAmount}
             isForceRefresh={isForceRefreshConversion}
             onForceRefreshEnd={forceRefreshConversionEndHandler}
             onUpdate={updateConversionHandler}

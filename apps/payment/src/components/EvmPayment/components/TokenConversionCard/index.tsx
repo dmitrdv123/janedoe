@@ -2,11 +2,10 @@ import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { Alert, Button, Card, Col, Dropdown, Form, ListGroup, Row, Spinner } from 'react-bootstrap'
 import { Asset, BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
 import { useTranslation } from 'react-i18next'
-import isEqual from 'lodash.isequal'
 
 import usePaymentConversion from '../../../../libs/hooks/usePaymentConversion'
 import { useInfoMessages, useToggleModal } from '../../../../states/application/hook'
-import { DEFAULT_SLIPPAGE, INFO_MESSAGE_PAYMENT_CONVERSION_ERROR, SLIPPAGES } from '../../../../constants'
+import { INFO_MESSAGE_PAYMENT_CONVERSION_ERROR, SLIPPAGES } from '../../../../constants'
 import TokenShortDetails from '../../../../components/TokenShortDetails'
 import { useBlockchains, useExchangeRate, usePaymentSettings, useTokens } from '../../../../states/settings/hook'
 import TokenAmountWithCurrency from '../../../../components/TokenAmountWithCurrency'
@@ -16,9 +15,11 @@ import ConversionTokensModal from '../../../modals/ConversionTokensModal'
 import { ApplicationModal } from '../../../../types/application-modal'
 
 interface TokenConversionCardProps {
-  blockchain: BlockchainMeta
-  token: Token
-  amount: number
+  fromBlockchain: BlockchainMeta
+  fromToken: Token
+  toToken: Token | undefined
+  slippage: number
+  currencyAmount: number
   disabled?: boolean
   isForceRefresh: boolean
   onForceRefreshEnd: () => void
@@ -26,17 +27,13 @@ interface TokenConversionCardProps {
 }
 
 const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
-  const { blockchain, token, amount, disabled, isForceRefresh, onForceRefreshEnd, onUpdate } = props
+  const { fromBlockchain, fromToken, toToken, slippage, currencyAmount, disabled, isForceRefresh, onForceRefreshEnd, onUpdate } = props
 
-  const tokenRef = useRef<Token>(token)
-  const toRef = useRef<Token | undefined>(undefined)
-  const amountRef = useRef<number>(amount)
-  const slippageRef = useRef<number>(DEFAULT_SLIPPAGE)
   const isProcessingRef = useRef<boolean>(false)
 
-  const [to, setTo] = useState<Token | undefined>(undefined)
-  const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE)
-  const [customSlippage, setCustomSlippage] = useState<string>('')
+  const [toTokenCur, setToTokenCur] = useState<Token | undefined>(toToken)
+  const [slippageCur, setSlippageCur] = useState<number>(slippage)
+  const [customSlippageCur, setCustomSlippageCur] = useState<string>('')
 
   const { t } = useTranslation()
 
@@ -61,7 +58,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
 
     return paymentSettings.assets
       .map(asset => {
-        if (asset.blockchain.toLocaleLowerCase() !== blockchain.name.toLocaleLowerCase()) {
+        if (asset.blockchain.toLocaleLowerCase() !== fromBlockchain.name.toLocaleLowerCase()) {
           return undefined
         }
 
@@ -73,63 +70,53 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
         return tokens.find(token => isAssetEqualToToken(asset, token))
       })
       .filter(asset => !!asset) as Token[]
-  }, [paymentSettings, blockchains, blockchain.name, tokens])
+  }, [paymentSettings, blockchains, fromBlockchain.name, tokens])
 
-  const paymentConversionHandler = useCallback(async (from: Token, to: Asset | undefined, amountCurrency: number, slippageToUse: number) => {
+  const paymentConversionHandler = useCallback(async (fromTokenToUse: Token, toTokenToUse: Asset | undefined, currencyAmountToUse: number, slippageToUse: number) => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_CONVERSION_ERROR)
 
     try {
-      onUpdate(undefined, undefined, slippageToUse)
-      const result = await paymentConversion(from, to, amountCurrency, slippageToUse)
+      const result = await paymentConversion(fromTokenToUse, toTokenToUse, currencyAmountToUse, slippageToUse)
       onUpdate(result?.quote.to, result?.amount, slippageToUse)
     } catch (error) {
-      onUpdate(undefined, undefined, slippageToUse)
       addInfoMessage(t('components.evm_payment.errors.conversion_failed'), INFO_MESSAGE_PAYMENT_CONVERSION_ERROR, 'danger', error)
+      onUpdate(undefined, undefined, slippageToUse)
     }
   }, [t, onUpdate, paymentConversion, addInfoMessage, removeInfoMessage])
 
   useEffect(() => {
     const process = async () => {
       isProcessingRef.current = true
-      tokenRef.current = token
-      amountRef.current = amount
-      slippageRef.current = slippage
-      toRef.current = to
 
       try {
-        await paymentConversionHandler(token, to, amount, slippage)
+        await paymentConversionHandler(fromToken, toTokenCur, currencyAmount, slippageCur)
       } finally {
-        isProcessingRef.current = false
         onForceRefreshEnd()
+        isProcessingRef.current = false
       }
     }
 
-    if (isForceRefresh && !isProcessingRef.current) {
+    if (isForceRefresh) {
       process()
     }
-  }, [amount, isForceRefresh, slippage, to, token, onForceRefreshEnd, paymentConversionHandler])
+  }, [currencyAmount, isForceRefresh, slippageCur, fromToken, toTokenCur, onForceRefreshEnd, paymentConversionHandler])
 
   useEffect(() => {
     const process = async () => {
+      if (isProcessingRef.current) {
+        return
+      }
       isProcessingRef.current = true
-      tokenRef.current = token
-      amountRef.current = amount
-      slippageRef.current = slippage
-      toRef.current = to
 
       try {
-        await paymentConversionHandler(token, to, amount, slippage)
+        await paymentConversionHandler(fromToken, toTokenCur, currencyAmount, slippageCur)
       } finally {
         isProcessingRef.current = false
       }
     }
 
-    if (isProcessingRef.current && isEqual(tokenRef.current, token) && isEqual(toRef.current, to) && amountRef.current === amount && slippageRef.current === slippage) {
-      return
-    }
-
     process()
-  }, [token, to, amount, slippage, paymentConversionHandler])
+  }, [currencyAmount, slippageCur, fromToken, toTokenCur, onForceRefreshEnd, paymentConversionHandler])
 
   const openHandler = useCallback((e: FormEvent) => {
     e.preventDefault()
@@ -137,12 +124,12 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
   }, [open])
 
   const selectTokenHandler = useCallback((tokenToUpdate: Token) => {
-    setTo(tokenToUpdate)
+    setToTokenCur(tokenToUpdate)
   }, [])
 
   const setSlippageHandler = useCallback((value: number) => {
-    setSlippage(value)
-    setCustomSlippage('')
+    setSlippageCur(value)
+    setCustomSlippageCur('')
   }, [])
 
   const setCustomSlippageHandler = useCallback((value: string) => {
@@ -151,14 +138,14 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
     if (num !== undefined) {
       const predefinedSlippage = SLIPPAGES.find(item => num === item)
       if (predefinedSlippage) {
-        setSlippage(predefinedSlippage)
-        setCustomSlippage(value)
+        setSlippageCur(predefinedSlippage)
+        setCustomSlippageCur(value)
       } else {
-        setSlippage(num)
-        setCustomSlippage(value)
+        setSlippageCur(num)
+        setCustomSlippageCur(value)
       }
     } else {
-      setCustomSlippage('')
+      setCustomSlippageCur('')
     }
   }, [])
 
@@ -174,7 +161,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
         <Card.Header className='p-2'>
           <div className="d-flex justify-content-between">
             <div>
-              <TokenShortDetails blockchain={blockchain} token={token} /> {t('components.evm_payment.conversion_desc')}
+              <TokenShortDetails blockchain={fromBlockchain} token={fromToken} /> {t('components.evm_payment.conversion_desc')}
             </div>
             <div>
               <Button
@@ -182,7 +169,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
                 className="text-decoration-none me-2"
                 size='sm'
                 disabled={disabled || paymentConversionStatus === 'processing'}
-                onClick={() => paymentConversionHandler(token, paymentConversionData?.quote.to, amount, slippage)}
+                onClick={() => paymentConversionHandler(fromToken, paymentConversionData?.quote.to, currencyAmount, slippageCur)}
               >
                 {t('common.refresh_btn')}
               </Button>
@@ -226,20 +213,20 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
                   </Form.Label>
                   <Col sm={4}>
                     {(disabled || paymentConversionStatus === 'processing') && (
-                      <Form.Control type="text" value={`${slippage}%`} disabled />
+                      <Form.Control type="text" value={`${slippageCur}%`} disabled />
                     )}
 
                     {(!disabled && paymentConversionStatus !== 'processing') && (
                       <Dropdown>
                         <Dropdown.Toggle variant="outline-link">
-                          {slippage}%
+                          {slippageCur}%
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                           {SLIPPAGES.map(item => (
-                            <Dropdown.Item key={`slippage_${item}`} onClick={() => setSlippageHandler(item)} active={slippage === item}>{item}%</Dropdown.Item>
+                            <Dropdown.Item key={`slippage_${item}`} onClick={() => setSlippageHandler(item)} active={slippageCur === item}>{item}%</Dropdown.Item>
                           ))}
                           <Dropdown.ItemText>
-                            <Form.Control type="number" placeholder={t('components.evm_payment.conversion_custom_slippage_placeholder')} value={customSlippage} onChange={e => setCustomSlippageHandler(e.target.value)} />
+                            <Form.Control type="number" placeholder={t('components.evm_payment.conversion_custom_slippage_placeholder')} value={customSlippageCur} onChange={e => setCustomSlippageHandler(e.target.value)} />
                           </Dropdown.ItemText>
                         </Dropdown.Menu>
                       </Dropdown>
@@ -250,7 +237,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
             </Row>
           </div>
           <div className="text-muted">
-            {t('components.evm_payment.explain', { token: `${token.symbol}` })}
+            {t('components.evm_payment.explain', { token: `${fromToken.symbol}` })}
           </div>
         </Card.Header>
         <Card.Body className='p-2'>
