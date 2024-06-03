@@ -76,6 +76,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_CONVERSION_ERROR)
 
     try {
+      onUpdate(undefined, undefined, slippageToUse)
       const result = await paymentConversion(fromTokenToUse, toTokenToUse, currencyAmountToUse, slippageToUse)
       onUpdate(result?.quote.to, result?.amount, slippageToUse)
     } catch (error) {
