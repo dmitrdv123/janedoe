@@ -3,6 +3,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { useAccount } from 'wagmi'
+import isEqual from 'lodash.isequal'
 
 import { ApplicationModal } from '../../../../types/application-modal'
 import { useToggleModal } from '../../../../states/application/hook'
@@ -60,9 +61,9 @@ const TokenButton: React.FC<TokenButtonProps> = (props) => {
     setSelectedToken(current => {
       if (current && isBlockchainToken(blockchain, current)) {
         const tokenToUpdate = paymentTokens.find(item => isToken(item, current.blockchain, current.symbol, current.address))
-        if (tokenToUpdate) {
-          return tokenToUpdate
-        }
+        return isEqual(current, tokenToUpdate)
+          ? current
+          : tokenToUpdate
       }
 
       if (paymentSettings) {

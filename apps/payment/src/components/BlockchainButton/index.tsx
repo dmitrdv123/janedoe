@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
+import isEqual from 'lodash.iseual'
 
 import { useToggleModal } from '../../states/application/hook'
 import { ApplicationModal } from '../../types/application-modal'
@@ -57,9 +58,10 @@ const BlockchainButton: React.FC<BlockchainButtonProps> = (props) => {
     setSelectedBlockchain(current => {
       if (current) {
         const blockchainToUpdate = findBlockchainByName(paymentBlockchains, current.name)
-        if (blockchainToUpdate) {
-          return blockchainToUpdate
-        }
+
+        return isEqual(current, blockchainToUpdate)
+          ? current
+          : blockchainToUpdate
       }
 
       if (paymentSettings) {
