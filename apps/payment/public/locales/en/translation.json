@@ -271,6 +271,7 @@
     "details": "Details",
     "errors": {
       "default": "Unknown error happens",
+      "unexpected": "Unexpected error happens",
       "transaction_error": "Transaction processing error",
       "param_not_set": "Parameter {{name}} is not set or empty",
       "param_exceed_max_length": "Length {{length}} of parameter {{name}} is exceed maximum length {{max_length}}"
