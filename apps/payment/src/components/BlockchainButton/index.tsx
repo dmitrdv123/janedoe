@@ -3,7 +3,7 @@ import { Form } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
-import isEqual from 'lodash.iseual'
+import isEqual from 'lodash.isequal'
 
 import { useToggleModal } from '../../states/application/hook'
 import { ApplicationModal } from '../../types/application-modal'
