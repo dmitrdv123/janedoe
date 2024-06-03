@@ -21,6 +21,7 @@ import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
 import { NativePayStage, TokenConvertStage, TokenPayStage } from '../../types/contract-call-result'
 import useTokenConvertAndNativePay from '../../libs/hooks/useTokenConvertAndNativePay'
 import useTokenConvertAndTokenPay from '../../libs/hooks/useTokenConvertAndTokenPay'
+import { PaymentDetails } from '../../types/payment-details'
 
 interface EvmPaymentProps {
   blockchain: BlockchainMeta
@@ -31,6 +32,8 @@ interface EvmPaymentProps {
 const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const { blockchain, restCurrencyAmount, receivedCurrencyAmount } = props
 
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [paymentDetailsCurrent, setPaymentDetailsCurrent] = useState<PaymentDetails | undefined>(undefined)
   const [fromToken, setFromToken] = useState<Token | undefined>(undefined)
   const [toToken, setToToken] = useState<Token | undefined>(undefined)
   const [fromTokenAmount, setFromTokenAmount] = useState<string | undefined>(undefined)
@@ -41,19 +44,27 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const [isForceRefreshToken, setIsForceRefreshToken] = useState(false)
 
   const { t } = useTranslation()
-  const { isConnected } = useAccount()
+  const { address, isConnected } = useAccount()
 
-  const { currency } = usePaymentData()
+  const { id, paymentId, currency } = usePaymentData()
   const paymentSettings = usePaymentSettings()
-  const paymentDetails = usePaymentDetails(blockchain, fromToken, blockchain, toToken, fromTokenAmount, toTokenAmount, slippage, restCurrencyAmount, currency)
+  const paymentDetails = usePaymentDetails(id, paymentId, address, blockchain, fromToken, blockchain, toToken, fromTokenAmount, toTokenAmount, slippage, restCurrencyAmount, currency)
   const exchangeRate = useExchangeRate()
 
   const navigateSuccessHandler = useNavigateSuccess(blockchain?.name, email)
   const { addInfoMessage, clearInfoMessage, removeInfoMessage } = useInfoMessages()
 
   const needConversion = useMemo(() => {
-    return !!fromToken && paymentSettings?.assets.findIndex(asset => isAssetEqualToToken(asset, fromToken)) === -1
+    return !!fromToken && paymentSettings?.assets && paymentSettings.assets.findIndex(asset => isAssetEqualToToken(asset, fromToken)) === -1
   }, [fromToken, paymentSettings?.assets])
+
+  useEffect(() => {
+    if (isProcessing) {
+      return
+    }
+
+    setPaymentDetailsCurrent(paymentDetails)
+  }, [isProcessing, paymentDetails])
 
   useEffect(() => {
     if (needConversion) {
@@ -95,15 +106,21 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     setEmail(emailToUpdate)
   }, [])
 
+  const processingHandler = useCallback(() => {
+    setIsProcessing(true)
+  }, [])
+
   const errorHandler = useCallback((error: Error | undefined) => {
     addInfoMessage(t('components.evm_payment.errors.failed_pay'), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger', error)
     setIsForceRefreshConversion(true)
     setIsForceRefreshToken(true)
+    setIsProcessing(false)
   }, [t, addInfoMessage])
 
   const successHandler = useCallback((txId: string | undefined) => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_PROCESSING_ERROR)
     navigateSuccessHandler(txId)
+    setIsProcessing(false)
   }, [navigateSuccessHandler, removeInfoMessage])
 
   const forceRefreshConversionEndHandler = useCallback(() => {
@@ -127,7 +144,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         />
       </div>
 
-      {(!!fromToken && !!paymentSettings && needConversion) && (
+      {(!!fromToken && needConversion) && (
         <div className="mb-2">
           <TokenConversionCard
             blockchain={blockchain}
@@ -150,7 +167,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && (!paymentDetails || !blockchain || !fromToken)) && (
+      {(isConnected && !paymentDetailsCurrent) && (
         <div className="d-grid mb-2">
           <Button variant="primary" size="lg" disabled>
             {t('components.evm_payment.pay')}
@@ -158,56 +175,60 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetails && !isAssetEqualToToken(paymentDetails.toToken, paymentDetails.fromToken) && isNativeAsset(paymentDetails.toBlockchain, paymentDetails.toToken)) && (
+      {(isConnected && !!paymentDetailsCurrent && !isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeAsset(paymentDetailsCurrent.toBlockchain, paymentDetailsCurrent.toToken)) && (
         <div className="d-grid mb-2">
           <PayButton
-            paymentDetails={paymentDetails}
+            paymentDetails={paymentDetailsCurrent}
             receivedCurrencyAmount={receivedCurrencyAmount}
             stages={
               [...Object.values(TokenConvertStage), ...Object.values(NativePayStage)]
             }
             usePay={useTokenConvertAndNativePay}
+            onProcessing={processingHandler}
             onError={errorHandler}
             onSuccess={successHandler}
           />
         </div>
       )}
 
-      {(isConnected && !!paymentDetails && !isAssetEqualToToken(paymentDetails.toToken, paymentDetails.fromToken) && !isNativeAsset(paymentDetails.toBlockchain, paymentDetails.toToken)) && (
+      {(isConnected && !!paymentDetailsCurrent && !isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeAsset(paymentDetailsCurrent.toBlockchain, paymentDetailsCurrent.toToken)) && (
         <div className="d-grid mb-2">
           <PayButton
-            paymentDetails={paymentDetails}
+            paymentDetails={paymentDetailsCurrent}
             receivedCurrencyAmount={receivedCurrencyAmount}
             stages={
               [...Object.values(TokenConvertStage), ...Object.values(TokenPayStage)]
             }
             usePay={useTokenConvertAndTokenPay}
+            onProcessing={processingHandler}
             onError={errorHandler}
             onSuccess={successHandler}
           />
         </div>
       )}
 
-      {(isConnected && !!paymentDetails && !!blockchain && isAssetEqualToToken(paymentDetails.toToken, paymentDetails.fromToken) && isNativeToken(blockchain, paymentDetails.fromToken)) && (
+      {(isConnected && !!paymentDetailsCurrent && !!blockchain && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
-            paymentDetails={paymentDetails}
+            paymentDetails={paymentDetailsCurrent}
             receivedCurrencyAmount={receivedCurrencyAmount}
             stages={Object.values(NativePayStage)}
             usePay={useNativePay}
+            onProcessing={processingHandler}
             onError={errorHandler}
             onSuccess={successHandler}
           />
         </div>
       )}
 
-      {(isConnected && !!paymentDetails && !!blockchain && isAssetEqualToToken(paymentDetails.toToken, paymentDetails.fromToken) && !isNativeToken(blockchain, paymentDetails.fromToken)) && (
+      {(isConnected && !!paymentDetailsCurrent && !!blockchain && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
-            paymentDetails={paymentDetails}
+            paymentDetails={paymentDetailsCurrent}
             receivedCurrencyAmount={receivedCurrencyAmount}
             stages={Object.values(TokenPayStage)}
             usePay={useTokenApproveAndPay}
+            onProcessing={processingHandler}
             onError={errorHandler}
             onSuccess={successHandler}
           />

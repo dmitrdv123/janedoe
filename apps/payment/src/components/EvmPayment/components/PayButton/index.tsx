@@ -18,12 +18,13 @@ interface PayButtonProps {
   receivedCurrencyAmount: number,
   stages: string[],
   usePay: () => ContractCallResult<PaymentDetails>,
+  onProcessing?: () => void,
   onError?: (error: Error | undefined) => void,
   onSuccess?: (txId: string | undefined) => void
 }
 
 const PayButton: React.FC<PayButtonProps> = (props) => {
-  const { paymentDetails, receivedCurrencyAmount, stages, usePay, onError, onSuccess } = props
+  const { paymentDetails, receivedCurrencyAmount, stages, usePay, onProcessing, onError, onSuccess } = props
 
   const { t } = useTranslation()
 
@@ -36,9 +37,10 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
 
   const handlePay = useCallback(async (e: FormEvent) => {
     e.preventDefault()
+    onProcessing?.()
     open()
     handle(paymentDetails)
-  }, [paymentDetails, handle, open])
+  }, [paymentDetails, handle, open, onProcessing])
 
   useEffect(() => {
     switch (status) {
