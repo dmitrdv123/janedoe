@@ -111,9 +111,9 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- payment: blocked modal can be closed and reopening with unknown state if meta was updated
-- payment: we need to recalculate token amount based on current token prices during convert and pay
-- account: if we open some account page in new tab then user will be unauthenticated in all tabs
+- payment: we need to recalculate token amount based on current token prices during convert and pay. If user will reject tx or it failed after conversion then we need to start from failed step without conversion
+- account: if we open some account page in new tab then user will be unauthenticated in all tabs in chrome
+- api: hardhat payment is not processed
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
@@ -152,6 +152,7 @@ disputable backlog:
 - payment: token without conversion should have higher priority in dropdown
 - aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success. Disputable since user should wait until tx will be processed. It could take longer than expected and bring additional unnecessary dependency of user from backend.
+- payment: use increaseAllowance instead of reset and set allowance. Disputable since openzeppelin ERC20 related classes does not have this method
 
 learning:
 
