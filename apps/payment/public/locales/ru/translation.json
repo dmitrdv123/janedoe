@@ -103,7 +103,7 @@
       }
     },
     "update_timer": {
-      "timer": "Курсы обмена токенов обновятся через {{seconds}} секунд"
+      "timer": "Детали платежа обновятся через {{seconds}} секунд"
     },
     "info_messages": {
       "payment_conversion_error_explorer_urls": "URL-адреса сведений о транзакциях:",

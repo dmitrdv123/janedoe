@@ -103,7 +103,7 @@
       }
     },
     "update_timer": {
-      "timer": "Token exchange rates will update in {{seconds}} seconds"
+      "timer": "Payment details will be updated in {{seconds}} seconds"
     },
     "info_messages": {
       "payment_conversion_error_explorer_urls": "Transactions Details URL's:",
