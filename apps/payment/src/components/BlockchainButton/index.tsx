@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { Form } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo } from 'react'
 import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
 import isEqual from 'lodash.isequal'
 
@@ -19,8 +19,6 @@ interface BlockchainButtonProps {
 
 const BlockchainButton: React.FC<BlockchainButtonProps> = (props) => {
   const { blockchain, disabled, onUpdate } = props
-
-  const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainMeta | undefined>(blockchain)
 
   const { t } = useTranslation()
 
@@ -55,31 +53,25 @@ const BlockchainButton: React.FC<BlockchainButtonProps> = (props) => {
   }, [blockchains, appSettings, paymentSettings])
 
   useEffect(() => {
-    setSelectedBlockchain(current => {
-      if (current) {
-        const blockchainToUpdate = findBlockchainByName(paymentBlockchains, current.name)
+    let blockchainToUpdate: BlockchainMeta | undefined = undefined
 
-        return isEqual(current, blockchainToUpdate)
-          ? current
-          : blockchainToUpdate
-      }
+    if (blockchain) {
+      blockchainToUpdate = findBlockchainByName(paymentBlockchains, blockchain.name)
+    }
 
-      if (paymentSettings) {
-        for (const asset of paymentSettings.assets) {
-          const blockchainToUpdate = findBlockchainByName(paymentBlockchains, asset.blockchain)
-          if (blockchainToUpdate) {
-            return blockchainToUpdate
-          }
+    if (!blockchainToUpdate && paymentSettings?.assets) {
+      for (const asset of paymentSettings.assets) {
+        blockchainToUpdate = findBlockchainByName(paymentBlockchains, asset.blockchain)
+        if (blockchainToUpdate) {
+          break
         }
       }
+    }
 
-      return undefined
-    })
-  }, [paymentBlockchains, paymentSettings])
-
-  useEffect(() => {
-    onUpdate(selectedBlockchain)
-  }, [selectedBlockchain, onUpdate])
+    if (!isEqual(blockchain, blockchainToUpdate)) {
+      onUpdate(blockchainToUpdate)
+    }
+  }, [blockchain, paymentBlockchains, paymentSettings, onUpdate])
 
   const openHandler = useCallback((e: FormEvent) => {
     e.preventDefault()
@@ -87,22 +79,22 @@ const BlockchainButton: React.FC<BlockchainButtonProps> = (props) => {
   }, [open])
 
   const selectBlockchainHandler = useCallback(async (blockchainToUpdate: BlockchainMeta) => {
-    setSelectedBlockchain(blockchainToUpdate)
-  }, [])
+    onUpdate(blockchainToUpdate)
+  }, [onUpdate])
 
   return (
     <>
       <BlockchainsModal
-        selectedBlockchain={selectedBlockchain}
+        selectedBlockchain={blockchain}
         blockchains={paymentBlockchains}
         onUpdate={selectBlockchainHandler}
       />
 
       <Form.Group>
         <Form.Control as="button" className="dropdown-toggle" disabled={disabled} onClick={openHandler}>
-          {selectedBlockchain?.displayName ?? t('components.blockchain_button.select_blockchain')}
+          {blockchain?.displayName ?? t('components.blockchain_button.select_blockchain')}
         </Form.Control>
-        {!selectedBlockchain && (
+        {!blockchain && (
           <Form.Text className="text-danger">
             {t('components.blockchain_button.errors.blockchain_required')}
           </Form.Text>
