@@ -5,6 +5,9 @@ import { PaymentDetails } from '../../types/payment-details'
 import { ApiRequestStatus } from '../../types/api-request'
 import useNativePay from './useNativePay'
 import useTokenConvert from './useTokenConvert'
+import { currencyToTokenAmount, findToken } from '../utils'
+import { useExchangeRate, useTokens } from '../../states/settings/hook'
+import { ServiceError } from '../../types/errors/service-error'
 
 export default function useTokenConvertAndNativePay(): ContractCallResult<PaymentDetails> {
   const statusRef = useRef<ApiRequestStatus>('idle')
@@ -16,6 +19,9 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
   const [details, setDetails] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
   const [txId, setTxId] = useState<string | undefined>(undefined)
+
+  const tokens = useTokens()
+  const exchangeRate = useExchangeRate()
 
   const {
     error: tokenConvertError,
@@ -36,10 +42,25 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
   } = useNativePay()
 
   const tokenConvertSuccessHandler = useCallback(() => {
-    if (!paymentDetailsRef.current) {
+    if (!paymentDetailsRef.current || !tokens || !exchangeRate) {
+      setError(new ServiceError('Unexpected error happens', 'common.errors.unexpected'))
+      setStatus('error')
+
       return
     }
+
     stageRef.current = ConvertNativePayStage.NativePay
+
+    const toToken = findToken(tokens, paymentDetailsRef.current.toBlockchain, paymentDetailsRef.current.toToken.symbol, paymentDetailsRef.current.toToken.address)
+    if (!toToken?.usdPrice) {
+      setError(new ServiceError('Unexpected error happens', 'common.errors.unexpected'))
+      setStatus('error')
+
+      return
+    }
+
+    const toTokenAmount  = currencyToTokenAmount(paymentDetailsRef.current.currencyAmount, toToken.usdPrice, toToken.decimals, exchangeRate)
+
     nativePayHandle({
       protocolPaymentId: paymentDetailsRef.current.protocolPaymentId,
       fromBlockchain: paymentDetailsRef.current.toBlockchain,
@@ -50,13 +71,13 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
       toAddress: paymentDetailsRef.current.toAddress,
       fromContracts: paymentDetailsRef.current.toContracts,
       toContracts: paymentDetailsRef.current.toContracts,
-      fromTokenAmount: paymentDetailsRef.current.toTokenAmount,
-      toTokenAmount: paymentDetailsRef.current.toTokenAmount,
+      fromTokenAmount: toTokenAmount,
+      toTokenAmount: toTokenAmount,
       currencyAmount: paymentDetailsRef.current.currencyAmount,
       currency: paymentDetailsRef.current.currency,
       slippage: paymentDetailsRef.current.slippage
     })
-  }, [nativePayHandle])
+  }, [exchangeRate, tokens, nativePayHandle])
 
   const handle = useCallback((paymentDetails: PaymentDetails) => {
     if (statusRef.current === 'processing') {

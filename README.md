@@ -111,7 +111,8 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- payment: we need to recalculate token amount based on current token prices during convert and pay. If user will reject tx or it failed after conversion then we need to start from failed step without conversion
+- payment: If user will reject tx or it failed after conversion then we need to start from failed step without conversion
+- payment: pay button should show amount of converted token in case of conversion and not from token amount
 - account: if we open some account page in new tab then user will be unauthenticated in all tabs in chrome
 - api: hardhat payment is not processed
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
