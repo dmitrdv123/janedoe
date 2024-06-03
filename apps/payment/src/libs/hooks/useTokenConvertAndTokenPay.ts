@@ -1,49 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { ContractCallResult } from '../../types/contract-call-result'
+import { ContractCallResult, ConvertTokenPayStage } from '../../types/contract-call-result'
 import { PaymentDetails } from '../../types/payment-details'
 import { ApiRequestStatus } from '../../types/api-request'
 import useTokenApproveAndPay from './useTokenApproveAndPay'
 import useTokenConvert from './useTokenConvert'
 
-export default function useTokenConvertAndTokenPay(
-  paymentDetails: PaymentDetails,
-  onError?: (error: Error | undefined) => void,
-  onSuccess?: (txId: string | undefined) => void
-): ContractCallResult {
+export default function useTokenConvertAndTokenPay(): ContractCallResult<PaymentDetails> {
+  const statusRef = useRef<ApiRequestStatus>('idle')
+  const stageRef = useRef<ConvertTokenPayStage | undefined>(undefined)
+  const paymentDetailsRef = useRef<PaymentDetails | undefined>(undefined)
+
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [stage, setStage] = useState<string | undefined>(undefined)
   const [details, setDetails] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
   const [txId, setTxId] = useState<string | undefined>(undefined)
-
-  const {
-    error: tokenPayError,
-    status: tokenPayStatus,
-    stage: tokenPayStage,
-    details: tokenPayDetails,
-    txId: tokenPayTxId,
-    handle: tokenPayHandle
-  } = useTokenApproveAndPay(
-    {
-      protocolPaymentId: paymentDetails.protocolPaymentId,
-      fromBlockchain: paymentDetails.toBlockchain,
-      fromToken: paymentDetails.toToken,
-      toBlockchain: paymentDetails.toBlockchain,
-      toToken: paymentDetails.toToken,
-      fromAddress: paymentDetails.toAddress,
-      toAddress: paymentDetails.toAddress,
-      fromContracts: paymentDetails.toContracts,
-      toContracts: paymentDetails.toContracts,
-      fromTokenAmount: paymentDetails.toTokenAmount,
-      toTokenAmount: paymentDetails.toTokenAmount,
-      currencyAmount: paymentDetails.currencyAmount,
-      currency: paymentDetails.currency,
-      slippage: paymentDetails.slippage
-    },
-    onError,
-    onSuccess
-  )
 
   const {
     error: tokenConvertError,
@@ -52,23 +24,63 @@ export default function useTokenConvertAndTokenPay(
     details: tokenConvertDetails,
     txId: tokenConvertTxId,
     handle: tokenConvertHandle
-  } = useTokenConvert(
-    paymentDetails,
-    onError,
-    tokenPayHandle
-  )
+  } = useTokenConvert()
 
-  const handle = useCallback(() => {
+  const {
+    error: tokenPayError,
+    status: tokenPayStatus,
+    stage: tokenPayStage,
+    details: tokenPayDetails,
+    txId: tokenPayTxId,
+    handle: tokenPayHandle
+  } = useTokenApproveAndPay()
+
+  const tokenConvertSuccessHandler = useCallback(() => {
+    if (!paymentDetailsRef.current) {
+      return
+    }
+
+    stageRef.current = ConvertTokenPayStage.TokenPay
+    tokenPayHandle({
+      protocolPaymentId: paymentDetailsRef.current.protocolPaymentId,
+      fromBlockchain: paymentDetailsRef.current.toBlockchain,
+      fromToken: paymentDetailsRef.current.toToken,
+      toBlockchain: paymentDetailsRef.current.toBlockchain,
+      toToken: paymentDetailsRef.current.toToken,
+      fromAddress: paymentDetailsRef.current.toAddress,
+      toAddress: paymentDetailsRef.current.toAddress,
+      fromContracts: paymentDetailsRef.current.toContracts,
+      toContracts: paymentDetailsRef.current.toContracts,
+      fromTokenAmount: paymentDetailsRef.current.toTokenAmount,
+      toTokenAmount: paymentDetailsRef.current.toTokenAmount,
+      currencyAmount: paymentDetailsRef.current.currencyAmount,
+      currency: paymentDetailsRef.current.currency,
+      slippage: paymentDetailsRef.current.slippage
+    })
+  }, [tokenPayHandle])
+
+  const handle = useCallback((paymentDetails: PaymentDetails) => {
+    if (statusRef.current === 'processing') {
+      return
+    }
+    statusRef.current = 'processing'
+    stageRef.current = ConvertTokenPayStage.TokenConvert
+    paymentDetailsRef.current = paymentDetails
+
     setError(undefined)
     setDetails(undefined)
     setStage(undefined)
     setTxId(undefined)
     setStatus('idle')
 
-    tokenConvertHandle()
+    tokenConvertHandle(paymentDetails)
   }, [tokenConvertHandle])
 
   useEffect(() => {
+    if (statusRef.current !== 'processing' || stageRef.current !== ConvertTokenPayStage.TokenConvert) {
+      return
+    }
+
     switch (tokenConvertStatus) {
       case 'processing':
         setError(undefined)
@@ -79,19 +91,30 @@ export default function useTokenConvertAndTokenPay(
         break
       case 'error':
         setError(tokenConvertError)
+        setStage(tokenConvertStage)
         setDetails(tokenConvertDetails)
         setTxId(tokenConvertTxId)
         setStatus('error')
+        statusRef.current = 'error'
         break
       case 'success':
         setError(undefined)
+        setStage(tokenConvertStage)
         setTxId(tokenConvertTxId)
         setDetails(tokenConvertDetails)
+        setStatus('processing')
+
+        tokenConvertSuccessHandler()
+
         break
     }
-  }, [tokenConvertTxId, tokenConvertError, tokenConvertStatus, tokenConvertStage, tokenConvertDetails])
+  }, [tokenConvertTxId, tokenConvertError, tokenConvertStatus, tokenConvertStage, tokenConvertDetails, tokenConvertSuccessHandler])
 
   useEffect(() => {
+    if (statusRef.current !== 'processing' || stageRef.current !== ConvertTokenPayStage.TokenPay) {
+      return
+    }
+
     switch (tokenPayStatus) {
       case 'processing':
         setError(undefined)
@@ -102,14 +125,19 @@ export default function useTokenConvertAndTokenPay(
         break
       case 'error':
         setError(tokenPayError)
+        setStage(tokenPayStage)
         setDetails(tokenPayDetails)
         setTxId(tokenPayTxId)
         setStatus('error')
+        statusRef.current = 'error'
         break
       case 'success':
         setError(undefined)
-        setTxId(tokenPayTxId)
+        setStage(tokenPayStage)
         setDetails(tokenPayDetails)
+        setTxId(tokenPayTxId)
+        setStatus('success')
+        statusRef.current = 'success'
         break
     }
   }, [tokenPayTxId, tokenPayError, tokenPayStatus, tokenPayStage, tokenPayDetails])

@@ -1,4 +1,4 @@
-import { FormEvent, useCallback } from 'react'
+import { FormEvent, useCallback, useEffect } from 'react'
 import { Button } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
@@ -17,13 +17,9 @@ interface PayButtonProps {
   paymentDetails: PaymentDetails
   receivedCurrencyAmount: number,
   stages: string[],
-  usePay: (
-    paymentDetails: PaymentDetails,
-    onError?: (error: Error | undefined) => void,
-    onSuccess?: (txId: string | undefined) => void,
-  ) => ContractCallResult,
+  usePay: () => ContractCallResult<PaymentDetails>,
   onError?: (error: Error | undefined) => void,
-  onSuccess?: (txId: string | undefined) => void,
+  onSuccess?: (txId: string | undefined) => void
 }
 
 const PayButton: React.FC<PayButtonProps> = (props) => {
@@ -36,23 +32,26 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
   const { currency } = usePaymentData()
   const exchangeRate = useExchangeRate()
 
-  const errorHandler = useCallback((error: Error | undefined) => {
-    close()
-    onError?.(error)
-  }, [close, onError])
-
-  const successHandler = useCallback((txId: string | undefined) => {
-    close()
-    onSuccess?.(txId)
-  }, [close, onSuccess])
-
-  const { stage, status, details, handle } = usePay(paymentDetails, errorHandler, successHandler)
+  const { stage, status, details, txId, error, handle } = usePay()
 
   const handlePay = useCallback(async (e: FormEvent) => {
     e.preventDefault()
     open()
-    handle()
-  }, [open, handle])
+    handle(paymentDetails)
+  }, [paymentDetails, handle, open])
+
+  useEffect(() => {
+    switch (status) {
+      case 'error':
+        close()
+        onError?.(error)
+        break
+      case 'success':
+        close()
+        onSuccess?.(txId)
+        break
+    }
+  }, [status, txId, error, close, onError, onSuccess])
 
   return (
     <>

@@ -10,10 +10,7 @@ import useDoUntil from './useDoUntil'
 import { getAddressOrDefault, tryParseInt } from '../utils'
 import { CHAINS } from '../../constants'
 
-export default function useTokenConvertTransactionMain(
-  onError?: (error: Error | undefined) => void,
-  onSuccess?: (txId: string | undefined) => void
-) {
+export default function useTokenConvertTransactionMain() {
   const statusRef = useRef<ApiRequestStatus>('idle')
 
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
@@ -40,19 +37,13 @@ export default function useTokenConvertTransactionMain(
               setData(undefined)
               setError(undefined)
               setStatus('success')
-              if (statusRef.current !== 'success') {
-                statusRef.current = 'success'
-                onSuccess?.(txId)
-              }
+              statusRef.current = 'success'
               return true
             case TransactionStatus.FAILED:
               setData(t('hooks.token_conversion_main.transaction_waiting_error', { requestId, txId }))
               setError(undefined)
               setStatus('processing')
-              if (statusRef.current !== 'error') {
-                statusRef.current = 'error'
-                onError?.(undefined)
-              }
+              statusRef.current = 'error'
               return true
             default:
               setData(t('hooks.token_conversion_main.transaction_waiting', { requestId, txId }))
@@ -70,7 +61,7 @@ export default function useTokenConvertTransactionMain(
 
       return clearInterval
     }
-  }, [config.config, requestId, status, t, txId, doUntilHandler, onError, onSuccess])
+  }, [config.config, requestId, status, t, txId, doUntilHandler])
 
   const handle = useCallback(async (requestIdToUse: string | undefined, evmTx: EvmTransaction | undefined) => {
     if (statusRef.current === 'processing') {
@@ -94,7 +85,8 @@ export default function useTokenConvertTransactionMain(
       setStatus('processing')
       statusRef.current = 'processing'
 
-      const chain = CHAINS.find(chain => chain.id === tryParseInt(evmTx.blockChain.chainId))
+      const evmTxChainId = tryParseInt(evmTx.blockChain.chainId)
+      const chain = CHAINS.find(chain => chain.id === evmTxChainId)
       const account = evmTx?.from ? getAddressOrDefault(evmTx?.from) : undefined
       const to = evmTx?.txTo ? getAddressOrDefault(evmTx?.txTo) : undefined
       const txData = evmTx?.txData ? evmTx.txData as `0x${string}` : undefined
@@ -144,10 +136,8 @@ export default function useTokenConvertTransactionMain(
       setStatus('error')
 
       statusRef.current = 'error'
-
-      onError?.(error)
     }
-  }, [signer, t, onError])
+  }, [signer, t])
 
   return {
     status,

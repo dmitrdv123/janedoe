@@ -1,34 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { ContractCallResult } from '../../types/contract-call-result'
+import { ContractCallResult, ConvertNativePayStage } from '../../types/contract-call-result'
 import { PaymentDetails } from '../../types/payment-details'
 import { ApiRequestStatus } from '../../types/api-request'
 import useNativePay from './useNativePay'
 import useTokenConvert from './useTokenConvert'
 
-export default function useTokenConvertAndNativePay(
-  paymentDetails: PaymentDetails,
-  onError?: (error: Error | undefined) => void,
-  onSuccess?: (txId: string | undefined) => void
-): ContractCallResult {
+export default function useTokenConvertAndNativePay(): ContractCallResult<PaymentDetails> {
+  const statusRef = useRef<ApiRequestStatus>('idle')
+  const stageRef = useRef<ConvertNativePayStage | undefined>(undefined)
+  const paymentDetailsRef = useRef<PaymentDetails | undefined>(undefined)
+
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [stage, setStage] = useState<string | undefined>(undefined)
   const [details, setDetails] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
   const [txId, setTxId] = useState<string | undefined>(undefined)
-
-  const {
-    error: nativePayError,
-    status: nativePayStatus,
-    stage: nativePayStage,
-    details: nativePayDetails,
-    txId: nativePayTxId,
-    handle: nativePayHandle
-  } = useNativePay(
-    paymentDetails,
-    onError,
-    onSuccess
-  )
 
   const {
     error: tokenConvertError,
@@ -37,23 +24,62 @@ export default function useTokenConvertAndNativePay(
     details: tokenConvertDetails,
     txId: tokenConvertTxId,
     handle: tokenConvertHandle
-  } = useTokenConvert(
-    paymentDetails,
-    onError,
-    nativePayHandle
-  )
+  } = useTokenConvert()
 
-  const handle = useCallback(() => {
+  const {
+    error: nativePayError,
+    status: nativePayStatus,
+    stage: nativePayStage,
+    details: nativePayDetails,
+    txId: nativePayTxId,
+    handle: nativePayHandle
+  } = useNativePay()
+
+  const tokenConvertSuccessHandler = useCallback(() => {
+    if (!paymentDetailsRef.current) {
+      return
+    }
+    stageRef.current = ConvertNativePayStage.NativePay
+    nativePayHandle({
+      protocolPaymentId: paymentDetailsRef.current.protocolPaymentId,
+      fromBlockchain: paymentDetailsRef.current.toBlockchain,
+      fromToken: paymentDetailsRef.current.toToken,
+      toBlockchain: paymentDetailsRef.current.toBlockchain,
+      toToken: paymentDetailsRef.current.toToken,
+      fromAddress: paymentDetailsRef.current.toAddress,
+      toAddress: paymentDetailsRef.current.toAddress,
+      fromContracts: paymentDetailsRef.current.toContracts,
+      toContracts: paymentDetailsRef.current.toContracts,
+      fromTokenAmount: paymentDetailsRef.current.toTokenAmount,
+      toTokenAmount: paymentDetailsRef.current.toTokenAmount,
+      currencyAmount: paymentDetailsRef.current.currencyAmount,
+      currency: paymentDetailsRef.current.currency,
+      slippage: paymentDetailsRef.current.slippage
+    })
+  }, [nativePayHandle])
+
+  const handle = useCallback((paymentDetails: PaymentDetails) => {
+    if (statusRef.current === 'processing') {
+      return
+    }
+    statusRef.current = 'processing'
+    stageRef.current = ConvertNativePayStage.TokenConvert
+    paymentDetailsRef.current = paymentDetails
+
     setError(undefined)
     setDetails(undefined)
     setStage(undefined)
     setTxId(undefined)
     setStatus('idle')
 
-    tokenConvertHandle()
+    tokenConvertHandle(paymentDetails)
   }, [tokenConvertHandle])
 
   useEffect(() => {
+    if (statusRef.current !== 'processing' || stageRef.current !== ConvertNativePayStage.TokenConvert) {
+      return
+    }
+
     switch (tokenConvertStatus) {
       case 'processing':
         setError(undefined)
@@ -64,19 +90,30 @@ export default function useTokenConvertAndNativePay(
         break
       case 'error':
         setError(tokenConvertError)
+        setStage(tokenConvertStage)
         setDetails(tokenConvertDetails)
         setTxId(tokenConvertTxId)
         setStatus('error')
+        statusRef.current = 'error'
         break
       case 'success':
         setError(undefined)
-        setTxId(tokenConvertTxId)
+        setStage(tokenConvertStage)
         setDetails(tokenConvertDetails)
+        setTxId(tokenConvertTxId)
+        setStatus('processing')
+
+        tokenConvertSuccessHandler()
+
         break
     }
-  }, [tokenConvertTxId, tokenConvertError, tokenConvertStatus, tokenConvertStage, tokenConvertDetails])
+  }, [tokenConvertTxId, tokenConvertError, tokenConvertStatus, tokenConvertStage, tokenConvertDetails, tokenConvertSuccessHandler])
 
   useEffect(() => {
+    if (statusRef.current !== 'processing' || stageRef.current !== ConvertNativePayStage.NativePay) {
+      return
+    }
+
     switch (nativePayStatus) {
       case 'processing':
         setError(undefined)
@@ -87,14 +124,19 @@ export default function useTokenConvertAndNativePay(
         break
       case 'error':
         setError(nativePayError)
+        setStage(nativePayStage)
         setDetails(nativePayDetails)
         setTxId(nativePayTxId)
         setStatus('error')
+        statusRef.current = 'error'
         break
       case 'success':
         setError(undefined)
-        setTxId(nativePayTxId)
+        setStage(nativePayStage)
         setDetails(nativePayDetails)
+        setTxId(nativePayTxId)
+        setStatus('success')
+        statusRef.current = 'success'
         break
     }
   }, [nativePayTxId, nativePayError, nativePayStatus, nativePayStage, nativePayDetails])

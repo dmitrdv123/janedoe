@@ -5,48 +5,51 @@ import { ContractCallResult } from '../../types/contract-call-result'
 import { getAddressOrDefault, tryParseInt } from '../utils'
 import useWriteAndWaitContract from './useWriteAndWaitContract'
 
-export default function useTokenApprove(
+export default function useTokenApprove(): ContractCallResult<{
   blockchain: BlockchainMeta,
   token: Token,
   spender: string,
-  amount: string,
-  onError?: (error: Error | undefined) => void,
-  onSuccess?: (txId: string | undefined) => void
-): ContractCallResult {
+  amount: string
+}> {
   const [stage, setStage] = useState<string | undefined>(undefined)
 
-  const { status, details, txId, error, handle: contractHandler } = useWriteAndWaitContract(
-    tryParseInt(blockchain.chainId),
-    getAddressOrDefault(token.address),
-    'approve',
-    [
-      {
-        type: 'function',
-        name: 'approve',
-        stateMutability: 'nonpayable',
-        inputs: [
-          {
-            type: 'address',
-          },
-          {
-            type: 'uint256',
-          },
-        ],
-        outputs: []
-      }
-    ],
-    [
-      getAddressOrDefault(spender),
-      BigInt(amount)
-    ],
-    undefined,
-    onError,
-    onSuccess
-  )
+  const { status, details, txId, error, handle: contractHandler } = useWriteAndWaitContract()
 
-  const handle = useCallback(() => {
+  const handle = useCallback((t: {
+    blockchain: BlockchainMeta,
+    token: Token,
+    spender: string,
+    amount: string
+  }) => {
+    const {blockchain, token, spender, amount} = t
+
     setStage('hooks.token_approve.token_approve')
-    contractHandler()
+
+    contractHandler({
+      chainId: tryParseInt(blockchain.chainId),
+      address: getAddressOrDefault(token.address),
+      functionName: 'approve',
+      abi: [
+        {
+          type: 'function',
+          name: 'approve',
+          stateMutability: 'nonpayable',
+          inputs: [
+            {
+              type: 'address',
+            },
+            {
+              type: 'uint256',
+            },
+          ],
+          outputs: []
+        }
+      ],
+      args: [
+        getAddressOrDefault(spender),
+        BigInt(amount)
+      ]
+    })
   }, [contractHandler])
 
   return {

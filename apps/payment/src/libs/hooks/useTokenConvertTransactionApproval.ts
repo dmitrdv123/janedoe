@@ -10,10 +10,7 @@ import useDoUntil from './useDoUntil'
 import { getAddressOrDefault, tryParseInt } from '../utils'
 import { CHAINS } from '../../constants'
 
-export default function useTokenConvertTransactionApproval(
-  onError?: (error: Error | undefined) => void,
-  onSuccess?: (txId: string | undefined) => void
-) {
+export default function useTokenConvertTransactionApproval() {
   const statusRef = useRef<ApiRequestStatus>('idle')
 
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
@@ -40,19 +37,13 @@ export default function useTokenConvertTransactionApproval(
               setData(undefined)
               setError(undefined)
               setStatus('success')
-              if (statusRef.current !== 'success') {
-                statusRef.current = 'success'
-                onSuccess?.(txId)
-              }
+              statusRef.current = 'success'
               return true
             case TransactionStatus.FAILED:
               setData(t('hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
               setError(undefined)
               setStatus('processing')
-              if (statusRef.current !== 'error') {
-                statusRef.current = 'error'
-                onError?.(undefined)
-              }
+              statusRef.current = 'error'
               return true
             default:
               setData(t('hooks.token_conversion_approval.transaction_waiting', { requestId, txId }))
@@ -70,7 +61,7 @@ export default function useTokenConvertTransactionApproval(
 
       return clearInterval
     }
-  }, [config.config, requestId, status, t, txId, doUntilHandler, onError, onSuccess])
+  }, [config.config, requestId, status, t, txId, doUntilHandler])
 
   const handle = useCallback(async (requestIdToUse: string | undefined, evmTx: EvmTransaction | undefined) => {
     if (statusRef.current === 'processing') {
@@ -93,7 +84,8 @@ export default function useTokenConvertTransactionApproval(
       setStatus('processing')
       statusRef.current = 'processing'
 
-      const chain = CHAINS.find(chain => chain.id === tryParseInt(evmTx.blockChain.chainId))
+      const evmTxChainId = tryParseInt(evmTx.blockChain.chainId)
+      const chain = CHAINS.find(chain => chain.id === evmTxChainId)
       const account = evmTx?.from ? getAddressOrDefault(evmTx.from) : undefined
       const to = evmTx?.from ? getAddressOrDefault(evmTx.approveTo) : undefined
       const approveData = evmTx?.approveData ? evmTx.approveData as `0x${string}` : undefined
@@ -109,10 +101,8 @@ export default function useTokenConvertTransactionApproval(
       setStatus('error')
 
       statusRef.current = 'error'
-
-      onError?.(error)
     }
-  }, [signer, t, onError])
+  }, [signer, t])
 
   return {
     status,

@@ -9,11 +9,7 @@ import { ApiWrapper } from '../services/api-wrapper'
 import { ApiRequestStatus } from '../../types/api-request'
 import { useExchangeRate, useTokens } from '../../states/settings/hook'
 
-export default function useTokenConvertSwap(
-  paymentDetails: PaymentDetails,
-  onError?: (error: Error | undefined) => void,
-  onSuccess?: (data: SwapResponse) => void
-) {
+export default function useTokenConvertSwap() {
   const statusRef = useRef<ApiRequestStatus>('idle')
 
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
@@ -27,24 +23,16 @@ export default function useTokenConvertSwap(
   const tokens = useTokens()
   const exchangeRate = useExchangeRate()
 
-  const handle = useCallback(async () => {
-    if (statusRef.current === 'processing') {
+  const handle = useCallback((paymentDetails: PaymentDetails) => {
+    if (statusRef.current === 'processing' || !exchangeRate || !tokens) {
       return
     }
+    statusRef.current = 'processing'
 
     setTxId(undefined)
     setData(undefined)
     setError(undefined)
-
-    if (!exchangeRate || !tokens) {
-      setStatus('idle')
-      statusRef.current = 'idle'
-
-      return
-    }
-
     setStatus('processing')
-    statusRef.current = 'processing'
 
     loadSwap(
       ApiWrapper.instance.swapRequest({
@@ -70,8 +58,6 @@ export default function useTokenConvertSwap(
 
           statusRef.current = 'error'
 
-          onError?.(error)
-
           return
         }
 
@@ -85,8 +71,6 @@ export default function useTokenConvertSwap(
 
           statusRef.current = 'error'
 
-          onError?.(error)
-
           return
         }
 
@@ -99,8 +83,6 @@ export default function useTokenConvertSwap(
           setStatus('error')
 
           statusRef.current = 'error'
-
-          onError?.(error)
 
           return
         }
@@ -123,8 +105,6 @@ export default function useTokenConvertSwap(
 
           statusRef.current = 'error'
 
-          onError?.(error)
-
           return
         }
 
@@ -134,8 +114,6 @@ export default function useTokenConvertSwap(
         setStatus('success')
 
         statusRef.current = 'success'
-
-        onSuccess?.(response)
       })
       .catch(error => {
         setTxId(undefined)
@@ -144,24 +122,12 @@ export default function useTokenConvertSwap(
         setStatus('error')
 
         statusRef.current = 'error'
-
-        onError?.(error)
       })
   }, [
     t,
-    paymentDetails.currencyAmount,
-    paymentDetails.currency,
-    paymentDetails.fromAddress,
-    paymentDetails.fromToken,
-    paymentDetails.slippage,
-    paymentDetails.toAddress,
-    paymentDetails.toToken,
-    paymentDetails.fromTokenAmount,
     exchangeRate,
     tokens,
-    loadSwap,
-    onError,
-    onSuccess
+    loadSwap
   ])
 
   return {

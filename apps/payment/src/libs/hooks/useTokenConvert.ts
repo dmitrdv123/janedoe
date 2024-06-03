@@ -11,113 +11,98 @@ import useTokenConvertTransactionMain from './useTokenConvertTransactionMain'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { tryParseInt } from '../utils'
 
-export default function useTokenConvert(
-  paymentDetails: PaymentDetails,
-  onError?: (error: Error | undefined) => void,
-  onSuccess?: (txId: string | undefined) => void
-): ContractCallResult {
+export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
+  const statusRef = useRef<ApiRequestStatus>('idle')
+  const stageRef = useRef<string | undefined>(undefined)
+  const evmTxRef = useRef<EvmTransaction | undefined>(undefined)
+  const requestIdRef = useRef<string | undefined>(undefined)
+
   const [stage, setStage] = useState<string | undefined>(undefined)
   const [details, setDetails] = useState<string | undefined>(undefined)
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [error, setError] = useState<Error | undefined>(undefined)
   const [requestId, setRequestId] = useState<string | undefined>(undefined)
-  const [evmTx, setEvmTx] = useState<EvmTransaction | undefined>(undefined)
-  const isDoneRef = useRef(false)
 
   const { status: switchChainStatus, error: switchChainError, switchChain } = useSwitchChain()
   const { chainId: currentChainId } = useAccount()
   const { t } = useTranslation()
 
   const {
-    status: mainStatus,
-    error: mainError,
-    handle: mainHandle
-  } = useTokenConvertTransactionMain(
-    onError,
-    onSuccess
-  )
-
-  const approveSuccessHandler = useCallback(() => {
-    mainHandle(requestId, evmTx)
-  }, [requestId, evmTx, mainHandle])
+    status: swapStatus,
+    error: swapError,
+    data: swapData,
+    handle: swapHandle
+  } = useTokenConvertSwap()
 
   const {
     status: approveStatus,
     error: approveError,
     handle: approveHandle
-  } = useTokenConvertTransactionApproval(
-    onError,
-    approveSuccessHandler
-  )
+  } = useTokenConvertTransactionApproval()
 
-  const swapSuccessHandler = useCallback((data: SwapResponse) => {
+  const {
+    status: mainStatus,
+    error: mainError,
+    handle: mainHandle
+  } = useTokenConvertTransactionMain()
+
+  const swapSuccessHandler = useCallback((data: SwapResponse | undefined) => {
     const execTx = (requestIdToUse: string | undefined, evmTxToUse: EvmTransaction | undefined) => {
       if (evmTxToUse?.approveTo && evmTxToUse.approveData) {
+        stageRef.current = TokenConvertStage.TokenApprove
         approveHandle(requestIdToUse, evmTxToUse)
       } else {
+        stageRef.current = TokenConvertStage.TokenConvert
         mainHandle(requestIdToUse, evmTxToUse)
       }
     }
 
+    if (!data) {
+      return
+    }
+
     const evmTransaction = data.tx as EvmTransaction
 
+    requestIdRef.current = data.requestId
+    evmTxRef.current = evmTransaction
     setRequestId(data.requestId)
-    setEvmTx(evmTransaction)
 
     const chainId = tryParseInt(evmTransaction.blockChain.chainId)
     if (chainId && currentChainId !== chainId) {
+      stageRef.current = TokenConvertStage.SwitchChain
       switchChain({ chainId }, { onSuccess: () => execTx(data.requestId, evmTransaction) })
     } else {
       execTx(data.requestId, evmTransaction)
     }
   }, [currentChainId, approveHandle, mainHandle, switchChain])
 
-  const {
-    status: swapStatus,
-    error: swapError,
-    handle: swapHandle
-  } = useTokenConvertSwap(paymentDetails, onError, swapSuccessHandler)
+  const approveSuccessHandler = useCallback(() => {
+    mainHandle(requestIdRef.current, evmTxRef.current)
+  }, [mainHandle])
 
-  const handle = useCallback(() => {
+  const handle = useCallback((paymentDetails: PaymentDetails) => {
+    if (statusRef.current === 'processing') {
+      return
+    }
+    statusRef.current = 'processing'
+    stageRef.current = TokenConvertStage.TokenSwap
+    requestIdRef.current = undefined
+    evmTxRef.current = undefined
+
     setError(undefined)
     setStage(undefined)
     setDetails(undefined)
-    setEvmTx(undefined)
     setRequestId(undefined)
     setStatus('idle')
-    isDoneRef.current = false
 
-    swapHandle()
+    swapHandle(paymentDetails)
   }, [swapHandle])
 
   useEffect(() => {
-    const err = switchChainError ? new Error(switchChainError.message) : undefined
-
-    switch (switchChainStatus) {
-      case 'pending':
-        setError(undefined)
-        setDetails(t('hooks.token_convert.switch_chain_processing'))
-        setStage(TokenConvertStage.SwitchChain)
-        setStatus('processing')
-        break
-      case 'error':
-        setError(err)
-        setDetails(t('hooks.token_convert.switch_chain_error'))
-        setStatus('error')
-
-        if (!isDoneRef.current) {
-          isDoneRef.current = true
-          onError?.(err)
-        }
-        break
-      case 'success':
-        setError(undefined)
-        setDetails(t('hooks.token_convert.switch_chain_success'))
-        break
+    if (statusRef.current !== 'processing' || stageRef.current !== TokenConvertStage.TokenSwap) {
+      return
     }
-  }, [switchChainError, switchChainStatus, t, onError])
 
-  useEffect(() => {
     switch (swapStatus) {
       case 'processing':
         setError(undefined)
@@ -128,16 +113,59 @@ export default function useTokenConvert(
       case 'error':
         setError(swapError)
         setDetails(t('hooks.token_convert.token_swap_error'))
+        setStage(TokenConvertStage.TokenSwap)
         setStatus('error')
+        statusRef.current = 'error'
         break
       case 'success':
         setError(undefined)
         setDetails(t('hooks.token_convert.token_swap_success'))
+        setStage(TokenConvertStage.TokenSwap)
+        setStatus('processing')
+
+        swapSuccessHandler(swapData)
+
         break
     }
-  }, [swapError, swapStatus, t])
+  }, [swapData, swapError, swapStatus, t, swapSuccessHandler])
 
   useEffect(() => {
+    if (statusRef.current !== 'processing' || stageRef.current !== TokenConvertStage.SwitchChain) {
+      return
+    }
+
+
+    switch (switchChainStatus) {
+      case 'pending':
+        setError(undefined)
+        setDetails(t('hooks.token_convert.switch_chain_processing'))
+        setStage(TokenConvertStage.SwitchChain)
+        setStatus('processing')
+        break
+      case 'error': {
+        const err = switchChainError ? new Error(switchChainError.message) : undefined
+
+        setError(err)
+        setDetails(t('hooks.token_convert.switch_chain_error'))
+        setStage(TokenConvertStage.SwitchChain)
+        setStatus('error')
+        statusRef.current = 'error'
+        break
+      }
+      case 'success':
+        setError(undefined)
+        setDetails(t('hooks.token_convert.switch_chain_success'))
+        setStage(TokenConvertStage.SwitchChain)
+        setStatus('processing')
+        break
+    }
+  }, [switchChainError, switchChainStatus, t])
+
+  useEffect(() => {
+    if (statusRef.current !== 'processing' || stageRef.current !== TokenConvertStage.TokenApprove) {
+      return
+    }
+
     switch (approveStatus) {
       case 'processing':
         setError(undefined)
@@ -148,16 +176,27 @@ export default function useTokenConvert(
       case 'error':
         setError(approveError)
         setDetails(t('hooks.token_convert.token_approve_error'))
+        setStage(TokenConvertStage.TokenApprove)
         setStatus('error')
+        statusRef.current = 'error'
         break
       case 'success':
         setError(undefined)
         setDetails(t('hooks.token_convert.token_approve_success'))
+        setStage(TokenConvertStage.TokenApprove)
+        setStatus('processing')
+
+        approveSuccessHandler()
+
         break
     }
-  }, [approveError, approveStatus, t])
+  }, [approveError, approveStatus, t, approveSuccessHandler])
 
   useEffect(() => {
+    if (statusRef.current !== 'processing' || stageRef.current !== TokenConvertStage.TokenConvert) {
+      return
+    }
+
     switch (mainStatus) {
       case 'processing':
         setError(undefined)
@@ -168,12 +207,16 @@ export default function useTokenConvert(
       case 'error':
         setError(mainError)
         setDetails(t('hooks.token_convert.token_convert_error'))
+        setStage(TokenConvertStage.TokenConvert)
         setStatus('error')
+        statusRef.current = 'error'
         break
       case 'success':
         setError(undefined)
         setDetails(t('hooks.token_convert.token_convert_success'))
+        setStage(TokenConvertStage.TokenConvert)
         setStatus('success')
+        statusRef.current = 'success'
         break
     }
   }, [mainError, mainStatus, t])

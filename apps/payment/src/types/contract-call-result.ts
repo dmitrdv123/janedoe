@@ -16,11 +16,21 @@ export enum TokenConvertStage {
   TokenConvert = 'hooks.token_convert.token_convert'
 }
 
-export interface ContractCallResult {
+export enum ConvertNativePayStage {
+  TokenConvert = 'hooks.token_convert_native_pay.token_convert',
+  NativePay = 'hooks.token_convert_native_pay.native_pay'
+}
+
+export enum ConvertTokenPayStage {
+  TokenConvert = 'hooks.token_convert_token_pay.token_convert',
+  TokenPay = 'hooks.token_convert_token_pay.token_pay'
+}
+
+export interface ContractCallResult<T> {
   status: ApiRequestStatus
   stage: string | undefined
   details: string | undefined
   txId?: string
   error: Error | undefined
-  handle: () => void
+  handle: (t: T) => void
 }

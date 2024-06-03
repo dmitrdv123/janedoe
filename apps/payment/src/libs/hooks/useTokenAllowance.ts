@@ -1,94 +1,148 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
-import { erc20Abi } from 'viem'
+import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 
-import { getAddressOrDefault, tryParseInt } from '../utils'
+import { getAddressOrDefault } from '../utils'
 import { ApiRequestStatus } from '../../types/api-request'
 import { ServiceError } from '../../types/errors/service-error'
 
-export default function useTokenAllowance(
-  blockchain: BlockchainMeta,
-  token: Token,
-  from: string,
-  to: string,
-  onError?: (error: Error | undefined) => void,
-  onSuccess?: (allowance: bigint | undefined) => void
-) {
+export default function useTokenAllowance() {
   const statusRef = useRef<ApiRequestStatus>('idle')
 
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [stage, setStage] = useState<string | undefined>(undefined)
   const [details, setDetails] = useState<string | undefined>(undefined)
+  const [allowance, setAllowance] = useState<bigint | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
+  const [data, setData] = useState<{
+    chainId: number,
+    address: Address,
+    functionName: 'allowance',
+    abi: [
+      {
+        type: 'function',
+        name: 'allowance',
+        stateMutability: 'view',
+        inputs: [
+          {
+            name: 'owner',
+            type: 'address',
+          },
+          {
+            name: 'spender',
+            type: 'address',
+          },
+        ],
+        outputs: [
+          {
+            type: 'uint256',
+          },
+        ],
+      }
+    ],
+    args: [`0x${string}`, `0x${string}`]
+  } | undefined>(undefined)
 
   const { t } = useTranslation()
 
   const {
-    status: tokenAllowanceStatus,
-    data: allowance,
-    error: tokenAllowanceError,
+    status: readStatus,
     refetch: readHandler
-  } = useReadContract({
-    chainId: tryParseInt(blockchain.chainId),
-    address: getAddressOrDefault(token.address),
-    functionName: 'allowance',
-    abi: erc20Abi,
-    args: [
-      getAddressOrDefault(from),
-      getAddressOrDefault(to)
-    ]
-  })
+  } = useReadContract(data)
 
-  const handle = useCallback(() => {
-    if (statusRef.current === 'processing') {
+  const handle = useCallback((
+    blockchain: BlockchainMeta,
+    token: Token,
+    from: string,
+    to: string,
+  ) => {
+    if (statusRef.current === 'processing' || !blockchain.chainId) {
       return
     }
-
     statusRef.current = 'processing'
 
     setError(undefined)
     setStage(undefined)
     setDetails(undefined)
-    setStatus('idle')
-
-    readHandler()
-  }, [readHandler])
+    setData({
+      chainId: parseInt(blockchain.chainId),
+      address: getAddressOrDefault(token.address),
+      functionName: 'allowance',
+      abi: [
+        {
+          type: 'function',
+          name: 'allowance',
+          stateMutability: 'view',
+          inputs: [
+            {
+              name: 'owner',
+              type: 'address',
+            },
+            {
+              name: 'spender',
+              type: 'address',
+            },
+          ],
+          outputs: [
+            {
+              type: 'uint256',
+            },
+          ],
+        }
+      ],
+      args: [
+        getAddressOrDefault(from),
+        getAddressOrDefault(to)
+      ]
+    })
+    setStatus('processing')
+  }, [])
 
   useEffect(() => {
-    const err = new ServiceError(tokenAllowanceError?.shortMessage ?? '', 'services.errors.payment_errors.read_allowance_error')
+    const reload = async () => {
+      setError(undefined)
+      setDetails(t('hooks.token_allowance.read_allowance_processing'))
+      setStage('hooks.token_allowance.read_allowance')
+      setAllowance(undefined)
+      setStatus('processing')
 
-    switch (tokenAllowanceStatus) {
-      case 'pending':
-        setError(undefined)
-        setDetails(t('hooks.token_allowance.read_allowance_processing'))
-        setStage('hooks.token_allowance.read_allowance')
-        setStatus('processing')
-        break
-      case 'error':
+      const {
+        status: tokenAllowanceStatus,
+        data: allowance,
+        error: tokenAllowanceError,
+      } = await readHandler()
 
-        setError(err)
-        setDetails(t('hooks.token_allowance.read_allowance_error'))
-        setStatus('error')
+      switch (tokenAllowanceStatus) {
+        case 'error': {
+          const err = new ServiceError(tokenAllowanceError?.shortMessage ?? '', 'services.errors.payment_errors.read_allowance_error')
 
-        if (statusRef.current !== 'error') {
+          setError(err)
+          setDetails(t('hooks.token_allowance.read_allowance_error'))
+          setStage('hooks.token_allowance.read_allowance')
+          setAllowance(undefined)
+          setStatus('error')
+
           statusRef.current = 'error'
-          onError?.(err)
+          break
         }
-        break
-      case 'success':
-        setError(undefined)
-        setDetails(t('hooks.token_allowance.read_allowance_success'))
-        setStatus('success')
+        case 'success':
+          setError(undefined)
+          setDetails(t('hooks.token_allowance.read_allowance_success'))
+          setStage('hooks.token_allowance.read_allowance')
+          setAllowance(allowance)
+          setStatus('success')
 
-        if (statusRef.current !== 'success') {
           statusRef.current = 'success'
-          onSuccess?.(allowance)
-        }
-        break
+          break
+      }
     }
-  }, [allowance, tokenAllowanceError, tokenAllowanceStatus, t, onError, onSuccess])
+
+    if (statusRef.current === 'processing' && data) {
+      reload()
+    }
+  }, [readStatus, status, data, t, readHandler])
 
   return {
     status,

@@ -153,6 +153,14 @@
         "contract_not_found": "Cannot find janedoe contract address for blockchain {{blockchain}}"
       }
     },
+    "token_convert_native_pay": {
+      "token_convert": "Token swap transaction",
+      "native_pay": "Payment transaction"
+    },
+    "token_convert_token_pay": {
+      "token_convert": "Token swap transaction",
+      "token_pay": "Payment transaction"
+    },
     "token_convert": {
       "switch_chain": "Blockchain switching",
       "switch_chain_processing": "Blockchain switching is in progress",
