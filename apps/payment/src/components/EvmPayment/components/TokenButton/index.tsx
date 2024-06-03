@@ -1,5 +1,5 @@
 import { Form } from 'react-bootstrap'
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { useAccount } from 'wagmi'
@@ -37,8 +37,6 @@ const TokenButton: React.FC<TokenButtonProps> = (props) => {
   const tokens = useTokens()
   const { handle: loadWalletDetailsHandler, data: walletDetails } = useWalletDetails(blockchain, address)
 
-  const [selectedToken, setSelectedToken] = useState<Token | undefined>(token)
-
   const paymentTokens = useMemo(() => {
     if (!tokens) {
       return []
@@ -58,30 +56,25 @@ const TokenButton: React.FC<TokenButtonProps> = (props) => {
   }, [token, walletDetails])
 
   useEffect(() => {
-    setSelectedToken(current => {
-      if (current && isBlockchainToken(blockchain, current)) {
-        const tokenToUpdate = paymentTokens.find(item => isToken(item, current.blockchain, current.symbol, current.address))
-        return isEqual(current, tokenToUpdate)
-          ? current
-          : tokenToUpdate
-      }
+    let tokenToUpdate: Token | undefined = undefined
 
-      if (paymentSettings) {
-        for (const asset of paymentSettings.assets) {
-          const tokenToUpdate = paymentTokens.find(item => isToken(item, asset.blockchain, asset.symbol, asset.address))
-          if (tokenToUpdate !== undefined) {
-            return tokenToUpdate
-          }
+    if (token) {
+      tokenToUpdate = paymentTokens.find(item => isToken(item, token.blockchain, token.symbol, token.address))
+    }
+
+    if (!tokenToUpdate && paymentSettings) {
+      for (const asset of paymentSettings.assets) {
+        tokenToUpdate = paymentTokens.find(item => isToken(item, asset.blockchain, asset.symbol, asset.address))
+        if (tokenToUpdate) {
+          break
         }
       }
+    }
 
-      return undefined
-    })
-  }, [blockchain, paymentSettings, paymentTokens])
-
-  useEffect(() => {
-    onUpdate(selectedToken)
-  }, [selectedToken, onUpdate])
+    if (!isEqual(token, tokenToUpdate)) {
+      onUpdate(tokenToUpdate)
+    }
+  }, [token, paymentSettings, paymentTokens, onUpdate])
 
   useEffect(() => {
     if (isForceRefresh) {
@@ -96,14 +89,14 @@ const TokenButton: React.FC<TokenButtonProps> = (props) => {
   }, [open])
 
   const selectTokenHandler = useCallback((tokenToUpdate: Token) => {
-    setSelectedToken(tokenToUpdate)
-  }, [])
+    onUpdate(tokenToUpdate)
+  }, [onUpdate])
 
   return (
     <>
       <TokensModal
         blockchain={blockchain}
-        selectedToken={selectedToken}
+        selectedToken={token}
         tokens={paymentTokens}
         onUpdate={selectTokenHandler}
         walletDetails={walletDetails}
@@ -111,10 +104,10 @@ const TokenButton: React.FC<TokenButtonProps> = (props) => {
 
       <Form.Group>
         <Form.Control as="button" className="dropdown-toggle" onClick={openHandler} disabled={disabled || paymentTokens.length < 2}>
-          {selectedToken?.symbol ?? t('components.evm_payment.select_token')}
+          {token?.symbol ?? t('components.evm_payment.select_token')}
         </Form.Control>
 
-        {!selectedToken && (
+        {!token && (
           <div>
             <Form.Text className="text-danger">
               {t('components.evm_payment.errors.token_required')}
@@ -130,17 +123,17 @@ const TokenButton: React.FC<TokenButtonProps> = (props) => {
           </div>
         )}
 
-        {(!!selectedToken && !!walletTokenAmount) && (
+        {(!!token && !!walletTokenAmount) && (
           <div>
             <Form.Text muted>
               {t('common.balance')} <TokenAmountWithCurrency
-                tokenSymbol={selectedToken.symbol}
-                tokenDecimals={selectedToken.decimals}
+                tokenSymbol={token.symbol}
+                tokenDecimals={token.decimals}
                 tokenAmount={walletTokenAmount}
                 currency={currency}
                 currencyAmount={
-                  selectedToken.usdPrice && exchangeRate
-                    ? tokenAmountToCurrency(walletTokenAmount, selectedToken.usdPrice, selectedToken.decimals, exchangeRate)
+                  token.usdPrice && exchangeRate
+                    ? tokenAmountToCurrency(walletTokenAmount, token.usdPrice, token.decimals, exchangeRate)
                     : null
                 }
               />
