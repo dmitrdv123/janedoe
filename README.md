@@ -115,6 +115,7 @@ others:
 - payment: pay button should show amount of converted token in case of conversion and not from token amount
 - account: if we open some account page in new tab then user will be unauthenticated in all tabs in chrome
 - api: hardhat payment is not processed
+- api: max block (2000) exceed for cronos even if I have an iterator
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
