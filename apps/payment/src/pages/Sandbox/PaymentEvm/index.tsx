@@ -46,7 +46,7 @@ const PaymentEvm: React.FC = () => {
               <Card.Header className='p-2'>
                 <div className="d-flex justify-content-between">
                   <div>
-                    <a href="#" className="text-decoration-none">ETH USDT</a> будет cконвертирован
+                    USDT будет cконвертирован
                   </div>
                   <div>
                     <Button variant="link" className="text-decoration-none" size='sm'>
@@ -57,22 +57,22 @@ const PaymentEvm: React.FC = () => {
 
                 <div>
                   <Row>
-                    <Col sm={6}>
+                    <Col xs="auto">
                       <Form.Group as={Row}>
-                        <Form.Label column sm={4}>
+                        <Form.Label column xs="auto">
                           в токен
                         </Form.Label>
-                        <Col sm={8}>
-                          <Form.Control as="button" className="dropdown-toggle" >
+                        <Col xs="auto">
+                          <Button className="dropdown-toggle" variant="outline-link">
                             ETH
-                          </Form.Control>
+                          </Button>
                         </Col>
                       </Form.Group>
                     </Col>
-                    <Col sm={6}>
+                    <Col xs="auto">
                       <Form.Group as={Row}>
-                        <Form.Label column sm={8}>с проскальзыванием</Form.Label>
-                        <Col sm={4}>
+                        <Form.Label column xs="auto">с проскальзыванием</Form.Label>
+                        <Col xs="auto">
                           <Dropdown>
                             <Dropdown.Toggle variant="outline-link">
                               1%
@@ -94,34 +94,32 @@ const PaymentEvm: React.FC = () => {
                 </div>
               </Card.Header>
               <Card.Body className='p-2'>
-
-
                 <div className="mb-2">
-                  <div>Суммарная комиссия: 0.32 USD</div>
+                  <div>Входящая сумма 0.0001 ETH (0.5 USD)</div>
+                  <div>Выходящая сумма 0.0005 USDT (0.5 USD)</div>
                   <div>Суммарное время: 2 мин</div>
                 </div>
 
-                <div>Конвертация:</div>
-                <ListGroup numbered>
-                  <ListGroup.Item className="border-0">
-                    <a href="#" className="text-decoration-none">BNB</a> в <a href="#" className="text-decoration-none">USDT</a> (<a href="#" className="text-decoration-none">Pancake V3</a>)
-                    <div>
-                      Комиссия: 0.16 USD
-                    </div>
-                    <div>
-                      Время: 1 мин
-                    </div>
-                  </ListGroup.Item>
-                  <ListGroup.Item className="border-0">
-                    <a href="#" className="text-decoration-none">USDT</a> в <a href="#" className="text-decoration-none">USDC</a> (<a href="#" className="text-decoration-none">Paraswap</a>)
-                    <div>
-                      Комиссия: 0.16 USD
-                    </div>
-                    <div>
-                      Время: 1 мин
-                    </div>
-                  </ListGroup.Item>
-                </ListGroup>
+                <div className="mb-2">
+                  Комиссии:
+                  <ListGroup as="ol" numbered>
+                    <ListGroup.Item as="li" className="border-0 pt-0 pb-0">
+                      Rango Fee 0.000000201131252603 ETH(= 0.00 USD)
+                    </ListGroup.Item>
+                    <ListGroup.Item as="li" className="border-0 pt-0 pb-0">
+                      Network Fee 0.0000258656 ETH(= 0.10 USD)
+                    </ListGroup.Item>
+                  </ListGroup>
+                </div>
+
+                <div className="mb-2">
+                  Конвертация:
+                  <ListGroup as="ol" numbered>
+                    <ListGroup.Item as="li" className="border-0 pt-0 pb-0">
+                      UniSwapV3: ETH в <a href="#" className="text-decoration-none">USDC</a>
+                    </ListGroup.Item>
+                  </ListGroup>
+                </div>
               </Card.Body>
             </Card>
 
@@ -154,7 +152,7 @@ const PaymentEvm: React.FC = () => {
             <Button variant="link">Обновить</Button>
           </div>
         </Container>
-      </main>
+      </main >
     </>
   )
 }
