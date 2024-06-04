@@ -162,7 +162,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
         <Card.Header className='p-2'>
           <div className="d-flex justify-content-between">
             <div>
-              <TokenShortDetails blockchain={fromBlockchain} token={fromToken} /> {t('components.evm_payment.conversion_desc')}
+              <TokenShortDetails token={fromToken} hideBlockchain={true}/> {t('components.evm_payment.conversion_desc')}
             </div>
             <div>
               <Button
@@ -178,12 +178,12 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
           </div>
           <div>
             <Row>
-              <Col sm={6}>
+              <Col xs="auto">
                 <Form.Group as={Row}>
-                  <Form.Label column sm={4}>
+                  <Form.Label column xs="auto">
                     {t('components.evm_payment.conversion_token')}
                   </Form.Label>
-                  <Col sm={8}>
+                  <Col xs="auto">
                     <Button
                       className="dropdown-toggle"
                       variant="outline-link"
@@ -196,23 +196,17 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
                         </>
                       )}
 
-                      {(!!paymentConversionData?.quote.to) && (
-                        <>
-                          {paymentConversionData.quote.to.symbol}&nbsp;({
-                            findBlockchainByName(blockchains ?? [], paymentConversionData.quote.to.blockchain)?.displayName ?? paymentConversionData.quote.to.blockchain
-                          })
-                        </>
-                      )}
+                      {(!!paymentConversionData?.quote.to) && (paymentConversionData.quote.to.symbol)}
                     </Button>
                   </Col>
                 </Form.Group>
               </Col>
-              <Col sm={6}>
+              <Col xs="auto">
                 <Form.Group as={Row}>
-                  <Form.Label column sm={8}>
+                  <Form.Label column xs="auto">
                     {t('components.evm_payment.conversion_slippage')}
                   </Form.Label>
-                  <Col sm={4}>
+                  <Col xs="auto">
                     {(disabled || paymentConversionStatus === 'processing') && (
                       <Form.Control type="text" value={`${slippageCur}%`} disabled />
                     )}
@@ -304,7 +298,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
                         {paymentConversionData.quote.path.map(
                           (item, i) => (
                             <ListGroup.Item as="li" className="border-0 pt-0 pb-0" key={i}>
-                              {item.swapper.title}: <TokenShortDetails blockchain={findBlockchainByName(blockchains ?? [], item.from.blockchain)} token={item.from} /> {t('components.evm_payment.to')} <TokenShortDetails blockchain={findBlockchainByName(blockchains ?? [], item.to.blockchain)} token={item.to} />
+                              {item.swapper.title}: <TokenShortDetails token={item.from} hideBlockchain={true}/> {t('components.evm_payment.to')} <TokenShortDetails blockchain={findBlockchainByName(blockchains ?? [], item.to.blockchain)} token={item.to} />
                             </ListGroup.Item>
                           )
                         )}
