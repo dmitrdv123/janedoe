@@ -230,7 +230,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
               </div>
             </div>
           </div>
-          <div className="text-muted">
+          <div className="small text-muted">
             {t('components.evm_payment.explain', { token: `${fromToken.symbol}` })}
           </div>
         </Card.Header>
