@@ -46,25 +46,15 @@ const PaymentEvm: React.FC = () => {
               <Card.Header className='p-2'>
                 <div className="d-flex justify-content-between">
                   <div>
-                    USDT будет cконвертирован
-                  </div>
-                  <div>
-                    <Button variant="link" className="text-decoration-none" size='sm'>
-                      Обновить
-                    </Button>
-                  </div>
-                </div>
-
-                <div>
                   <Row>
                     <Col xs="auto">
                       <Form.Group as={Row}>
                         <Form.Label column xs="auto">
-                          в токен
+                          обмен на
                         </Form.Label>
                         <Col xs="auto">
                           <Button className="dropdown-toggle" variant="outline-link">
-                            ETH
+                            USDC
                           </Button>
                         </Col>
                       </Form.Group>
@@ -88,6 +78,12 @@ const PaymentEvm: React.FC = () => {
                       </Form.Group>
                     </Col>
                   </Row>
+                  </div>
+                  <div>
+                    <Button variant="link" className="text-decoration-none" size='sm'>
+                      Обновить
+                    </Button>
+                  </div>
                 </div>
                 <div className="text-muted">
                   магазин не принимает USDT в качестве оплаты

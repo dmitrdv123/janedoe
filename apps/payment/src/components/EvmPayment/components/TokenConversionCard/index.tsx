@@ -160,76 +160,75 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
 
       <Card>
         <Card.Header className='p-2'>
-          <div className="d-flex justify-content-between">
-            <div>
-              <TokenShortDetails token={fromToken} hideBlockchain={true}/> {t('components.evm_payment.conversion_desc')}
-            </div>
-            <div>
-              <Button
-                variant="link"
-                className="text-decoration-none me-2"
-                size='sm'
-                disabled={disabled || paymentConversionStatus === 'processing'}
-                onClick={() => paymentConversionHandler(fromToken, paymentConversionData?.quote.to, currencyAmount, slippageCur)}
-              >
-                {t('common.refresh_btn')}
-              </Button>
-            </div>
-          </div>
           <div>
-            <Row>
-              <Col xs="auto">
-                <Form.Group as={Row}>
-                  <Form.Label column xs="auto">
-                    {t('components.evm_payment.conversion_token')}
-                  </Form.Label>
+            <div className="d-flex justify-content-between">
+              <div>
+                <Row>
                   <Col xs="auto">
-                    <Button
-                      className="dropdown-toggle"
-                      variant="outline-link"
-                      disabled={disabled || paymentConversionStatus === 'processing'}
-                      onClick={openHandler}
-                    >
-                      {(!paymentConversionData?.quote.to) && (
-                        <>
-                          {t('components.evm_payment.conversion_select_token')}
-                        </>
-                      )}
+                    <Form.Group as={Row}>
+                      <Form.Label column xs="auto">
+                        {t('components.evm_payment.conversion_token')}
+                      </Form.Label>
+                      <Col xs="auto">
+                        <Button
+                          className="dropdown-toggle"
+                          variant="outline-link"
+                          disabled={disabled || paymentConversionStatus === 'processing'}
+                          onClick={openHandler}
+                        >
+                          {(!paymentConversionData?.quote.to) && (
+                            <>
+                              {t('components.evm_payment.conversion_select_token')}
+                            </>
+                          )}
 
-                      {(!!paymentConversionData?.quote.to) && (paymentConversionData.quote.to.symbol)}
-                    </Button>
+                          {(!!paymentConversionData?.quote.to) && (paymentConversionData.quote.to.symbol)}
+                        </Button>
+                      </Col>
+                    </Form.Group>
                   </Col>
-                </Form.Group>
-              </Col>
-              <Col xs="auto">
-                <Form.Group as={Row}>
-                  <Form.Label column xs="auto">
-                    {t('components.evm_payment.conversion_slippage')}
-                  </Form.Label>
                   <Col xs="auto">
-                    {(disabled || paymentConversionStatus === 'processing') && (
-                      <Form.Control type="text" value={`${slippageCur}%`} disabled />
-                    )}
+                    <Form.Group as={Row}>
+                      <Form.Label column xs="auto">
+                        {t('components.evm_payment.conversion_slippage')}
+                      </Form.Label>
+                      <Col xs="auto">
+                        {(disabled || paymentConversionStatus === 'processing') && (
+                          <Form.Control type="text" value={`${slippageCur}%`} disabled />
+                        )}
 
-                    {(!disabled && paymentConversionStatus !== 'processing') && (
-                      <Dropdown>
-                        <Dropdown.Toggle variant="outline-link">
-                          {slippageCur}%
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {SLIPPAGES.map(item => (
-                            <Dropdown.Item key={`slippage_${item}`} onClick={() => setSlippageHandler(item)} active={slippageCur === item}>{item}%</Dropdown.Item>
-                          ))}
-                          <Dropdown.ItemText>
-                            <Form.Control type="number" placeholder={t('components.evm_payment.conversion_custom_slippage_placeholder')} value={customSlippageCur} onChange={e => setCustomSlippageHandler(e.target.value)} />
-                          </Dropdown.ItemText>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    )}
+                        {(!disabled && paymentConversionStatus !== 'processing') && (
+                          <Dropdown>
+                            <Dropdown.Toggle variant="outline-link">
+                              {slippageCur}%
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                              {SLIPPAGES.map(item => (
+                                <Dropdown.Item key={`slippage_${item}`} onClick={() => setSlippageHandler(item)} active={slippageCur === item}>{item}%</Dropdown.Item>
+                              ))}
+                              <Dropdown.ItemText>
+                                <Form.Control type="number" placeholder={t('components.evm_payment.conversion_custom_slippage_placeholder')} value={customSlippageCur} onChange={e => setCustomSlippageHandler(e.target.value)} />
+                              </Dropdown.ItemText>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        )}
+                      </Col>
+                    </Form.Group>
                   </Col>
-                </Form.Group>
-              </Col>
-            </Row>
+                </Row>
+              </div>
+              <div>
+                <Button
+                  variant="link"
+                  className="text-decoration-none me-2"
+                  size='sm'
+                  disabled={disabled || paymentConversionStatus === 'processing'}
+                  onClick={() => paymentConversionHandler(fromToken, paymentConversionData?.quote.to, currencyAmount, slippageCur)}
+                >
+                  {t('common.refresh_btn')}
+                </Button>
+              </div>
+            </div>
           </div>
           <div className="text-muted">
             {t('components.evm_payment.explain', { token: `${fromToken.symbol}` })}
@@ -298,7 +297,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
                         {paymentConversionData.quote.path.map(
                           (item, i) => (
                             <ListGroup.Item as="li" className="border-0 pt-0 pb-0" key={i}>
-                              {item.swapper.title}: <TokenShortDetails token={item.from} hideBlockchain={true}/> {t('components.evm_payment.to')} <TokenShortDetails blockchain={findBlockchainByName(blockchains ?? [], item.to.blockchain)} token={item.to} />
+                              {item.swapper.title}: <TokenShortDetails token={item.from} hideBlockchain={true} /> {t('components.evm_payment.to')} <TokenShortDetails blockchain={findBlockchainByName(blockchains ?? [], item.to.blockchain)} token={item.to} />
                             </ListGroup.Item>
                           )
                         )}
