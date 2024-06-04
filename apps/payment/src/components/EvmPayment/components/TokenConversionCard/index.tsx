@@ -160,154 +160,174 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
 
       <Card>
         <Card.Header className='p-2'>
-          <div>
-            <div className="d-flex justify-content-between">
-              <div>
-                <Row>
-                  <Col xs="auto">
-                    <Form.Group as={Row}>
-                      <Form.Label column xs="auto">
-                        {t('components.evm_payment.conversion_token')}
-                      </Form.Label>
-                      <Col xs="auto">
-                        <Button
-                          className="dropdown-toggle"
-                          variant="outline-link"
-                          disabled={disabled || paymentConversionStatus === 'processing'}
-                          onClick={openHandler}
-                        >
-                          {(!paymentConversionData?.quote.to) && (
-                            <>
-                              {t('components.evm_payment.conversion_select_token')}
-                            </>
-                          )}
-
-                          {(!!paymentConversionData?.quote.to) && (paymentConversionData.quote.to.symbol)}
-                        </Button>
-                      </Col>
-                    </Form.Group>
-                  </Col>
-                  <Col xs="auto">
-                    <Form.Group as={Row}>
-                      <Form.Label column xs="auto">
-                        {t('components.evm_payment.conversion_slippage')}
-                      </Form.Label>
-                      <Col xs="auto">
-                        {(disabled || paymentConversionStatus === 'processing') && (
-                          <Form.Control type="text" value={`${slippageCur}%`} disabled />
-                        )}
-
-                        {(!disabled && paymentConversionStatus !== 'processing') && (
-                          <Dropdown>
-                            <Dropdown.Toggle variant="outline-link">
-                              {slippageCur}%
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                              {SLIPPAGES.map(item => (
-                                <Dropdown.Item key={`slippage_${item}`} onClick={() => setSlippageHandler(item)} active={slippageCur === item}>{item}%</Dropdown.Item>
-                              ))}
-                              <Dropdown.ItemText>
-                                <Form.Control type="number" placeholder={t('components.evm_payment.conversion_custom_slippage_placeholder')} value={customSlippageCur} onChange={e => setCustomSlippageHandler(e.target.value)} />
-                              </Dropdown.ItemText>
-                            </Dropdown.Menu>
-                          </Dropdown>
-                        )}
-                      </Col>
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </div>
-              <div>
-                <Button
-                  variant="link"
-                  className="text-decoration-none me-2"
-                  size='sm'
-                  disabled={disabled || paymentConversionStatus === 'processing'}
-                  onClick={() => paymentConversionHandler(fromToken, paymentConversionData?.quote.to, currencyAmount, slippageCur)}
-                >
-                  {t('common.refresh_btn')}
-                </Button>
-              </div>
+          <div className="d-flex justify-content-between">
+            <div>
+              <div>{t('components.evm_payment.conversion_title')}</div>
+              <small className='text-muted'>
+                {t('components.evm_payment.explain', { token: `${fromToken.symbol}` })}
+              </small>
             </div>
-          </div>
-          <div className="small text-muted">
-            {t('components.evm_payment.explain', { token: `${fromToken.symbol}` })}
+            <div>
+              <Button
+                variant="link"
+                className="text-decoration-none me-2"
+                size='sm'
+                disabled={disabled || paymentConversionStatus === 'processing'}
+                onClick={() => paymentConversionHandler(fromToken, paymentConversionData?.quote.to, currencyAmount, slippageCur)}
+              >
+                {t('common.refresh_btn')}
+              </Button>
+            </div>
           </div>
         </Card.Header>
         <Card.Body className='p-2'>
-          {paymentConversionStatus === 'processing' && (
-            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
-              <span className="visually-hidden">{t('common.loading')}</span>
-            </Spinner>
-          )}
+          <Row>
+            <Col sm={6}>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>
+                  {t('components.evm_payment.conversion_token')}
+                </Form.Label>
+                <Button
+                  className="dropdown-toggle w-100"
+                  variant="outline-secondary"
+                  disabled={disabled || paymentConversionStatus === 'processing'}
+                  onClick={openHandler}
+                >
+                  {(!paymentConversionData?.quote.to) && (
+                    <>
+                      {t('components.evm_payment.conversion_select_token')}
+                    </>
+                  )}
 
-          {paymentConversionStatus === 'error' && (
-            <Alert variant='warning' className='mb-0'>
-              {t('components.evm_payment.conversion_error_alert')}
-            </Alert>
-          )}
+                  {(!!paymentConversionData?.quote.to) && (paymentConversionData.quote.to.symbol)}
+                </Button>
+              </Form.Group>
 
-          {paymentConversionStatus === 'success' && (
-            <>
-              {!paymentConversionData && (
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>
+                  {t('components.evm_payment.conversion_slippage')}
+                </Form.Label>
+
+                {(disabled || paymentConversionStatus === 'processing') && (
+                  <Form.Control type="text" value={`${slippageCur}%`} disabled />
+                )}
+
+                {(!disabled && paymentConversionStatus !== 'processing') && (
+                  <Dropdown className="w-100">
+                    <Dropdown.Toggle variant="outline-secondary" className="w-100">
+                      {slippageCur}%
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="w-100">
+                      {SLIPPAGES.map(item => (
+                        <Dropdown.Item key={`slippage_${item}`} onClick={() => setSlippageHandler(item)} active={slippageCur === item}>{item}%</Dropdown.Item>
+                      ))}
+                      <Dropdown.ItemText>
+                        <Form.Control type="number" placeholder={t('components.evm_payment.conversion_custom_slippage_placeholder')} value={customSlippageCur} onChange={e => setCustomSlippageHandler(e.target.value)} />
+                      </Dropdown.ItemText>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
+
+              </Form.Group>
+            </Col>
+            <Col sm={6}>
+              {paymentConversionStatus === 'processing' && (
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
+                  <span className="visually-hidden">{t('common.loading')}</span>
+                </Spinner>
+              )}
+
+              {paymentConversionStatus === 'error' && (
                 <Alert variant='warning' className='mb-0'>
-                  {t('components.evm_payment.conversion_not_found_alert')}
+                  {t('components.evm_payment.conversion_error_alert')}
                 </Alert>
               )}
 
-              {!!paymentConversionData && (
+              {paymentConversionStatus === 'success' && (
                 <>
-                  <div className="mb-2">
-                    {!!paymentConversionData.quote.estimatedTimeInSeconds && (
-                      <>
-                        {t('components.evm_payment.total_duration', { seconds: paymentConversionData.quote.estimatedTimeInSeconds })}
-                      </>
-                    )}
-                  </div>
-
-                  {(paymentConversionData.quote.fee.length > 0) && (
-                    <div className="mb-2">
-                      {t('components.evm_payment.fee')}
-                      <ListGroup as="ol" numbered>
-                        {paymentConversionData.quote.fee.map(
-                          (item, i) => (
-                            <ListGroup.Item as="li" className="border-0 pt-0 pb-0" key={i}>
-                              {item.name} <TokenAmountWithCurrency
-                                tokenSymbol={item.token.symbol}
-                                tokenDecimals={item.token.decimals}
-                                tokenAmount={item.amount}
-                                currency={currency}
-                                currencyAmount={
-                                  item.token.usdPrice && exchangeRate
-                                    ? tokenAmountToCurrency(item.amount, item.token.usdPrice, item.token.decimals, exchangeRate)
-                                    : null
-                                }
-                              />
-                            </ListGroup.Item>
-                          )
-                        )}
-                      </ListGroup>
-                    </div>
+                  {!paymentConversionData && (
+                    <Alert variant='warning' className='mb-0'>
+                      {t('components.evm_payment.conversion_not_found_alert')}
+                    </Alert>
                   )}
 
-                  {(!!paymentConversionData.quote.path && paymentConversionData.quote.path.length > 0) && (
-                    <div className="mb-2">
-                      {t('components.evm_payment.conversion')}
-                      <ListGroup as="ol" numbered>
-                        {paymentConversionData.quote.path.map(
-                          (item, i) => (
-                            <ListGroup.Item as="li" className="border-0 pt-0 pb-0" key={i}>
-                              {item.swapper.title}: <TokenShortDetails token={item.from} hideBlockchain={true} /> {t('components.evm_payment.to')} <TokenShortDetails blockchain={findBlockchainByName(blockchains ?? [], item.to.blockchain)} token={item.to} />
-                            </ListGroup.Item>
-                          )
+                  {!!paymentConversionData && (
+                    <>
+                      <div className="mb-2">
+                        <div>
+                          {t('components.evm_payment.conversion_input_amount')} <TokenAmountWithCurrency
+                            tokenSymbol={fromToken.symbol}
+                            tokenDecimals={fromToken.decimals}
+                            tokenAmount={paymentConversionData.amount}
+                            currency={currency}
+                            currencyAmount={
+                              fromToken.usdPrice && exchangeRate
+                                ? tokenAmountToCurrency(paymentConversionData.amount, fromToken.usdPrice, fromToken.decimals, exchangeRate)
+                                : null
+                            }
+                          />
+                        </div>
+                        <div>
+                          {t('components.evm_payment.conversion_output_amount')} <TokenAmountWithCurrency
+                            tokenSymbol={paymentConversionData.quote.to.symbol}
+                            tokenDecimals={paymentConversionData.quote.to.decimals}
+                            tokenAmount={paymentConversionData.quote.outputAmountMin}
+                            currency={currency}
+                            currencyAmount={paymentConversionData.quote.outputAmountUsd}
+                          />
+                        </div>
+                        {!!paymentConversionData.quote.estimatedTimeInSeconds && (
+                          <div>
+                            {t('components.evm_payment.total_duration', { seconds: paymentConversionData.quote.estimatedTimeInSeconds })}
+                          </div>
                         )}
-                      </ListGroup>
-                    </div>
+                      </div>
+
+                      {(paymentConversionData.quote.fee.length > 0) && (
+                        <div className="mb-2">
+                          {t('components.evm_payment.fee')}
+                          <ListGroup as="ol" numbered>
+                            {paymentConversionData.quote.fee.map(
+                              (item, i) => (
+                                <ListGroup.Item as="li" className="border-0 pt-0 pb-0" key={i}>
+                                  {item.name}: <TokenAmountWithCurrency
+                                    tokenSymbol={item.token.symbol}
+                                    tokenDecimals={item.token.decimals}
+                                    tokenAmount={item.amount}
+                                    currency={currency}
+                                    currencyAmount={
+                                      item.token.usdPrice && exchangeRate
+                                        ? tokenAmountToCurrency(item.amount, item.token.usdPrice, item.token.decimals, exchangeRate)
+                                        : null
+                                    }
+                                  />
+                                </ListGroup.Item>
+                              )
+                            )}
+                          </ListGroup>
+                        </div>
+                      )}
+
+                      {(!!paymentConversionData.quote.path && paymentConversionData.quote.path.length > 0) && (
+                        <div className="mb-2">
+                          {t('components.evm_payment.conversion')}
+                          <ListGroup as="ol" numbered>
+                            {paymentConversionData.quote.path.map(
+                              (item, i) => (
+                                <ListGroup.Item as="li" className="border-0 pt-0 pb-0" key={i}>
+                                  {item.swapper.title}: <TokenShortDetails token={item.from} hideBlockchain={true} /> {t('components.evm_payment.to')} <TokenShortDetails blockchain={findBlockchainByName(blockchains ?? [], item.to.blockchain)} token={item.to} />
+                                </ListGroup.Item>
+                              )
+                            )}
+                          </ListGroup>
+                        </div>
+                      )}
+                    </>
                   )}
                 </>
               )}
-            </>
-          )}
+            </Col>
+          </Row>
         </Card.Body>
       </Card>
     </>
