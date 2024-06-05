@@ -120,6 +120,23 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     setIsProcessing(false)
   }, [t, addInfoMessage])
 
+  const errorConvertAndPayHandler = useCallback((error: Error | undefined, stage: string | undefined) => {
+    addInfoMessage(t('components.evm_payment.errors.failed_pay'), INFO_MESSAGE_PAYMENT_PROCESSING_ERROR, 'danger', error)
+    setIsForceRefreshConversion(true)
+    setIsForceRefreshToken(true)
+    setIsProcessing(false)
+
+    if (
+      stage
+      && (
+        Object.values(NativePayStage).map(item => item.toString()).includes(stage)
+        || Object.values(TokenPayStage).map(item => item.toString()).includes(stage)
+      )
+    ) {
+      setFromToken(toToken)
+    }
+  }, [toToken, t, addInfoMessage])
+
   const successHandler = useCallback((txId: string | undefined) => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_PROCESSING_ERROR)
     navigateSuccessHandler(txId)
@@ -167,7 +184,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
       </div>
 
       {(isConnected && !!paymentDetailsCurrent) && (
-        <PaymentDetailsInfo paymentDetails={paymentDetailsCurrent} restCurrencyAmount={restCurrencyAmount} receivedCurrencyAmount={receivedCurrencyAmount}/>
+        <PaymentDetailsInfo paymentDetails={paymentDetailsCurrent} restCurrencyAmount={restCurrencyAmount} receivedCurrencyAmount={receivedCurrencyAmount} />
       )}
 
       {!isConnected && (
@@ -194,7 +211,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
             }
             usePay={useTokenConvertAndNativePay}
             onProcessing={processingHandler}
-            onError={errorHandler}
+            onError={errorConvertAndPayHandler}
             onSuccess={successHandler}
           />
         </div>
@@ -210,7 +227,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
             }
             usePay={useTokenConvertAndTokenPay}
             onProcessing={processingHandler}
-            onError={errorHandler}
+            onError={errorConvertAndPayHandler}
             onSuccess={successHandler}
           />
         </div>

@@ -111,7 +111,7 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- payment: If user will reject tx or it failed after conversion then we need to start from failed step without conversion
+- payment: calc required conversion amount based on already existed in wallet
 - account: if we open some account page in new tab then user will be unauthenticated in all tabs in chrome. It is related to disabling metamask extension.
 - api: hardhat payment is not processed
 - api: max block (2000) exceed for cronos even if I have an iterator

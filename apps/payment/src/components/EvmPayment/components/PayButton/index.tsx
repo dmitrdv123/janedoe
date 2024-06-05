@@ -13,7 +13,7 @@ interface PayButtonProps {
   stages: string[]
   usePay: () => ContractCallResult<PaymentDetails>
   onProcessing?: () => void
-  onError?: (error: Error | undefined) => void
+  onError?: (error: Error | undefined, stage: string | undefined) => void
   onSuccess?: (txId: string | undefined) => void
 }
 
@@ -36,14 +36,14 @@ const PayButton: React.FC<PayButtonProps> = (props) => {
     switch (status) {
       case 'error':
         close()
-        onError?.(error)
+        onError?.(error, stage)
         break
       case 'success':
         close()
         onSuccess?.(txId)
         break
     }
-  }, [status, txId, error, close, onError, onSuccess])
+  }, [status, stage, txId, error, close, onError, onSuccess])
 
   return (
     <>
