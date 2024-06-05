@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useRef, useCallback, useDeferredValue } f
 import { Form, InputGroup, ListGroup, Modal, Spinner, Image } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Search } from 'react-bootstrap-icons'
-import { BlockchainMeta, EVMChainInfo, Token, TransactionType } from 'rango-sdk-basic'
+import { Asset, BlockchainMeta, EVMChainInfo, Token, TransactionType } from 'rango-sdk-basic'
 import { Orama, search } from '@orama/orama'
 
 import { useModalIsOpen, useToggleModal } from '../../../states/application/hook'
@@ -115,16 +115,26 @@ const TokensModal: React.FC<TokensModalProps> = (props) => {
         assets: accountPaymentSettings.assets.filter(item => !sameTokenAndAsset(item, token))
       })
     } else {
-      const asset = {
+      const blockchainIndex = accountPaymentSettings.blockchains.findIndex(item => item.toLocaleLowerCase() === token.blockchain.toLocaleLowerCase())
+      if (blockchainIndex === -1) {
+        return
+      }
+
+      const assetsByBlockchain: Asset[][] = []
+      accountPaymentSettings.blockchains.forEach((blockchain) => {
+        const assets = accountPaymentSettings.assets.filter((asset) => asset.blockchain.toLocaleLowerCase() === blockchain.toLocaleLowerCase())
+        assetsByBlockchain.push(assets)
+      })
+
+      assetsByBlockchain[blockchainIndex].push({
         blockchain: token.blockchain,
         symbol: token.symbol,
         address: isNullOrEmptyOrWhitespaces(token.address) ? null : token.address
-      }
+      })
 
       onUpdateAccountPaymentSettings({
         ...accountPaymentSettings,
-        blockchains: accountPaymentSettings.blockchains,
-        assets: [...accountPaymentSettings.assets, asset]
+        assets: assetsByBlockchain.flat()
       })
     }
   }, [accountPaymentSettings, onUpdateAccountPaymentSettings])
