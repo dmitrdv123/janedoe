@@ -52,6 +52,8 @@ NODE_ENV=local pnpm run dev --filter=protocol-tron
 NODE_ENV=local pnpm run deploy --filter=installer
 # deploy contracts
 NODE_ENV=local pnpm run deploy --filter=protocol -- --network localhost
+NODE_ENV=local CONTRACT=RangoReceiver VERSION=RangoReceiverV4 INIT=initialize4 pnpm run upgrade --filter=protocol -- --network localhost
+NODE_ENV=local CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network localhost
 # deploy contracts to zksync (optionally)
 NODE_ENV=local pnpm run deploy --filter=protocol-zksync -- --network zksyncInMemoryNode
 # deploy contracts to tron (optionally)
@@ -111,8 +113,6 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- payment: calc required conversion amount based on already existed in wallet
-- account: if we open some account page in new tab then user will be unauthenticated in all tabs in chrome. It is related to disabling metamask extension.
 - api: hardhat payment is not processed
 - api: max block (2000) exceed for cronos even if I have an iterator
 - api: filter not found error
@@ -155,6 +155,9 @@ disputable backlog:
 - aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success. Disputable since user should wait until tx will be processed. It could take longer than expected and bring additional unnecessary dependency of user from backend.
 - payment: use increaseAllowance instead of reset and set allowance. Disputable since openzeppelin ERC20 related classes does not have this method
+- account: if we open some account page in new tab then user will be unauthenticated in all tabs in chrome. It is related to disabling metamask extension. Disputable since user wallet should be connected
+- payment: calc required conversion amount based on already existed amount in wallet. Disputable since it is possible to have situation when amount is too small to have conversion. Another situation, user are going to use ETH with conversion to USDT, but it has enough USDT. In this case conversion will be skipped since amount is zero. Another situation, during calculating conversion we found one amount. But during swap we have another amount.
+
 
 learning:
 
