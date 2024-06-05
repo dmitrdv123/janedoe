@@ -84,6 +84,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     setToToken(fromToken)
     setFromTokenAmount(fromTokenAmountTmp)
     setToTokenAmount(toTokenAmountTmp)
+    setToTokenSwapAmount(toTokenAmountTmp)
     setSlippage(DEFAULT_SLIPPAGE)
   }, [restCurrencyAmount, exchangeRate, fromToken, toToken, needConversion])
 
@@ -227,7 +228,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetailsCurrent && !!blockchain && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
+      {(isConnected && !!paymentDetailsCurrent && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             title={t('components.evm_payment.pay')}
@@ -241,7 +242,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetailsCurrent && !!blockchain && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
+      {(isConnected && !!paymentDetailsCurrent && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             title={t('components.evm_payment.pay')}

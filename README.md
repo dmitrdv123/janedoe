@@ -115,6 +115,7 @@ others:
 - account: if we open some account page in new tab then user will be unauthenticated in all tabs in chrome. It is related to disabling metamask extension.
 - api: hardhat payment is not processed
 - api: max block (2000) exceed for cronos even if I have an iterator
+- api: filter not found error
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
