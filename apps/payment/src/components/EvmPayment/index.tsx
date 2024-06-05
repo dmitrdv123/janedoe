@@ -22,6 +22,7 @@ import { NativePayStage, TokenConvertStage, TokenPayStage } from '../../types/co
 import useTokenConvertAndNativePay from '../../libs/hooks/useTokenConvertAndNativePay'
 import useTokenConvertAndTokenPay from '../../libs/hooks/useTokenConvertAndTokenPay'
 import { PaymentDetails } from '../../types/payment-details'
+import PaymentDetailsInfo from './components/PaymentDetailsInfo'
 
 interface EvmPaymentProps {
   blockchain: BlockchainMeta
@@ -38,6 +39,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const [toToken, setToToken] = useState<Token | undefined>(undefined)
   const [fromTokenAmount, setFromTokenAmount] = useState<string | undefined>(undefined)
   const [toTokenAmount, setToTokenAmount] = useState<string | undefined>(undefined)
+  const [toTokenSwapAmount, setToTokenSwapAmount] = useState<string | undefined>(undefined)
   const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE)
   const [email, setEmail] = useState('')
   const [isForceRefreshConversion, setIsForceRefreshConversion] = useState(false)
@@ -48,7 +50,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
   const { id, paymentId, currency } = usePaymentData()
   const paymentSettings = usePaymentSettings()
-  const paymentDetails = usePaymentDetails(id, paymentId, address, blockchain, fromToken, blockchain, toToken, fromTokenAmount, toTokenAmount, slippage, restCurrencyAmount, currency)
+  const paymentDetails = usePaymentDetails(id, paymentId, address, address, blockchain, fromToken, blockchain, toToken, fromTokenAmount, toTokenAmount, toTokenSwapAmount, slippage, restCurrencyAmount, currency)
   const exchangeRate = useExchangeRate()
 
   const navigateSuccessHandler = useNavigateSuccess(blockchain?.name, email)
@@ -90,17 +92,18 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     setFromToken(tokenToUpdate)
   }, [clearInfoMessage])
 
-  const updateConversionHandler = useCallback((toTokenToUpdate: Token | undefined, tokenAmountToUpdate: string | undefined, slippageToUpdate: number) => {
-    setFromTokenAmount(tokenAmountToUpdate)
-
-    const toTokenAmountTmp = toTokenToUpdate?.usdPrice && exchangeRate
+  const updateConversionHandler = useCallback((toTokenToUpdate: Token | undefined, fromTokenAmountToUpdate: string | undefined, toTokenSwapAmountToUpdate: string | undefined, slippageToUpdate: number) => {
+    const toTokenAmountToUpdate = toTokenToUpdate?.usdPrice && exchangeRate
       ? currencyToTokenAmount(restCurrencyAmount, toTokenToUpdate.usdPrice, toTokenToUpdate.decimals, exchangeRate)
       : undefined
+
+    setFromTokenAmount(fromTokenAmountToUpdate)
     setToToken(toTokenToUpdate)
-    setToTokenAmount(toTokenAmountTmp)
+    setToTokenAmount(toTokenAmountToUpdate)
+    setToTokenSwapAmount(toTokenSwapAmountToUpdate)
 
     setSlippage(slippageToUpdate)
-  }, [restCurrencyAmount, exchangeRate])
+  }, [exchangeRate, restCurrencyAmount])
 
   const changeEmailHandler = useCallback((emailToUpdate: string) => {
     setEmail(emailToUpdate)
@@ -163,6 +166,10 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         <EmailInput email={email} onChange={changeEmailHandler} />
       </div>
 
+      {(isConnected && !!paymentDetailsCurrent) && (
+        <PaymentDetailsInfo paymentDetails={paymentDetailsCurrent} restCurrencyAmount={restCurrencyAmount} receivedCurrencyAmount={receivedCurrencyAmount}/>
+      )}
+
       {!isConnected && (
         <div className="d-grid mb-2">
           <ConnectButton />
@@ -180,8 +187,8 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
       {(isConnected && !!paymentDetailsCurrent && !isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeAsset(paymentDetailsCurrent.toBlockchain, paymentDetailsCurrent.toToken)) && (
         <div className="d-grid mb-2">
           <PayButton
+            title={t('components.evm_payment.swap_and_pay')}
             paymentDetails={paymentDetailsCurrent}
-            receivedCurrencyAmount={receivedCurrencyAmount}
             stages={
               [...Object.values(TokenConvertStage), ...Object.values(NativePayStage)]
             }
@@ -196,8 +203,8 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
       {(isConnected && !!paymentDetailsCurrent && !isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeAsset(paymentDetailsCurrent.toBlockchain, paymentDetailsCurrent.toToken)) && (
         <div className="d-grid mb-2">
           <PayButton
+            title={t('components.evm_payment.swap_and_pay')}
             paymentDetails={paymentDetailsCurrent}
-            receivedCurrencyAmount={receivedCurrencyAmount}
             stages={
               [...Object.values(TokenConvertStage), ...Object.values(TokenPayStage)]
             }
@@ -212,8 +219,8 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
       {(isConnected && !!paymentDetailsCurrent && !!blockchain && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
+            title={t('components.evm_payment.pay')}
             paymentDetails={paymentDetailsCurrent}
-            receivedCurrencyAmount={receivedCurrencyAmount}
             stages={Object.values(NativePayStage)}
             usePay={useNativePay}
             onProcessing={processingHandler}
@@ -226,8 +233,8 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
       {(isConnected && !!paymentDetailsCurrent && !!blockchain && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
+            title={t('components.evm_payment.pay')}
             paymentDetails={paymentDetailsCurrent}
-            receivedCurrencyAmount={receivedCurrencyAmount}
             stages={Object.values(TokenPayStage)}
             usePay={useTokenApproveAndPay}
             onProcessing={processingHandler}

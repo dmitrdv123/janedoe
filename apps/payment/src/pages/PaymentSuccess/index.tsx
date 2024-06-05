@@ -7,7 +7,7 @@ import './index.css'
 import SettingsLoader from '../../states/settings/loader'
 import PaymentNavbar from '../../components/PaymentNavbar'
 import usePaymentData from '../../libs/hooks/usePaymentData'
-import PaymentSummary from '../../components/PaymentSummary'
+import PaymentDataInfo from '../../components/PaymentDataInfo'
 import InfoMessages from '../../components/InfoMessages'
 
 const PaymentStatus: React.FC = () => {
@@ -26,7 +26,7 @@ const PaymentStatus: React.FC = () => {
         <InfoMessages />
 
           <div className='mb-2 mt-2'>
-            <PaymentSummary />
+            <PaymentDataInfo />
           </div>
 
           <Alert variant="success">

@@ -4,7 +4,7 @@ import { usePaymentSettings } from '../../states/settings/hook'
 import CurrencyAmount from '../CurrencyAmount'
 import usePaymentData from '../../libs/hooks/usePaymentData'
 
-const PaymentSummary: React.FC = () => {
+const PaymentDataInfo: React.FC = () => {
   const { t } = useTranslation()
 
   const { id, paymentId, amount, currency } = usePaymentData()
@@ -28,4 +28,4 @@ const PaymentSummary: React.FC = () => {
   )
 }
 
-export default PaymentSummary
+export default PaymentDataInfo

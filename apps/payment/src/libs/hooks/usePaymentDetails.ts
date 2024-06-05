@@ -11,15 +11,17 @@ import { INFO_MESSAGE_PAYMENT_DETAILS_ERROR } from '../../constants'
 export default function usePaymentDetails(
   id: string,
   paymentId : string,
-  address: Address | undefined,
+  fromAddress: Address | undefined,
+  toAddress: Address | undefined,
   fromBlockchain: BlockchainMeta,
   fromToken: Token | undefined,
   toBlockchain: BlockchainMeta,
   toToken: Token | undefined,
   fromTokenAmount: string | undefined,
   toTokenAmount: string | undefined,
+  toTokenSwapAmount: string | undefined,
   slippage: number | undefined,
-  amount: number,
+  currencyAmount: number,
   currency: string
 ): PaymentDetails | undefined {
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | undefined>(undefined)
@@ -32,11 +34,13 @@ export default function usePaymentDetails(
   useEffect(() => {
     if (
       !appSettings
-      || !address
+      || !fromAddress
+      || !toAddress
       || !fromToken
       || !toToken
       || !fromTokenAmount
       || !toTokenAmount
+      || !toTokenSwapAmount
     ) {
       setPaymentDetails(undefined)
       return
@@ -70,20 +74,21 @@ export default function usePaymentDetails(
 
     removeInfoMessage(INFO_MESSAGE_PAYMENT_DETAILS_ERROR)
     setPaymentDetails({
-      fromBlockchain,
       protocolPaymentId,
+      fromBlockchain,
       fromToken,
       toBlockchain,
       toToken,
+      fromAddress,
+      toAddress,
       fromContracts,
       toContracts,
-      slippage,
-      currency,
       fromTokenAmount,
       toTokenAmount,
-      fromAddress: address,
-      toAddress: address,
-      currencyAmount: amount,
+      toTokenSwapAmount,
+      currencyAmount,
+      currency,
+      slippage,
     })
   }, [
     id,
@@ -92,13 +97,15 @@ export default function usePaymentDetails(
     fromToken,
     toBlockchain,
     toToken,
-    address,
+    fromAddress,
+    toAddress,
     fromTokenAmount,
     toTokenAmount,
+    toTokenSwapAmount,
+    currencyAmount,
+    currency,
     slippage,
     appSettings,
-    amount,
-    currency,
     t,
     addInfoMessage,
     removeInfoMessage

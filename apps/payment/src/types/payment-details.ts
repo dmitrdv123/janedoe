@@ -18,6 +18,7 @@ export interface PaymentDetails {
   toContracts: { [key: string]: string }
   fromTokenAmount: string
   toTokenAmount: string
+  toTokenSwapAmount: string
   currencyAmount: number
   currency: string
   slippage: number | undefined

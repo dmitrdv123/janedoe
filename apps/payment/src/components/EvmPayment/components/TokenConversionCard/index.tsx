@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 import usePaymentConversion from '../../../../libs/hooks/usePaymentConversion'
 import { useInfoMessages, useToggleModal } from '../../../../states/application/hook'
 import { INFO_MESSAGE_PAYMENT_CONVERSION_ERROR, SLIPPAGES } from '../../../../constants'
-import TokenShortDetails from '../../../../components/TokenShortDetails'
+import TokenShortDetails from '../../../TokenShortDetails'
 import { useBlockchains, useExchangeRate, usePaymentSettings, useTokens } from '../../../../states/settings/hook'
-import TokenAmountWithCurrency from '../../../../components/TokenAmountWithCurrency'
+import TokenAmountWithCurrency from '../../../TokenAmountWithCurrency'
 import { findBlockchainByName, isAssetEqualToToken, tokenAmountToCurrency, tryParseFloat } from '../../../../libs/utils'
 import usePaymentData from '../../../../libs/hooks/usePaymentData'
 import ConversionTokensModal from '../../../modals/ConversionTokensModal'
@@ -23,7 +23,7 @@ interface TokenConversionCardProps {
   disabled?: boolean
   isForceRefresh: boolean
   onForceRefreshEnd: () => void
-  onUpdate: (token: Token | undefined, tokenAmount: string | undefined, slippage: number) => void
+  onUpdate: (toToken: Token | undefined, fromTokenAmount: string | undefined, toTokenAmount: string | undefined, slippage: number) => void
 }
 
 const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
@@ -74,14 +74,13 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
 
   const paymentConversionHandler = useCallback(async (fromTokenToUse: Token, toTokenToUse: Asset | undefined, currencyAmountToUse: number, slippageToUse: number) => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_CONVERSION_ERROR)
+    onUpdate(undefined, undefined, undefined, slippageToUse)
 
     try {
-      onUpdate(undefined, undefined, slippageToUse)
       const result = await paymentConversion(fromTokenToUse, toTokenToUse, currencyAmountToUse, slippageToUse)
-      onUpdate(result?.quote.to, result?.amount, slippageToUse)
+      onUpdate(result?.quote.to, result?.amount, result?.quote.outputAmount, slippageToUse)
     } catch (error) {
       addInfoMessage(t('components.evm_payment.errors.conversion_failed'), INFO_MESSAGE_PAYMENT_CONVERSION_ERROR, 'danger', error)
-      onUpdate(undefined, undefined, slippageToUse)
     }
   }, [t, onUpdate, paymentConversion, addInfoMessage, removeInfoMessage])
 
@@ -182,8 +181,8 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
         </Card.Header>
         <Card.Body className='p-2'>
           <Row>
-            <Col sm={6}>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Col sm={4}>
+              <Form.Group className="mb-3">
                 <Form.Label>
                   {t('components.evm_payment.conversion_token')}
                 </Form.Label>
@@ -230,7 +229,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
 
               </Form.Group>
             </Col>
-            <Col sm={6}>
+            <Col sm={8}>
               {paymentConversionStatus === 'processing' && (
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
                   <span className="visually-hidden">{t('common.loading')}</span>
@@ -271,7 +270,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
                           {t('components.evm_payment.conversion_output_amount')} <TokenAmountWithCurrency
                             tokenSymbol={paymentConversionData.quote.to.symbol}
                             tokenDecimals={paymentConversionData.quote.to.decimals}
-                            tokenAmount={paymentConversionData.quote.outputAmountMin}
+                            tokenAmount={paymentConversionData.quote.outputAmount}
                             currency={currency}
                             currencyAmount={paymentConversionData.quote.outputAmountUsd}
                           />

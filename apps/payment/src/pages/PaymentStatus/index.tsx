@@ -17,7 +17,7 @@ import TokenAmount from '../../components/TokenAmount'
 import CurrencyAmount from '../../components/CurrencyAmount'
 import PaymentNavbar from '../../components/PaymentNavbar'
 import usePaymentData from '../../libs/hooks/usePaymentData'
-import PaymentSummary from '../../components/PaymentSummary'
+import PaymentDataInfo from '../../components/PaymentDataInfo'
 import InfoMessages from '../../components/InfoMessages'
 import { useBlockchains, useExchangeRate, useTokens } from '../../states/settings/hook'
 import { ApiRequestStatus } from '../../types/api-request'
@@ -156,7 +156,7 @@ const PaymentStatus: React.FC = () => {
           <InfoMessages />
 
           <div className='mb-2 mt-2'>
-            <PaymentSummary />
+            <PaymentDataInfo />
           </div>
 
           {(status === 'success' && paymentHistory && isDone(paymentHistory, amount)) && (

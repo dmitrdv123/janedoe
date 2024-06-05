@@ -29,9 +29,10 @@ const TokenAmountWithCurrency: React.FC<TokenAmountProps> = (props) => {
             amount={tokenAmount}
             symbol={tokenSymbol}
             decimals={tokenDecimals}
-          /> {currencyAmount !== null &&(
+          />
+          {currencyAmount !== null && (
             <>
-              (= <CurrencyAmount currency={currency} amount={currencyAmount} />)
+              &nbsp;(= <CurrencyAmount currency={currency} amount={currencyAmount} />)
             </>
           )}
         </>

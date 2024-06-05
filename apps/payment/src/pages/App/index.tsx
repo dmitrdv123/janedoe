@@ -15,7 +15,7 @@ import UpdateTimer from '../../components/UpdateTimer'
 import BlockchainButton from '../../components/BlockchainButton'
 import EvmPayment from '../../components/EvmPayment'
 import TransferPayment from '../../components/TransferPayment'
-import PaymentSummary from '../../components/PaymentSummary'
+import PaymentDataInfo from '../../components/PaymentDataInfo'
 import InfoMessages from '../../components/InfoMessages'
 import { DEFAULT_CURRENCY_DECIMAL_PLACES } from '../../constants'
 import { roundNumber } from '../../libs/utils'
@@ -56,7 +56,7 @@ const App: React.FC = () => {
           <InfoMessages />
 
           <div className='mb-2 mt-2'>
-            <PaymentSummary />
+            <PaymentDataInfo />
           </div>
 
           {(!settings.current || !['success', 'error'].includes(status)) && (

@@ -58,7 +58,7 @@ const PaymentEvm: React.FC = () => {
               </Card.Header>
               <Card.Body className='p-2'>
                 <Row>
-                  <Col sm={6}>
+                  <Col sm={4}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                       <Form.Label>Конвертация в</Form.Label>
                       <Form.Control as="button" className="dropdown-toggle">
@@ -81,7 +81,7 @@ const PaymentEvm: React.FC = () => {
                       </Dropdown>
                     </Form.Group>
                   </Col>
-                  <Col sm={6}>
+                  <Col sm={8}>
                     <div className="mb-2">
                       <div>Входящая сумма: 0.0001 ETH (0.5 USD)</div>
                       <div>Выходящая сумма: 0.0005 USDT (0.5 USD)</div>

@@ -73,6 +73,7 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
       toContracts: paymentDetailsRef.current.toContracts,
       fromTokenAmount: toTokenAmount,
       toTokenAmount: toTokenAmount,
+      toTokenSwapAmount: toTokenAmount,
       currencyAmount: paymentDetailsRef.current.currencyAmount,
       currency: paymentDetailsRef.current.currency,
       slippage: paymentDetailsRef.current.slippage
