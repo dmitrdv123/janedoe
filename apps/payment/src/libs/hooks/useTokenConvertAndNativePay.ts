@@ -26,7 +26,6 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
   const {
     error: tokenConvertError,
     status: tokenConvertStatus,
-    stage: tokenConvertStage,
     details: tokenConvertDetails,
     txId: tokenConvertTxId,
     handle: tokenConvertHandle
@@ -35,7 +34,6 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
   const {
     error: nativePayError,
     status: nativePayStatus,
-    stage: nativePayStage,
     details: nativePayDetails,
     txId: nativePayTxId,
     handle: nativePayHandle
@@ -105,14 +103,14 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
     switch (tokenConvertStatus) {
       case 'processing':
         setError(undefined)
-        setStage(tokenConvertStage)
+        setStage(ConvertNativePayStage.TokenConvert)
         setDetails(tokenConvertDetails)
         setTxId(tokenConvertTxId)
         setStatus('processing')
         break
       case 'error':
         setError(tokenConvertError)
-        setStage(tokenConvertStage)
+        setStage(ConvertNativePayStage.TokenConvert)
         setDetails(tokenConvertDetails)
         setTxId(tokenConvertTxId)
         setStatus('error')
@@ -120,7 +118,7 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
         break
       case 'success':
         setError(undefined)
-        setStage(tokenConvertStage)
+        setStage(ConvertNativePayStage.TokenConvert)
         setDetails(tokenConvertDetails)
         setTxId(tokenConvertTxId)
         setStatus('processing')
@@ -129,7 +127,7 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
 
         break
     }
-  }, [tokenConvertTxId, tokenConvertError, tokenConvertStatus, tokenConvertStage, tokenConvertDetails, tokenConvertSuccessHandler])
+  }, [tokenConvertTxId, tokenConvertError, tokenConvertStatus, tokenConvertDetails, tokenConvertSuccessHandler])
 
   useEffect(() => {
     if (statusRef.current !== 'processing' || stageRef.current !== ConvertNativePayStage.NativePay) {
@@ -139,14 +137,14 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
     switch (nativePayStatus) {
       case 'processing':
         setError(undefined)
-        setStage(nativePayStage)
+        setStage(ConvertNativePayStage.NativePay)
         setDetails(nativePayDetails)
         setTxId(nativePayTxId)
         setStatus('processing')
         break
       case 'error':
         setError(nativePayError)
-        setStage(nativePayStage)
+        setStage(ConvertNativePayStage.NativePay)
         setDetails(nativePayDetails)
         setTxId(nativePayTxId)
         setStatus('error')
@@ -154,14 +152,14 @@ export default function useTokenConvertAndNativePay(): ContractCallResult<Paymen
         break
       case 'success':
         setError(undefined)
-        setStage(nativePayStage)
+        setStage(ConvertNativePayStage.NativePay)
         setDetails(nativePayDetails)
         setTxId(nativePayTxId)
         setStatus('success')
         statusRef.current = 'success'
         break
     }
-  }, [nativePayTxId, nativePayError, nativePayStatus, nativePayStage, nativePayDetails])
+  }, [nativePayTxId, nativePayError, nativePayStatus, nativePayDetails])
 
   return {
     status,

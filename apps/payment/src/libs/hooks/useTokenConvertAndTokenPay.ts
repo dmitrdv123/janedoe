@@ -26,7 +26,6 @@ export default function useTokenConvertAndTokenPay(): ContractCallResult<Payment
   const {
     error: tokenConvertError,
     status: tokenConvertStatus,
-    stage: tokenConvertStage,
     details: tokenConvertDetails,
     txId: tokenConvertTxId,
     handle: tokenConvertHandle
@@ -35,7 +34,6 @@ export default function useTokenConvertAndTokenPay(): ContractCallResult<Payment
   const {
     error: tokenPayError,
     status: tokenPayStatus,
-    stage: tokenPayStage,
     details: tokenPayDetails,
     txId: tokenPayTxId,
     handle: tokenPayHandle
@@ -105,14 +103,14 @@ export default function useTokenConvertAndTokenPay(): ContractCallResult<Payment
     switch (tokenConvertStatus) {
       case 'processing':
         setError(undefined)
-        setStage(tokenConvertStage)
+        setStage(ConvertTokenPayStage.TokenConvert)
         setDetails(tokenConvertDetails)
         setTxId(tokenConvertTxId)
         setStatus('processing')
         break
       case 'error':
         setError(tokenConvertError)
-        setStage(tokenConvertStage)
+        setStage(ConvertTokenPayStage.TokenConvert)
         setDetails(tokenConvertDetails)
         setTxId(tokenConvertTxId)
         setStatus('error')
@@ -120,7 +118,7 @@ export default function useTokenConvertAndTokenPay(): ContractCallResult<Payment
         break
       case 'success':
         setError(undefined)
-        setStage(tokenConvertStage)
+        setStage(ConvertTokenPayStage.TokenConvert)
         setTxId(tokenConvertTxId)
         setDetails(tokenConvertDetails)
         setStatus('processing')
@@ -129,7 +127,7 @@ export default function useTokenConvertAndTokenPay(): ContractCallResult<Payment
 
         break
     }
-  }, [tokenConvertTxId, tokenConvertError, tokenConvertStatus, tokenConvertStage, tokenConvertDetails, tokenConvertSuccessHandler])
+  }, [tokenConvertTxId, tokenConvertError, tokenConvertStatus, tokenConvertDetails, tokenConvertSuccessHandler])
 
   useEffect(() => {
     if (statusRef.current !== 'processing' || stageRef.current !== ConvertTokenPayStage.TokenPay) {
@@ -139,14 +137,14 @@ export default function useTokenConvertAndTokenPay(): ContractCallResult<Payment
     switch (tokenPayStatus) {
       case 'processing':
         setError(undefined)
-        setStage(tokenPayStage)
+        setStage(ConvertTokenPayStage.TokenPay)
         setDetails(tokenPayDetails)
         setTxId(tokenPayTxId)
         setStatus('processing')
         break
       case 'error':
         setError(tokenPayError)
-        setStage(tokenPayStage)
+        setStage(ConvertTokenPayStage.TokenPay)
         setDetails(tokenPayDetails)
         setTxId(tokenPayTxId)
         setStatus('error')
@@ -154,14 +152,14 @@ export default function useTokenConvertAndTokenPay(): ContractCallResult<Payment
         break
       case 'success':
         setError(undefined)
-        setStage(tokenPayStage)
+        setStage(ConvertTokenPayStage.TokenPay)
         setDetails(tokenPayDetails)
         setTxId(tokenPayTxId)
         setStatus('success')
         statusRef.current = 'success'
         break
     }
-  }, [tokenPayTxId, tokenPayError, tokenPayStatus, tokenPayStage, tokenPayDetails])
+  }, [tokenPayTxId, tokenPayError, tokenPayStatus, tokenPayDetails])
 
   return {
     status,

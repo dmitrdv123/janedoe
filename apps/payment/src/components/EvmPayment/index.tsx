@@ -18,7 +18,7 @@ import TokenButton from './components/TokenButton'
 import { useInfoMessages } from '../../states/application/hook'
 import { DEFAULT_SLIPPAGE, INFO_MESSAGE_PAYMENT_PROCESSING_ERROR } from '../../constants'
 import useTokenApproveAndPay from '../../libs/hooks/useTokenApproveAndPay'
-import { NativePayStage, TokenConvertStage, TokenPayStage } from '../../types/contract-call-result'
+import { ConvertNativePayStage, ConvertTokenPayStage, NativePayStage, TokenPayStage } from '../../types/contract-call-result'
 import useTokenConvertAndNativePay from '../../libs/hooks/useTokenConvertAndNativePay'
 import useTokenConvertAndTokenPay from '../../libs/hooks/useTokenConvertAndTokenPay'
 import { PaymentDetails } from '../../types/payment-details'
@@ -126,13 +126,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     setIsForceRefreshToken(true)
     setIsProcessing(false)
 
-    if (
-      stage
-      && (
-        Object.values(NativePayStage).map(item => item.toString()).includes(stage)
-        || Object.values(TokenPayStage).map(item => item.toString()).includes(stage)
-      )
-    ) {
+    if (stage === ConvertNativePayStage.NativePay || stage === ConvertTokenPayStage.TokenPay) {
       setFromToken(toToken)
     }
   }, [toToken, t, addInfoMessage])
@@ -207,7 +201,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
             title={t('components.evm_payment.swap_and_pay')}
             paymentDetails={paymentDetailsCurrent}
             stages={
-              [...Object.values(TokenConvertStage), ...Object.values(NativePayStage)]
+              [...Object.values(ConvertNativePayStage)]
             }
             usePay={useTokenConvertAndNativePay}
             onProcessing={processingHandler}
@@ -223,7 +217,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
             title={t('components.evm_payment.swap_and_pay')}
             paymentDetails={paymentDetailsCurrent}
             stages={
-              [...Object.values(TokenConvertStage), ...Object.values(TokenPayStage)]
+              [...Object.values(ConvertTokenPayStage)]
             }
             usePay={useTokenConvertAndTokenPay}
             onProcessing={processingHandler}
