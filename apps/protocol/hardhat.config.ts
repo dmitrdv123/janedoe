@@ -28,7 +28,7 @@ const config: HardhatUserConfig = {
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     },
     optimism: {
-      url: 'https://mainnet.optimism.io',
+      url: 'https://optimism-rpc.publicnode.com',
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     },
     base: {

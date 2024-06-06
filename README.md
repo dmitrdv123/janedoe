@@ -103,6 +103,17 @@ NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initiali
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network cronos
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network eth
 NODE_ENV=production CONTRACT=RangoReceiver VERSION=RangoReceiverV2 INIT=initialize2 pnpm run upgrade --filter=protocol-zksync -- --network zksync
+
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network bsc
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network polygon
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network arbitrum
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network optimism
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network base
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network avalanche
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network linea
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network cronos
+NODE_ENV=production CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network eth
+
 # deploy resources in aws
 NODE_ENV=production pnpm run deploy --filter=installer
 # init necessary data into db and bitcoin
@@ -113,7 +124,6 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
   - api: create and use email to send notification using sns and proper domain

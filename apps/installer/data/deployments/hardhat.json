@@ -1,1 +1,14 @@
-{"chainId":"0x7a69","blockchain":"hardhat","contractAddresses":{"JaneDoe":"0x41219a0a9C0b86ED81933c788a6B63Dfef8f17eE","WrappedNative":"0x82A9286dB983093Ff234cefCea1d8fA66382876B","RangoReceiver":"0x1d460d731Bd5a0fF2cA07309dAEB8641a7b175A1"},"contractDetails":{"JaneDoe":"JaneDoe","WrappedNative":"WrappedNative","RangoReceiver":"RangoReceiver"}}
+{
+  "chainId": "0x7a69",
+  "blockchain": "hardhat",
+  "contractAddresses": {
+    "JaneDoe": "0x18b7CBdfFA52d1e7BB992fd50f394c5b59E20B72",
+    "WrappedNative": "0x6431AF84d34F0522cAA58b221d94A150B5AdAC69",
+    "RangoReceiver": "0x2f321ed425c82E74925488139e1556f9B76a2551"
+  },
+  "contractDetails": {
+    "JaneDoe": "JaneDoe",
+    "WrappedNative": "WrappedNativeV3",
+    "RangoReceiver": "RangoReceiverV4"
+  }
+}
