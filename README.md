@@ -113,7 +113,6 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- api: hardhat payment is not processed
 - api: max block (2000) exceed for cronos even if I have an iterator
 - api: filter not found error
 - protocol, protocol-zksync: update wrapped-native contract to version with reentrancy guard
