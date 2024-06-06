@@ -1,5 +1,5 @@
 import * as chains from 'viem/chains'
-import { Address, GetLogsReturnType, createPublicClient, http, parseEventLogs, webSocket } from 'viem'
+import { Address, createPublicClient, http, parseEventLogs, webSocket } from 'viem'
 import { AbiEvent } from 'abitype'
 
 import { BlockchainEvmClientConfig } from '@repo/dao/dist/src/interfaces/blockchain-evm-client-config'
@@ -39,30 +39,12 @@ export class EvmServiceImpl implements EvmService {
         )
         : toBlock
 
-      let logs: GetLogsReturnType
-      switch (chainId) {
-        case '0x1': // eth
-        case '0xa': // optimism
-        case '0xe708': // linea
-        case '0x144': // zkSync
-        case '0x19': // cronos: cronos have method eth_newfilter but not eth_newFilter which is used inside viem
-          logs = await client.getLogs({
-            address,
-            event,
-            fromBlock,
-            toBlock
-          })
-          break
-        default:
-          const filter = await client.createEventFilter({
-            address,
-            event,
-            fromBlock,
-            toBlock
-          })
-          logs = await client.getFilterLogs({ filter })
-          break
-      }
+      const logs = await client.getLogs({
+        address,
+        event,
+        fromBlock: from,
+        toBlock: to
+      })
 
       const parsedLogs = await parseEventLogs({
         logs,

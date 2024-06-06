@@ -3,7 +3,7 @@
       "chainId": "0x38",
       "blockchain": "bsc",
       "transport": "http",
-      "rpcUrl": "https://bsc-dataseed.binance.org",
+      "rpcUrl": "https://bsc-rpc.publicnode.com",
       "maxBlockRange": 49999
   },
   {
