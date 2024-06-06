@@ -50,11 +50,25 @@ export class BtcPayer {
 
     const bitcoinWrapperService = commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService')
 
-    let addressTo: string = ''
+    let addressTo: string | undefined = undefined
     try {
-      console.log(`BtcPayer: start to create bitcoin address for account id ${accountProfile.id} and address ${accountProfile.address} with label ${protocolPaymentId}`)
-      addressTo = await bitcoinWrapperService.createBitcoinAddress(accountProfile.id, protocolPaymentId)
-      console.log(`BtcPayer: end to create bitcoin address for wallet ${accountProfile.id} with label ${protocolPaymentId}`)
+      console.log(`BtcPayer: start to load bitcoin wallet for account id ${accountProfile.id}`)
+      await bitcoinWrapperService.loadBitcoinWallet(accountProfile.id)
+      console.log(`BtcPayer: end to load bitcoin wallet for account id ${accountProfile.id}`)
+
+      console.log(`BtcPayer: start to find address for account id ${accountProfile.id} with label ${protocolPaymentId}`)
+      const addressByLabel = await bitcoinWrapperService.getAddressByLabel(accountProfile.id, protocolPaymentId)
+      if (addressByLabel) {
+        addressTo = Object.keys(addressByLabel).find(key => addressByLabel[key].purpose.toLocaleLowerCase() === "receive")
+      }
+      console.log(`BtcPayer: end to find address for account id ${accountProfile.id} with label ${protocolPaymentId}`)
+      console.log(`BtcPayer: address ${addressTo}`)
+
+      if (!addressTo) {
+        console.log(`BtcPayer: start to create bitcoin address for account id ${accountProfile.id} and address ${accountProfile.address} with label ${protocolPaymentId}`)
+        addressTo = await bitcoinWrapperService.createBitcoinAddress(accountProfile.id, protocolPaymentId)
+        console.log(`BtcPayer: end to create bitcoin address for wallet ${accountProfile.id} with label ${protocolPaymentId}`)
+      }
 
       console.log(`BtcPayer: start to import bitcoin address ${addressTo} into wallet ${appConfig.BITCOIN_CENTRAL_WALLET} with label ${protocolPaymentId}`)
       const descriptor = await bitcoinWrapperService.getBitcoinAddressDescriptorInfo(addressTo)
