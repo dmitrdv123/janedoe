@@ -9,6 +9,7 @@
     "dev": "hardhat node",
     "deploy": "hardhat run ./scripts/deploy.ts",
     "upgrade": "hardhat run ./scripts/upgrade.ts",
+    "verify": "hardhat verify",
     "seed": "hardhat run ./scripts/seed.ts",
     "sandbox": "hardhat run ./scripts/sandbox.ts"
   },

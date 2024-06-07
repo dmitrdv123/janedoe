@@ -39,6 +39,9 @@
       "cache": false,
       "dependsOn": ["^build"]
     },
+    "verify": {
+      "cache": false
+    },
     "destroy": {
       "cache": false,
       "dependsOn": ["^build"]

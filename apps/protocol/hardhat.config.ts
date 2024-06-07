@@ -55,6 +55,37 @@ const config: HardhatUserConfig = {
       url: 'https://rpc.ankr.com/eth',
       accounts: process.env.SIGNER ? [process.env.SIGNER] : undefined
     }
+  },
+  etherscan: {
+    apiKey: {
+      bsc: process.env.BSCSCAN_API_KEY ?? '',
+      polygon: process.env.POLYGONSCAN_API_KEY ?? '',
+      arbitrumOne: process.env.ARBISCAN_API_KEY ?? '',
+      optimisticEthereum: process.env.OPTIMISMSCAN_API_KEY ?? '',
+      base: process.env.BASESCAN_API_KEY ?? '',
+      linea: process.env.LINEASCAN_API_KEY ?? '',
+      cronos: process.env.CRONOSSCAN_API_KEY ?? '',
+      mainnet: process.env.ETHERSCAN_API_KEY ?? '',
+      avalanche: process.env.SNOWTRACE_API_KEY ?? ''
+    },
+    customChains: [
+      {
+        network: "cronos",
+        chainId: 25,
+        urls: {
+          apiURL: "https://api.cronoscan.com/api",
+          browserURL: "https://cronoscan.com"
+        }
+      },
+      {
+        network: "linea",
+        chainId: 59144,
+        urls: {
+          apiURL: "https://api.lineascan.build/api",
+          browserURL: "https://lineascan.build"
+        }
+      }
+    ]
   }
 }
 

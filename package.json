@@ -12,6 +12,7 @@
     "seed": "turbo run seed",
     "deploy": "turbo run deploy",
     "upgrade": "turbo run upgrade",
+    "verify": "turbo run verify",
     "destroy": "turbo run destroy",
     "balances": "turbo run balances"
   },

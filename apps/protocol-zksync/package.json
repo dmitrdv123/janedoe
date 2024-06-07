@@ -10,6 +10,7 @@
     "dev": "npx zksync-cli dev start fork mainnet",
     "deploy": "hardhat deploy-zksync --script deploy.ts",
     "upgrade": "hardhat deploy-zksync --script upgrade.ts",
+    "verify": "hardhat verify",
     "sandbox": "hardhat run ./scripts/sandbox.ts"
   },
   "keywords": [],
