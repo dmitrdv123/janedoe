@@ -20,7 +20,7 @@ const TokenDetails: React.FC<TokenDetailsProps> = (props) => {
       <div>
         <div className='fw-bold'>{token.symbol}</div>
         <div className='text-muted'>{token.name} ({blockchain?.displayName ?? token.blockchain})</div>
-        {((blockchain?.type === TransactionType.EVM || blockchain?.type === TransactionType.TRON) && token.address) && (
+        {(blockchain?.type === TransactionType.EVM && token.address) && (
           <a href={(blockchain.info as EVMChainInfo).addressUrl.replace('{wallet}', token.address)} target='_blank' className="text-decoration-none">
             {t('common.details')}
           </a>

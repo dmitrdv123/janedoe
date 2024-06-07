@@ -1,6 +1,6 @@
 {
   "disableConversion": false,
-  "blockchains": ["ETH", "TRON", "BSC", "ARBITRUM", "BASE", "AVAX_CCHAIN", "POLYGON", "OPTIMISM", "CRONOS", "ZKSYNC", "LINEA", "BTC"],
+  "blockchains": ["ETH", "BSC", "ARBITRUM", "BASE", "AVAX_CCHAIN", "POLYGON", "OPTIMISM", "CRONOS", "ZKSYNC", "LINEA", "BTC"],
   "assets": [
     {
       "blockchain": "ETH",
@@ -15,16 +15,6 @@
     {
       "blockchain": "ETH",
       "symbol": "ETH",
-      "address": null
-    },
-    {
-      "blockchain": "TRON",
-      "symbol": "USDT",
-      "address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
-    },
-    {
-      "blockchain": "TRON",
-      "symbol": "TRX",
       "address": null
     },
     {

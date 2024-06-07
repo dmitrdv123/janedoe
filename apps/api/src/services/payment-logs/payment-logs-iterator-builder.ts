@@ -32,7 +32,6 @@ export class PaymentLogsIteratorBuilder {
     let result: PaymentLogsIterator | undefined = undefined
 
     switch (blockchain.type) {
-      case TransactionType.TRON:
       case TransactionType.EVM:
         const appSettings = await this.settingsService.loadAppSettings()
 

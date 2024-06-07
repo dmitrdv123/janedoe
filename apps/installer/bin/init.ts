@@ -51,14 +51,18 @@ async function saveSettings(): Promise<void> {
           return true
         }
 
-        return file.toLocaleLowerCase() !== 'hardhat.json'
-          && file.toLocaleLowerCase() !== 'localhost.json'
-          && file.toLocaleLowerCase() !== 'zksyncinmemorynode.json'
-          && file.toLocaleLowerCase() !== 'zksyncdockerizednode.json'
-          && file.toLocaleLowerCase() !== 'zksyncsepoliatestnet.json'
-          && file.toLocaleLowerCase() !== 'tronshasta.json'
-          && file.toLocaleLowerCase() !== 'tronnile.json'
-          && file.toLocaleLowerCase() !== 'trondevelopment.json'
+        const fileTmp = file.toLocaleLowerCase()
+        return fileTmp.endsWith('.json')
+          && ![
+            'hardhat.json',
+            'localhost.json',
+            'zksyncinmemorynode.json',
+            'zksyncdockerizednode.json',
+            'zksyncsepoliatestnet.json',
+            'tronshasta.json',
+            'tronnile.json',
+            'trondevelopment.json'
+          ].includes(fileTmp)
       })
       .map(
         async file => {

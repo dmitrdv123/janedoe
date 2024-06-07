@@ -54,9 +54,11 @@ const PaymentDetailsInfo: React.FC<PaymentDetailsInfoProps> = (props) => {
         <div>
           {t('components.evm_payment.pay_summary_amount')} <CurrencyAmount amount={amount} currency={currency} />
         </div>
-        <div>
-          {t('components.evm_payment.pay_summary_already_payed_amount')} <CurrencyAmount amount={receivedCurrencyAmount} currency={currency} />
-        </div>
+        {!!receivedCurrencyAmount && (
+          <div>
+            {t('components.evm_payment.pay_summary_already_payed_amount')} <CurrencyAmount amount={receivedCurrencyAmount} currency={currency} />
+          </div>
+        )}
         <div>
           <strong>
             {t('components.evm_payment.pay_summary_total_amount')}
