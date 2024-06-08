@@ -1,0 +1,24 @@
+{
+  "name": "sandbox",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -r pino-pretty -r node-cache -q dist/index.js\""
+  },
+  "dependencies": {
+    "@repo/common": "workspace:*",
+    "@repo/dao": "workspace:*",
+    "@repo/dao-aws": "workspace:*",
+    "@repo/evm": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "18",
+    "eslint": "^8.56.0",
+    "nodemon": "^2.0.20",
+    "typescript": "^5.4.4"
+  }
+}

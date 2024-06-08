@@ -834,6 +834,40 @@ importers:
         specifier: ^8.56.0
         version: 8.57.0
 
+  apps/sandbox:
+    dependencies:
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../packages/common
+      '@repo/dao':
+        specifier: workspace:*
+        version: link:../../packages/dao
+      '@repo/dao-aws':
+        specifier: workspace:*
+        version: link:../../packages/dao-aws
+      '@repo/evm':
+        specifier: workspace:*
+        version: link:../../packages/evm
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@types/node':
+        specifier: '18'
+        version: 18.17.5
+      eslint:
+        specifier: ^8.56.0
+        version: 8.57.0
+      nodemon:
+        specifier: ^2.0.20
+        version: 2.0.22
+      typescript:
+        specifier: ^5.4.4
+        version: 5.4.5
+
   apps/support:
     dependencies:
       '@reduxjs/toolkit':
@@ -7172,6 +7206,7 @@ packages:
 
   glob@7.1.7:
     resolution: {integrity: sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ==}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   glob@7.2.0:
     resolution: {integrity: sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==}
