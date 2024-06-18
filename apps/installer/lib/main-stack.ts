@@ -496,6 +496,13 @@ function handler(event) {
       projectionType: ProjectionType.ALL
     })
 
+    tableData.addGlobalSecondaryIndex({
+      indexName: 'gsi_pk2-gsi_sk2-index',
+      partitionKey: { name: 'gsi_pk2', type: AttributeType.STRING },
+      sortKey: { name: 'gsi_sk2', type: AttributeType.NUMBER },
+      projectionType: ProjectionType.ALL
+    })
+
     const tableNotification = new Table(this, withEnv(`ddb_${env('TABLE_NAME_NOTIFICATION')}`), {
       tableName: withEnv(env('TABLE_NAME_NOTIFICATION')),
       partitionKey: { name: 'pk', type: AttributeType.STRING },

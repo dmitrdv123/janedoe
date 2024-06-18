@@ -1,59 +1,184 @@
 import * as dotenv from 'dotenv'
 dotenv.config({ path: `.env.${process.env.NODE_ENV}`.trim() })
-
-import * as ecc from 'tiny-secp256k1'
 import * as bitcoin from 'bitcoinjs-lib'
 
-import { BIP32Factory } from 'bip32'
-import ECPairFactory from 'ecpair'
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
 
-function generateBitcoinWallets() {
-  console.log(`generateBitcoinWallets`)
+import { BitcoinDaoImpl } from '@repo/dao-aws/dist/src/dao/bitcoin.dao'
+import { DynamoServiceImpl } from '@repo/dao-aws/dist/src/services/dynamo.service'
+import { BitcoinCoreServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-core.service'
+import { BitcoinServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin.service'
+import { BitcoinUtilsServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-utils.service'
+import { BitcoinBlockServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
 
-  const network = bitcoin.networks.bitcoin
+import { BitcoinBlockTask } from './task/bitcoin-block.task'
+import { createAppConfig } from './app-config'
+import { BitcoinPaymentLogsIterator } from './services/payment-logs/bitcoin-payment-logs.iterator'
 
-  const factory = ECPairFactory(ecc)
-  const keyPair = factory.makeRandom()
-  const rootWif = keyPair.toWIF()
-  if (!keyPair.privateKey) {
-    throw new Error('KeyPair does not have a private key.');
-  }
+createAppConfig()
 
-  console.log(`root wif ${rootWif}`)
+const dynamoService = new DynamoServiceImpl(new DynamoDB())
+const bitcoinDao = new BitcoinDaoImpl(dynamoService)
+const bitcoinUtilsService = new BitcoinUtilsServiceImpl(bitcoin.networks.regtest)
+const bitcoinCoreService = new BitcoinCoreServiceImpl()
+const bitcoinService = new BitcoinServiceImpl(bitcoinCoreService, bitcoinUtilsService, bitcoinDao)
+const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, bitcoinDao)
+const bitcoinBlockTask = new BitcoinBlockTask(bitcoinBlockService, 10)
+const bitcoinPaymentLogsIterator = new BitcoinPaymentLogsIterator(bitcoinBlockService)
 
-  const bip32 = BIP32Factory(ecc)
-  const root = bip32.fromPrivateKey(keyPair.privateKey, Buffer.alloc(32), network)
-  for (let i = 0; i <= 10; i++) {
-    const child = root.derivePath(`m/0'/0/${i}`)
-    const childWif = child.toWIF()
-    const { address } = bitcoin.payments.p2wpkh({
-      pubkey: child.publicKey,
-      network: network
-    })
+async function bitcoinPaymentLogsIteratorTests() {
+  const fromBlockhash = '19114c57a0cb0767db048946c5a37831f8d129a565a17fc4a68aa9b17611995c'
+  const toBlockhash = '79a59a33033fd03215ad20dce1a8720a14c35fcf1b4c2c8f3bedd2fb5d1ca148'
 
-    console.log(`child wif ${childWif}`)
-    console.log(`child address ${address}`)
-  }
+  const block = await bitcoinBlockService.getBlock(toBlockhash)
+  await bitcoinBlockService.updateLatestProcessedBlock(block)
+
+  bitcoinPaymentLogsIterator.skip(fromBlockhash)
+  await bitcoinPaymentLogsIterator.nextBatch()
+  await bitcoinPaymentLogsIterator.nextBatch()
 }
 
-function generateBitcoinWallet() {
-  console.log(`generateBitcoinWallet`)
+async function bitcoinBlockTaskTests() {
+  const blockhash = '19114c57a0cb0767db048946c5a37831f8d129a565a17fc4a68aa9b17611995c'
 
-  const factory = ECPairFactory(ecc)
-  const keyPair = factory.makeRandom()
-  const wif = keyPair.toWIF()
+  const block = await bitcoinBlockService.getBlock(blockhash)
+  await bitcoinBlockService.updateLatestProcessedBlock(block)
 
-  const { address } = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey })
+  await bitcoinBlockTask.run()
+}
 
-  console.log(`wif ${wif}`)
-  console.log(`address ${address}`)
+async function bitcoinCoreServiceTests() {
+  const feeRate = await bitcoinCoreService.getFeeRate(3)
+  console.log(`feeRate ${feeRate}`)
+}
+
+async function transactionTests() {
+  const walletName = 'walletForPay1'
+  const label1 = '123qwe'
+  const label2 = '234qwe'
+  const blockhash = '79a59a33033fd03215ad20dce1a8720a14c35fcf1b4c2c8f3bedd2fb5d1ca148'
+  const address = 'bcrt1qxj6trv0fqw9m2makws6quj0ccmnvv7qs4c6yt2'
+
+  const wallet = await bitcoinService.createWallet(walletName)
+  console.log(`wallet created: ${JSON.stringify(wallet)}`)
+
+  const walletAddress1 = await bitcoinService.createWalletAddress(walletName, label1)
+  console.log(`wallet address created: ${JSON.stringify(walletAddress1)}`)
+  const walletAddress2 = await bitcoinService.createWalletAddress(walletName, label2)
+  console.log(`wallet address created: ${JSON.stringify(walletAddress2)}`)
+
+  const block = await bitcoinBlockService.getBlock(blockhash)
+  console.log(`block ${JSON.stringify(block)}`)
+
+  await bitcoinBlockService.processBlock(block)
+
+  const transactions = await bitcoinBlockService.listBlockTransactionOutputs(0, 10000)
+  console.log(`transactions ${JSON.stringify(transactions)}`)
+
+  const walletBalance = await bitcoinService.getWalletBalance(walletName)
+  console.log(`wallet ${walletName} balance: ${walletBalance}`)
+
+  const walletAddressBalance1 = await bitcoinService.getWalletAddressBalance(walletName, label1)
+  console.log(`wallet ${walletName} address ${label1} balance: ${walletAddressBalance1}`)
+
+  const walletAddressBalance2 = await bitcoinService.getWalletAddressBalance(walletName, label2)
+  console.log(`wallet ${walletName} address ${label2} balance: ${walletAddressBalance2}`)
+
+  await bitcoinService.withdraw(walletName, address)
+  console.log(`withdrawal of wallet ${walletName} to address ${address} was done`)
+}
+
+async function bitcoinServiceTests() {
+  const walletName = 'wallet2'
+  const label1 = 'qwe123'
+  const label2 = 'qwe124'
+  const address = 'bcrt1qxj6trv0fqw9m2makws6quj0ccmnvv7qs4c6yt2'
+
+  const wallet = await bitcoinService.createWallet(walletName)
+  console.log(`wallet created: ${JSON.stringify(wallet)}`)
+
+  const walletAddress1 = await bitcoinService.createWalletAddress(walletName, label1)
+  console.log(`wallet address created: ${JSON.stringify(walletAddress1)}`)
+  const walletAddress2 = await bitcoinService.createWalletAddress(walletName, label2)
+  console.log(`wallet address created: ${JSON.stringify(walletAddress2)}`)
+
+  const walletBalance = await bitcoinService.getWalletBalance(walletName)
+  console.log(`wallet ${walletName} balance: ${walletBalance}`)
+
+  const walletAddressBalance1 = await bitcoinService.getWalletAddressBalance(walletName, label1)
+  console.log(`wallet ${walletName} address ${label1} balance: ${walletAddressBalance1}`)
+
+  const walletAddressBalance2 = await bitcoinService.getWalletAddressBalance(walletName, label2)
+  console.log(`wallet ${walletName} address ${label2} balance: ${walletAddressBalance2}`)
+
+  const loadedWalletAddress1 = await bitcoinDao.loadWalletAddress(walletName, label1)
+  console.log(`loaded wallet ${walletName} address ${label1}: ${JSON.stringify(loadedWalletAddress1)}`)
+
+  const loadedWalletAddressByAddress1 = await bitcoinDao.loadWalletAddressByAddress(walletAddress1.data.address)
+  console.log(`loaded wallet ${walletName} address ${label1} by address ${walletAddress1.data.address}: ${JSON.stringify(loadedWalletAddressByAddress1)}`)
+
+  const walletAddresses = await bitcoinDao.listWalletAddresses(walletName)
+  console.log(`loaded wallet ${walletName} addresses: ${JSON.stringify(walletAddresses)}`)
+
+  await bitcoinService.withdraw(walletName, address)
+  console.log(`withdrawal of wallet ${walletName} to address ${address} was done`)
+}
+
+async function bitcoinBlockServiceTests() {
+  const fromBlockheight = 0
+  const toBlockheight = 1599
+
+  const blockheight1 = 1599
+  const blockheight2 = 1598
+  const blockheight3 = 1597
+
+  const blockhash1 = '46763c3f4b19c07bb406d1f4b8151c78caa21bec439fc5e0bc0fec248e4bd396'
+  const blockhash2 = '1564f58d87c9936edc57ef91ed4b3ff125a3ebd9a2b1f94965e9bb9e06f476f6'
+  const blockhash3 = '02f516ba31ab2e8b61536542f281000a36b0aaad37d66f50d12bbd19e84d5ca6'
+
+  const block1 = await bitcoinBlockService.getBlock(blockhash1)
+  console.log(`block ${blockhash1}: ${JSON.stringify(block1)}`)
+
+  const block2 = await bitcoinBlockService.getBlock(blockhash2)
+  console.log(`block ${blockhash2}: ${JSON.stringify(block2)}`)
+
+  const loadedBlockheight1 = await bitcoinBlockService.getBlockhash(blockheight1)
+  console.log(`loaded blockhash for height ${blockheight1}: ${loadedBlockheight1}`)
+
+  const loadedLatestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlock()
+  console.log(`loaded latest processed block: ${JSON.stringify(loadedLatestProcessedBlock)}`)
+
+  const loadedProcessedBlock1 = await bitcoinBlockService.getProcessedBlock(blockhash1)
+  console.log(`loaded processed block for ${blockhash1}: ${JSON.stringify(loadedProcessedBlock1)}`)
+
+  const transactionOutputs = await bitcoinBlockService.listBlockTransactionOutputs(0, 1599)
+  console.log(`loaded transaction outputs from ${fromBlockheight} to ${toBlockheight}: ${JSON.stringify(transactionOutputs)}`)
+
+  let latestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlock()
+  console.log(`latest processed blockhash: ${latestProcessedBlock?.hash}`)
+
+  await bitcoinBlockService.processBlock(block1)
+  console.log(`block ${block1.hash} processed`)
+
+  latestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlock()
+  console.log(`latest processed blockhash: ${latestProcessedBlock?.hash}`)
+
+  await bitcoinBlockService.processBlock(block2)
+  console.log(`block ${block2.hash} processed`)
+
+  latestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlock()
+  console.log(`loaded latest processed block: ${latestProcessedBlock?.hash}`)
 }
 
 async function main() {
   console.log(`hello world!`)
 
-  generateBitcoinWallet()
-  generateBitcoinWallets()
+  await bitcoinPaymentLogsIteratorTests()
+  // await bitcoinBlockTaskTests()
+  // await bitcoinCoreServiceTests()
+  // await bitcoinServiceTests()
+  // await bitcoinBlockServiceTests()
+  // await transactionTests()
 }
 
 main()

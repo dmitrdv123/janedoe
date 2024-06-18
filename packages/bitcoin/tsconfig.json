@@ -1,0 +1,11 @@
+{
+  "exclude": ["node_modules", "dist"],
+  "extends": "@repo/typescript-config/node18.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  }
+}

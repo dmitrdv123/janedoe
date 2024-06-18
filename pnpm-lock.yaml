@@ -836,6 +836,24 @@ importers:
 
   apps/sandbox:
     dependencies:
+      '@aws-sdk/client-cloudwatch':
+        specifier: ^3.537.0
+        version: 3.576.0
+      '@aws-sdk/client-dynamodb':
+        specifier: ^3.535.0
+        version: 3.535.0
+      '@aws-sdk/client-s3':
+        specifier: ^3.537.0
+        version: 3.537.0
+      '@aws-sdk/client-secrets-manager':
+        specifier: ^3.535.0
+        version: 3.535.0
+      '@aws-sdk/util-dynamodb':
+        specifier: ^3.535.0
+        version: 3.535.0(@aws-sdk/client-dynamodb@3.535.0)
+      '@repo/bitcoin':
+        specifier: workspace:*
+        version: link:../../packages/bitcoin
       '@repo/common':
         specifier: workspace:*
         version: link:../../packages/common
@@ -848,12 +866,15 @@ importers:
       '@repo/evm':
         specifier: workspace:*
         version: link:../../packages/evm
+      axios:
+        specifier: ^1.4.0
+        version: 1.6.8(debug@4.3.4)
       bip32:
         specifier: ^4.0.0
         version: 4.0.0
       bitcoinjs-lib:
-        specifier: ^6.1.5
-        version: 6.1.5
+        specifier: ^6.1.6
+        version: 6.1.6
       coininfo:
         specifier: ^5.2.1
         version: 5.2.1
@@ -866,6 +887,9 @@ importers:
       tiny-secp256k1:
         specifier: ^2.2.3
         version: 2.2.3
+      viem:
+        specifier: ^2.13.1
+        version: 2.13.1(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -988,6 +1012,55 @@ importers:
       vite:
         specifier: ^5.2.9
         version: 5.2.9(@types/node@18.17.5)(terser@5.30.3)
+
+  packages/bitcoin:
+    dependencies:
+      '@repo/common':
+        specifier: workspace:^
+        version: link:../common
+      '@repo/dao':
+        specifier: workspace:^
+        version: link:../dao
+      '@repo/dao-aws':
+        specifier: workspace:^
+        version: link:../dao-aws
+      axios:
+        specifier: ^1.4.0
+        version: 1.6.8(debug@4.3.4)
+      bip32:
+        specifier: ^4.0.0
+        version: 4.0.0
+      bitcoinjs-lib:
+        specifier: ^6.1.6
+        version: 6.1.6
+      coininfo:
+        specifier: ^5.2.1
+        version: 5.2.1
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      ecpair:
+        specifier: ^2.1.0
+        version: 2.1.0
+      tiny-secp256k1:
+        specifier: ^2.2.3
+        version: 2.2.3
+      viem:
+        specifier: ^2.13.1
+        version: 2.13.1(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.22.4)
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: '18'
+        version: 18.17.5
+      typescript:
+        specifier: ^5.4.4
+        version: 5.4.5
 
   packages/common:
     dependencies:
@@ -5458,8 +5531,8 @@ packages:
     resolution: {integrity: sha512-aOGy88DDlVUhspIXJN+dVEtclhIsfAUppD43V0j40cPTld3pv/0X/MlrZSZ6jowIaQQzFwP8M6rFU2z2mVYjDQ==}
     engines: {node: '>=6.0.0'}
 
-  bitcoinjs-lib@6.1.5:
-    resolution: {integrity: sha512-yuf6xs9QX/E8LWE2aMJPNd0IxGofwfuVOiYdNUESkc+2bHHVKjhJd8qewqapeoolh9fihzHGoDCB5Vkr57RZCQ==}
+  bitcoinjs-lib@6.1.6:
+    resolution: {integrity: sha512-Fk8+Vc+e2rMoDU5gXkW9tD+313rhkm5h6N9HfZxXvYU9LedttVvmXKTgd9k5rsQJjkSfsv6XRM8uhJv94SrvcA==}
     engines: {node: '>=8.0.0'}
 
   bl@1.2.3:
@@ -11766,13 +11839,13 @@ snapshots:
   '@aws-crypto/crc32@3.0.0':
     dependencies:
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.575.0
       tslib: 1.14.1
 
   '@aws-crypto/crc32c@3.0.0':
     dependencies:
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.575.0
       tslib: 1.14.1
 
   '@aws-crypto/ie11-detection@3.0.0':
@@ -11784,7 +11857,7 @@ snapshots:
       '@aws-crypto/ie11-detection': 3.0.0
       '@aws-crypto/supports-web-crypto': 3.0.0
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.575.0
       '@aws-sdk/util-locate-window': 3.495.0
       '@aws-sdk/util-utf8-browser': 3.259.0
       tslib: 1.14.1
@@ -11795,7 +11868,7 @@ snapshots:
       '@aws-crypto/sha256-js': 3.0.0
       '@aws-crypto/supports-web-crypto': 3.0.0
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.575.0
       '@aws-sdk/util-locate-window': 3.495.0
       '@aws-sdk/util-utf8-browser': 3.259.0
       tslib: 1.14.1
@@ -11803,13 +11876,13 @@ snapshots:
   '@aws-crypto/sha256-js@1.2.2':
     dependencies:
       '@aws-crypto/util': 1.2.2
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.575.0
       tslib: 1.14.1
 
   '@aws-crypto/sha256-js@3.0.0':
     dependencies:
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.575.0
       tslib: 1.14.1
 
   '@aws-crypto/supports-web-crypto@3.0.0':
@@ -11818,13 +11891,13 @@ snapshots:
 
   '@aws-crypto/util@1.2.2':
     dependencies:
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.575.0
       '@aws-sdk/util-utf8-browser': 3.259.0
       tslib: 1.14.1
 
   '@aws-crypto/util@3.0.0':
     dependencies:
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.575.0
       '@aws-sdk/util-utf8-browser': 3.259.0
       tslib: 1.14.1
 
@@ -18820,7 +18893,7 @@ snapshots:
       typeforce: 1.18.0
       wif: 2.0.6
 
-  bitcoinjs-lib@6.1.5:
+  bitcoinjs-lib@6.1.6:
     dependencies:
       '@noble/hashes': 1.4.0
       bech32: 2.0.0

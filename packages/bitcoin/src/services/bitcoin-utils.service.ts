@@ -1,0 +1,114 @@
+import * as bitcoin from 'bitcoinjs-lib'
+import * as ecc from 'tiny-secp256k1'
+
+import { BIP32Factory } from 'bip32'
+import ECPairFactory from 'ecpair'
+
+import { BitcoinUtxo, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { parseBigIntToNumber, parseToBigNumber } from '../utils/bitcoin-utils'
+import { BITCOIN_DECIMALS } from '../constants'
+
+export interface BitcoinUtilsService {
+  generateRootWallet(): BitcoinWalletData
+  generateChildWallet(rootWalletData: BitcoinWalletData, index: number): BitcoinWalletData
+  createTransaction(walletData: BitcoinWalletData[], utxos: BitcoinUtxo[], address: string, feeRate: number): bitcoin.Transaction
+}
+
+export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
+  public constructor(
+    private network?: bitcoin.networks.Network | undefined
+  ) { }
+
+  public generateRootWallet(): BitcoinWalletData {
+    const factory = ECPairFactory(ecc)
+    const keyPair = factory.makeRandom()
+    const wif = keyPair.toWIF()
+
+    const { address } = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.network })
+    if (!address) {
+      throw new Error('P2WPKH does not have a address')
+    }
+
+    return { wif, address }
+  }
+
+  public generateChildWallet(rootWalletData: BitcoinWalletData, index: number): BitcoinWalletData {
+    const factory = ECPairFactory(ecc)
+    const keyPair = factory.fromWIF(rootWalletData.wif) // for some reason it failed with this.network arg, at least for regtest
+
+    if (!keyPair.privateKey) {
+      throw new Error('KeyPair does not have a private key')
+    }
+
+    const bip32 = BIP32Factory(ecc)
+    const root = bip32.fromPrivateKey(keyPair.privateKey, Buffer.alloc(32), this.network)
+
+    const child = root.derivePath(`m/0'/0/${index}`)
+    const wif = child.toWIF()
+    const { address } = bitcoin.payments.p2wpkh({
+      pubkey: child.publicKey,
+      network: this.network
+    })
+    if (!address) {
+      throw new Error('P2WPKH does not have a address')
+    }
+
+    return { wif, address }
+  }
+
+  public createTransaction(walletData: BitcoinWalletData[], utxos: BitcoinUtxo[], address: string, feeRate: number): bitcoin.Transaction {
+    const totalInputValue = utxos.reduce(
+      (acc, utxo) => acc += parseToBigNumber(utxo.data.amount, BITCOIN_DECIMALS), BigInt(0)
+    )
+
+    const estimateFeeTx = this.doCreateTransaction(walletData, utxos, feeRate, address, parseBigIntToNumber(totalInputValue))
+
+    const fee = BigInt(Math.ceil(estimateFeeTx.virtualSize() * feeRate))
+    const outputValue = totalInputValue - fee
+
+    return this.doCreateTransaction(walletData, utxos, feeRate, address, parseBigIntToNumber(outputValue))
+  }
+
+  public doCreateTransaction(walletData: BitcoinWalletData[], utxos: BitcoinUtxo[], feeRate: number, address: string, value: number): bitcoin.Transaction {
+    if (value <= 0) {
+      throw new Error(`Incorrect output value ${value}`)
+    }
+
+    const factory = ECPairFactory(ecc)
+
+    const psbt = new bitcoin.Psbt({ network: this.network })
+
+    const wifs: string[] = []
+    utxos.forEach(utxo => {
+      const data = walletData.find(item => item.address === utxo.data.address)
+      if (!data) {
+        return
+      }
+
+      wifs.push(data.wif)
+
+      const amount = parseToBigNumber(utxo.data.amount, BITCOIN_DECIMALS)
+
+      psbt.addInput({
+        hash: utxo.data.txid,
+        index: utxo.data.vout,
+        witnessUtxo: {
+          script: bitcoin.address.toOutputScript(utxo.data.address, this.network),
+          value: parseBigIntToNumber(amount)
+        }
+      })
+    })
+
+    psbt.addOutput({ address, value: value })
+
+    for (let i = 0; i < psbt.inputCount; ++i) {
+      const keyPair = factory.fromWIF(wifs[i], this.network)
+      psbt.signInput(i, keyPair)
+    }
+
+    psbt.finalizeAllInputs()
+    psbt.setMaximumFeeRate(Math.ceil(feeRate))
+
+    return psbt.extractTransaction()
+  }
+}

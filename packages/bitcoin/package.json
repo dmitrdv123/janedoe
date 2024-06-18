@@ -1,0 +1,27 @@
+{
+  "name": "@repo/bitcoin",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "@repo/common": "workspace:^",
+    "@repo/dao": "workspace:^",
+    "@repo/dao-aws": "workspace:^",
+    "axios": "^1.4.0",
+    "bip32": "^4.0.0",
+    "bitcoinjs-lib": "^6.1.6",
+    "coininfo": "^5.2.1",
+    "dotenv": "^16.4.5",
+    "ecpair": "^2.1.0",
+    "tiny-secp256k1": "^2.2.3",
+    "viem": "^2.13.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "18",
+    "typescript": "^5.4.4"
+  }
+}
