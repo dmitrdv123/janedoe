@@ -1,5 +1,5 @@
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinWallet, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressData } from '@repo/dao/dist/src/interfaces/bitcoin'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
 import { BitcoinUtilsService } from './bitcoin-utils.service'
@@ -82,17 +82,31 @@ export class BitcoinServiceImpl implements BitcoinService {
       throw new Error('Fee rate not found')
     }
 
-    const walletAddresses = await this.bitcoinDao.listWalletAddresses(walletName)
-    if (walletAddresses.length === 0) {
-      return
-    }
-
     const utxos = await this.bitcoinDao.listUtxos(walletName)
     if (utxos.length === 0) {
       return
     }
 
-    const tx = this.bitcoinUtilsService.createTransaction(walletAddresses.map(item => item.data), utxos, address, feeRate)
+    const walletAddresses = await Promise.all(
+      Array
+        .from(
+          new Set(utxos.map(item => item.label))
+        )
+        .map(
+          async label => this.bitcoinDao.loadWalletAddress(walletName, label)
+        )
+    )
+    const walletAddressData = walletAddresses.reduce((acc, item) => {
+      if (item) {
+        acc.push(item.data)
+      }
+      return acc
+    }, [] as BitcoinWalletAddressData[])
+    if (walletAddressData.length === 0) {
+      return
+    }
+
+    const tx = this.bitcoinUtilsService.createTransaction(walletAddressData, utxos, address, feeRate)
     await this.bitcoinCoreService.sendTransaction(tx)
   }
 }

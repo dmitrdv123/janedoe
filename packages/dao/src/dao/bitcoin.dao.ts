@@ -14,7 +14,7 @@ export interface BitcoinDao {
   saveWalletAddress(wallet: BitcoinWalletAddress): Promise<void>
   loadWalletAddress(walletName: string, label: string): Promise<BitcoinWalletAddress | undefined>
   loadWalletAddressByAddress(address: string): Promise<BitcoinWalletAddress | undefined>
-  listWalletAddresses(walletName: string): Promise<BitcoinWalletAddress[]>
+  listWalletAddressLabels(walletName: string): Promise<string[]>
   updateWalletAddressCounter(walletName: string): Promise<number>
 
   saveUtxos(utxos: BitcoinUtxo[]): Promise<void>

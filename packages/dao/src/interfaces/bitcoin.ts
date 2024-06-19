@@ -34,7 +34,7 @@ export interface BitcoinUtxo {
   data: BitcoinUtxoData
 }
 
-export interface BitcoinWalletData {
+export interface BitcoinWalletAddressData {
   wif: string
   address: string
 }
@@ -42,7 +42,12 @@ export interface BitcoinWalletData {
 export interface BitcoinWalletAddress {
   walletName: string
   label: string
-  data: BitcoinWalletData
+  data: BitcoinWalletAddressData
+}
+
+export interface BitcoinWalletData {
+  wif: string
+  address: string
 }
 
 export interface BitcoinWallet {

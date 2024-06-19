@@ -4,14 +4,14 @@ import * as ecc from 'tiny-secp256k1'
 import { BIP32Factory } from 'bip32'
 import ECPairFactory from 'ecpair'
 
-import { BitcoinUtxo, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinUtxo, BitcoinWalletAddressData, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
 import { parseBigIntToNumber, parseToBigNumber } from '../utils/bitcoin-utils'
 import { BITCOIN_DECIMALS } from '../constants'
 
 export interface BitcoinUtilsService {
   generateRootWallet(): BitcoinWalletData
-  generateChildWallet(rootWalletData: BitcoinWalletData, index: number): BitcoinWalletData
-  createTransaction(walletData: BitcoinWalletData[], utxos: BitcoinUtxo[], address: string, feeRate: number): bitcoin.Transaction
+  generateChildWallet(rootWalletData: BitcoinWalletData, index: number): BitcoinWalletAddressData
+  createTransaction(walletAddressData: BitcoinWalletAddressData[], utxos: BitcoinUtxo[], address: string, feeRate: number): bitcoin.Transaction
 }
 
 export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
@@ -32,7 +32,7 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     return { wif, address }
   }
 
-  public generateChildWallet(rootWalletData: BitcoinWalletData, index: number): BitcoinWalletData {
+  public generateChildWallet(rootWalletData: BitcoinWalletData, index: number): BitcoinWalletAddressData {
     const factory = ECPairFactory(ecc)
     const keyPair = factory.fromWIF(rootWalletData.wif) // for some reason it failed with this.network arg, at least for regtest
 
@@ -56,20 +56,20 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     return { wif, address }
   }
 
-  public createTransaction(walletData: BitcoinWalletData[], utxos: BitcoinUtxo[], address: string, feeRate: number): bitcoin.Transaction {
+  public createTransaction(walletAddressData: BitcoinWalletAddressData[], utxos: BitcoinUtxo[], address: string, feeRate: number): bitcoin.Transaction {
     const totalInputValue = utxos.reduce(
       (acc, utxo) => acc += parseToBigNumber(utxo.data.amount, BITCOIN_DECIMALS), BigInt(0)
     )
 
-    const estimateFeeTx = this.doCreateTransaction(walletData, utxos, feeRate, address, parseBigIntToNumber(totalInputValue))
+    const estimateFeeTx = this.doCreateTransaction(walletAddressData, utxos, feeRate, address, parseBigIntToNumber(totalInputValue))
 
     const fee = BigInt(Math.ceil(estimateFeeTx.virtualSize() * feeRate))
     const outputValue = totalInputValue - fee
 
-    return this.doCreateTransaction(walletData, utxos, feeRate, address, parseBigIntToNumber(outputValue))
+    return this.doCreateTransaction(walletAddressData, utxos, feeRate, address, parseBigIntToNumber(outputValue))
   }
 
-  public doCreateTransaction(walletData: BitcoinWalletData[], utxos: BitcoinUtxo[], feeRate: number, address: string, value: number): bitcoin.Transaction {
+  public doCreateTransaction(walletAddressData: BitcoinWalletAddressData[], utxos: BitcoinUtxo[], feeRate: number, address: string, value: number): bitcoin.Transaction {
     if (value <= 0) {
       throw new Error(`Incorrect output value ${value}`)
     }
@@ -80,7 +80,7 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
 
     const wifs: string[] = []
     utxos.forEach(utxo => {
-      const data = walletData.find(item => item.address === utxo.data.address)
+      const data = walletAddressData.find(item => item.address === utxo.data.address)
       if (!data) {
         return
       }

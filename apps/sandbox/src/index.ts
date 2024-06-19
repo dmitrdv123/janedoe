@@ -3,6 +3,7 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV}`.trim() })
 import * as bitcoin from 'bitcoinjs-lib'
 
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager'
 
 import { BitcoinDaoImpl } from '@repo/dao-aws/dist/src/dao/bitcoin.dao'
 import { DynamoServiceImpl } from '@repo/dao-aws/dist/src/services/dynamo.service'
@@ -14,11 +15,13 @@ import { BitcoinBlockServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin
 import { BitcoinBlockTask } from './task/bitcoin-block.task'
 import { createAppConfig } from './app-config'
 import { BitcoinPaymentLogsIterator } from './services/payment-logs/bitcoin-payment-logs.iterator'
+import { SecretServiceImpl } from '@repo/dao-aws/dist/src/services/secret.service'
 
 createAppConfig()
 
 const dynamoService = new DynamoServiceImpl(new DynamoDB())
-const bitcoinDao = new BitcoinDaoImpl(dynamoService)
+const secretService = new SecretServiceImpl(new SecretsManagerClient())
+const bitcoinDao = new BitcoinDaoImpl(dynamoService, secretService)
 const bitcoinUtilsService = new BitcoinUtilsServiceImpl(bitcoin.networks.regtest)
 const bitcoinCoreService = new BitcoinCoreServiceImpl()
 const bitcoinService = new BitcoinServiceImpl(bitcoinCoreService, bitcoinUtilsService, bitcoinDao)
@@ -117,8 +120,8 @@ async function bitcoinServiceTests() {
   const loadedWalletAddressByAddress1 = await bitcoinDao.loadWalletAddressByAddress(walletAddress1.data.address)
   console.log(`loaded wallet ${walletName} address ${label1} by address ${walletAddress1.data.address}: ${JSON.stringify(loadedWalletAddressByAddress1)}`)
 
-  const walletAddresses = await bitcoinDao.listWalletAddresses(walletName)
-  console.log(`loaded wallet ${walletName} addresses: ${JSON.stringify(walletAddresses)}`)
+  const walletAddressLabels = await bitcoinDao.listWalletAddressLabels(walletName)
+  console.log(`loaded wallet ${walletName} address labels: ${JSON.stringify(walletAddressLabels)}`)
 
   await bitcoinService.withdraw(walletName, address)
   console.log(`withdrawal of wallet ${walletName} to address ${address} was done`)
@@ -170,15 +173,86 @@ async function bitcoinBlockServiceTests() {
   console.log(`loaded latest processed block: ${latestProcessedBlock?.hash}`)
 }
 
+async function bitcoinDaoTests() {
+  const walletName = 'bitcoinDaoTest_wallet1'
+
+  await bitcoinDao.saveWallet({
+    walletName,
+    data: {
+      wif: 'wif',
+      address: 'address'
+    }
+  })
+  console.log(`debug >> save wallet done`)
+
+  let wallet = await bitcoinDao.loadWallet(walletName)
+  console.log(`debug >> load wallet done ${JSON.stringify(wallet)}`)
+
+  await bitcoinDao.saveWallet({
+    walletName,
+    data: {
+      wif: 'wif1',
+      address: 'address1'
+    }
+  })
+  console.log(`debug >> save wallet done`)
+
+  wallet = await bitcoinDao.loadWallet(walletName)
+  console.log(`debug >> load wallet done ${JSON.stringify(wallet)}`)
+
+  await bitcoinDao.saveWalletAddress({
+    walletName,
+    label: 'label1',
+    data: {
+      wif: 'label1_wif',
+      address: 'label1_address'
+    }
+  })
+  console.log(`debug >> save wallet address done`)
+
+  let walletAddress = await bitcoinDao.loadWalletAddress(walletName, 'label1')
+  console.log(`debug >> load wallet address done ${JSON.stringify(walletAddress)}`)
+
+  await bitcoinDao.saveWalletAddress({
+    walletName,
+    label: 'label1',
+    data: {
+      wif: 'label1_wif1',
+      address: 'label1_address1'
+    }
+  })
+  console.log(`debug >> save wallet address done`)
+
+  await bitcoinDao.saveWalletAddress({
+    walletName,
+    label: 'label2',
+    data: {
+      wif: 'label2_wif1',
+      address: 'label2_address1'
+    }
+  })
+  console.log(`debug >> save wallet address done`)
+
+  walletAddress = await bitcoinDao.loadWalletAddress(walletName, 'label1')
+  console.log(`debug >> load wallet address done ${JSON.stringify(walletAddress)}`)
+
+  walletAddress = await bitcoinDao.loadWalletAddressByAddress('label1_address1')
+  console.log(`debug >> load wallet address by address done ${JSON.stringify(walletAddress)}`)
+
+  const walletAddressLabels = await bitcoinDao.listWalletAddressLabels(walletName)
+  console.log(`debug >> list wallet address labels done ${JSON.stringify(walletAddressLabels)}`)
+}
+
 async function main() {
   console.log(`hello world!`)
 
-  await bitcoinPaymentLogsIteratorTests()
+  // await bitcoinPaymentLogsIteratorTests()
   // await bitcoinBlockTaskTests()
   // await bitcoinCoreServiceTests()
   // await bitcoinServiceTests()
   // await bitcoinBlockServiceTests()
   // await transactionTests()
+  await bitcoinDaoTests()
 }
 
 main()

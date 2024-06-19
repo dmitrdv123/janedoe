@@ -91,13 +91,13 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
   }
 
   private async updateBalance(walletName: string): Promise<void> {
-    const [walletAddresses, utxos] = await Promise.all([
-      await this.bitcoinDao.listWalletAddresses(walletName),
+    const [walletAddressLabels, utxos] = await Promise.all([
+      await this.bitcoinDao.listWalletAddressLabels(walletName),
       await this.bitcoinDao.listUtxos(walletName)
     ])
 
-    const amountByLabel = walletAddresses.reduce((acc, walletAddress) => {
-      acc[walletAddress.label] = BigInt(0)
+    const amountByLabel = walletAddressLabels.reduce((acc, label) => {
+      acc[label] = BigInt(0)
       return acc
     }, {} as { [key: string]: bigint })
 
