@@ -187,6 +187,7 @@ improvement backlog:
 - payment: if error happens during convert and pay on payment stage then we need to show that conversion is done and we dont need to convert again
 - account: payment settings page - there is a blink when warning "no blockchains" shown despite it is exist
 - bitcoin: BitcoinUtilsServiceImpl, createTransaction do not add input if amount is less than possible fee for this input
+- dao-aws: BitcoinDao, store wif in secrets
 - aws:
   - aws: make appservice private to access only from api gateway
   - aws: configure cloudformation logs to delete when stack destroyed and retain
