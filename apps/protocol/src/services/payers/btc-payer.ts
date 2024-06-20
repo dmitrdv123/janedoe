@@ -3,9 +3,10 @@ import { customAlphabet } from 'nanoid'
 import { AxiosError } from 'axios'
 
 import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
-import { BitcoinWrapperService } from '@repo/common/dist/src/services/bitcoin-wrapper-service'
-import { commonContainer } from '@repo/common/dist/src/containers/common.container'
-import appConfig from '@repo/common/dist/src/app-config'
+import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
+import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.container'
+
+import { BitcoinWrapperServiceImpl } from '../bitcoin-wrapper.service'
 
 export class BtcPayerBuilder {
   private static instance: BtcPayerBuilder | undefined = undefined
@@ -48,32 +49,19 @@ export class BtcPayer {
     const paymentId = nanoid()
     const protocolPaymentId = accountProfile.id + paymentId
 
-    const bitcoinWrapperService = commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService')
+    const bitcoinService = bitcoinContainer.resolve<BitcoinService>('bitcoinService')
 
     let addressTo: string | undefined = undefined
     try {
-      console.log(`BtcPayer: start to load bitcoin wallet for account id ${accountProfile.id}`)
-      await bitcoinWrapperService.loadBitcoinWallet(accountProfile.id)
-      console.log(`BtcPayer: end to load bitcoin wallet for account id ${accountProfile.id}`)
+      console.log(`BtcPayer: start to create bitcoin wallet for account id ${accountProfile.id}`)
+      const wallet = await bitcoinService.createWallet(accountProfile.id)
+      console.log(`BtcPayer: end to create bitcoin wallet for account id ${accountProfile.id}: ${JSON.stringify(wallet)}`)
 
-      console.log(`BtcPayer: start to find address for account id ${accountProfile.id} with label ${protocolPaymentId}`)
-      const addressByLabel = await bitcoinWrapperService.getAddressByLabel(accountProfile.id, protocolPaymentId)
-      if (addressByLabel) {
-        addressTo = Object.keys(addressByLabel).find(key => addressByLabel[key].purpose.toLocaleLowerCase() === "receive")
-      }
-      console.log(`BtcPayer: end to find address for account id ${accountProfile.id} with label ${protocolPaymentId}`)
-      console.log(`BtcPayer: address ${addressTo}`)
+      console.log(`BtcPayer: start to create bitcoin wallet address for account id ${accountProfile.id} with label ${protocolPaymentId}`)
+      const walletAddress = await bitcoinService.createWalletAddress(accountProfile.id, paymentId)
+      console.log(`BtcPayer: end to create bitcoin wallet address for account id ${accountProfile.id} with label ${protocolPaymentId}: ${JSON.stringify(walletAddress)}`)
 
-      if (!addressTo) {
-        console.log(`BtcPayer: start to create bitcoin address for account id ${accountProfile.id} and address ${accountProfile.address} with label ${protocolPaymentId}`)
-        addressTo = await bitcoinWrapperService.createBitcoinAddress(accountProfile.id, protocolPaymentId)
-        console.log(`BtcPayer: end to create bitcoin address for wallet ${accountProfile.id} with label ${protocolPaymentId}`)
-      }
-
-      console.log(`BtcPayer: start to import bitcoin address ${addressTo} into wallet ${appConfig.BITCOIN_CENTRAL_WALLET} with label ${protocolPaymentId}`)
-      const descriptor = await bitcoinWrapperService.getBitcoinAddressDescriptorInfo(addressTo)
-      await bitcoinWrapperService.importBitcoinDescriptor(appConfig.BITCOIN_CENTRAL_WALLET, descriptor.descriptor, protocolPaymentId)
-      console.log(`BtcPayer: end to import bitcoin address ${addressTo} into wallet ${appConfig.BITCOIN_CENTRAL_WALLET} with label ${protocolPaymentId}`)
+      addressTo = walletAddress.data.address
     } catch (error) {
       if (error instanceof AxiosError) {
         const dataError = error.response?.data?.error
@@ -87,6 +75,8 @@ export class BtcPayer {
 
       throw error
     }
+
+    const bitcoinWrapperService = new BitcoinWrapperServiceImpl()
 
     try {
       console.log(`BtcPayer: start to load bitcoin wallet ${from}`)

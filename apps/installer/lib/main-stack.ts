@@ -10,7 +10,7 @@ import { Secret } from 'aws-cdk-lib/aws-secretsmanager'
 import { Repository } from 'aws-cdk-lib/aws-ecr'
 import { AnyPrincipal, Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam'
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
-import { BlockDeviceVolume, CfnEIP, EbsDeviceVolumeType, IInstance, IKeyPair, IVpc, Instance, InstanceClass, InstanceSize, InstanceType, KeyPair, MachineImage, Peer, Port, SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2'
+import { IKeyPair, IVpc, KeyPair, Vpc } from 'aws-cdk-lib/aws-ec2'
 import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations'
 import { CfnAutoScalingConfiguration, CfnService } from 'aws-cdk-lib/aws-apprunner'
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins'
@@ -44,8 +44,6 @@ interface MainStackOutput {
   cloudfrontResponseFunction?: cloudfront.IFunction
 
   httpApi?: HttpApi
-  bitcoinCoreInstanceElasticIp?: CfnEIP
-  bitcoinCoreInstance?: IInstance
   service?: apprunner.Service
 
   alarmMetricRango?: Metric
@@ -85,10 +83,6 @@ export class MainStack extends Stack {
   }
 
   private deployBackend(output: MainStackOutput) {
-    if (process.env.NODE_ENV !== 'local') {
-      this.deployBitcoinCore(output)
-    }
-
     this.deployDataBucket(output)
     this.deployDdb(output)
 
@@ -302,22 +296,6 @@ function handler(event) {
       })
     }
 
-    if (output.bitcoinCoreInstance) {
-      new CfnOutput(this, withEnv('cloudformation_output_ec2_bitcoincore'), {
-        exportName: withEnv('ec2-bitcoincore', '-'),
-        value: output.bitcoinCoreInstance.instancePublicIp,
-        description: 'Bitcoin Core EC2 public IP',
-      })
-    }
-
-    if (output.bitcoinCoreInstanceElasticIp) {
-      new CfnOutput(this, withEnv('cloudformation_output_ec2_bitcoincore_elastic_ip'), {
-        exportName: withEnv('ec2-bitcoincore-elastic-ip', '-'),
-        value: output.bitcoinCoreInstanceElasticIp.attrPublicIp,
-        description: 'Bitcoin Core EC2 elastic IP',
-      })
-    }
-
     if (output.tableData) {
       new CfnOutput(this, withEnv('cloudformation_output_table_data'), {
         exportName: withEnv('table-data', '-'),
@@ -431,50 +409,6 @@ function handler(event) {
     }
   }
 
-  private deployBitcoinCore(output: MainStackOutput) {
-    const ec2SecurityGroup = new SecurityGroup(this, withEnv('securitygroup_bitcoincore'), {
-      vpc: output.vpc,
-      allowAllOutbound: true,
-      securityGroupName: withEnv('bitcoincore'),
-    })
-
-    ec2SecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22), 'Allow SSH access')
-    ec2SecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(8332), 'Allow Bitcoin Core P2P port')
-    ec2SecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(8334), 'Allow Bitcoin Core Testnet P2P port')
-    ec2SecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(8333), 'Allow Bitcoin Core RPC port')
-    ec2SecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(18332), 'Allow Bitcoin Core Testnet RPC port')
-    ec2SecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(18443), 'Allow Bitcoin Core Regtest port')
-    ec2SecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(38332), 'Allow Bitcoin Core Testnet RPC port')
-
-    const bitcoinCoreInstance = new Instance(this, withEnv('ec2_bitcoincore'), {
-      instanceType: InstanceType.of(InstanceClass.C7G, InstanceSize.MEDIUM),
-      instanceName: withEnv('bitcoincore'),
-      machineImage: MachineImage.lookup({
-        name: env('AMI_BITCOIN_CORE')
-      }),
-      vpc: output.vpc,
-      securityGroup: ec2SecurityGroup,
-      keyPair: output.keyPair,
-      blockDevices: [{
-        deviceName: '/dev/sda1',
-        volume: BlockDeviceVolume.ebs(50, {
-          volumeType: EbsDeviceVolumeType.GP3,
-        })
-      }],
-      vpcSubnets: {
-        subnetType: SubnetType.PUBLIC,
-      },
-      associatePublicIpAddress: true
-    })
-
-    const bitcoinCoreInstanceElasticIp = new CfnEIP(this, withEnv('elastic_ip'), {
-      instanceId: bitcoinCoreInstance.instanceId
-    })
-
-    output.bitcoinCoreInstanceElasticIp = bitcoinCoreInstanceElasticIp
-    output.bitcoinCoreInstance = bitcoinCoreInstance
-  }
-
   private deployDataBucket(output: MainStackOutput) {
     const bucketData = this.deployBucket(env('BUCKET_NAME_DATA'))
     output.bucketData = bucketData
@@ -579,7 +513,20 @@ function handler(event) {
       generateSecretString: {
         secretStringTemplate: JSON.stringify(
           {
-            data: `http://${env('BITCOIN_USER')}:${env('BITCOIN_PASSWORD')}@${output.bitcoinCoreInstanceElasticIp?.attrPublicIp}:${env('BITCOIN_PORT')}`,
+            data: env('BITCOIN_RPC'),
+            pwd: ''
+          }
+        ),
+        generateStringKey: 'pwd'
+      }
+    })
+
+    const bitcoinFeeRpc = new Secret(this, withEnv('secret_bitcoin_fee_rpc'), {
+      secretName: withEnv('bitcoin_fee_rpc'),
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify(
+          {
+            data: env('BITCOIN_FEE_RPC'),
             pwd: ''
           }
         ),
@@ -617,7 +564,6 @@ function handler(event) {
           environmentVariables: {
             PORT: env('PORT'),
             IS_DEV: env('IS_DEV'),
-            BITCOIN_CENTRAL_WALLET: withEnv(env('BITCOIN_CENTRAL_WALLET')),
             APP_NAME: env('APP_NAME'),
             APP_URL: `https://${output.cloudfrontLanding?.distributionDomainName}` ?? '',
             STATUS_PAGE_URL: `https://${output.cloudfrontPayment?.distributionDomainName}` ?? '',
@@ -641,7 +587,8 @@ function handler(event) {
             JWT_ENCRYPTION_KEY: apprunner.Secret.fromSecretsManager(jwtEncryptionKey, 'data'),
             JWT_INIT_VECTOR: apprunner.Secret.fromSecretsManager(jwtInitVector, 'data'),
             EMAIL_CONFIG: apprunner.Secret.fromSecretsManager(emailConfig, 'data'),
-            BITCOIN_RPC: apprunner.Secret.fromSecretsManager(bitcoinRpc, 'data')
+            BITCOIN_RPC: apprunner.Secret.fromSecretsManager(bitcoinRpc, 'data'),
+            BITCOIN_FEE_RPC: apprunner.Secret.fromSecretsManager(bitcoinFeeRpc, 'data')
           }
         }
       })

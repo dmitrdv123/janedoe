@@ -4,23 +4,16 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV ?? 'development'}`.trim() })
 import * as fs from 'fs'
 import * as path from 'path'
 
-import { CloudFormation } from '@aws-sdk/client-cloudformation'
-
 import { AppSettings, AppSettingsBlockchain, AppSettingsContracts, AppSettingsCurrency } from '@repo/dao/dist/src/interfaces/settings'
 import { SettingsDao } from '@repo/dao/dist/src/dao/settings.dao'
 import { AccountPaymentSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 import { daoContainer as dynamoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
-import { BitcoinWrapperService } from '@repo/common/dist/src/services/bitcoin-wrapper-service'
 import { initAppConfig } from '@repo/common/dist/src/app-config'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 import { BlockchainSettings } from '@repo/dao/dist/src/interfaces/blockchain-settings'
 import { BlockchainEvmClientConfig } from '@repo/dao/dist/src/interfaces/blockchain-evm-client-config'
-import { PaymentLogDao } from '@repo/dao/dist/src/dao/payment-log.dao'
-import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 
-import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
-import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 
 import { env, loadFileAsJson, withEnv } from '../lib/utils'
 import { APP_SETTINGS_PREFIX, BLOCKCHAIN_EVM_CLIENT_CONFIG_SETTINGS_PREFIX, BLOCKCHAIN_SETTINGS_PREFIX, DEFAULT_ACCOUNT_PAYMENT_SETTINGS_PREFIX } from '../lib/constants'
@@ -47,22 +40,26 @@ async function saveSettings(): Promise<void> {
   const contracts: AppSettingsContracts[] = await Promise.all(
     fs.readdirSync(path.join(process.cwd(), deploymentsFolder))
       .filter(file => {
+        const fileTmp = file.toLocaleLowerCase()
+
+        if (!fileTmp.endsWith('.json')) {
+          return false
+        }
+
         if (process.env.NODE_ENV === 'local') {
           return true
         }
 
-        const fileTmp = file.toLocaleLowerCase()
-        return fileTmp.endsWith('.json')
-          && ![
-            'hardhat.json',
-            'localhost.json',
-            'zksyncinmemorynode.json',
-            'zksyncdockerizednode.json',
-            'zksyncsepoliatestnet.json',
-            'tronshasta.json',
-            'tronnile.json',
-            'trondevelopment.json'
-          ].includes(fileTmp)
+        return ![
+          'hardhat.json',
+          'localhost.json',
+          'zksyncinmemorynode.json',
+          'zksyncdockerizednode.json',
+          'zksyncsepoliatestnet.json',
+          'tronshasta.json',
+          'tronnile.json',
+          'trondevelopment.json'
+        ].includes(fileTmp)
       })
       .map(
         async file => {
@@ -157,71 +154,11 @@ async function saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs:
   console.log(`End to save blockchain transport settings for ${evmClientConfigs.length} blockchains`)
 }
 
-async function createBitcoinCentralWallet(): Promise<void> {
-  console.log('Start to create bitcoin central wallet')
-
-  const bitcoinCentralWallet = withEnv(env('BITCOIN_CENTRAL_WALLET'))
-  const bitcoinService = commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService')
-  await bitcoinService.createBitcoinWallet(bitcoinCentralWallet, true)
-
-  console.log('End to create bitcoin central wallet')
-
-  console.log(`Start to import addresses to ${bitcoinCentralWallet}`)
-  const paymentLogDao = awsContainer.resolve<PaymentLogDao>('paymentLogDao')
-  const accountDao = awsContainer.resolve<AccountDao>('accountDao')
-
-  const profiles = await accountDao.listAccountProfiles()
-  console.log(`Found ${profiles.length} profiles`)
-
-  await bitcoinService.loadBitcoinWallet(bitcoinCentralWallet)
-
-  for (let i = 0; i < profiles.length; i++) {
-    const profile = profiles[i]
-    console.log(`Start to import address to ${bitcoinCentralWallet} for profile Id ${profile.id}`)
-
-    const logs = await paymentLogDao.listPaymentLogs(profile.id)
-    const logsBtc = logs.filter(log => log.blockchain.toLocaleLowerCase() === 'btc')
-    console.log(`Found ${logsBtc.length} btc payment logs for profile Id ${profile.id}`)
-
-    for (let j = 0; j < logsBtc.length; j++) {
-      const log = logsBtc[j]
-
-      const protocolPaymentId = log.accountId + log.paymentId
-      const address = log.to
-      const descriptor = await bitcoinService.getBitcoinAddressDescriptorInfo(address)
-
-      console.log(`Start to import descriptor ${descriptor.descriptor} with label ${protocolPaymentId} to wallet ${bitcoinCentralWallet}`)
-      await bitcoinService.importBitcoinDescriptor(bitcoinCentralWallet, descriptor.descriptor, protocolPaymentId)
-      console.log(`End to import descriptor ${descriptor.descriptor} with label ${protocolPaymentId} to wallet ${bitcoinCentralWallet}`)
-    }
-
-    console.log(`End to import address to ${bitcoinCentralWallet} for profile Id ${profile.id}`)
-  }
-
-  console.log(`End to import addresses to ${bitcoinCentralWallet}`)
-}
-
 async function init(): Promise<void> {
-  const nodeEnv = process.env.NODE_ENV ?? 'local'
-
-  let bitcoinRpc = `http://${env('BITCOIN_USER')}:${env('BITCOIN_PASSWORD')}@127.0.0.1:${env('BITCOIN_PORT')}`
-  if (nodeEnv !== 'local') {
-    const cloudformation = new CloudFormation()
-    const output = await cloudformation.describeStacks({
-      StackName: withEnv('janedoe-main', '-')
-    })
-
-    const bitcoinRpcIp = output.Stacks?.[0].Outputs?.find(item => item.ExportName === withEnv('ec2-bitcoincore', '-'))
-    if (!bitcoinRpcIp?.OutputValue) {
-      throw new Error('Cannot find cloudformation output for ec2-bitcoincore')
-    }
-
-    bitcoinRpc = `http://${env('BITCOIN_USER')}:${env('BITCOIN_PASSWORD')}@${bitcoinRpcIp.OutputValue}:${env('BITCOIN_PORT')}`
-  }
-
   initAppConfig({
     TABLE_NAME: withEnv(process.env.TABLE_NAME ?? ''),
-    BITCOIN_RPC: bitcoinRpc
+    BITCOIN_RPC: env('BITCOIN_RPC'),
+    BITCOIN_FEE_RPC: env('BITCOIN_FEE_RPC')
   })
 }
 
@@ -230,8 +167,7 @@ async function main() {
 
   await Promise.all([
     saveSettings(),
-    saveDefaultAccountPaymentSettings(),
-    createBitcoinCentralWallet()
+    saveDefaultAccountPaymentSettings()
   ])
 }
 

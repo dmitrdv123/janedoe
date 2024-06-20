@@ -22,6 +22,11 @@ export interface WithBitcoinWalletResult {
   complete: boolean
 }
 
+export interface SendBitcoinToResult {
+  txid: string
+  fee_reason: string
+}
+
 export interface BitcoinCoreResult<T> {
   id: string,
   result: T | null | undefined

@@ -25,8 +25,8 @@ export function createAppConfig() {
     throw new Error('BITCOIN_RPC is not set')
   }
 
-  if (!process.env.BITCOIN_CENTRAL_WALLET) {
-    throw new Error('BITCOIN_CENTRAL_WALLET is not set')
+  if (!process.env.BITCOIN_FEE_RPC) {
+    throw new Error('BITCOIN_FEE_RPC is not set')
   }
 
   if (!process.env.EXCHANGERATE_API_KEY) {
@@ -52,7 +52,7 @@ export function createAppConfig() {
     JWT_INIT_VECTOR: process.env.JWT_INIT_VECTOR,
     EMAIL_CONFIG: process.env.EMAIL_CONFIG,
     BITCOIN_RPC: process.env.BITCOIN_RPC,
-    BITCOIN_CENTRAL_WALLET: process.env.BITCOIN_CENTRAL_WALLET,
+    BITCOIN_FEE_RPC: process.env.BITCOIN_FEE_RPC,
     EXCHANGERATE_API_KEY: process.env.EXCHANGERATE_API_KEY,
     SEED_BTC_WALLET_FROM: process.env.SEED_BTC_WALLET_FROM,
     TABLE_NAME: process.env.TABLE_NAME

@@ -3,21 +3,20 @@ import { BlockchainMeta } from 'rango-sdk-basic'
 
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
-import appConfig from '@repo/common/dist/src/app-config'
+import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
 
 import { BLOCKCHAIN_BTC, BLOCKCHAIN_BTC_NATIVE_TOKEN_DECIMALS } from '../../constants'
 import { PaymentLogsIterator } from './payment-logs-iterator'
 import { logger } from '../../utils/logger'
 import { parseToBigNumber, tokenAmountToUsd } from '../../utils/utils'
 import { MetaService } from '../meta-service'
-import { BitcoinService } from '../bitcoin-service'
 
 export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
   private blockhash: string = ''
 
   public constructor(
     private blockchain: BlockchainMeta,
-    private bitcoinService: BitcoinService,
+    private bitcoinBlockService: BitcoinBlockService,
     private metaService: MetaService
   ) {
   }
@@ -33,29 +32,51 @@ export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
   public async nextBatch(): Promise<PaymentLog[]> {
     logger.debug('BitcoinPaymentLogsIterator: start to process next batch')
 
-    logger.debug(`BitcoinPaymentLogsIterator: start to list transactions for wallet ${appConfig.BITCOIN_CENTRAL_WALLET} since block ${this.blockhash}`)
-    const result = await this.bitcoinService.listBitcoinTransactionsSinceBlock(
-      appConfig.BITCOIN_CENTRAL_WALLET,
-      this.blockhash
-    )
-    logger.debug(`BitcoinPaymentLogsIterator: found ${result.transactions.length} transactions and last processed blockhash ${result.lastblock}`)
+    let fromHeight = 0
+    let toHeight = 0
 
-    this.blockhash = result.lastblock
-    if (!result.transactions.length) {
+    const lastProcessedBlock = await this.bitcoinBlockService.getLatestProcessedBlock()
+    if (!lastProcessedBlock) {
+      logger.debug('BitcoinPaymentLogsIterator: skip batch since last processed block not found')
+      return []
+    }
+    toHeight = lastProcessedBlock.height
+
+    if (this.blockhash) {
+      const block = await this.bitcoinBlockService.getProcessedBlock(this.blockhash)
+      if (!block) {
+        throw new Error(`Block ${this.blockhash} not found`)
+      }
+      fromHeight = block.height + 1
+    } else {
+      fromHeight = 0
+    }
+
+    if (fromHeight > toHeight) {
+      logger.debug(`BitcoinPaymentLogsIterator: skip batch since from block height ${fromHeight} is more than to block height ${toHeight}`)
       return []
     }
 
-    const tokensByTimestamp = result.transactions.map(tx => ({
-      timestamp: tx.time,
+    logger.debug(`BitcoinPaymentLogsIterator: start to list transactions from block height ${fromHeight} to block height ${toHeight}`)
+    const transactionOutputs = await this.bitcoinBlockService.listBlockTransactionOutputs(fromHeight, toHeight)
+    logger.debug(`BitcoinPaymentLogsIterator: found ${transactionOutputs.length} transactions`)
+
+    this.blockhash = lastProcessedBlock.hash
+    if (!transactionOutputs.length) {
+      return []
+    }
+
+    const tokensByTimestamp = transactionOutputs.map(tx => ({
+      timestamp: tx.data.time,
       blockchain: this.blockchain.name,
       address: null
     }))
     const tokensAtTxTime = await this.metaService.loadTokens(tokensByTimestamp)
 
-    const paymentLogs = result.transactions
+    const paymentLogs = transactionOutputs
       .map((tx, i) => {
         const tokenAtTxTime = tokensAtTxTime[i]
-        const amount = parseToBigNumber(tx.amount, BLOCKCHAIN_BTC_NATIVE_TOKEN_DECIMALS).toString()
+        const amount = parseToBigNumber(tx.data.amount, BLOCKCHAIN_BTC_NATIVE_TOKEN_DECIMALS).toString()
         const amountUsd = tokenAtTxTime ? tokenAmountToUsd(amount, tokenAtTxTime.usdPrice, tokenAtTxTime.decimals) : undefined
 
         const paymentLog: PaymentLog = {
@@ -69,14 +90,14 @@ export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
           tokenUsdPrice: tokenAtTxTime?.usdPrice ?? null,
 
           from: null,
-          to: tx.address,
+          to: tx.data.address,
           amount: amount,
           amountUsd: amountUsd ?? null,
 
-          block: tx.blockhash,
-          timestamp: tx.time,
-          transaction: tx.txid,
-          index: tx.blockindex,
+          block: tx.data.blockhash,
+          timestamp: tx.data.time,
+          transaction: tx.data.txid,
+          index: tx.data.blockheight,
         }
 
         return paymentLog

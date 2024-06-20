@@ -1,6 +1,7 @@
 import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
 
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
+import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
 
 import { SettingsService } from '../settings-service'
 import { getAddressOrDefault } from '../../utils/utils'
@@ -10,7 +11,6 @@ import { BitcoinPaymentLogsIterator } from './bitcoin-payment-logs-iterator'
 import { BLOCKCHAIN_BTC } from '../../constants'
 import { AccountService } from '../account-service'
 import { MetaService } from '../meta-service'
-import { BitcoinService } from '../bitcoin-service'
 
 export class PaymentLogsIteratorBuilder {
   private lastProcessed: string | undefined = undefined
@@ -19,7 +19,7 @@ export class PaymentLogsIteratorBuilder {
     private settingsService: SettingsService,
     private accountService: AccountService,
     private evmService: EvmService,
-    private bitcoinService: BitcoinService,
+    private bitcoinBlockService: BitcoinBlockService,
     private metaService: MetaService
   ) { }
 
@@ -49,7 +49,7 @@ export class PaymentLogsIteratorBuilder {
       case TransactionType.TRANSFER:
         switch (blockchain.name.toLocaleLowerCase()) {
           case BLOCKCHAIN_BTC:
-            result = new BitcoinPaymentLogsIterator(blockchain, this.bitcoinService, this.metaService)
+            result = new BitcoinPaymentLogsIterator(blockchain, this.bitcoinBlockService, this.metaService)
             break
         }
         break

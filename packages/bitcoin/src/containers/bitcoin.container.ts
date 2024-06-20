@@ -1,3 +1,7 @@
+import * as bitcoin from 'bitcoinjs-lib'
+
+import appConfig from '@repo/common/dist/src/app-config'
+
 import { Container } from '@repo/common/dist/src/containers/container'
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
 import { daoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
@@ -10,7 +14,12 @@ import { BitcoinServiceImpl } from '../services/bitcoin.service'
 export const bitcoinContainer = new Container()
 
 // Services
-bitcoinContainer.register('bitcoinUtilsService', new BitcoinUtilsServiceImpl())
+bitcoinContainer.register(
+  'bitcoinUtilsService',
+  new BitcoinUtilsServiceImpl(
+    appConfig.IS_DEV ? bitcoin.networks.regtest : bitcoin.networks.bitcoin
+  )
+)
 bitcoinContainer.register('bitcoinCoreService', new BitcoinCoreServiceImpl())
 bitcoinContainer.register(
   'bitcoinBlockService',

@@ -26,6 +26,7 @@
     "@aws-cdk/aws-apprunner-alpha": "2.133.0-alpha.0",
     "@aws-sdk/client-cloudformation": "^3.536.0",
     "@aws-solutions-constructs/aws-cloudfront-s3": "^2.54.0",
+    "@repo/bitcoin": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/dao": "workspace:*",
     "@repo/dao-aws": "workspace:*",

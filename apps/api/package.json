@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^6.0.0",
+    "@repo/bitcoin": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/dao": "workspace:*",
     "@repo/dao-aws": "workspace:*",

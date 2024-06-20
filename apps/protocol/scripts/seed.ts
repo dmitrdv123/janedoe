@@ -2,15 +2,16 @@ import { ethers } from 'hardhat'
 import { customAlphabet } from 'nanoid'
 import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers'
 
+import '../src/app-config'
+
 import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import { AppSettingsContracts } from '@repo/dao/dist/src/interfaces/settings'
-import { BitcoinWrapperService } from '@repo/common/dist/src/services/bitcoin-wrapper-service'
-import { daoContainer as dynamoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
-import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 import { Account } from '@repo/dao/dist/src/interfaces/account-profile'
 import { AccountPaymentSettings } from '@repo/dao/dist/src/interfaces/account-settings'
+import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 
-import '../src/app-config'
+import { daoContainer as dynamoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
+import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.container'
 
 import { JaneDoe, JaneDoe__factory, WrappedNative, WrappedNative__factory } from '../typechain-types'
 import { DEPLOYMENTS_FOLDER, USDC_ADDRESS, USDT_ADDRESS } from '../src/constants'
@@ -30,7 +31,7 @@ let btcPayer: BtcPayer
 
 const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz')
 const accountDao = dynamoContainer.resolve<AccountDao>('accountDao')
-const bitcoinWrapperService = commonContainer.resolve<BitcoinWrapperService>('bitcoinWrapperService')
+const bitcoinService = bitcoinContainer.resolve<BitcoinService>('bitcoinService')
 
 async function init() {
   accounts = await ethers.getSigners()
@@ -102,7 +103,7 @@ async function createAccount(account: HardhatEthersSigner, accountTemplate: stri
   }
 
   console.log(`Start to create bitcoin wallet for account id ${id} and address ${account.address}`)
-  await bitcoinWrapperService.createBitcoinWallet(id, false)
+  await bitcoinService.createWallet(id)
   console.log(`End to create bitcoin wallet for account id ${id} and address ${account.address}`)
 
   console.log(`End to create account for id ${id} and address ${account.address}`)

@@ -201,8 +201,8 @@ export class AccountController {
       assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
       assertParam('address', req.params.address, ADDRESS_MAX_LENGTH)
 
-      const result = await this.accountService.withdraw(req.params.id, req.params.blockchain, req.params.address)
-      res.send(result)
+      const txid = await this.accountService.withdraw(req.params.id, req.params.blockchain, req.params.address)
+      res.send({ txid })
     } catch (err) {
       processControllerError(res, err as Error)
     }

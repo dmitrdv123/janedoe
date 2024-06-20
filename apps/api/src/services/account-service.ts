@@ -6,10 +6,9 @@ import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { AccountApiSettings, AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountSettings, AccountTeamSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
 import { AppSettings } from '@repo/dao/dist/src/interfaces/settings'
-
-import { WithdrawBitcoinWalletResult } from '@repo/common/dist/src/interfaces/bitcoin'
+import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
-import { BitcoinCoreError } from '@repo/common/dist/src/errors/bitcoin-core-error'
+import { BitcoinCoreError } from '@repo/bitcoin/dist/src/errors/bitcoin-core-error'
 
 import { BLOCKCHAIN_BTC, COMMON_SETTINGS_DEFAULT_CURRENCY, COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH } from '../constants'
 import { logger } from '../utils/logger'
@@ -23,7 +22,6 @@ import { MetaService } from './meta-service'
 import { PaymentLogKey } from '../interfaces/payment-log'
 import { SettingsService } from './settings-service'
 import { ServiceError } from '../errors/service-error'
-import { BitcoinService } from './bitcoin-service'
 
 export interface AccountService {
   loadAccount(id: string): Promise<Account | undefined>
@@ -48,7 +46,7 @@ export interface AccountService {
   removeAccountApiKeySettings(id: string): Promise<void>
 
   balance(id: string, blockchain: string): Promise<number>
-  withdraw(id: string, blockchain: string, address: string): Promise<WithdrawBitcoinWalletResult>
+  withdraw(id: string, blockchain: string, address: string): Promise<string | undefined>
   sendIpn(ipnKey: IpnKey): Promise<IpnResult>
 
   loadPaymentHistory(id: string, filter: PaymentFilter, last: PaymentLogKey | undefined, size: number | undefined): Promise<PaymentHistoryResponse>
@@ -265,7 +263,7 @@ export class AccountServiceImpl implements AccountService {
     }
 
     await this.accountDao.saveAccount(account)
-    await this.bitcoinService.createBitcoinWallet(id, false)
+    await this.bitcoinService.createWallet(id)
 
     logger.debug('AccountService: end to create account')
     logger.debug(account)
@@ -374,13 +372,13 @@ export class AccountServiceImpl implements AccountService {
   public async balance(id: string, blockchain: string): Promise<number> {
     switch (blockchain.toLocaleLowerCase()) {
       case BLOCKCHAIN_BTC:
-        return await this.bitcoinService.getBitcoinBalance(id)
+        return await this.bitcoinService.getWalletBalance(id)
       default:
         throw new Error(`Unsupported blockchain ${blockchain}`)
     }
   }
 
-  public async withdraw(id: string, blockchain: string, address: string): Promise<WithdrawBitcoinWalletResult> {
+  public async withdraw(id: string, blockchain: string, address: string): Promise<string | undefined> {
     switch (blockchain.toLocaleLowerCase()) {
       case BLOCKCHAIN_BTC:
         const settings = await this.loadAccountSettings(id)
@@ -396,7 +394,7 @@ export class AccountServiceImpl implements AccountService {
         }
 
         try {
-          return await this.bitcoinService.withdrawBitcoin(id, address)
+          return await this.bitcoinService.withdraw(id, address)
         } catch (err) {
           if (err instanceof BitcoinCoreError) {
             const bitcoinCoreError = err as BitcoinCoreError

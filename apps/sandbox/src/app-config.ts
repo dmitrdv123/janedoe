@@ -49,10 +49,6 @@ export function createAppConfig() {
     throw new Error('BITCOIN_FEE_RPC is not set')
   }
 
-  if (!process.env.BITCOIN_CENTRAL_WALLET) {
-    throw new Error('BITCOIN_CENTRAL_WALLET is not set')
-  }
-
   if (!process.env.EXCHANGERATE_API_KEY) {
     throw new Error('EXCHANGERATE_API_KEY is not set')
   }
@@ -120,7 +116,6 @@ export function createAppConfig() {
     PINO_CONFIG: process.env.PINO_CONFIG,
     BITCOIN_RPC: process.env.BITCOIN_RPC,
     BITCOIN_FEE_RPC: process.env.BITCOIN_FEE_RPC,
-    BITCOIN_CENTRAL_WALLET: process.env.BITCOIN_CENTRAL_WALLET,
     TABLE_NAME: process.env.TABLE_NAME,
     TABLE_NAME_TIME_SERIES: process.env.TABLE_NAME_TIME_SERIES,
     TABLE_NAME_NOTIFICATION: process.env.TABLE_NAME_NOTIFICATION,

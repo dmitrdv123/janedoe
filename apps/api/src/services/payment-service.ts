@@ -2,6 +2,7 @@ import { Account } from '@repo/dao/dist/src/interfaces/account-profile'
 import { PaymentDao } from '@repo/dao/dist/src/dao/payment.dao'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { PaymentSuccessInfo } from '@repo/dao/dist/src/interfaces/payment-success-info'
+import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 
 import appConfig from '@repo/common/dist/src/app-config'
 
@@ -12,7 +13,6 @@ import { Wallet } from '../interfaces/wallet'
 import { PaymentHistory } from '../interfaces/payment-history'
 import { PaymentLogService } from './payment-log-service'
 import { AccountService } from './account-service'
-import { BitcoinService } from './bitcoin-service'
 
 export interface PaymentService {
   paymentSettings(id: string, paymentId: string): Promise<PaymentSettings>
@@ -118,14 +118,13 @@ export class PaymentServiceImpl implements PaymentService {
               const protocolPaymentId = id + paymentId
 
               logger.debug(`PaymentService: start to create bitcoin address for ${id} with protocols payment id ${protocolPaymentId}`)
-              const address = await this.bitcoinService.createBitcoinAddress(id, protocolPaymentId)
-              logger.debug(`PaymentService: bitcoin address ${address}`)
+              const walletAddress = await this.bitcoinService.createWalletAddress(id, protocolPaymentId)
+              logger.debug(`PaymentService: bitcoin address ${walletAddress.data.address}`)
 
-              logger.debug(`PaymentService: start to import bitcoin address ${address} to ${appConfig.BITCOIN_CENTRAL_WALLET} with label ${protocolPaymentId}`)
-              await this.bitcoinService.importBitcoinAddress(appConfig.BITCOIN_CENTRAL_WALLET, address, protocolPaymentId)
-              logger.debug('PaymentService: end to import bitcoin address')
-
-              wallet = { address, blockchain }
+              wallet = {
+                blockchain,
+                address: walletAddress.data.address
+              }
               break
             default:
               wallet = { blockchain, address: account.profile.address }

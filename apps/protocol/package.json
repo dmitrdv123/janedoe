@@ -23,6 +23,7 @@
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.0.1",
     "@openzeppelin/hardhat-upgrades": "^3.0.1",
+    "@repo/bitcoin": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/dao": "workspace:*",
     "@repo/dao-aws": "workspace:*",

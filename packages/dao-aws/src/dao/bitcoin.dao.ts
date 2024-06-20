@@ -105,7 +105,13 @@ export class BitcoinDaoImpl implements BitcoinDao {
     const result = await this.secretService.loadSecret(
       generateKeyWithSeparator('.', BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_PREFIX, walletName)
     )
-    return result ? JSON.parse(result) : undefined
+
+    return result
+      ? {
+        walletName,
+        data: JSON.parse(result)
+      }
+      : undefined
   }
 
   public async saveWalletAddress(walletAddress: BitcoinWalletAddress): Promise<void> {

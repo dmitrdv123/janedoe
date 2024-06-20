@@ -11,7 +11,7 @@ export interface BitcoinService {
   getWalletBalance(walletName: string): Promise<number>
   getWalletAddressBalance(walletName: string, label: string): Promise<number>
 
-  withdraw(walletName: string, address: string): Promise<void>
+  withdraw(walletName: string, address: string): Promise<string | undefined>
 }
 
 export class BitcoinServiceImpl implements BitcoinService {
@@ -71,7 +71,7 @@ export class BitcoinServiceImpl implements BitcoinService {
     return balance ?? 0
   }
 
-  public async withdraw(walletName: string, address: string): Promise<void> {
+  public async withdraw(walletName: string, address: string): Promise<string | undefined> {
     const wallet = await this.bitcoinDao.loadWallet(walletName)
     if (!wallet) {
       throw new Error(`Wallet ${walletName} not found`)
@@ -84,7 +84,7 @@ export class BitcoinServiceImpl implements BitcoinService {
 
     const utxos = await this.bitcoinDao.listUtxos(walletName)
     if (utxos.length === 0) {
-      return
+      return undefined
     }
 
     const walletAddresses = await Promise.all(
@@ -103,10 +103,12 @@ export class BitcoinServiceImpl implements BitcoinService {
       return acc
     }, [] as BitcoinWalletAddressData[])
     if (walletAddressData.length === 0) {
-      return
+      return undefined
     }
 
     const tx = this.bitcoinUtilsService.createTransaction(walletAddressData, utxos, address, feeRate)
     await this.bitcoinCoreService.sendTransaction(tx)
+
+    return tx.getId()
   }
 }

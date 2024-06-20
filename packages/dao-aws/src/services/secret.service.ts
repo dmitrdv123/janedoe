@@ -11,8 +11,16 @@ export class SecretServiceImpl implements SecretService {
   ) { }
 
   public async loadSecret(secretName: string): Promise<string | undefined> {
-    const data = await this.client.send(new GetSecretValueCommand({ SecretId: secretName }));
-    return data.SecretString
+    try {
+      const data = await this.client.send(new GetSecretValueCommand({ SecretId: secretName }));
+      return data.SecretString
+    } catch (error) {
+      if (error instanceof SecretsManagerServiceException && error.name === 'ResourceNotFoundException') {
+        return undefined
+      } else {
+        throw error
+      }
+    }
   }
 
   public async saveSecret(secretName: string, data: string): Promise<void> {
