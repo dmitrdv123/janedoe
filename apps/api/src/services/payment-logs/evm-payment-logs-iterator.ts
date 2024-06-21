@@ -58,6 +58,9 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
     logger.debug(`EvmPaymentLogsIteratorService: found ${events.length} events`)
 
     this.fromBlock = toBlock + BigInt(1)
+    if (events.length === 0) {
+      return []
+    }
 
     const tokensByTimestamp: TokenByTimestamp[] = events.map(
       event => ({

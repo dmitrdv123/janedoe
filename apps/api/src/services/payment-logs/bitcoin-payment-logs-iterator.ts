@@ -12,7 +12,7 @@ import { parseToBigNumber, tokenAmountToUsd } from '../../utils/utils'
 import { MetaService } from '../meta-service'
 
 export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
-  private blockhash: string = ''
+  private fromHeight: number = 0
 
   public constructor(
     private blockchain: BlockchainMeta,
@@ -22,47 +22,33 @@ export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
   }
 
   public lastProcessed(): string {
-    return this.blockhash
+    return this.fromHeight.toString()
   }
 
   public skip(lastProcessed: string): void {
-    this.blockhash = lastProcessed
+    this.fromHeight = parseInt(lastProcessed)
   }
 
   public async nextBatch(): Promise<PaymentLog[]> {
     logger.debug('BitcoinPaymentLogsIterator: start to process next batch')
 
-    let fromHeight = 0
-    let toHeight = 0
-
-    const lastProcessedBlock = await this.bitcoinBlockService.getLatestProcessedBlock()
-    if (!lastProcessedBlock) {
+    const toHeight = await this.bitcoinBlockService.getLatestProcessedBlockHeight()
+    if (toHeight === undefined) {
       logger.debug('BitcoinPaymentLogsIterator: skip batch since last processed block not found')
       return []
     }
-    toHeight = lastProcessedBlock.height
 
-    if (this.blockhash) {
-      const block = await this.bitcoinBlockService.getProcessedBlock(this.blockhash)
-      if (!block) {
-        throw new Error(`Block ${this.blockhash} not found`)
-      }
-      fromHeight = block.height + 1
-    } else {
-      fromHeight = 0
-    }
-
-    if (fromHeight > toHeight) {
-      logger.debug(`BitcoinPaymentLogsIterator: skip batch since from block height ${fromHeight} is more than to block height ${toHeight}`)
+    if (this.fromHeight > toHeight) {
+      logger.debug(`BitcoinPaymentLogsIterator: skip batch since from block height ${this.fromHeight} is more than to block height ${toHeight}`)
       return []
     }
 
-    logger.debug(`BitcoinPaymentLogsIterator: start to list transactions from block height ${fromHeight} to block height ${toHeight}`)
-    const transactionOutputs = await this.bitcoinBlockService.listBlockTransactionOutputs(fromHeight, toHeight)
+    logger.debug(`BitcoinPaymentLogsIterator: start to list transactions from block height ${this.fromHeight} to block height ${toHeight}`)
+    const transactionOutputs = await this.bitcoinBlockService.listBlockTransactionOutputs(this.fromHeight, toHeight)
     logger.debug(`BitcoinPaymentLogsIterator: found ${transactionOutputs.length} transactions`)
 
-    this.blockhash = lastProcessedBlock.hash
-    if (!transactionOutputs.length) {
+    this.fromHeight = toHeight + 1
+    if (transactionOutputs.length === 0) {
       return []
     }
 

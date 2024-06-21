@@ -1,17 +1,16 @@
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinBlock, BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
 import appConfig from '@repo/common/dist/src/app-config'
 
-import { batchWriteItemsByChunks, generateKey, generateKeyWithSeparator, queryItems } from '../utils/dynamo-utils'
+import { batchWriteItemsByChunks, generateKey, generateKeyForSecret, queryItems } from '../utils/dynamo-utils'
 import { DynamoService } from '../services/dynamo.service'
 import { SecretService } from '../services/secret.service'
 
 export class BitcoinDaoImpl implements BitcoinDao {
   private static readonly PK_PREFIX = 'bitcoin'
-  private static readonly PK_BLOCK_PREFIX = 'block_processed'
-  private static readonly PK_LATEST_PROCESSED_BLOCK_PREFIX = 'block_processed_latest'
+  private static readonly PK_LATEST_PROCESSED_BLOCK_HEIGHT_PREFIX = 'block_processed_height_latest'
   private static readonly PK_FEE_RATE_PREFIX = 'fee_rate'
   private static readonly PK_WALLET_PREFIX = 'wallet'
   private static readonly PK_WALLET_ADDRESS_PREFIX = 'wallet_address'
@@ -28,48 +27,26 @@ export class BitcoinDaoImpl implements BitcoinDao {
     private secretService: SecretService
   ) { }
 
-  public async saveProcessedBlock(block: BitcoinBlock): Promise<void> {
+  public async saveLatestProcessedBlockHeight(height: number): Promise<void> {
     await this.dynamoService.putItem({
       TableName: appConfig.TABLE_NAME,
       Item: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_BLOCK_PREFIX, block.hash),
-        sk: block.hash,
-        block
+        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_LATEST_PROCESSED_BLOCK_HEIGHT_PREFIX),
+        sk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_LATEST_PROCESSED_BLOCK_HEIGHT_PREFIX),
+        height
       })
     })
   }
 
-  public async loadProcessedBlock(blockhash: string): Promise<BitcoinBlock | undefined> {
+  public async loadLatestProcessedBlockHeight(): Promise<number | undefined> {
     const result = await this.dynamoService.readItem({
       TableName: appConfig.TABLE_NAME,
       Key: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_BLOCK_PREFIX, blockhash),
-        sk: blockhash,
+        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_LATEST_PROCESSED_BLOCK_HEIGHT_PREFIX),
+        sk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_LATEST_PROCESSED_BLOCK_HEIGHT_PREFIX)
       })
     })
-    return result.Item ? unmarshall(result.Item).block as BitcoinBlock : undefined
-  }
-
-  public async saveLatestProcessedBlock(block: BitcoinBlock): Promise<void> {
-    await this.dynamoService.putItem({
-      TableName: appConfig.TABLE_NAME,
-      Item: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_LATEST_PROCESSED_BLOCK_PREFIX),
-        sk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_LATEST_PROCESSED_BLOCK_PREFIX),
-        block
-      })
-    })
-  }
-
-  public async loadLatestProcessedBlock(): Promise<BitcoinBlock | undefined> {
-    const result = await this.dynamoService.readItem({
-      TableName: appConfig.TABLE_NAME,
-      Key: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_LATEST_PROCESSED_BLOCK_PREFIX),
-        sk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_LATEST_PROCESSED_BLOCK_PREFIX)
-      })
-    })
-    return result.Item ? unmarshall(result.Item).block as BitcoinBlock : undefined
+    return result.Item ? unmarshall(result.Item).height as number : undefined
   }
 
   public async saveFeeRate(feeRate: number): Promise<void> {
@@ -96,14 +73,14 @@ export class BitcoinDaoImpl implements BitcoinDao {
 
   public async saveWallet(wallet: BitcoinWallet): Promise<void> {
     await this.secretService.saveSecret(
-      generateKeyWithSeparator('.', BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_PREFIX, wallet.walletName),
+      generateKeyForSecret(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_PREFIX, wallet.walletName),
       JSON.stringify(wallet.data)
     )
   }
 
   public async loadWallet(walletName: string): Promise<BitcoinWallet | undefined> {
     const result = await this.secretService.loadSecret(
-      generateKeyWithSeparator('.', BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_PREFIX, walletName)
+      generateKeyForSecret(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_PREFIX, walletName)
     )
 
     return result
@@ -128,11 +105,11 @@ export class BitcoinDaoImpl implements BitcoinDao {
         })
       }),
       this.secretService.saveSecret(
-        generateKeyWithSeparator('.', BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BY_NAME_PREFIX, walletAddress.walletName, walletAddress.label),
+        generateKeyForSecret(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BY_NAME_PREFIX, walletAddress.walletName, walletAddress.label),
         JSON.stringify(walletAddress.data)
       ),
       this.secretService.saveSecret(
-        generateKeyWithSeparator('.', BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BY_ADDRESS_PREFIX, walletAddress.data.address),
+        generateKeyForSecret(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BY_ADDRESS_PREFIX, walletAddress.data.address),
         JSON.stringify(walletAddress)
       )
     ])
@@ -140,7 +117,7 @@ export class BitcoinDaoImpl implements BitcoinDao {
 
   public async loadWalletAddress(walletName: string, label: string): Promise<BitcoinWalletAddress | undefined> {
     const dataSecret = await this.secretService.loadSecret(
-      generateKeyWithSeparator('.', BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BY_NAME_PREFIX, walletName, label)
+      generateKeyForSecret(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BY_NAME_PREFIX, walletName, label)
     )
 
     return dataSecret
@@ -154,7 +131,7 @@ export class BitcoinDaoImpl implements BitcoinDao {
 
   public async loadWalletAddressByAddress(address: string): Promise<BitcoinWalletAddress | undefined> {
     const dataSecret = await this.secretService.loadSecret(
-      generateKeyWithSeparator('.', BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BY_ADDRESS_PREFIX, address)
+      generateKeyForSecret(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BY_ADDRESS_PREFIX, address)
     )
 
     return dataSecret ? JSON.parse(dataSecret) : undefined

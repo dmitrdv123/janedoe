@@ -1,10 +1,8 @@
-import { BitcoinBlock, BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } from '../interfaces/bitcoin'
+import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } from '../interfaces/bitcoin'
 
 export interface BitcoinDao {
-  saveProcessedBlock(block: BitcoinBlock): Promise<void>
-  loadProcessedBlock(blockhash: string): Promise<BitcoinBlock | undefined>
-  loadLatestProcessedBlock(): Promise<BitcoinBlock | undefined>
-  saveLatestProcessedBlock(block: BitcoinBlock): Promise<void>
+  loadLatestProcessedBlockHeight(): Promise<number | undefined>
+  saveLatestProcessedBlockHeight(height: number): Promise<void>
 
   saveFeeRate(feeRate: number): Promise<void>
   loadFeeRate(): Promise<number | undefined>

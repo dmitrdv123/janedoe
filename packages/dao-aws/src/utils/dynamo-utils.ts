@@ -5,11 +5,11 @@ import { DynamoService } from '../services/dynamo.service'
 import { unmarshall } from '@aws-sdk/util-dynamodb'
 
 export function generateKey(...args: unknown[]): string {
-  return generateKeyWithSeparator('#', args)
+  return args.map(item => !!item || item === 0 ? item : '').join('#')
 }
 
-export function generateKeyWithSeparator(separator: string, ...args: unknown[]): string {
-  return args.map(item => !!item || item === 0 ? item : '').join(separator)
+export function generateKeyForSecret(...args: unknown[]): string {
+  return args.map(item => !!item || item === 0 ? item : '').join('.')
 }
 
 export async function batchWriteItemsByChunks(dynamoService: DynamoService, tableName: string, requests: WriteRequest[]): Promise<void> {

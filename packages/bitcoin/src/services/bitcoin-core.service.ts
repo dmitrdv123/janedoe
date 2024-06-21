@@ -5,18 +5,17 @@ import { BitcoinBlock, BitcoinTransaction } from '@repo/dao/dist/src/interfaces/
 import appConfig from '@repo/common/dist/src/app-config'
 
 export interface BitcoinCoreService {
-  getLatestBlockheight(): Promise<number>
+  getLatestBlockHeight(): Promise<number>
   getBlockhash(height: number): Promise<string>
   getBlockByHash(blockhash: string): Promise<BitcoinBlock>
-  getTransaction(txid: string): Promise<BitcoinTransaction>
   sendTransaction(tx: bitcoin.Transaction): Promise<void>
-  getFeeRate(blockcount: number): Promise<number>
+  getFeeRate(blockcount: number): Promise<number | undefined>
 }
 
 export class BitcoinCoreServiceImpl implements BitcoinCoreService {
   public constructor() { }
 
-  public async getLatestBlockheight(): Promise<number> {
+  public async getLatestBlockHeight(): Promise<number> {
     bitcoin.Block
     const data = {
       "jsonrpc": "1.0",
@@ -50,17 +49,6 @@ export class BitcoinCoreServiceImpl implements BitcoinCoreService {
     return response.data.result
   }
 
-  public async getTransaction(txid: string): Promise<BitcoinTransaction> {
-    const data = {
-      "jsonrpc": "1.0",
-      "id": "curltest",
-      "method": "getrawtransaction",
-      "params": [txid, 2]
-    }
-    const response = await axios.post(appConfig.BITCOIN_RPC, data)
-    return response.data.result
-  }
-
   public async sendTransaction(tx: bitcoin.Transaction): Promise<void> {
     const data = {
       "jsonrpc": "1.0",
@@ -71,8 +59,9 @@ export class BitcoinCoreServiceImpl implements BitcoinCoreService {
     await axios.post(appConfig.BITCOIN_RPC, data)
   }
 
-  public async getFeeRate(blockcount: number): Promise<number> {
+  public async getFeeRate(blockcount: number): Promise<number | undefined> {
     const response = await axios.get(appConfig.BITCOIN_FEE_RPC)
-    return response.data[blockcount.toString()]
+    const feeRate = response.data[blockcount.toString()]
+    return feeRate ?? undefined
   }
 }

@@ -12,9 +12,7 @@ import { BitcoinServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin.serv
 import { BitcoinUtilsServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-utils.service'
 import { BitcoinBlockServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
 
-import { BitcoinBlockTask } from './task/bitcoin-block.task'
 import { createAppConfig } from './app-config'
-import { BitcoinPaymentLogsIterator } from './services/payment-logs/bitcoin-payment-logs.iterator'
 import { SecretServiceImpl } from '@repo/dao-aws/dist/src/services/secret.service'
 
 createAppConfig()
@@ -26,29 +24,6 @@ const bitcoinUtilsService = new BitcoinUtilsServiceImpl(bitcoin.networks.regtest
 const bitcoinCoreService = new BitcoinCoreServiceImpl()
 const bitcoinService = new BitcoinServiceImpl(bitcoinCoreService, bitcoinUtilsService, bitcoinDao)
 const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, bitcoinDao)
-const bitcoinBlockTask = new BitcoinBlockTask(bitcoinBlockService, 10)
-const bitcoinPaymentLogsIterator = new BitcoinPaymentLogsIterator(bitcoinBlockService)
-
-async function bitcoinPaymentLogsIteratorTests() {
-  const fromBlockhash = '19114c57a0cb0767db048946c5a37831f8d129a565a17fc4a68aa9b17611995c'
-  const toBlockhash = '79a59a33033fd03215ad20dce1a8720a14c35fcf1b4c2c8f3bedd2fb5d1ca148'
-
-  const block = await bitcoinBlockService.getBlock(toBlockhash)
-  await bitcoinBlockService.updateLatestProcessedBlock(block)
-
-  bitcoinPaymentLogsIterator.skip(fromBlockhash)
-  await bitcoinPaymentLogsIterator.nextBatch()
-  await bitcoinPaymentLogsIterator.nextBatch()
-}
-
-async function bitcoinBlockTaskTests() {
-  const blockhash = '19114c57a0cb0767db048946c5a37831f8d129a565a17fc4a68aa9b17611995c'
-
-  const block = await bitcoinBlockService.getBlock(blockhash)
-  await bitcoinBlockService.updateLatestProcessedBlock(block)
-
-  await bitcoinBlockTask.run()
-}
 
 async function bitcoinCoreServiceTests() {
   const feeRate = await bitcoinCoreService.getFeeRate(3)
@@ -148,29 +123,26 @@ async function bitcoinBlockServiceTests() {
   const loadedBlockheight1 = await bitcoinBlockService.getBlockhash(blockheight1)
   console.log(`loaded blockhash for height ${blockheight1}: ${loadedBlockheight1}`)
 
-  const loadedLatestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlock()
+  const loadedLatestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlockHeight()
   console.log(`loaded latest processed block: ${JSON.stringify(loadedLatestProcessedBlock)}`)
-
-  const loadedProcessedBlock1 = await bitcoinBlockService.getProcessedBlock(blockhash1)
-  console.log(`loaded processed block for ${blockhash1}: ${JSON.stringify(loadedProcessedBlock1)}`)
 
   const transactionOutputs = await bitcoinBlockService.listBlockTransactionOutputs(0, 1599)
   console.log(`loaded transaction outputs from ${fromBlockheight} to ${toBlockheight}: ${JSON.stringify(transactionOutputs)}`)
 
-  let latestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlock()
-  console.log(`latest processed blockhash: ${latestProcessedBlock?.hash}`)
+  let latestProcessedBlockHeight = await bitcoinBlockService.getLatestProcessedBlockHeight()
+  console.log(`latest processed blockhash: ${latestProcessedBlockHeight}`)
 
   await bitcoinBlockService.processBlock(block1)
   console.log(`block ${block1.hash} processed`)
 
-  latestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlock()
-  console.log(`latest processed blockhash: ${latestProcessedBlock?.hash}`)
+  latestProcessedBlockHeight = await bitcoinBlockService.getLatestProcessedBlockHeight()
+  console.log(`latest processed blockhash: ${latestProcessedBlockHeight}`)
 
   await bitcoinBlockService.processBlock(block2)
   console.log(`block ${block2.hash} processed`)
 
-  latestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlock()
-  console.log(`loaded latest processed block: ${latestProcessedBlock?.hash}`)
+  latestProcessedBlockHeight = await bitcoinBlockService.getLatestProcessedBlockHeight()
+  console.log(`loaded latest processed block: ${latestProcessedBlockHeight}`)
 }
 
 async function bitcoinDaoTests() {

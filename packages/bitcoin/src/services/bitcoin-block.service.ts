@@ -8,10 +8,11 @@ import { BITCOIN_DECIMALS } from '../constants'
 export interface BitcoinBlockService {
   getBlock(blockhash: string): Promise<BitcoinBlock>
   getBlockhash(height: number): Promise<string>
-  getProcessedBlock(blockhash: string): Promise<BitcoinBlock | undefined>
-  getLatestProcessedBlock(): Promise<BitcoinBlock | undefined>
-  updateLatestProcessedBlock(block: BitcoinBlock): Promise<void>
+  getLatestBlockHeight(): Promise<number>
+  getLatestProcessedBlockHeight(): Promise<number | undefined>
+  updateLatestProcessedBlockHeight(height: number): Promise<void>
   listBlockTransactionOutputs(fromHeight: number, toHeight: number): Promise<BitcoinTransactionOutput[]>
+  refreshFeeRate(): Promise<boolean>
   processBlock(block: BitcoinBlock): Promise<void>
 }
 
@@ -29,25 +30,34 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
     return await this.bitcoinCoreService.getBlockhash(height)
   }
 
-  public async getProcessedBlock(blockhash: string): Promise<BitcoinBlock | undefined> {
-    return await this.bitcoinDao.loadProcessedBlock(blockhash)
+  public async getLatestBlockHeight(): Promise<number> {
+    return await this.bitcoinCoreService.getLatestBlockHeight()
   }
 
-  public async getLatestProcessedBlock(): Promise<BitcoinBlock | undefined> {
-    return await this.bitcoinDao.loadLatestProcessedBlock()
+  public async getLatestProcessedBlockHeight(): Promise<number | undefined> {
+    return await this.bitcoinDao.loadLatestProcessedBlockHeight()
   }
 
-  public async updateLatestProcessedBlock(block: BitcoinBlock): Promise<void> {
-    await this.bitcoinDao.saveLatestProcessedBlock(block)
+  public async updateLatestProcessedBlockHeight(height: number): Promise<void> {
+    await this.bitcoinDao.saveLatestProcessedBlockHeight(height)
   }
 
   public async listBlockTransactionOutputs(fromHeight: number, toHeight: number): Promise<BitcoinTransactionOutput[]> {
     return await this.bitcoinDao.listTransactionOutputs(fromHeight, toHeight)
   }
 
-  public async processBlock(block: BitcoinBlock): Promise<void> {
+  public async refreshFeeRate(): Promise<boolean> {
     const feeRate = await this.bitcoinCoreService.getFeeRate(3)
 
+    if (feeRate) {
+      await this.bitcoinDao.saveFeeRate(feeRate)
+      return true
+    } else {
+      return false
+    }
+  }
+
+  public async processBlock(block: BitcoinBlock): Promise<void> {
     const utxoDataKeysForDelete = this.processVins(block)
     const transactionOutputs = await this.processVouts(block)
 
@@ -80,8 +90,6 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
     if (walletNames.length > 0) {
       await this.updateBalances(walletNames)
     }
-    await this.bitcoinDao.saveFeeRate(feeRate)
-    await this.bitcoinDao.saveProcessedBlock(block)
   }
 
   private async updateBalances(walletNames: string[]): Promise<void> {

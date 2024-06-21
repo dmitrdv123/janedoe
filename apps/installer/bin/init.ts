@@ -6,6 +6,7 @@ import * as path from 'path'
 
 import { AppSettings, AppSettingsBlockchain, AppSettingsContracts, AppSettingsCurrency } from '@repo/dao/dist/src/interfaces/settings'
 import { SettingsDao } from '@repo/dao/dist/src/dao/settings.dao'
+import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
 import { AccountPaymentSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 import { daoContainer as dynamoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 import { initAppConfig } from '@repo/common/dist/src/app-config'
@@ -84,7 +85,8 @@ async function saveSettings(): Promise<void> {
 
   await Promise.all([
     saveAppSettings(contracts),
-    saveBlockchainSettings(contracts, evmClientConfigs),
+    saveEvmBlockchainSettings(contracts, evmClientConfigs),
+    saveBitcoinBlockchainSettings(),
     saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs)
   ])
 
@@ -114,34 +116,12 @@ async function saveAppSettings(contracts: AppSettingsContracts[]): Promise<void>
   await settingsDao.saveSettings(appSettings, APP_SETTINGS_PREFIX)
 }
 
-async function saveBlockchainSettings(contracts: AppSettingsContracts[], evmClientConfigs: BlockchainEvmClientConfig[]): Promise<void> {
+async function saveEvmBlockchainSettings(contracts: AppSettingsContracts[], evmClientConfigs: BlockchainEvmClientConfig[]): Promise<void> {
   const settingsDao = dynamoContainer.resolve<SettingsDao>('settingsDao')
   const evmService = evmContainer.resolve<EvmService>('evmService')
-  const bitcoinCoreService = bitcoinContainer.resolve<BitcoinCoreService>('bitcoinCoreService')
 
-  await Promise.all([
-    async () => {
-      let shouldSave = false
-      if (process.env.IS_DEV) {
-        shouldSave = true
-      } else {
-        const existingSettings = await settingsDao.loadSettings<BlockchainSettings>(BLOCKCHAIN_SETTINGS_PREFIX, BLOCKCHAIN_BTC)
-        shouldSave = !existingSettings
-      }
-
-      if (shouldSave) {
-        const latestBitcoinBlockHeight = await bitcoinCoreService.getLatestBlockheight()
-        const latestBitcoinBlockhash = await bitcoinCoreService.getBlockhash(latestBitcoinBlockHeight)
-
-        const blockchainSettings: BlockchainSettings = {
-          blockchain: BLOCKCHAIN_BTC,
-          block: latestBitcoinBlockhash
-        }
-
-        await settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, BLOCKCHAIN_BTC)
-      }
-    },
-    ...contracts
+  await Promise.all(
+    contracts
       .map(async contract => {
         let shouldSave = false
         if (process.env.IS_DEV) {
@@ -162,7 +142,35 @@ async function saveBlockchainSettings(contracts: AppSettingsContracts[], evmClie
           await settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
         }
       })
-  ])
+  )
+}
+
+async function saveBitcoinBlockchainSettings(): Promise<void> {
+  const settingsDao = dynamoContainer.resolve<SettingsDao>('settingsDao')
+  const bitcoinCoreService = bitcoinContainer.resolve<BitcoinCoreService>('bitcoinCoreService')
+  const bitcoinDao = dynamoContainer.resolve<BitcoinDao>('bitcoinDao')
+
+  let shouldSave = false
+  if (process.env.IS_DEV) {
+    shouldSave = true
+  } else {
+    const existingSettings = await settingsDao.loadSettings<BlockchainSettings>(BLOCKCHAIN_SETTINGS_PREFIX, BLOCKCHAIN_BTC)
+    shouldSave = !existingSettings
+  }
+
+  if (shouldSave) {
+    const latestBitcoinBlockHeight = await bitcoinCoreService.getLatestBlockHeight()
+
+    const blockchainSettings: BlockchainSettings = {
+      blockchain: BLOCKCHAIN_BTC,
+      block: latestBitcoinBlockHeight.toString()
+    }
+
+    await Promise.all([
+      settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, BLOCKCHAIN_BTC),
+      bitcoinDao.saveLatestProcessedBlockHeight(latestBitcoinBlockHeight)
+    ])
+  }
 }
 
 async function saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs: BlockchainEvmClientConfig[]): Promise<void> {
