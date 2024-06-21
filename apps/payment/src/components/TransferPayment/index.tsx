@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Col, Row, Spinner } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
-import { currencyToTokenAmount, isNativeToken } from '../../libs/utils'
+import { currencyToTokenAmount, isNativeToken, roundNumber } from '../../libs/utils'
 import { useExchangeRate, usePaymentSettings, useTokens } from '../../states/settings/hook'
 import usePaymentData from '../../libs/hooks/usePaymentData'
 import EmailInput from './components/EmailInput'
@@ -12,9 +12,10 @@ import AddressInput from './components/AddressInput'
 import PayLink from './components/PayLink'
 import StatusButton from './components/StatusButton'
 import { useInfoMessages } from '../../states/application/hook'
-import { INFO_MESSAGE_NATIVE_TOKEN_NOT_FOUND_ERROR, INFO_MESSAGE_TOKEN_PRICE_NOT_DEFINED_ERROR, INFO_MESSAGE_WALLET_NOT_FOUND_ERROR } from '../../constants'
+import { DEFAULT_CURRENCY_DECIMAL_PLACES, INFO_MESSAGE_NATIVE_TOKEN_NOT_FOUND_ERROR, INFO_MESSAGE_TOKEN_PRICE_NOT_DEFINED_ERROR, INFO_MESSAGE_WALLET_NOT_FOUND_ERROR } from '../../constants'
 import { useInterval } from '../../libs/hooks/useInterval'
 import usePaymentRestAmount from '../../libs/hooks/usePaymentRestAmount'
+import useNavigateSuccess from '../../libs/hooks/useNavigateSuccess'
 
 interface TransferPaymentProps {
   blockchain: BlockchainMeta
@@ -38,6 +39,7 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
   const paymentSettings = usePaymentSettings()
   const exchangeRate = useExchangeRate()
   const tokens = useTokens()
+  const navigateSuccessHandler = useNavigateSuccess(blockchain?.name, email)
   const {
     restCurrencyAmount: restCurrencyAmountUpdated,
     receivedCurrencyAmount: receivedCurrencyAmountUpdated,
@@ -95,6 +97,12 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
       setRestCurrencyAmount(restCurrencyAmountUpdated)
     }
   }, [reloadReceivedAmountStatus, restCurrencyAmountUpdated])
+
+  useEffect(() => {
+    if (roundNumber(restCurrencyAmount, DEFAULT_CURRENCY_DECIMAL_PLACES) === 0) {
+      navigateSuccessHandler()
+    }
+  }, [restCurrencyAmount, navigateSuccessHandler])
 
   useEffect(() => {
     if (!token?.usdPrice || !exchangeRate) {
