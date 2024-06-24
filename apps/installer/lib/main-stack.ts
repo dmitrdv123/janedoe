@@ -566,7 +566,7 @@ function handler(event) {
             IS_DEV: env('IS_DEV'),
             APP_NAME: env('APP_NAME'),
             APP_URL: `https://${output.cloudfrontLanding?.distributionDomainName}` ?? '',
-            STATUS_PAGE_URL: `https://${output.cloudfrontPayment?.distributionDomainName}` ?? '',
+            PAYMENT_URL: `https://${output.cloudfrontPayment?.distributionDomainName}` ?? '',
             SUPPORT_URL: `https://${output.cloudfrontSupport?.distributionDomainName}` ?? '',
             PINO_CONFIG: env('PINO_CONFIG'),
             TABLE_NAME: output.tableData?.tableName ?? '',

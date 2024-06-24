@@ -15,7 +15,7 @@ import { DEFAULT_FIAT_DECIMAL_PLACES } from '../constants'
 
 export function assertParam(name: string, value: string | null | undefined, maxLength?: number): void {
   if (isNullOrEmptyOrWhitespaces(value)) {
-    throw new ServiceError(`${name} is not set or empty`, 'common.param_not_set')
+    throw new ServiceError(`${name} is not set or empty`, 'common.errors.param_not_set')
   }
 
   if (maxLength) {

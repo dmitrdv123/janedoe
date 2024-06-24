@@ -47,7 +47,7 @@ export class EmailTemplateServiceImpl implements EmailTemplateService {
     const body = templateReceipt
       .replaceAll('${app_name}', appConfig.APP_NAME)
       .replaceAll('${app_url}', appConfig.APP_URL)
-      .replaceAll('${status_page_url}', `${appConfig.STATUS_PAGE_URL}/status/${id}/${paymentId}/${currency}/${amountCurrency}`)
+      .replaceAll('${status_page_url}', `${appConfig.PAYMENT_URL}/status/${id}/${paymentId}/${currency}/${amountCurrency}`)
       .replaceAll('${id}', id)
       .replaceAll('${description}', description)
       .replaceAll('${payment_id}', paymentId)

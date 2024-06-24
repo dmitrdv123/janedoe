@@ -33,8 +33,8 @@ export function createAppConfig() {
     throw new Error('APP_URL is not set')
   }
 
-  if (!process.env.STATUS_PAGE_URL) {
-    throw new Error('STATUS_PAGE_URL is not set')
+  if (!process.env.PAYMENT_URL) {
+    throw new Error('PAYMENT_URL is not set')
   }
 
   if (!process.env.SUPPORT_URL) {
@@ -110,7 +110,7 @@ export function createAppConfig() {
     EMAIL_CONFIG: process.env.EMAIL_CONFIG,
     APP_NAME: process.env.APP_NAME,
     APP_URL: process.env.APP_URL,
-    STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
+    PAYMENT_URL: process.env.PAYMENT_URL,
     SUPPORT_URL: process.env.SUPPORT_URL,
     EXCHANGERATE_API_KEY: process.env.EXCHANGERATE_API_KEY,
     PINO_CONFIG: process.env.PINO_CONFIG,
