@@ -21,6 +21,7 @@ const Contracts: React.FC = () => {
         const blockchain = findBlockchainByName(blockchainsToUse, contract.blockchain)
 
         return Object.keys(contract.contractAddresses)
+          .filter(key => key.toLocaleLowerCase() !== 'rangoreceiver')
           .sort()
           .map(key => (
             <tr key={[contract.blockchain, key].join('_')}>
@@ -57,10 +58,6 @@ const Contracts: React.FC = () => {
           </p>
 
           <p>
-            RangoReceiver - contract to receive and transfer payments with token conversions to JaneDoe contract.
-          </p>
-
-          <p>
             WrappedNative - contract based on the <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-20" target='blank'>ERC20 standard</a>. It is wrapper around blockchain native currency.
           </p>
         </>
@@ -70,10 +67,6 @@ const Contracts: React.FC = () => {
         <>
           <p>
             JaneDoe - основной контракт на основе <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>стандарта ERC1155</a>. Он хранит ваши средства.
-          </p>
-
-          <p>
-            RangoReceiver - контракт для получения и передачи платежей с конвертацией токенов в контракт JaneDoe.
           </p>
 
           <p>
