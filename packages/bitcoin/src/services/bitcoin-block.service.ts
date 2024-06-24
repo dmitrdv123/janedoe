@@ -2,8 +2,6 @@ import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
 import { BitcoinBlock, BitcoinTransaction, BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinVout } from '@repo/dao/dist/src/interfaces/bitcoin'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
-import { convertBigIntToFloat, parseToBigNumber } from '../utils/bitcoin-utils'
-import { BITCOIN_DECIMALS } from '../constants'
 
 export interface BitcoinBlockService {
   getBlock(blockhash: string): Promise<BitcoinBlock>
@@ -76,8 +74,6 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
     const filteredUtxoDataKeysForDelete = this.filterUtxoKeys(utxosForSave, utxoDataKeysForDelete)
     const filteredUtxosForSave = this.filterUtxos(utxosForSave, utxoDataKeysForDelete)
 
-    const walletNames = await this.changedWalletNames(filteredUtxoDataKeysForDelete, filteredUtxosForSave)
-
     if (transactionOutputs.length > 0) {
       await this.bitcoinDao.saveTransactionOutputs(transactionOutputs)
     }
@@ -85,65 +81,8 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
       await this.bitcoinDao.deleteUtxos(filteredUtxoDataKeysForDelete)
     }
     if (filteredUtxosForSave.length > 0) {
-      await this.bitcoinDao.saveUtxos(filteredUtxosForSave)
+      await this.bitcoinDao.saveUtxos(filteredUtxosForSave, true)
     }
-    if (walletNames.length > 0) {
-      await this.updateBalances(walletNames)
-    }
-  }
-
-  private async updateBalances(walletNames: string[]): Promise<void> {
-    await Promise.all(
-      walletNames.map(walletName => this.updateBalance(walletName))
-    )
-  }
-
-  private async updateBalance(walletName: string): Promise<void> {
-    const [walletAddressLabels, utxos] = await Promise.all([
-      await this.bitcoinDao.listWalletAddressLabels(walletName),
-      await this.bitcoinDao.listUtxos(walletName)
-    ])
-
-    const amountByLabel = walletAddressLabels.reduce((acc, label) => {
-      acc[label] = BigInt(0)
-      return acc
-    }, {} as { [key: string]: bigint })
-
-    let totalAmount = BigInt(0)
-    const amountByLabelResult = utxos.reduce((acc, utxo) => {
-      if (!acc[utxo.label]) {
-        acc[utxo.label] = BigInt(0)
-      }
-
-      const delta = parseToBigNumber(utxo.data.amount, BITCOIN_DECIMALS)
-      totalAmount += delta
-      acc[utxo.label] += delta
-
-      return acc
-    }, amountByLabel)
-
-    await Promise.all(
-      [
-        this.bitcoinDao.saveWalletBalance(walletName, convertBigIntToFloat(totalAmount, BITCOIN_DECIMALS)),
-        ...Object.entries(amountByLabelResult)
-          .map(([label, amount]) =>
-            this.bitcoinDao.saveWalletAddressBalance(walletName, label, convertBigIntToFloat(amount, BITCOIN_DECIMALS))
-          )
-      ]
-    )
-  }
-
-  private async changedWalletNames(dataKeysForDelete: BitcoinUtxoDataKey[], utxosForSave: BitcoinUtxo[]): Promise<string[]> {
-    const transactionOutputs = await Promise.all(
-      dataKeysForDelete.map(async key => this.bitcoinDao.loadTransactionOutput(key.txid, key.vout))
-    )
-
-    const walletNames = [
-      ...transactionOutputs.map(item => item?.walletName).filter(item => !!item) as string[],
-      ...utxosForSave.map(utxo => utxo.walletName)
-    ]
-
-    return Array.from(new Set(walletNames))
   }
 
   private filterUtxos(utxos: BitcoinUtxo[], utxoDataKeys: BitcoinUtxoDataKey[]) {

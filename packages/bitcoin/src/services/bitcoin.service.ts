@@ -62,13 +62,11 @@ export class BitcoinServiceImpl implements BitcoinService {
   }
 
   public async getWalletBalance(walletName: string): Promise<number> {
-    const balance = await this.bitcoinDao.loadWalletBalance(walletName)
-    return balance ?? 0
+    return await this.bitcoinDao.loadWalletBalance(walletName)
   }
 
   public async getWalletAddressBalance(walletName: string, label: string): Promise<number> {
-    const balance = await this.bitcoinDao.loadWalletAddressBalance(walletName, label)
-    return balance ?? 0
+    return await this.bitcoinDao.loadWalletAddressBalance(walletName, label)
   }
 
   public async withdraw(walletName: string, address: string): Promise<string | undefined> {
@@ -82,7 +80,7 @@ export class BitcoinServiceImpl implements BitcoinService {
       throw new Error('Fee rate not found')
     }
 
-    const utxos = await this.bitcoinDao.listUtxos(walletName)
+    const utxos = await this.bitcoinDao.listWalletUtxos(walletName)
     if (utxos.length === 0) {
       return undefined
     }
@@ -108,6 +106,7 @@ export class BitcoinServiceImpl implements BitcoinService {
 
     const tx = this.bitcoinUtilsService.createTransaction(walletAddressData, utxos, address, feeRate)
     await this.bitcoinCoreService.sendTransaction(tx)
+    await this.bitcoinDao.saveUtxos(utxos, false)
 
     return tx.getId()
   }

@@ -164,14 +164,15 @@ export class BitcoinDaoImpl implements BitcoinDao {
     return result.Attributes ? unmarshall(result.Attributes).address_counter as number : 0
   }
 
-  public async saveUtxos(utxos: BitcoinUtxo[]): Promise<void> {
+  public async saveUtxos(utxos: BitcoinUtxo[], active: boolean): Promise<void> {
     const putRequests = utxos.map(utxo => ({
       PutRequest: {
         Item: marshall({
           pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, utxo.data.txid),
           sk: utxo.data.vout.toString(),
           gsi_pk1: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, utxo.walletName),
-          gsi_sk1: utxo.walletName,
+          gsi_sk1: utxo.label,
+          active,
           utxo
         })
       }
@@ -201,60 +202,49 @@ export class BitcoinDaoImpl implements BitcoinDao {
     )
   }
 
-  public async listUtxos(walletName: string): Promise<BitcoinUtxo[]> {
+  public async listWalletUtxos(walletName: string): Promise<BitcoinUtxo[]> {
+    return await queryItems(this.dynamoService, 'utxo', {
+      TableName: appConfig.TABLE_NAME,
+      IndexName: 'gsi_pk1-gsi_sk1-index',
+      KeyConditionExpression: 'gsi_pk1 = :pk',
+      FilterExpression: 'active = :active',
+      ExpressionAttributeValues: marshall({
+        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, walletName),
+        ':active': true
+      })
+    })
+  }
+
+  public async listWalletAddressUtxos(walletName: string, label: string): Promise<BitcoinUtxo[]> {
     return await queryItems(this.dynamoService, 'utxo', {
       TableName: appConfig.TABLE_NAME,
       IndexName: 'gsi_pk1-gsi_sk1-index',
       KeyConditionExpression: 'gsi_pk1 = :pk and gsi_sk1= :sk',
+      FilterExpression: 'active = :active',
       ExpressionAttributeValues: marshall({
         ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, walletName),
-        ':sk': walletName
+        ':sk': label,
+        ':active': true
       })
     })
   }
 
-  public async saveWalletBalance(walletName: string, amount: number): Promise<void> {
-    await this.dynamoService.putItem({
-      TableName: appConfig.TABLE_NAME,
-      Item: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_BALANCE_PREFIX, walletName),
-        sk: walletName,
-        amount
-      })
-    })
+  public async loadWalletBalance(walletName: string): Promise<number> {
+    const utxos = await this.listWalletUtxos(walletName)
+
+    return utxos.reduce((acc, utxo) => {
+      acc += utxo.data.amount
+      return acc
+    }, 0)
   }
 
-  public async loadWalletBalance(walletName: string): Promise<number | undefined> {
-    const result = await this.dynamoService.readItem({
-      TableName: appConfig.TABLE_NAME,
-      Key: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_BALANCE_PREFIX, walletName),
-        sk: walletName,
-      })
-    })
-    return result.Item ? unmarshall(result.Item).amount as number : undefined
-  }
+  public async loadWalletAddressBalance(walletName: string, label: string): Promise<number> {
+    const utxos = await this.listWalletAddressUtxos(walletName, label)
 
-  public async saveWalletAddressBalance(rootWalletName: string, walletName: string, amount: number): Promise<void> {
-    await this.dynamoService.putItem({
-      TableName: appConfig.TABLE_NAME,
-      Item: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BALANCE_PREFIX, rootWalletName),
-        sk: walletName,
-        amount
-      })
-    })
-  }
-
-  public async loadWalletAddressBalance(rootWalletName: string, walletName: string): Promise<number | undefined> {
-    const result = await this.dynamoService.readItem({
-      TableName: appConfig.TABLE_NAME,
-      Key: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_BALANCE_PREFIX, rootWalletName),
-        sk: walletName,
-      })
-    })
-    return result.Item ? unmarshall(result.Item).amount as number : undefined
+    return utxos.reduce((acc, utxo) => {
+      acc += utxo.data.amount
+      return acc
+    }, 0)
   }
 
   public async saveTransactionOutputs(transactionOutputs: BitcoinTransactionOutput[]): Promise<void> {

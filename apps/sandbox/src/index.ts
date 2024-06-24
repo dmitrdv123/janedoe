@@ -224,7 +224,7 @@ async function main() {
   // await bitcoinServiceTests()
   // await bitcoinBlockServiceTests()
   // await transactionTests()
-  await bitcoinDaoTests()
+  // await bitcoinDaoTests()
 }
 
 main()
