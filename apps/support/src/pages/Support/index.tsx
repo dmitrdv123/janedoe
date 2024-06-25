@@ -145,7 +145,7 @@ const Support: React.FC = () => {
                   type="email"
                   placeholder={t('pages.support.email_placeholder')}
                   required
-                  defaultValue={email}
+                  value={email}
                   onChange={event => setEmail(event.target.value)}
                   isInvalid={!email || !/^[^\s@]+@[^\s@]+$/.test(email)}
                 />
@@ -158,39 +158,39 @@ const Support: React.FC = () => {
                 <>
                   <Form.Group className="mb-2" >
                     <Form.Label>{t('pages.support.from_wallet')}</Form.Label>
-                    <Form.Control type="text" placeholder={t('pages.support.from_wallet_placeholder')} defaultValue={from} onChange={event => setFrom(event.target.value)} />
+                    <Form.Control type="text" placeholder={t('pages.support.from_wallet_placeholder')} value={from} onChange={event => setFrom(event.target.value)} />
                   </Form.Group>
 
                   <Form.Group className="mb-2" >
                     <Form.Label>{t('pages.support.company_id')}</Form.Label>
-                    <Form.Control type="text" placeholder={t('pages.support.company_id_placeholder')} defaultValue={companyId} onChange={event => setCompanyId(event.target.value)} />
+                    <Form.Control type="text" placeholder={t('pages.support.company_id_placeholder')} value={companyId} onChange={event => setCompanyId(event.target.value)} />
                   </Form.Group>
 
                   <Form.Group className="mb-2" >
                     <Form.Label>{t('pages.support.payment_id')}</Form.Label>
-                    <Form.Control type="text" placeholder={t('pages.support.payment_id_placeholder')} defaultValue={paymentId} onChange={event => setPaymentId(event.target.value)} />
+                    <Form.Control type="text" placeholder={t('pages.support.payment_id_placeholder')} value={paymentId} onChange={event => setPaymentId(event.target.value)} />
                   </Form.Group>
 
                   <Form.Group className="mb-2" >
                     <Form.Label>{t('pages.support.blockchain')}</Form.Label>
-                    <Form.Control type="text" placeholder={t('pages.support.blockchain_placeholder')} defaultValue={blockchain} onChange={event => setBlockchain(event.target.value)} />
+                    <Form.Control type="text" placeholder={t('pages.support.blockchain_placeholder')} value={blockchain} onChange={event => setBlockchain(event.target.value)} />
                   </Form.Group>
 
                   <Form.Group className="mb-2" >
                     <Form.Label>{t('pages.support.token')}</Form.Label>
-                    <Form.Control type="text" placeholder={t('pages.support.token_placeholder')} defaultValue={token} onChange={event => setToken(event.target.value)} />
+                    <Form.Control type="text" placeholder={t('pages.support.token_placeholder')} value={token} onChange={event => setToken(event.target.value)} />
                   </Form.Group>
 
                   <Form.Group className="mb-2" >
                     <Form.Label>{t('pages.support.transaction')}</Form.Label>
-                    <Form.Control type="text" placeholder={t('pages.support.transaction_placeholder')} defaultValue={transaction} onChange={event => setTransaction(event.target.value)} />
+                    <Form.Control type="text" placeholder={t('pages.support.transaction_placeholder')} value={transaction} onChange={event => setTransaction(event.target.value)} />
                   </Form.Group>
                 </>
               )}
 
               <Form.Group className="mb-2" >
                 <Form.Label>{t('pages.support.desc')}</Form.Label>
-                <Form.Control as="textarea" rows={5} required defaultValue={desc} onChange={event => setDesc(event.target.value)} />
+                <Form.Control as="textarea" rows={5} required value={desc} onChange={event => setDesc(event.target.value)} />
                 <Form.Control.Feedback type="invalid">
                   {t('pages.support.desc_required')}
                 </Form.Control.Feedback>

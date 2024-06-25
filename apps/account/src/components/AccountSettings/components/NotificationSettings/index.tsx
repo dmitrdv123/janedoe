@@ -94,7 +94,7 @@ const NotificationSettings: React.FC = () => {
             <Form.Control
               type="url"
               placeholder={t('components.account_settings.notification_settings_url_placeholder')}
-              defaultValue={callbackUrlNotificationSettings}
+              value={callbackUrlNotificationSettings}
               onChange={event => setCallbackUrlNotificationSettings(event.target.value)}
               readOnly={!rbacSettings?.isOwner && rbacSettings?.permissions['notification_settings'] !== 'Modify'}
             />
@@ -112,7 +112,7 @@ const NotificationSettings: React.FC = () => {
               <Form.Control
                 type={showCallbackSecretKey ? "text" : "password"}
                 placeholder={t('components.account_settings.notification_settings_key_placeholder')}
-                defaultValue={secretKeyNotificationSettings}
+                value={secretKeyNotificationSettings}
                 onChange={event => setSecretKeyNotificationSettings(event.target.value)}
                 readOnly={!rbacSettings?.isOwner && rbacSettings?.permissions['notification_settings'] !== 'Modify'}
               />

@@ -31,7 +31,7 @@ const ApiSettings: React.FC = () => {
                 type={showApiKey ? "text" : "password"}
                 placeholder={t('components.account_settings.api_key_placeholder')}
                 readOnly
-                defaultValue={currentApiKey}
+                value={currentApiKey}
               />
               <Button variant="outline-secondary" onClick={() => setShowApiKey(!showApiKey)}>
                 {showApiKey ? t('common.hide_btn') : t('common.show_btn')}

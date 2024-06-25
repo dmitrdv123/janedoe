@@ -63,7 +63,7 @@ const TeamSettingsUser: React.FC<TeamSettingsUserProps> = (props) => {
             <Form.Control
               type="text"
               placeholder={t('components.account_settings.team_settings_wallet_placeholder')}
-              defaultValue={userSettings.address}
+              value={userSettings.address}
               onChange={event => changeAddressHandler(event.target.value)}
               readOnly={!rbacSettings?.isOwner && rbacSettings?.permissions['team_settings'] !== 'Modify'}
               isInvalid={addressErrors.length > 0}
@@ -104,7 +104,7 @@ const TeamSettingsUser: React.FC<TeamSettingsUserProps> = (props) => {
                   <Form.Label column sm="2">{t(`components.account_settings.team_settings_${key}`)} </Form.Label>
                   <Col sm="10">
                     <Form.Select
-                      defaultValue={userSettings.permissions[key] ?? 'Disable'}
+                      value={userSettings.permissions[key] ?? 'Disable'}
                       onChange={event => changePermissionHandler(key, event.target.value as Permission)}
                       disabled={!rbacSettings?.isOwner && rbacSettings?.permissions['team_settings'] !== 'Modify'}
                     >

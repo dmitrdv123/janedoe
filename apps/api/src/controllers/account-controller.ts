@@ -126,7 +126,7 @@ export class AccountController {
       assertObjectParam('notification settings', req.body)
 
       const settings: AccountNotificationSettings = req.body
-      assertParam('callback url', settings.callbackUrl, CALLBACK_URL_MAX_LENGTH)
+      assertMaxLength('callback url', settings.callbackUrl, CALLBACK_URL_MAX_LENGTH)
       assertMaxLength('secret key', settings.secretKey, SECRET_KEY_MAX_LENGTH)
 
       await this.accountService.saveAccountNotificationSettings(req.params.id, settings)

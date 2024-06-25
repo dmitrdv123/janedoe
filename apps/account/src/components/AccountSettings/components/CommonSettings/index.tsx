@@ -157,7 +157,7 @@ const CommonSettings: React.FC = () => {
             <Form.Control
               type="email"
               placeholder={t('components.account_settings.common_settings_email_placeholder')}
-              defaultValue={emailCommonSettings}
+              value={emailCommonSettings}
               onChange={event => setEmailCommonSettings(event.target.value)}
               readOnly={!rbacSettings?.isOwner && rbacSettings?.permissions['common_settings'] !== 'Modify'}
             />
@@ -173,7 +173,7 @@ const CommonSettings: React.FC = () => {
             <Form.Control
               as="textarea"
               rows={3}
-              defaultValue={descCommonSettings}
+              value={descCommonSettings}
               onChange={event => setDescCommonSettings(event.target.value)}
               readOnly={!rbacSettings?.isOwner && rbacSettings?.permissions['common_settings'] !== 'Modify'}
               maxLength={COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH}

@@ -302,11 +302,11 @@ export class AccountServiceImpl implements AccountService {
         ...settings,
         notificationSettings: {
           ...settings.notificationSettings,
-          secretKey: settings.notificationSettings.secretKey ? this.cryptoService.decrypt(settings.notificationSettings.secretKey) : null
+          secretKey: settings.notificationSettings.secretKey ? this.cryptoService.decrypt(settings.notificationSettings.secretKey) : ''
         },
         apiSettings: {
           ...settings.apiSettings,
-          apiKey: settings.apiSettings.apiKey ? this.cryptoService.decrypt(settings.apiSettings.apiKey) : null
+          apiKey: settings.apiSettings.apiKey ? this.cryptoService.decrypt(settings.apiSettings.apiKey) : ''
         }
       }
       : undefined

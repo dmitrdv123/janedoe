@@ -44,7 +44,7 @@ export class ApiWrapper {
     const result = await response.json()
     if (!response.ok) {
       if (result.code && result.message) {
-        throw new ServiceError(result.message, result.code)
+        throw new ServiceError(result.message, result.code, result.args)
       }
 
       throw new ServiceError('Failed to send request', 'services.errors.request_error')
