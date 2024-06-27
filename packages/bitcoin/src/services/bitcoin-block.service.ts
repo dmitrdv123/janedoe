@@ -50,13 +50,12 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
 
   public async refreshFeeRate(): Promise<boolean> {
     const feeRate = await this.bitcoinCoreService.getFeeRate(3)
-
-    if (feeRate) {
-      await this.bitcoinDao.saveFeeRate(feeRate)
-      return true
-    } else {
+    if (!feeRate) {
       return false
     }
+
+    await this.bitcoinDao.saveFeeRate(feeRate)
+    return true
   }
 
   public async processBlock(block: BitcoinBlock): Promise<void> {
