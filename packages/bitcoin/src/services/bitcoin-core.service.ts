@@ -1,7 +1,7 @@
 import * as bitcoin from 'bitcoinjs-lib'
 import axios from 'axios'
 
-import { BitcoinBlock, BitcoinTransaction } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinBlock } from '@repo/dao/dist/src/interfaces/bitcoin'
 import appConfig from '@repo/common/dist/src/app-config'
 
 export interface BitcoinCoreService {

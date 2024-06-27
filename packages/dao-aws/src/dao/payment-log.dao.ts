@@ -6,7 +6,7 @@ import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
 import appConfig from '@repo/common/dist/src/app-config'
 
 import { DynamoService } from '../services/dynamo.service'
-import { generateKey } from '../utils/dynamo-utils'
+import { generateKey, queryItems } from '../utils/dynamo-utils'
 import { QueryInput } from '@aws-sdk/client-dynamodb'
 
 export class PaymentLogDaoImpl implements PaymentLogDao {
@@ -96,21 +96,14 @@ export class PaymentLogDaoImpl implements PaymentLogDao {
       expressionAttributeValues[':addressTo'] = filter.to.toLocaleLowerCase()
     }
 
-    const params: QueryInput = {
+    const request: QueryInput = {
       TableName: appConfig.TABLE_NAME,
       KeyConditionExpression: keyConditionExpression.join(' and '),
       FilterExpression: filterExpressions.length ? filterExpressions.join(' and ') : undefined,
       ExpressionAttributeNames: Object.keys(expressionAttributeNames).length > 0 ? expressionAttributeNames : undefined,
       ExpressionAttributeValues: marshall(expressionAttributeValues),
     }
-
-    const result = await this.dynamoService.queryItems(params)
-
-    const paymentLogs = result.Items
-      ? result.Items
-        .map(item => item ? unmarshall(item).paymentLog as PaymentLog : undefined)
-        .filter(item => !!item) as PaymentLog[]
-      : []
+    const paymentLogs = await queryItems<PaymentLog>(this.dynamoService, 'paymentLog', request)
 
     return paymentLogs.sort((a, b) => {
       if (a.timestamp > b.timestamp) {

@@ -2,9 +2,9 @@
   "chainId": "0x7a69",
   "blockchain": "hardhat",
   "contractAddresses": {
-    "JaneDoe": "0x2e13f7644014F6E934E314F0371585845de7B986",
-    "WrappedNative": "0xFE92134da38df8c399A90a540f20187D19216E05",
-    "RangoReceiver": "0xf4e55515952BdAb2aeB4010f777E802D61eB384f"
+    "JaneDoe": "0xe519389F8c262d4301Fd2830196FB7D0021daf59",
+    "WrappedNative": "0xf4e55515952BdAb2aeB4010f777E802D61eB384f",
+    "RangoReceiver": "0xcE7e5946C14Cdd1f8de4473dB9c20fd65EBd47d0"
   },
   "contractDetails": {
     "JaneDoe": "JaneDoe",

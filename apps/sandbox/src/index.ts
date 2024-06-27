@@ -3,23 +3,29 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV}`.trim() })
 import * as bitcoin from 'bitcoinjs-lib'
 
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager'
 
+import { AccountDaoImpl } from '@repo/dao-aws/dist/src/dao/account.dao'
 import { BitcoinDaoImpl } from '@repo/dao-aws/dist/src/dao/bitcoin.dao'
+import { PaymentLogDaoImpl } from '@repo/dao-aws/dist/src/dao/payment-log.dao'
+import { NotificationDaoImpl } from '@repo/dao-aws/dist/src/dao/notification.dao'
 import { DynamoServiceImpl } from '@repo/dao-aws/dist/src/services/dynamo.service'
 import { BitcoinCoreServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-core.service'
 import { BitcoinServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { BitcoinUtilsServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-utils.service'
 import { BitcoinBlockServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
+import { BitcoinUtxo, BitcoinUtxoDataKey } from '@repo/dao/dist/src/interfaces/bitcoin';
+import { IpnKey } from '@repo/dao/dist/src/interfaces/ipn'
+import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 
 import { createAppConfig } from './app-config'
-import { SecretServiceImpl } from '@repo/dao-aws/dist/src/services/secret.service'
 
 createAppConfig()
 
 const dynamoService = new DynamoServiceImpl(new DynamoDB())
-const secretService = new SecretServiceImpl(new SecretsManagerClient())
-const bitcoinDao = new BitcoinDaoImpl(dynamoService, secretService)
+const accountDao = new AccountDaoImpl(dynamoService)
+const bitcoinDao = new BitcoinDaoImpl(dynamoService)
+const paymentLogDao = new PaymentLogDaoImpl(dynamoService)
+const notificationDao = new NotificationDaoImpl(dynamoService)
 const bitcoinUtilsService = new BitcoinUtilsServiceImpl(bitcoin.networks.regtest)
 const bitcoinCoreService = new BitcoinCoreServiceImpl()
 const bitcoinService = new BitcoinServiceImpl(bitcoinCoreService, bitcoinUtilsService, bitcoinDao)
@@ -95,8 +101,8 @@ async function bitcoinServiceTests() {
   const loadedWalletAddressByAddress1 = await bitcoinDao.loadWalletAddressByAddress(walletAddress1.data.address)
   console.log(`loaded wallet ${walletName} address ${label1} by address ${walletAddress1.data.address}: ${JSON.stringify(loadedWalletAddressByAddress1)}`)
 
-  const walletAddressLabels = await bitcoinDao.listWalletAddressLabels(walletName)
-  console.log(`loaded wallet ${walletName} address labels: ${JSON.stringify(walletAddressLabels)}`)
+  const walletAddresses = await bitcoinDao.listWalletAddresses(walletName)
+  console.log(`loaded wallet ${walletName} address labels: ${JSON.stringify(walletAddresses)}`)
 
   await bitcoinService.withdraw(walletName, address)
   console.log(`withdrawal of wallet ${walletName} to address ${address} was done`)
@@ -211,8 +217,249 @@ async function bitcoinDaoTests() {
   walletAddress = await bitcoinDao.loadWalletAddressByAddress('label1_address1')
   console.log(`debug >> load wallet address by address done ${JSON.stringify(walletAddress)}`)
 
-  const walletAddressLabels = await bitcoinDao.listWalletAddressLabels(walletName)
-  console.log(`debug >> list wallet address labels done ${JSON.stringify(walletAddressLabels)}`)
+  const walletAddresses = await bitcoinDao.listWalletAddresses(walletName)
+  console.log(`debug >> list wallet address labels done ${JSON.stringify(walletAddresses)}`)
+
+  const utxos: BitcoinUtxo[] = [
+    {
+      walletName: 'walletName2',
+      label: 'label2',
+      data: {
+        txid: 'txid2',
+        vout: -1,
+        hex: 'hex2',
+        amount: 1,
+        address: 'address2'
+      }
+    }
+  ]
+  for (let i = 0; i < 30; ++i) {
+    utxos.push(
+      {
+        walletName,
+        label: 'label1',
+        data: {
+          txid: `txid${i}`,
+          vout: i,
+          hex: `hex${i}`,
+          amount: i + 1,
+          address: `address${i}`
+        }
+      }
+    )
+  }
+  await bitcoinDao.saveUtxos(utxos, true)
+  console.log(`debug >> save utxos done`)
+
+  const keys: BitcoinUtxoDataKey[] = []
+  for (let i = 0; i < 101; ++i) {
+    keys.push({
+      txid: `txid${i}`,
+      vout: i
+    })
+  }
+  const loadedUtxos = await bitcoinDao.loadUtxos(keys)
+  console.log(`debug >> loading utxos done: keys - ${keys.length}, utxos - ${loadedUtxos.length}`)
+}
+
+async function accountDaoTests(): Promise<void> {
+  const accounts = await accountDao.listAccountProfiles()
+  console.log(`debug >> load account profiles done ${accounts.length}`)
+  console.log(JSON.stringify(accounts))
+
+  await accountDao.saveAccountTeamSettings(accounts[0].id, 'address1', {
+    users: [
+      {
+        accountTeamUserSettingsId: 'accountTeamUserSettingsId11',
+        address: 'address11',
+        permissions: {
+          'key11': 'View'
+        }
+      },
+      {
+        accountTeamUserSettingsId: 'accountTeamUserSettingsId12',
+        address: 'address12',
+        permissions: {
+          'key12': 'View'
+        }
+      }
+    ]
+  })
+  console.log(`debug >> save account team settings done`)
+
+  await accountDao.saveAccountTeamSettings(accounts[1].id, 'address2', {
+    users: [
+      {
+        accountTeamUserSettingsId: 'accountTeamUserSettingsId11',
+        address: 'address11',
+        permissions: {
+          'key11': 'View'
+        }
+      },
+      {
+        accountTeamUserSettingsId: 'accountTeamUserSettingsId21',
+        address: 'address21',
+        permissions: {
+          'key21': 'View'
+        }
+      },
+      {
+        accountTeamUserSettingsId: 'accountTeamUserSettingsId22',
+        address: 'address22',
+        permissions: {
+          'key22': 'View'
+        }
+      }
+    ]
+  })
+  console.log(`debug >> save account team settings done`)
+
+  let address = 'address11'
+  let sharedAccounts = await accountDao.listSharedAccounts(address)
+  console.log(`debug >> loading shared accounts for ${address} done: found ${sharedAccounts.length} shared accounts`)
+  console.log(JSON.stringify(sharedAccounts))
+
+  address = 'address12'
+  sharedAccounts = await accountDao.listSharedAccounts(address)
+  console.log(`debug >> loading shared accounts for ${address} done: found ${sharedAccounts.length} shared accounts`)
+  console.log(JSON.stringify(sharedAccounts))
+
+  address = 'address21'
+  sharedAccounts = await accountDao.listSharedAccounts(address)
+  console.log(`debug >> loading shared accounts for ${address} done: found ${sharedAccounts.length} shared accounts`)
+  console.log(JSON.stringify(sharedAccounts))
+
+  address = 'address22'
+  sharedAccounts = await accountDao.listSharedAccounts(address)
+  console.log(`debug >> loading shared accounts for ${address} done: found ${sharedAccounts.length} shared accounts`)
+  console.log(JSON.stringify(sharedAccounts))
+
+  address = 'address23'
+  sharedAccounts = await accountDao.listSharedAccounts(address)
+  console.log(`debug >> loading shared accounts for ${address} done: found ${sharedAccounts.length} shared accounts`)
+  console.log(JSON.stringify(sharedAccounts))
+}
+
+async function paymentLogDaoTests(): Promise<void> {
+  await paymentLogDao.savePaymentLog({
+    accountId: 'accountId1',
+    paymentId: 'paymentId11',
+
+    block: 'block1',
+    timestamp: 0,
+    transaction: 'tx1',
+    index: 0,
+
+    from: null,
+    to: 'to1',
+    amount: '1',
+    amountUsd: null,
+
+    blockchain: 'blockchain1',
+    tokenAddress: null,
+    tokenSymbol: null,
+    tokenDecimals: null,
+    tokenUsdPrice: null,
+  })
+  console.log(`debug >> save payment log done`)
+
+  await paymentLogDao.savePaymentLog({
+    accountId: 'accountId1',
+    paymentId: 'paymentId12',
+
+    block: 'block2',
+    timestamp: 0,
+    transaction: 'tx2',
+    index: 0,
+
+    from: null,
+    to: 'to2',
+    amount: '2',
+    amountUsd: null,
+
+    blockchain: 'blockchain2',
+    tokenAddress: null,
+    tokenSymbol: null,
+    tokenDecimals: null,
+    tokenUsdPrice: null,
+  })
+  console.log(`debug >> save payment log done`)
+
+  await paymentLogDao.savePaymentLog({
+    accountId: 'accountId2',
+    paymentId: 'paymentId21',
+
+    block: 'block3',
+    timestamp: 0,
+    transaction: 'tx3',
+    index: 0,
+
+    from: null,
+    to: 'to3',
+    amount: '3',
+    amountUsd: null,
+
+    blockchain: 'blockchain3',
+    tokenAddress: null,
+    tokenSymbol: null,
+    tokenDecimals: null,
+    tokenUsdPrice: null,
+  })
+  console.log(`debug >> save payment log done`)
+
+  let account = 'accountId1'
+  let paymentLogs = await paymentLogDao.listPaymentLogs(account)
+  console.log(`debug >> loading payment logs for ${account} done: found ${paymentLogs.length} payment logs`)
+  console.log(JSON.stringify(paymentLogs))
+
+  account = 'accountId2'
+  paymentLogs = await paymentLogDao.listPaymentLogs(account)
+  console.log(`debug >> loading payment logs for ${account} done: found ${paymentLogs.length} payment logs`)
+  console.log(JSON.stringify(paymentLogs))
+
+  account = 'accountId3'
+  paymentLogs = await paymentLogDao.listPaymentLogs(account)
+  console.log(`debug >> loading payment logs for ${account} done: found ${paymentLogs.length} payment logs`)
+  console.log(JSON.stringify(paymentLogs))
+}
+
+async function notificationDaoTests(): Promise<void> {
+  let ipnKey: IpnKey = {
+    accountId: 'accountId1',
+    paymentId: 'paymentId1',
+    blockchain: 'blockchain1',
+    transaction: 'transaction1',
+    index: 0
+  }
+  await notificationDao.saveNotification({
+    key: 'key1',
+    notificationType: NotificationType.IPN,
+    timestamp: 0,
+    data: ipnKey
+  })
+  console.log(`debug >> save notification done`)
+
+  ipnKey = {
+    accountId: 'accountId2',
+    paymentId: 'paymentId2',
+    blockchain: 'blockchain2',
+    transaction: 'transaction2',
+    index: 1
+  }
+  await notificationDao.saveNotification({
+    key: 'key2',
+    notificationType: NotificationType.IPN,
+    timestamp: 2,
+    data: ipnKey
+  })
+  console.log(`debug >> save notification done`)
+
+  const notifications = await notificationDao.listNotifications<IpnKey>()
+  console.log(`debug >> loading notifications done: found ${notifications.length} notifications`)
+  console.log(JSON.stringify(notifications))
+
+  const notificationType = notifications[0].notificationType
+  console.log(`debug >> notificationType of first element ${notificationType} is equal ${notificationType === NotificationType.IPN} to NotificationType.IPN`)
 }
 
 async function main() {
@@ -225,6 +472,9 @@ async function main() {
   // await bitcoinBlockServiceTests()
   // await transactionTests()
   // await bitcoinDaoTests()
+  // await accountDaoTests()
+  // await paymentLogDaoTests()
+  // await notificationDaoTests()
 }
 
 main()

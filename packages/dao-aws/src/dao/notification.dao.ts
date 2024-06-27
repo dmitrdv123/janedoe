@@ -1,11 +1,11 @@
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
+import { marshall } from '@aws-sdk/util-dynamodb'
 
 import { NotificationDao } from '@repo/dao/dist/src/dao/notification.dao'
 import { Notification, NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import appConfig from '@repo/common/dist/src/app-config'
 
 import { DynamoService } from '../services/dynamo.service'
-import { generateKey } from '../utils/dynamo-utils'
+import { generateKey, scanItems } from '../utils/dynamo-utils'
 
 export class NotificationDaoImpl implements NotificationDao {
   private static readonly PK_PREFIX = 'notification'
@@ -15,33 +15,14 @@ export class NotificationDaoImpl implements NotificationDao {
   ) { }
 
   public async listNotifications<T>(): Promise<Notification<T>[]> {
-    const result = await this.dynamoService.scanItems({
+    const request = {
       TableName: appConfig.TABLE_NAME_NOTIFICATION,
       FilterExpression: 'begins_with(pk, :pk_prefix)',
       ExpressionAttributeValues: marshall({
         ':pk_prefix': `${NotificationDaoImpl.PK_PREFIX}#`
       })
-    })
-
-    const notifications = result.Items
-      ? result.Items
-        .map(item => {
-          if (!item.notification) {
-            return undefined
-          }
-
-          const notification = unmarshall(item).notification
-          return {
-            key: notification.key,
-            notificationType: notification.notificationType as NotificationType,
-            timestamp: notification.timestamp,
-            data: notification.data as T
-          } as Notification<T>
-        })
-        .filter(item => !!item) as Notification<T>[]
-      : []
-
-    return notifications
+    }
+    return await scanItems<Notification<T>>(this.dynamoService, 'notification', request)
   }
 
   public async saveNotification<T>(notification: Notification<T>): Promise<void> {

@@ -7,7 +7,7 @@ import { SharedAccount } from '@repo/dao/dist/src/interfaces/shared-account'
 import appConfig from '@repo/common/dist/src/app-config'
 
 import { DynamoService } from '../services/dynamo.service'
-import { generateKey, batchWriteItemsByChunks } from '../utils/dynamo-utils'
+import { generateKey, batchWriteItemsByChunks, queryItems, scanItems } from '../utils/dynamo-utils'
 import { ApiKeyData } from '../interfaces/api-key-data'
 
 export class AccountDaoImpl implements AccountDao {
@@ -44,25 +44,22 @@ export class AccountDaoImpl implements AccountDao {
   }
 
   public async listAccountProfiles(): Promise<AccountProfile[]> {
-    const result = await this.dynamoService.scanItems({
+    const request = {
       TableName: appConfig.TABLE_NAME,
       FilterExpression: 'begins_with(pk, :pk_prefix)',
       ExpressionAttributeValues: marshall({
         ':pk_prefix': `${AccountDaoImpl.PK_PREFIX}#`
       }),
       ProjectionExpression: 'account.profile'
-    })
+    }
+    const accounts = await scanItems<Partial<Account>>(this.dynamoService, 'account', request)
 
-    const profiles = result.Items
-      ? result.Items
-        .map(item => {
-          const account = unmarshall(item).account as Account
-          return account.profile
-        })
-        .filter(item => !!item) as AccountProfile[]
-      : []
-
-    return profiles
+    return accounts.reduce((acc, account) => {
+      if (account.profile) {
+        acc.push(account.profile)
+      }
+      return acc
+    }, [] as AccountProfile[])
   }
 
   public async loadAccountProfile(id: string): Promise<AccountProfile | undefined> {
@@ -122,20 +119,16 @@ export class AccountDaoImpl implements AccountDao {
   }
 
   public async listSharedAccounts(address: string): Promise<SharedAccount[]> {
-    const result = await this.dynamoService.queryItems({
+    const request = {
       TableName: appConfig.TABLE_NAME,
       KeyConditionExpression: 'pk = :pk_value',
       ExpressionAttributeValues: marshall({
         ':pk_value': generateKey(AccountDaoImpl.PK_SHARED_ACCOUNT_PREFIX, address.toLocaleLowerCase())
       }),
       ScanIndexForward: false
-    })
+    }
 
-    return result.Items
-      ? result.Items
-        .map(item => item ? unmarshall(item).sharedAccount as SharedAccount : undefined)
-        .filter(item => !!item) as SharedAccount[]
-      : []
+    return await queryItems(this.dynamoService, 'sharedAccount', request)
   }
 
   public async loadAccountSettings(id: string): Promise<AccountSettings | undefined> {
@@ -207,30 +200,24 @@ export class AccountDaoImpl implements AccountDao {
       })
     })
 
-    const sharedAccounts = await this.dynamoService.queryItems({
+    const request = {
       TableName: appConfig.TABLE_NAME,
       IndexName: 'gsi_pk1-gsi_sk1-index',
       KeyConditionExpression: 'gsi_pk1 = :pk',
       ExpressionAttributeValues: marshall({
         ':pk': generateKey(AccountDaoImpl.PK_SHARED_ACCOUNT_PREFIX, id),
       })
-    })
+    }
+    const sharedAccounts = await queryItems<SharedAccount>(this.dynamoService, 'sharedAccount', request)
 
-    const deleteRequests = sharedAccounts.Items
-      ? sharedAccounts.Items.map(item => {
-        const sharedAccount = unmarshall(item)
-
-        return {
-          DeleteRequest: {
-            Key: marshall({
-              pk: sharedAccount.pk,
-              sk: sharedAccount.sk
-            })
-          }
-        }
-      })
-      : []
-
+    const deleteRequests = sharedAccounts.map(sharedAccount => ({
+      DeleteRequest: {
+        Key: marshall({
+          pk: generateKey(AccountDaoImpl.PK_SHARED_ACCOUNT_PREFIX, sharedAccount.shareToAddress.toLocaleLowerCase()),
+          sk: sharedAccount.sharedAccountId
+        })
+      }
+    }))
     await batchWriteItemsByChunks(
       this.dynamoService,
       appConfig.TABLE_NAME,
@@ -257,7 +244,6 @@ export class AccountDaoImpl implements AccountDao {
         }
       }
     })
-
     await batchWriteItemsByChunks(
       this.dynamoService,
       appConfig.TABLE_NAME,

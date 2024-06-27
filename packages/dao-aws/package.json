@@ -7,12 +7,13 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.537.0",
-    "@aws-sdk/client-s3": "^3.537.0",
     "@aws-sdk/client-dynamodb": "^3.535.0",
+    "@aws-sdk/client-s3": "^3.537.0",
     "@aws-sdk/client-secrets-manager": "^3.535.0",
     "@aws-sdk/util-dynamodb": "^3.535.0",
     "@repo/common": "workspace:^",
     "@repo/dao": "workspace:^",
+    "crypto": "^1.0.1",
     "rango-sdk-basic": "^0.1.47"
   },
   "devDependencies": {

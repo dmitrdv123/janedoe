@@ -460,6 +460,14 @@ function handler(event) {
   }
 
   private deployService(output: MainStackOutput) {
+    const cryptoSeed = new Secret(this, withEnv('secret_crypto_seed'), {
+      secretName: withEnv('crypto_seed'),
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ data: env('CRYPTO_SEED'), pwd: '' }),
+        generateStringKey: 'pwd'
+      }
+    })
+
     const jwtEncryptionKey = new Secret(this, withEnv('secret_jwt_encryption_key'), {
       secretName: withEnv('jwt_encryption_key'),
       generateSecretString: {
@@ -583,6 +591,7 @@ function handler(event) {
             METRIC_BITCOIN_NAME: output.alarmMetricBitcoin?.metricName ?? ''
           },
           environmentSecrets: {
+            CRYPTO_SEED: apprunner.Secret.fromSecretsManager(cryptoSeed, 'data'),
             EXCHANGERATE_API_KEY: apprunner.Secret.fromSecretsManager(exchangeRateApiKey, 'data'),
             RANGO_API_KEY: apprunner.Secret.fromSecretsManager(rangoApiKey, 'data'),
             RANGO_API_KEY_SWAP: apprunner.Secret.fromSecretsManager(rangoApiKeySwap, 'data'),

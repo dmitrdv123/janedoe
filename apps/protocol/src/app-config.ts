@@ -41,6 +41,10 @@ export function createAppConfig() {
     throw new Error('TABLE_NAME is not set')
   }
 
+  if (!process.env.CRYPTO_SEED) {
+    throw new Error('CRYPTO_SEED is not set')
+  }
+
   const NODE_ENV = process.env.NODE_ENV ?? 'local'
 
   initAppConfig({
@@ -55,7 +59,8 @@ export function createAppConfig() {
     BITCOIN_FEE_RPC: process.env.BITCOIN_FEE_RPC,
     EXCHANGERATE_API_KEY: process.env.EXCHANGERATE_API_KEY,
     SEED_BTC_WALLET_FROM: process.env.SEED_BTC_WALLET_FROM,
-    TABLE_NAME: process.env.TABLE_NAME
+    TABLE_NAME: process.env.TABLE_NAME,
+    CRYPTO_SEED: process.env.CRYPTO_SEED
   })
 }
 

@@ -1,4 +1,4 @@
-import { BatchWriteItemInput, CreateTableInput, CreateTableOutput, DeleteItemInput, DeleteItemOutput, DeleteTableInput, DeleteTableOutput, DescribeTableInput, DescribeTableOutput, DynamoDB, GetItemInput, GetItemOutput, PutItemInput, PutItemOutput, QueryInput, QueryOutput, ScanInput, ScanOutput, TableDescription, UpdateItemInput, UpdateItemOutput, UpdateTimeToLiveCommandInput, UpdateTimeToLiveCommandOutput } from '@aws-sdk/client-dynamodb'
+import { BatchGetItemCommandOutput, BatchGetItemInput, BatchWriteItemInput, CreateTableInput, CreateTableOutput, DeleteItemInput, DeleteItemOutput, DeleteTableOutput, DescribeTableOutput, DynamoDB, GetItemInput, GetItemOutput, PutItemInput, PutItemOutput, QueryInput, QueryOutput, ScanInput, ScanOutput, UpdateItemInput, UpdateItemOutput } from '@aws-sdk/client-dynamodb'
 
 export interface DynamoService {
   describeTable(tableName: string): Promise<DescribeTableOutput>
@@ -9,6 +9,7 @@ export interface DynamoService {
   updateItem(request: UpdateItemInput): Promise<UpdateItemOutput>
   deleteItem(request: DeleteItemInput): Promise<DeleteItemOutput>
   batchWriteItems(request: BatchWriteItemInput): Promise<void>
+  batchReadItems(request: BatchGetItemInput): Promise<BatchGetItemCommandOutput>
   queryItems(request: QueryInput): Promise<QueryOutput>
   scanItems(request: ScanInput): Promise<ScanOutput>
 }
@@ -54,38 +55,15 @@ export class DynamoServiceImpl implements DynamoService {
     await this.dynamodb.batchWriteItem(request)
   }
 
+  public async batchReadItems(request: BatchGetItemInput): Promise<BatchGetItemCommandOutput> {
+    return await this.dynamodb.batchGetItem(request)
+  }
+
   public async queryItems(request: QueryInput): Promise<QueryOutput> {
-    const result = await this.dynamodb.query(request)
-
-    while (result.LastEvaluatedKey != null) {
-      request.ExclusiveStartKey = result.LastEvaluatedKey
-      const nextResult = await this.dynamodb.query(request)
-      const nextItems = nextResult.Items ?? []
-      const resultItems = result.Items ?? []
-      nextItems.forEach(item => resultItems.push(item))
-      result.Count = (result.Count ?? 0) + (nextResult.Count ?? 0)
-      result.ScannedCount = (result.ScannedCount ?? 0) + (nextResult.ScannedCount ?? 0)
-      result.LastEvaluatedKey = nextResult.LastEvaluatedKey
-    }
-
-    return result
+    return await this.dynamodb.query(request)
   }
 
   public async scanItems(request: ScanInput): Promise<ScanOutput> {
-    const result = await this.dynamodb.scan(request)
-
-    while (result.LastEvaluatedKey != null) {
-      request.ExclusiveStartKey = result.LastEvaluatedKey
-      const nextResult = await this.dynamodb.scan(request)
-      const nextItems = nextResult.Items ?? []
-      const resultItems = result.Items ?? []
-      nextItems.forEach(item => resultItems.push(item))
-      result.Count = (result.Count ?? 0) + (nextResult.Count ?? 0)
-      result.ScannedCount = (result.ScannedCount ?? 0) + (nextResult.ScannedCount ?? 0)
-      result.LastEvaluatedKey = nextResult.LastEvaluatedKey
-    }
-
-    return result
+    return await this.dynamodb.scan(request)
   }
-
 }

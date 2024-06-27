@@ -56,7 +56,7 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
   }
 
   public async processBlock(block: BitcoinBlock): Promise<void> {
-    const utxoDataKeysForDelete = this.processVins(block)
+    const utxoDataKeysForDelete = await this.processVins(block)
     const transactionOutputs = await this.processVouts(block)
 
     const utxosForSave: BitcoinUtxo[] = transactionOutputs.map(item => ({
@@ -138,8 +138,8 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
     }
   }
 
-  private processVins(block: BitcoinBlock): BitcoinUtxoDataKey[] {
-    return block.tx
+  private async processVins(block: BitcoinBlock): Promise<BitcoinUtxoDataKey[]> {
+    const keys = block.tx
       .map(
         transaction => transaction.vin.reduce((acc, txInput) => {
           if (txInput.txid !== undefined && txInput.vout !== undefined) {
@@ -153,5 +153,12 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
         }, [] as BitcoinUtxoDataKey[])
       )
       .flat()
+
+    const utxos = await this.bitcoinDao.loadUtxos(keys)
+
+    return utxos.map(utxo => ({
+      txid: utxo.data.txid,
+      vout: utxo.data.vout
+    }))
   }
 }

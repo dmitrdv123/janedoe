@@ -80,7 +80,7 @@ export class BitcoinServiceImpl implements BitcoinService {
       throw new Error('Fee rate not found')
     }
 
-    const utxos = await this.bitcoinDao.listWalletUtxos(walletName)
+    const utxos = await this.bitcoinDao.listWalletUtxos(walletName, true)
     if (utxos.length === 0) {
       return undefined
     }

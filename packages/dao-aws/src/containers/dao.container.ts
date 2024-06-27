@@ -109,8 +109,7 @@ daoContainer.register(
 daoContainer.register(
   'bitcoinDao',
   new BitcoinDaoImpl(
-    daoContainer.resolve<DynamoService>('dynamoService'),
-    daoContainer.resolve<SecretService>('secretService')
+    daoContainer.resolve<DynamoService>('dynamoService')
   )
 )
 daoContainer.register(

@@ -97,6 +97,10 @@ export function createAppConfig() {
     throw new Error('METRIC_BITCOIN_NAME is not set')
   }
 
+  if (!process.env.CRYPTO_SEED) {
+    throw new Error('CRYPTO_SEED is not set')
+  }
+
   const NODE_ENV = process.env.NODE_ENV ?? 'local'
 
   initAppConfig({
@@ -125,7 +129,8 @@ export function createAppConfig() {
     METRIC_RANGO_CONVERSION_NAMESPACE: process.env.METRIC_RANGO_CONVERSION_NAMESPACE,
     METRIC_RANGO_CONVERSION_NAME: process.env.METRIC_RANGO_CONVERSION_NAME,
     METRIC_BITCOIN_NAMESPACE: process.env.METRIC_BITCOIN_NAMESPACE,
-    METRIC_BITCOIN_NAME: process.env.METRIC_BITCOIN_NAME
+    METRIC_BITCOIN_NAME: process.env.METRIC_BITCOIN_NAME,
+    CRYPTO_SEED: process.env.CRYPTO_SEED
   })
 }
 
