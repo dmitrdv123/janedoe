@@ -419,7 +419,7 @@ function handler(event) {
       tableName: withEnv(env('TABLE_NAME')),
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.STRING },
-      billingMode: BillingMode.PROVISIONED,
+      billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY
     })
 
@@ -441,7 +441,7 @@ function handler(event) {
       tableName: withEnv(env('TABLE_NAME_NOTIFICATION')),
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
-      billingMode: BillingMode.PROVISIONED,
+      billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY
     })
 

@@ -13,30 +13,33 @@ import { BitcoinCoreServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-
 import { BitcoinServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { BitcoinUtilsServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-utils.service'
 import { BitcoinBlockServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
-import { BitcoinUtxo, BitcoinUtxoDataKey } from '@repo/dao/dist/src/interfaces/bitcoin';
+import { BitcoinBlock, BitcoinUtxo } from '@repo/dao/dist/src/interfaces/bitcoin';
 import { IpnKey } from '@repo/dao/dist/src/interfaces/ipn'
 import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 
 import { createAppConfig } from './app-config'
+import { loadFile, saveFile } from './utils'
+import { CacheServiceImpl } from '@repo/common/dist/src/services/cache-service'
 
 createAppConfig()
 
 const dynamoService = new DynamoServiceImpl(new DynamoDB())
+const cacheService = new CacheServiceImpl()
 const accountDao = new AccountDaoImpl(dynamoService)
-const bitcoinDao = new BitcoinDaoImpl(dynamoService)
+const bitcoinDao = new BitcoinDaoImpl(dynamoService, cacheService)
 const paymentLogDao = new PaymentLogDaoImpl(dynamoService)
 const notificationDao = new NotificationDaoImpl(dynamoService)
 const bitcoinUtilsService = new BitcoinUtilsServiceImpl(bitcoin.networks.regtest)
 const bitcoinCoreService = new BitcoinCoreServiceImpl()
 const bitcoinService = new BitcoinServiceImpl(bitcoinCoreService, bitcoinUtilsService, bitcoinDao)
-const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, bitcoinDao)
+const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, cacheService, bitcoinDao)
 
-async function bitcoinCoreServiceTests() {
+async function bitcoinCoreServiceTests(): Promise<void> {
   const feeRate = await bitcoinCoreService.getFeeRate(3)
   console.log(`feeRate ${feeRate}`)
 }
 
-async function transactionTests() {
+async function transactionTests(): Promise<void> {
   const walletName = 'walletForPay1'
   const label1 = '123qwe'
   const label2 = '234qwe'
@@ -72,7 +75,7 @@ async function transactionTests() {
   console.log(`withdrawal of wallet ${walletName} to address ${address} was done`)
 }
 
-async function bitcoinServiceTests() {
+async function bitcoinServiceTests(): Promise<void> {
   const walletName = 'wallet2'
   const label1 = 'qwe123'
   const label2 = 'qwe124'
@@ -98,17 +101,17 @@ async function bitcoinServiceTests() {
   const loadedWalletAddress1 = await bitcoinDao.loadWalletAddress(walletName, label1)
   console.log(`loaded wallet ${walletName} address ${label1}: ${JSON.stringify(loadedWalletAddress1)}`)
 
-  const loadedWalletAddressByAddress1 = await bitcoinDao.loadWalletAddressByAddress(walletAddress1.data.address)
-  console.log(`loaded wallet ${walletName} address ${label1} by address ${walletAddress1.data.address}: ${JSON.stringify(loadedWalletAddressByAddress1)}`)
+  let walletAddresses = await bitcoinDao.listWalletAddresses(walletName)
+  console.log(`loaded wallet ${walletName} address: ${JSON.stringify(walletAddresses)}`)
 
-  const walletAddresses = await bitcoinDao.listWalletAddresses(walletName)
-  console.log(`loaded wallet ${walletName} address labels: ${JSON.stringify(walletAddresses)}`)
+  walletAddresses = await bitcoinDao.listAllWalletAddresses()
+  console.log(`loaded all wallet addresses: ${JSON.stringify(walletAddresses)}`)
 
   await bitcoinService.withdraw(walletName, address)
   console.log(`withdrawal of wallet ${walletName} to address ${address} was done`)
 }
 
-async function bitcoinBlockServiceTests() {
+async function bitcoinBlockServiceTests(): Promise<void> {
   const fromBlockheight = 0
   const toBlockheight = 1599
 
@@ -151,7 +154,28 @@ async function bitcoinBlockServiceTests() {
   console.log(`loaded latest processed block: ${latestProcessedBlockHeight}`)
 }
 
-async function bitcoinDaoTests() {
+async function bitcoinBlockServiceProdTests(): Promise<void> {
+  const blockhash1 = '000000000000000000012e1c0662d672efbcdbc315324aecb0e2a8f80fd9bf22'
+  const dir = 'data/'
+  const fileName = `block${blockhash1}.json`
+  const filePath = `${dir}/${fileName}`
+
+  // console.log(`start loading block ${blockhash1}`)
+  // const block1 = await bitcoinBlockService.getBlock(blockhash1)
+  // await saveFile(dir, fileName, block1)
+  // console.log(`end loading block ${blockhash1}`)
+
+  const block1 = await loadFile<BitcoinBlock>(filePath)
+  if (!block1) {
+    throw new Error(`Could not load block from ${filePath}`)
+  }
+
+  console.log(`start processing block ${block1.hash}`)
+  await bitcoinBlockService.processBlock(block1)
+  console.log(`end processing block ${block1.hash}`)
+}
+
+async function bitcoinDaoTests(): Promise<void> {
   const walletName = 'bitcoinDaoTest_wallet1'
 
   await bitcoinDao.saveWallet({
@@ -214,11 +238,11 @@ async function bitcoinDaoTests() {
   walletAddress = await bitcoinDao.loadWalletAddress(walletName, 'label1')
   console.log(`debug >> load wallet address done ${JSON.stringify(walletAddress)}`)
 
-  walletAddress = await bitcoinDao.loadWalletAddressByAddress('label1_address1')
-  console.log(`debug >> load wallet address by address done ${JSON.stringify(walletAddress)}`)
+  let walletAddresses = await bitcoinDao.listWalletAddresses(walletName)
+  console.log(`debug >> list wallet address for ${walletName} done: ${JSON.stringify(walletAddresses)}`)
 
-  const walletAddresses = await bitcoinDao.listWalletAddresses(walletName)
-  console.log(`debug >> list wallet address labels done ${JSON.stringify(walletAddresses)}`)
+  walletAddresses = await bitcoinDao.listAllWalletAddresses()
+  console.log(`debug >> load all wallet addresses done: ${JSON.stringify(walletAddresses)}`)
 
   const utxos: BitcoinUtxo[] = [
     {
@@ -251,15 +275,8 @@ async function bitcoinDaoTests() {
   await bitcoinDao.saveUtxos(utxos, true)
   console.log(`debug >> save utxos done`)
 
-  const keys: BitcoinUtxoDataKey[] = []
-  for (let i = 0; i < 101; ++i) {
-    keys.push({
-      txid: `txid${i}`,
-      vout: i
-    })
-  }
-  const loadedUtxos = await bitcoinDao.loadUtxos(keys)
-  console.log(`debug >> loading utxos done: keys - ${keys.length}, utxos - ${loadedUtxos.length}`)
+  const loadedUtxos = await bitcoinDao.listAllUtxos()
+  console.log(`debug >> load all utxos done: ${JSON.stringify(loadedUtxos)}`)
 }
 
 async function accountDaoTests(): Promise<void> {
@@ -470,6 +487,7 @@ async function main() {
   // await bitcoinCoreServiceTests()
   // await bitcoinServiceTests()
   // await bitcoinBlockServiceTests()
+  // await bitcoinBlockServiceProdTests()
   // await transactionTests()
   // await bitcoinDaoTests()
   // await accountDaoTests()

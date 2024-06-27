@@ -4,7 +4,10 @@ import appConfig from '@repo/common/dist/src/app-config'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
+import { CacheService } from '@repo/common/dist/src/services/cache-service'
+
 import { daoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
+import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 
 import { BitcoinBlockServiceImpl } from '../services/bitcoin-block.service'
 import { BitcoinCoreService, BitcoinCoreServiceImpl } from '../services/bitcoin-core.service'
@@ -25,6 +28,7 @@ bitcoinContainer.register(
   'bitcoinBlockService',
   new BitcoinBlockServiceImpl(
     bitcoinContainer.resolve<BitcoinCoreService>('bitcoinCoreService'),
+    commonContainer.resolve<CacheService>('cacheService'),
     daoContainer.resolve<BitcoinDao>('bitcoinDao'),
   )
 )

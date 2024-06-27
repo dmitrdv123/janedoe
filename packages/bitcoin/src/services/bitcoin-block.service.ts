@@ -1,5 +1,6 @@
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinBlock, BitcoinTransaction, BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinVout } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinBlock, BitcoinTransactionOutput, BitcoinTransactionOutputData, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { CacheService } from '@repo/common/dist/src/services/cache-service'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
 
@@ -15,8 +16,11 @@ export interface BitcoinBlockService {
 }
 
 export class BitcoinBlockServiceImpl implements BitcoinBlockService {
+  private isInit = false
+
   public constructor(
     private bitcoinCoreService: BitcoinCoreService,
+    private cacheService: CacheService,
     private bitcoinDao: BitcoinDao
   ) { }
 
@@ -56,8 +60,27 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
   }
 
   public async processBlock(block: BitcoinBlock): Promise<void> {
-    const utxoDataKeysForDelete = await this.processVins(block)
-    const transactionOutputs = await this.processVouts(block)
+    if (!this.isInit) {
+      const [allUtxos, allWalletAddresses] = await Promise.all([
+        this.bitcoinDao.listAllUtxos(),
+        this.bitcoinDao.listAllWalletAddresses()
+      ])
+
+      allUtxos.forEach(item => {
+        const key = `utxo#${item.data.txid}#${item.data.vout}`
+        this.cacheService.set(key, key)
+      })
+
+      allWalletAddresses.forEach(item => {
+        const key = `wallet_address#${item.data.address}`
+        this.cacheService.set(key, item)
+      })
+
+      this.isInit = true
+    }
+
+    const utxoDataKeysForDelete = this.processVins(block)
+    const transactionOutputs = this.processVouts(block)
 
     const utxosForSave: BitcoinUtxo[] = transactionOutputs.map(item => ({
       walletName: item.walletName,
@@ -95,54 +118,11 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
     return utxoDataKeys.filter(utxo => !keys.has(`${utxo.txid}#${utxo.vout}`))
   }
 
-  private async processVouts(block: BitcoinBlock): Promise<BitcoinTransactionOutput[]> {
-    const bitcoinTransactionOutputs = await Promise.all(
-      block.tx
-        .map(transaction => transaction.vout.map(
-          txOutput => this.processVout(block, transaction, txOutput)
-        ))
-        .flat()
-    )
-
-    return bitcoinTransactionOutputs.reduce((acc, item) => {
-      if (item) {
-        acc.push(item)
-      }
-      return acc
-    }, [] as BitcoinTransactionOutput[])
-  }
-
-  private async processVout(block: BitcoinBlock, transaction: BitcoinTransaction, vout: BitcoinVout): Promise<BitcoinTransactionOutput | undefined> {
-    if (!vout.scriptPubKey.address) {
-      return undefined
-    }
-
-    const walletAddress = await this.bitcoinDao.loadWalletAddressByAddress(vout.scriptPubKey.address)
-    if (!walletAddress) {
-      return undefined
-    }
-
-    return {
-      walletName: walletAddress.walletName,
-      label: walletAddress.label,
-      data: {
-        txid: transaction.txid,
-        vout: vout.n,
-        blockhash: block.hash,
-        blockheight: block.height,
-        time: block.time,
-        hex: vout.scriptPubKey.hex,
-        address: vout.scriptPubKey.address,
-        amount: vout.value
-      }
-    }
-  }
-
-  private async processVins(block: BitcoinBlock): Promise<BitcoinUtxoDataKey[]> {
-    const keys = block.tx
+  private processVins(block: BitcoinBlock): BitcoinUtxoDataKey[] {
+    return block.tx
       .map(
         transaction => transaction.vin.reduce((acc, txInput) => {
-          if (txInput.txid !== undefined && txInput.vout !== undefined) {
+          if (txInput.txid !== undefined && txInput.vout !== undefined && this.cacheService.has(`utxo#${txInput.txid}#${txInput.vout}`)) {
             acc.push({
               txid: txInput.txid,
               vout: txInput.vout
@@ -153,12 +133,36 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
         }, [] as BitcoinUtxoDataKey[])
       )
       .flat()
+  }
 
-    const utxos = await this.bitcoinDao.loadUtxos(keys)
+  private processVouts(block: BitcoinBlock): BitcoinTransactionOutput[] {
+    return block.tx
+      .map(
+        transaction => transaction.vout.reduce((acc, txOutput) => {
+          if (txOutput.scriptPubKey.address && this.cacheService.has(`wallet_address#${txOutput.scriptPubKey.address}`)) {
+            const walletAddress = this.cacheService.get<BitcoinWalletAddress>(`wallet_address#${txOutput.scriptPubKey.address}`)
 
-    return utxos.map(utxo => ({
-      txid: utxo.data.txid,
-      vout: utxo.data.vout
-    }))
+            if (walletAddress) {
+              acc.push({
+                walletName: walletAddress.walletName,
+                label: walletAddress.label,
+                data: {
+                  txid: transaction.txid,
+                  vout: txOutput.n,
+                  blockhash: block.hash,
+                  blockheight: block.height,
+                  time: block.time,
+                  hex: txOutput.scriptPubKey.hex,
+                  address: txOutput.scriptPubKey.address,
+                  amount: txOutput.value
+                }
+              })
+            }
+          }
+
+          return acc
+        }, [] as BitcoinTransactionOutput[])
+      )
+      .flat()
   }
 }

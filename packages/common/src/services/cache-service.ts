@@ -2,9 +2,10 @@ import NodeCache from 'node-cache'
 
 export interface CacheService {
   get<T>(key: string): T | undefined
-  set<T>(key: string, data: T, ttl: number): boolean
+  set<T>(key: string, data: T, ttl?: number | undefined): boolean
+  del(key: string): void
   has(key: string): boolean
-  run<T>(cacheKey: string, ttl: number, func: () => Promise<T>): Promise<T>
+  run<T>(cacheKey: string, ttl: number | undefined, func: () => Promise<T>): Promise<T>
 }
 
 export class CacheServiceImpl implements CacheService {
@@ -14,15 +15,19 @@ export class CacheServiceImpl implements CacheService {
     return CacheServiceImpl.cache.get<T>(key)
   }
 
-  public set<T>(key: string, data: T, ttl: number): boolean {
-    return CacheServiceImpl.cache.set<T>(key, data, ttl)
+  public set<T>(key: string, data: T, ttl?: number | undefined): boolean {
+    return ttl ? CacheServiceImpl.cache.set<T>(key, data, ttl) : CacheServiceImpl.cache.set<T>(key, data)
+  }
+
+  public del(key: string): void {
+    CacheServiceImpl.cache.del(key)
   }
 
   public has(key: string): boolean {
     return CacheServiceImpl.cache.has(key)
   }
 
-  public async run<T>(cacheKey: string, ttl: number, func: () => Promise<T>): Promise<T> {
+  public async run<T>(cacheKey: string, ttl: number | undefined, func: () => Promise<T>): Promise<T> {
     const cachedData = CacheServiceImpl.cache.get<T>(cacheKey)
 
     if (cachedData != undefined) {
@@ -30,7 +35,11 @@ export class CacheServiceImpl implements CacheService {
     }
 
     const data = await func()
-    CacheServiceImpl.cache.set(cacheKey, data, ttl)
+    if (ttl) {
+      CacheServiceImpl.cache.set(cacheKey, data, ttl)
+    } else {
+      CacheServiceImpl.cache.set(cacheKey, data)
+    }
 
     return data
   }

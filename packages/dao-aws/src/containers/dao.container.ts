@@ -4,6 +4,9 @@ import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager'
 import { CloudWatch } from '@aws-sdk/client-cloudwatch'
 
 import { Container } from '@repo/common/dist/src/containers/container'
+import { CacheService } from '@repo/common/dist/src/services/cache-service'
+
+import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 
 import { DynamoService, DynamoServiceImpl } from '../services/dynamo.service'
 import { AccountDaoImpl } from '../dao/account.dao'
@@ -109,7 +112,8 @@ daoContainer.register(
 daoContainer.register(
   'bitcoinDao',
   new BitcoinDaoImpl(
-    daoContainer.resolve<DynamoService>('dynamoService')
+    daoContainer.resolve<DynamoService>('dynamoService'),
+    commonContainer.resolve<CacheService>('cacheService')
   )
 )
 daoContainer.register(

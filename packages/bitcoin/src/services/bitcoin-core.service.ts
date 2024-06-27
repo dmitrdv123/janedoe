@@ -45,7 +45,7 @@ export class BitcoinCoreServiceImpl implements BitcoinCoreService {
       "method": "getblock",
       "params": [blockhash, 2]  // 2 for detailed transactions
     }
-    const response = await axios.post(appConfig.BITCOIN_RPC, data)
+    const response = await axios.post(appConfig.BITCOIN_RPC, data, { maxContentLength: Infinity, maxBodyLength: Infinity })
     return response.data.result
   }
 

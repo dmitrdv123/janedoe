@@ -2,9 +2,10 @@ import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
 import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { CacheService } from '@repo/common/dist/src/services/cache-service'
 import appConfig from '@repo/common/dist/src/app-config'
 
-import { batchReadItemsByChunks, batchWriteItemsByChunks, generateKey, queryItems } from '../utils/dynamo-utils'
+import { batchWriteItemsByChunks, generateKey, queryItems, scanItems } from '../utils/dynamo-utils'
 import { DynamoService } from '../services/dynamo.service'
 import { decryptString, encryptString } from '../utils/crypto-utils'
 
@@ -19,7 +20,8 @@ export class BitcoinDaoImpl implements BitcoinDao {
   private static readonly PK_TRANSACTION_PREFIX = 'transaction_output'
 
   public constructor(
-    private dynamoService: DynamoService
+    private dynamoService: DynamoService,
+    private cacheService: CacheService
   ) { }
 
   public async saveLatestProcessedBlockHeight(height: number): Promise<void> {
@@ -108,11 +110,11 @@ export class BitcoinDaoImpl implements BitcoinDao {
       Item: marshall({
         pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, walletAddress.walletName),
         sk: walletAddress.label,
-        gsi_pk1: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, walletAddress.data.address.toLocaleLowerCase()),
-        gsi_sk1: walletAddress.data.address.toLocaleLowerCase(),
         walletAddress: walletAddressToSave
       })
     })
+
+    this.cacheService.set(`wallet_address#${walletAddress.data.address}`, walletAddress)
   }
 
   public async loadWalletAddress(walletName: string, label: string): Promise<BitcoinWalletAddress | undefined> {
@@ -125,26 +127,6 @@ export class BitcoinDaoImpl implements BitcoinDao {
     })
 
     const walletAddress = result.Item ? unmarshall(result.Item).walletAddress as BitcoinWalletAddress : undefined
-    if (walletAddress) {
-      walletAddress.data.wif = decryptString(walletAddress.data.wif, appConfig.CRYPTO_SEED)
-    }
-
-    return walletAddress
-  }
-
-  public async loadWalletAddressByAddress(address: string): Promise<BitcoinWalletAddress | undefined> {
-    const result = await this.dynamoService.queryItems({
-      TableName: appConfig.TABLE_NAME,
-      IndexName: 'gsi_pk1-gsi_sk1-index',
-      KeyConditionExpression: 'gsi_pk1 = :pk and gsi_sk1= :sk',
-      ExpressionAttributeValues: marshall({
-        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, address.toLocaleLowerCase()),
-        ':sk': address.toLocaleLowerCase()
-      }),
-      Limit: 1
-    })
-
-    const walletAddress = result.Items && result.Items.length > 0 ? unmarshall(result.Items[0]).walletAddress as BitcoinWalletAddress : undefined
     if (walletAddress) {
       walletAddress.data.wif = decryptString(walletAddress.data.wif, appConfig.CRYPTO_SEED)
     }
@@ -166,6 +148,18 @@ export class BitcoinDaoImpl implements BitcoinDao {
       walletAddress.data.wif = decryptString(walletAddress.data.wif, appConfig.CRYPTO_SEED)
       return walletAddress
     })
+  }
+
+  public async listAllWalletAddresses(): Promise<BitcoinWalletAddress[]> {
+    const request = {
+      TableName: appConfig.TABLE_NAME,
+      FilterExpression: 'begins_with(pk, :pk_prefix)',
+      ExpressionAttributeValues: marshall({
+        ':pk_prefix': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, '')
+      })
+    }
+
+    return await scanItems(this.dynamoService, 'walletAddress', request)
   }
 
   public async updateWalletAddressCounter(walletName: string): Promise<number> {
@@ -204,20 +198,8 @@ export class BitcoinDaoImpl implements BitcoinDao {
       appConfig.TABLE_NAME,
       putRequests
     )
-  }
 
-  public async loadUtxos(keys: BitcoinUtxoDataKey[]): Promise<BitcoinUtxo[]> {
-    const readRequests = keys.map(key => marshall({
-      pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, key.txid),
-      sk: key.vout.toString()
-    }))
-
-    return await batchReadItemsByChunks(
-      this.dynamoService,
-      appConfig.TABLE_NAME,
-      'utxo',
-      readRequests
-    )
+    utxos.forEach(utxo => this.cacheService.set(`utxo#${utxo.data.txid}#${utxo.data.vout}`, utxo))
   }
 
   public async deleteUtxos(keys: BitcoinUtxoDataKey[]): Promise<void> {
@@ -235,6 +217,8 @@ export class BitcoinDaoImpl implements BitcoinDao {
       appConfig.TABLE_NAME,
       deleteRequests
     )
+
+    keys.forEach(key => this.cacheService.del(`utxo#${key.txid}#${key.vout}`))
   }
 
   public async listWalletUtxos(walletName: string, active: boolean): Promise<BitcoinUtxo[]> {
@@ -262,6 +246,18 @@ export class BitcoinDaoImpl implements BitcoinDao {
         ':active': active
       })
     })
+  }
+
+  public async listAllUtxos(): Promise<BitcoinUtxo[]> {
+    const request = {
+      TableName: appConfig.TABLE_NAME,
+      FilterExpression: 'begins_with(pk, :pk_prefix)',
+      ExpressionAttributeValues: marshall({
+        ':pk_prefix': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, '')
+      })
+    }
+
+    return await scanItems(this.dynamoService, 'utxo', request)
   }
 
   public async loadWalletBalance(walletName: string): Promise<number> {
