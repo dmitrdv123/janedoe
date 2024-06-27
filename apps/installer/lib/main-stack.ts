@@ -460,84 +460,10 @@ function handler(event) {
   }
 
   private deployService(output: MainStackOutput) {
-    const cryptoSeed = new Secret(this, withEnv('secret_crypto_seed'), {
-      secretName: withEnv('crypto_seed'),
+    const secret = new Secret(this, withEnv('secret'), {
+      secretName: withEnv('secret'),
       generateSecretString: {
-        secretStringTemplate: JSON.stringify({ data: env('CRYPTO_SEED'), pwd: '' }),
-        generateStringKey: 'pwd'
-      }
-    })
-
-    const jwtEncryptionKey = new Secret(this, withEnv('secret_jwt_encryption_key'), {
-      secretName: withEnv('jwt_encryption_key'),
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ data: env('JWT_ENCRYPTION_KEY'), pwd: '' }),
-        generateStringKey: 'pwd'
-      }
-    })
-
-    const jwtInitVector = new Secret(this, withEnv(`secret_jwt_init_vector`), {
-      secretName: withEnv('jwt_init_vector'),
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ data: env('JWT_INIT_VECTOR'), pwd: '' }),
-        generateStringKey: 'pwd'
-      }
-    })
-
-    const emailConfig = new Secret(this, withEnv('secret_email_config'), {
-      secretName: withEnv('email_config'),
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ data: env('EMAIL_CONFIG'), pwd: '' }),
-        generateStringKey: 'pwd'
-      }
-    })
-
-    const exchangeRateApiKey = new Secret(this, withEnv('secret_exchangerate_api_key'), {
-      secretName: withEnv('exchangerate_api_key'),
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ data: env('EXCHANGERATE_API_KEY'), pwd: '' }),
-        generateStringKey: 'pwd'
-      }
-    })
-
-    const rangoApiKey = new Secret(this, withEnv('secret_rango_api_key'), {
-      secretName: withEnv('rango_api_key'),
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ data: env('RANGO_API_KEY'), pwd: '' }),
-        generateStringKey: 'pwd'
-      }
-    })
-
-    const rangoApiKeySwap = new Secret(this, withEnv('secret_rango_api_key_swap'), {
-      secretName: withEnv('rango_api_key_swap'),
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ data: env('RANGO_API_KEY_SWAP'), pwd: '' }),
-        generateStringKey: 'pwd'
-      }
-    })
-
-    const bitcoinRpc = new Secret(this, withEnv('secret_bitcoin_rpc'), {
-      secretName: withEnv('bitcoin_rpc'),
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify(
-          {
-            data: env('BITCOIN_RPC'),
-            pwd: ''
-          }
-        ),
-        generateStringKey: 'pwd'
-      }
-    })
-
-    const bitcoinFeeRpc = new Secret(this, withEnv('secret_bitcoin_fee_rpc'), {
-      secretName: withEnv('bitcoin_fee_rpc'),
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify(
-          {
-            data: env('BITCOIN_FEE_RPC'),
-            pwd: ''
-          }
-        ),
+        secretStringTemplate: JSON.stringify({ data: env('SECRETS'), pwd: '' }),
         generateStringKey: 'pwd'
       }
     })
@@ -591,15 +517,7 @@ function handler(event) {
             METRIC_BITCOIN_NAME: output.alarmMetricBitcoin?.metricName ?? ''
           },
           environmentSecrets: {
-            CRYPTO_SEED: apprunner.Secret.fromSecretsManager(cryptoSeed, 'data'),
-            EXCHANGERATE_API_KEY: apprunner.Secret.fromSecretsManager(exchangeRateApiKey, 'data'),
-            RANGO_API_KEY: apprunner.Secret.fromSecretsManager(rangoApiKey, 'data'),
-            RANGO_API_KEY_SWAP: apprunner.Secret.fromSecretsManager(rangoApiKeySwap, 'data'),
-            JWT_ENCRYPTION_KEY: apprunner.Secret.fromSecretsManager(jwtEncryptionKey, 'data'),
-            JWT_INIT_VECTOR: apprunner.Secret.fromSecretsManager(jwtInitVector, 'data'),
-            EMAIL_CONFIG: apprunner.Secret.fromSecretsManager(emailConfig, 'data'),
-            BITCOIN_RPC: apprunner.Secret.fromSecretsManager(bitcoinRpc, 'data'),
-            BITCOIN_FEE_RPC: apprunner.Secret.fromSecretsManager(bitcoinFeeRpc, 'data')
+            SECRETS: apprunner.Secret.fromSecretsManager(secret, 'data')
           }
         }
       })

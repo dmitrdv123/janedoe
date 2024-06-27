@@ -187,10 +187,19 @@ async function saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs:
 }
 
 async function init(): Promise<void> {
+  if (!process.env.SECRETS) {
+    throw new Error('SECRETS is not set')
+  }
+
+  const {
+    BITCOIN_RPC,
+    BITCOIN_FEE_RPC
+  } = JSON.parse(process.env.SECRETS)
+
   initAppConfig({
     TABLE_NAME: withEnv(process.env.TABLE_NAME ?? ''),
-    BITCOIN_RPC: env('BITCOIN_RPC'),
-    BITCOIN_FEE_RPC: env('BITCOIN_FEE_RPC')
+    BITCOIN_RPC: BITCOIN_RPC,
+    BITCOIN_FEE_RPC: BITCOIN_FEE_RPC
   })
 }
 
