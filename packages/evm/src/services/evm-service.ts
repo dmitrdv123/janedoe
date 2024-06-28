@@ -73,8 +73,22 @@ export class EvmServiceImpl implements EvmService {
       ? createPublicClient({
         chain,
         transport: config.transport === 'http'
-          ? http(config.rpcUrl)
-          : webSocket(config.rpcUrl),
+          ? http(config.rpcUrl, {
+            /** The max number of times to retry. */
+            retryCount: 5,
+            /** The base delay (in ms) between retries. */
+            retryDelay: 1000,
+            /** The timeout (in ms) for the HTTP request. Default: 10_000 */
+            timeout: 30_000
+          })
+          : webSocket(config.rpcUrl, {
+            /** The max number of times to retry. */
+            retryCount: 5,
+            /** The base delay (in ms) between retries. */
+            retryDelay: 1000,
+            /** The timeout (in ms) for the HTTP request. Default: 10_000 */
+            timeout: 30_000
+          }),
       })
       : createPublicClient({
         chain,

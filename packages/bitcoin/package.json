@@ -9,7 +9,7 @@
     "@repo/common": "workspace:^",
     "@repo/dao": "workspace:^",
     "@repo/dao-aws": "workspace:^",
-    "axios": "^1.4.0",
+    "axios": "^1.7.2",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.6",
     "coininfo": "^5.2.1",

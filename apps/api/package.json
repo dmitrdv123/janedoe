@@ -15,7 +15,7 @@
     "@repo/dao-aws": "workspace:*",
     "@repo/evm": "workspace:*",
     "abitype": "^1.0.2",
-    "axios": "^1.4.0",
+    "axios": "^1.7.2",
     "better-lock": "^2.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

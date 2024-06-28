@@ -193,8 +193,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(typescript@5.4.4)(zod@3.22.4)
       axios:
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.7.2
+        version: 1.7.2(debug@4.3.4)
       better-lock:
         specifier: ^2.0.3
         version: 2.0.3
@@ -729,8 +729,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/evm
       axios:
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.7.2
+        version: 1.7.2(debug@4.3.4)
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
@@ -876,8 +876,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/evm
       axios:
-        specifier: ^1.4.0
-        version: 1.6.8(debug@4.3.4)
+        specifier: ^1.7.2
+        version: 1.7.2(debug@4.3.4)
       bip32:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1034,8 +1034,8 @@ importers:
         specifier: workspace:^
         version: link:../dao-aws
       axios:
-        specifier: ^1.4.0
-        version: 1.6.8(debug@4.3.4)
+        specifier: ^1.7.2
+        version: 1.7.2(debug@4.3.4)
       bip32:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1051,6 +1051,9 @@ importers:
       ecpair:
         specifier: ^2.1.0
         version: 2.1.0
+      node-fetch:
+        specifier: ^3.3.2
+        version: 3.3.2
       tiny-secp256k1:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1077,8 +1080,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(typescript@5.4.4)(zod@3.22.4)
       axios:
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.7.2
+        version: 1.7.2(debug@4.3.4)
       better-lock:
         specifier: ^2.0.3
         version: 2.0.3
@@ -5422,14 +5425,14 @@ packages:
     resolution: {integrity: sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==}
     engines: {node: '>=4'}
 
-  axios@1.4.0:
-    resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
-
   axios@1.5.0:
     resolution: {integrity: sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==}
 
   axios@1.6.8:
     resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
+
+  axios@1.7.2:
+    resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
 
   axobject-query@3.2.1:
     resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
@@ -6167,6 +6170,10 @@ packages:
   dashdash@1.14.1:
     resolution: {integrity: sha512-jRFi8UDGo6j+odZiEpjazZaWqEal3w/basFjQHQEwVtZJGDpxbH1MeYluwCS8Xq5wmLJooDlMgvVarmWfGM44g==}
     engines: {node: '>=0.10'}
+
+  data-uri-to-buffer@4.0.1:
+    resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
+    engines: {node: '>= 12'}
 
   data-view-buffer@1.0.1:
     resolution: {integrity: sha512-0lht7OugA5x3iJLOWFhWK/5ehONdprk0ISXqVFn/NFrDu+cuc8iADFrGQz5BnRK7LLU3JmkbXSxaqX+/mXYtUA==}
@@ -7059,6 +7066,10 @@ packages:
   fb-watchman@2.0.2:
     resolution: {integrity: sha512-p5161BqbuCaSnB8jIbzQHOlpgsPmK5rJVDfDKO91Axs5NC1uu3HRQm6wt9cd9/+GtQQIO53JdGXXoyDpTAsgYA==}
 
+  fetch-blob@3.2.0:
+    resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
+    engines: {node: ^12.20 || >= 14.13}
+
   fetch-cookie@0.11.0:
     resolution: {integrity: sha512-BQm7iZLFhMWFy5CZ/162sAGjBfdNWb7a8LEqqnzsHFhxT/X/SVj/z2t2nu3aJvjlbQkrAlTUApplPRjWyH4mhA==}
     engines: {node: '>=8'}
@@ -7136,15 +7147,6 @@ packages:
     resolution: {integrity: sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==}
     engines: {node: '>=0.4.0'}
 
-  follow-redirects@1.15.2:
-    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-
   follow-redirects@1.15.6:
     resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
     engines: {node: '>=4.0'}
@@ -7181,6 +7183,10 @@ packages:
   form-data@4.0.0:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
+
+  formdata-polyfill@4.0.10:
+    resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
+    engines: {node: '>=12.20.0'}
 
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -8979,6 +8985,10 @@ packages:
     resolution: {integrity: sha512-tmPX422rYgofd4epzrNoOXiE8XFZYOcCq1vD7MAXCDO+O+zndlA2ztdKKMa+EeuBG5tHETpr4ml4RGgpqDCCAg==}
     engines: {node: '>= 0.10.5'}
 
+  node-domexception@1.0.0:
+    resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
+    engines: {node: '>=10.5.0'}
+
   node-emoji@1.11.0:
     resolution: {integrity: sha512-wo2DpQkQp7Sjm2A0cq+sN7EHKO6Sl0ctXeBdFZrL9T9+UywORbufTcTZxom8YqpLQt/FqNMUkOpkZrJVYSKD3A==}
 
@@ -9002,6 +9012,10 @@ packages:
     peerDependenciesMeta:
       encoding:
         optional: true
+
+  node-fetch@3.3.2:
+    resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   node-forge@1.3.1:
     resolution: {integrity: sha512-dPEtOeMvF9VMcYV/1Wb8CPoVAXtp6MKMlcbAt4ddqmGqUJ6fQZFXkNZNkNlfevtNkGtaSoXf/vNNNSvgrdXwtA==}
@@ -11320,6 +11334,10 @@ packages:
 
   wcwidth@1.0.1:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
+
+  web-streams-polyfill@3.3.3:
+    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
+    engines: {node: '>= 8'}
 
   web-vitals@3.4.0:
     resolution: {integrity: sha512-n9fZ5/bG1oeDkyxLWyep0eahrNcPDF6bFqoyispt7xkW0xhDzpUBTgyDKqWDi1twT0MgH4HvvqzpUyh0ZxZV4A==}
@@ -14803,7 +14821,7 @@ snapshots:
   '@matterlabs/hardhat-zksync-node@1.0.3(hardhat@2.19.4(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))(zksync-ethers@6.7.0(ethers@6.9.0(bufferutil@4.0.8)(utf-8-validate@6.0.3)))':
     dependencies:
       '@matterlabs/hardhat-zksync-solc': 1.1.4(hardhat@2.19.4(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))
-      axios: 1.6.8(debug@4.3.4)
+      axios: 1.7.2(debug@4.3.4)
       chai: 4.4.1
       chalk: 4.1.2
       fs-extra: 11.2.0
@@ -14866,7 +14884,7 @@ snapshots:
       '@matterlabs/hardhat-zksync-solc': 1.1.4(hardhat@2.19.4(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))
       '@nomicfoundation/hardhat-verify': 2.0.5(hardhat@2.19.4(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5))(typescript@5.4.5)(utf-8-validate@6.0.3))
       '@openzeppelin/contracts': 4.9.6
-      axios: 1.6.8(debug@4.3.4)
+      axios: 1.7.2(debug@4.3.4)
       cbor: 8.1.0
       chai: 4.4.1
       chalk: 4.1.2
@@ -15443,7 +15461,7 @@ snapshots:
   '@openzeppelin/defender-admin-client@1.54.1(bufferutil@4.0.8)(debug@4.3.4)(utf-8-validate@6.0.3)':
     dependencies:
       '@openzeppelin/defender-base-client': 1.54.1(debug@4.3.4)
-      axios: 1.6.8(debug@4.3.4)
+      axios: 1.7.2(debug@4.3.4)
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@6.0.3)
       lodash: 4.17.21
       node-fetch: 2.7.0
@@ -15457,7 +15475,7 @@ snapshots:
     dependencies:
       amazon-cognito-identity-js: 6.3.7
       async-retry: 1.3.3
-      axios: 1.6.8(debug@4.3.4)
+      axios: 1.7.2(debug@4.3.4)
       lodash: 4.17.21
       node-fetch: 2.7.0
     transitivePeerDependencies:
@@ -15475,7 +15493,7 @@ snapshots:
     dependencies:
       '@ethersproject/abi': 5.7.0
       '@openzeppelin/defender-sdk-base-client': 1.8.0
-      axios: 1.6.8(debug@4.3.4)
+      axios: 1.7.2(debug@4.3.4)
       lodash: 4.17.21
     transitivePeerDependencies:
       - debug
@@ -18742,14 +18760,6 @@ snapshots:
 
   axe-core@4.7.0: {}
 
-  axios@1.4.0:
-    dependencies:
-      follow-redirects: 1.15.2
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
   axios@1.5.0(debug@4.3.4):
     dependencies:
       follow-redirects: 1.15.6(debug@4.3.4)
@@ -18759,7 +18769,15 @@ snapshots:
       - debug
     optional: true
 
-  axios@1.6.8(debug@4.3.4):
+  axios@1.6.8:
+    dependencies:
+      follow-redirects: 1.15.6(debug@4.3.4)
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.7.2(debug@4.3.4):
     dependencies:
       follow-redirects: 1.15.6(debug@4.3.4)
       form-data: 4.0.0
@@ -19691,6 +19709,8 @@ snapshots:
     dependencies:
       assert-plus: 1.0.0
 
+  data-uri-to-buffer@4.0.1: {}
+
   data-view-buffer@1.0.1:
     dependencies:
       call-bind: 1.0.7
@@ -20551,7 +20571,7 @@ snapshots:
   eth-gas-reporter@0.2.27(bufferutil@4.0.8)(utf-8-validate@6.0.3):
     dependencies:
       '@solidity-parser/parser': 0.14.5
-      axios: 1.6.8(debug@4.3.4)
+      axios: 1.7.2(debug@4.3.4)
       cli-table3: 0.5.1
       colors: 1.4.0
       ethereum-cryptography: 1.2.0
@@ -20911,6 +20931,11 @@ snapshots:
     dependencies:
       bser: 2.1.1
 
+  fetch-blob@3.2.0:
+    dependencies:
+      node-domexception: 1.0.0
+      web-streams-polyfill: 3.3.3
+
   fetch-cookie@0.11.0:
     dependencies:
       tough-cookie: 4.1.3
@@ -21004,8 +21029,6 @@ snapshots:
 
   flow-parser@0.206.0: {}
 
-  follow-redirects@1.15.2: {}
-
   follow-redirects@1.15.6(debug@4.3.4):
     optionalDependencies:
       debug: 4.3.4(supports-color@8.1.1)
@@ -21042,6 +21065,10 @@ snapshots:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
+
+  formdata-polyfill@4.0.10:
+    dependencies:
+      fetch-blob: 3.2.0
 
   forwarded@0.2.0: {}
 
@@ -23359,6 +23386,8 @@ snapshots:
     dependencies:
       minimatch: 3.1.2
 
+  node-domexception@1.0.0: {}
+
   node-emoji@1.11.0:
     dependencies:
       lodash: 4.17.21
@@ -23373,6 +23402,12 @@ snapshots:
   node-fetch@2.7.0:
     dependencies:
       whatwg-url: 5.0.0
+
+  node-fetch@3.3.2:
+    dependencies:
+      data-uri-to-buffer: 4.0.1
+      fetch-blob: 3.2.0
+      formdata-polyfill: 4.0.10
 
   node-forge@1.3.1: {}
 
@@ -24196,7 +24231,7 @@ snapshots:
 
   rango-sdk-basic@0.1.47(bufferutil@4.0.8)(utf-8-validate@6.0.3):
     dependencies:
-      axios: 1.6.8(debug@4.3.4)
+      axios: 1.6.8
       bignumber.js: 9.1.2
       eth-rpc-errors: 4.0.3
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@6.0.3)
@@ -25532,7 +25567,7 @@ snapshots:
       '@babel/runtime': 7.24.4
       '@ethersproject/abi': 5.7.0
       '@tronweb3/google-protobuf': 3.21.2
-      axios: 1.6.8(debug@4.3.4)
+      axios: 1.7.2(debug@4.3.4)
       bignumber.js: 9.1.2
       eslint-config-prettier: 8.10.0(eslint@8.57.0)
       ethereum-cryptography: 2.1.3
@@ -26147,6 +26182,8 @@ snapshots:
   wcwidth@1.0.1:
     dependencies:
       defaults: 1.0.4
+
+  web-streams-polyfill@3.3.3: {}
 
   web-vitals@3.4.0: {}
 

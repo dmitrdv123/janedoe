@@ -18,10 +18,10 @@ export class BitcoinCoreServiceImpl implements BitcoinCoreService {
   public async getLatestBlockHeight(): Promise<number> {
     bitcoin.Block
     const data = {
-      "jsonrpc": "1.0",
-      "id": "getblock.io",
-      "method": "getblockcount",
-      "params": []
+      'jsonrpc': '2.0',
+      'id': 'getblock.io',
+      'method': 'getblockcount',
+      'params': []
     }
     const response = await axios.post(appConfig.BITCOIN_RPC, data)
     return response.data.result
@@ -29,10 +29,10 @@ export class BitcoinCoreServiceImpl implements BitcoinCoreService {
 
   public async getBlockhash(height: number): Promise<string> {
     const data = {
-      "jsonrpc": "1.0",
-      "id": "curltest",
-      "method": "getblockhash",
-      "params": [height]
+      'jsonrpc': '2.0',
+      'id': 'curltest',
+      'method': 'getblockhash',
+      'params': [height]
     }
     const response = await axios.post(appConfig.BITCOIN_RPC, data)
     return response.data.result
@@ -40,10 +40,10 @@ export class BitcoinCoreServiceImpl implements BitcoinCoreService {
 
   public async getBlockByHash(blockhash: string): Promise<BitcoinBlock> {
     const data = {
-      "jsonrpc": "1.0",
-      "id": "curltest",
-      "method": "getblock",
-      "params": [blockhash, 2]  // 2 for detailed transactions
+      'jsonrpc': '2.0',
+      'id': 'curltest',
+      'method': 'getblock',
+      'params': [blockhash, 2]  // 2 for detailed transactions
     }
     const response = await axios.post(appConfig.BITCOIN_RPC, data, { maxContentLength: Infinity, maxBodyLength: Infinity })
     return response.data.result
@@ -51,10 +51,10 @@ export class BitcoinCoreServiceImpl implements BitcoinCoreService {
 
   public async sendTransaction(tx: bitcoin.Transaction): Promise<void> {
     const data = {
-      "jsonrpc": "1.0",
-      "id": "curltest",
-      "method": "sendrawtransaction",
-      "params": [tx.toHex(), 0]
+      'jsonrpc': '2.0',
+      'id': 'curltest',
+      'method': 'sendrawtransaction',
+      'params': [tx.toHex(), 0]
     }
     await axios.post(appConfig.BITCOIN_RPC, data)
   }
