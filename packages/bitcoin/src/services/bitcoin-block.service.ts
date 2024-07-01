@@ -1,5 +1,5 @@
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinBlock, BitcoinTransactionOutput, BitcoinTransactionOutputData, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinBlock, BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
