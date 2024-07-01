@@ -492,7 +492,7 @@ function handler(event) {
       serviceName: withEnv('janedoe'),
       autoDeploymentsEnabled: true,
       cpu: apprunner.Cpu.ONE_VCPU,
-      memory: apprunner.Memory.FOUR_GB,
+      memory: apprunner.Memory.TWO_GB,
       source: apprunner.Source.fromEcr({
         repository: Repository.fromRepositoryName(this, withEnv('repo_janedoe'), env('IMAGE_REPO')),
         imageConfiguration: {

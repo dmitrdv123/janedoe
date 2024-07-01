@@ -19,8 +19,16 @@ export class TaskManagerImpl implements TaskManager {
       async task => {
         await task.run()
 
+        let isRunning = false
         setInterval(async () => {
-          await task.run()
+          if (!isRunning) {
+            isRunning = true
+            try {
+              await task.run()
+            } finally {
+              isRunning = false
+            }
+        }
         }, task.getInterval() * 1000)
       }
     )
