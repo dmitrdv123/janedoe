@@ -16,11 +16,13 @@ import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
 import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
+import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.container'
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
+import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
 
 import { AccountController } from '../controllers/account-controller'
 import { AuthController } from '../controllers/auth-controller'
@@ -30,7 +32,7 @@ import { AuthService, AuthServiceImpl } from '../services/auth-service'
 import { PaymentService, PaymentServiceImpl } from '../services/payment-service'
 import { SettingsService, SettingsServiceImpl } from '../services/settings-service'
 import { BITCOIN_BLOCK_TASK_INTERVAL_SECONDS, META_TASK_INTERVAL_SECONDS, NOTIFICATION_TASK_INTERVAL_SECONDS, PAYMENT_TASK_INTERVAL_SECONDS } from '../constants'
-import { Task, TaskManagerImpl } from '../tasks/task-manager'
+import { Task, TaskManager, TaskManagerImpl } from '../tasks/task-manager'
 import { EmailService, EmailServiceImpl } from '../services/email-service'
 import { EmailTemplateService, EmailTemplateServiceImpl } from '../services/email-template-service'
 import { NotificationService, NotificationServiceImpl } from '../services/notification-service'
@@ -52,6 +54,7 @@ import { DocController } from '../controllers/doc-controller'
 import { MetaTask } from '../tasks/meta-task'
 import { RangoService, RangoServiceImpl } from '../services/rango-service'
 import { BitcoinBlockTask } from '../tasks/bitcoin-block.task'
+import { PaymentManagerTask } from '../tasks/payment-manager-task'
 
 const container = new Container()
 
@@ -215,11 +218,12 @@ container.register(
 )
 
 // Tasks
+container.register('taskManager', new TaskManagerImpl())
+
 container.register(
   'bitcoinBlockTask',
   new BitcoinBlockTask(
-    bitcoinContainer.resolve<BitcoinBlockService>('bitcoinBlockService'),
-    BITCOIN_BLOCK_TASK_INTERVAL_SECONDS
+    bitcoinContainer.resolve<BitcoinBlockService>('bitcoinBlockService')
   )
 )
 container.register(
@@ -227,8 +231,7 @@ container.register(
   new NotificationTask<PaymentLog>(
     NotificationType.IPN,
     container.resolve<NotificationObserver>('ipnNotificationObserver'),
-    container.resolve<NotificationService>('notificationService'),
-    NOTIFICATION_TASK_INTERVAL_SECONDS
+    container.resolve<NotificationService>('notificationService')
   )
 )
 container.register(
@@ -236,25 +239,28 @@ container.register(
   new NotificationTask<PaymentLog>(
     NotificationType.PAYMENT,
     container.resolve<NotificationObserver>('paymentStatusNotificationObserver'),
-    container.resolve<NotificationService>('notificationService'),
-    NOTIFICATION_TASK_INTERVAL_SECONDS
+    container.resolve<NotificationService>('notificationService')
   )
 )
 container.register(
   'metaTask',
   new MetaTask(
     container.resolve<MetaService>('metaService'),
-    container.resolve<SettingsService>('settingsService'),
-    META_TASK_INTERVAL_SECONDS
+    container.resolve<SettingsService>('settingsService')
   )
 )
 container.register(
-  'taskManager',
-  new TaskManagerImpl(
-    container.resolve<Task>('bitcoinBlockTask'),
-    container.resolve<Task>('ipnNotificationTask'),
-    container.resolve<Task>('paymentStatusNotificationTask'),
-    container.resolve<Task>('metaTask')
+  'paymentManagerTask',
+  new PaymentManagerTask(
+    container.resolve<TaskManager>('taskManager'),
+    container.resolve<SettingsService>('settingsService'),
+    container.resolve<MetaService>('metaService'),
+    container.resolve<AccountService>('accountService'),
+    evmContainer.resolve<EvmService>('evmService'),
+    bitcoinContainer.resolve<BitcoinBlockService>('bitcoinBlockService'),
+    container.resolve<NotificationService>('notificationService'),
+    container.resolve<PaymentLogService>('paymentLogService'),
+    container.resolve<CryptoService>('cryptoService')
   )
 )
 

@@ -7,13 +7,8 @@ import { SettingsService } from '../services/settings-service'
 export class MetaTask implements Task {
   public constructor(
     private metaService: MetaService,
-    private settingsService: SettingsService,
-    private interval: number
+    private settingsService: SettingsService
   ) { }
-
-  public getInterval(): number {
-    return this.interval
-  }
 
   public async run(): Promise<void> {
     try {

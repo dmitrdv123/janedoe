@@ -10,56 +10,51 @@ export class NotificationTask<T> implements Task {
   public constructor(
     private notificationType: NotificationType,
     private observer: NotificationObserver,
-    private notificationService: NotificationService,
-    private interval: number
+    private notificationService: NotificationService
   ) { }
-
-  public getInterval(): number {
-    return this.interval
-  }
 
   public async run(): Promise<void> {
     try {
-      logger.info(`NotificationTask: notification task start`)
+      logger.info(`NotificationTask ${this.notificationType}: notification task start`)
 
-      logger.debug(`NotificationTask: start to find notifications`)
+      logger.debug(`NotificationTask ${this.notificationType}: start to find notifications`)
       const notifications = await this.notificationService.loadNotifications<T>(this.notificationType)
-      logger.debug(`NotificationTask: found ${notifications.length} notifications`)
+      logger.debug(`NotificationTask ${this.notificationType}: found ${notifications.length} notifications`)
 
       await Promise.all(
         notifications.map(async notification => {
           try {
             await this.process(notification)
           } catch (error) {
-            logger.error(`NotificationTask: error happens`)
+            logger.error(`NotificationTask ${this.notificationType}: error happens`)
             logger.error(error)
           }
         })
       )
     } catch (error) {
-      logger.error(`NotificationTask: error happens`)
+      logger.error(`NotificationTask ${this.notificationType}: error happens`)
       logger.error(error)
     }
   }
 
   private async process(notification: Notification<T>): Promise<void> {
-    logger.debug(`NotificationTask: start process notification ${notification.key}`)
+    logger.debug(`NotificationTask ${this.notificationType}: start process notification ${notification.key}`)
     logger.debug(notification)
 
-    logger.debug(`NotificationTask: start to notify observer about notification ${notification.key}`)
+    logger.debug(`NotificationTask ${this.notificationType}: start to notify observer about notification ${notification.key}`)
     const processed = await this.observer.notify(notification)
-    logger.debug('NotificationTask: end to notify observer')
+    logger.debug('NotificationTask ${this.notificationType}: end to notify observer')
 
     if (processed) {
-      logger.debug(`NotificationTask: start to remove notification ${notification.key}`)
+      logger.debug(`NotificationTask ${this.notificationType}: start to remove notification ${notification.key}`)
       await this.notificationService.removeNotification(notification)
-      logger.debug('NotificationTask: end to remove notification')
+      logger.debug(`NotificationTask ${this.notificationType}: end to remove notification`)
     } else if (Date.now() - notification.timestamp >= MAX_NOTIFICATION_TIMESTAMP_DELTA_SEC) {
-      logger.debug(`NotificationTask: start to remove notification  ${notification.key} since it is older than limit`)
+      logger.debug(`NotificationTask ${this.notificationType}: start to remove notification  ${notification.key} since it is older than limit`)
       await this.notificationService.removeNotification(notification)
-      logger.debug('NotificationTask: end to remove notification')
+      logger.debug('NotificationTask ${this.notificationType}: end to remove notification')
     } else {
-      logger.debug(`NotificationTask: notification ${notification.key} was not processed`)
+      logger.debug(`NotificationTask ${this.notificationType}: notification ${notification.key} was not processed`)
     }
   }
 }

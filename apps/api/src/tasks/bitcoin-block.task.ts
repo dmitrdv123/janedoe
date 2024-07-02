@@ -5,13 +5,8 @@ import { Task } from './task-manager'
 
 export class BitcoinBlockTask implements Task {
   public constructor(
-    private bitcoinBlockService: BitcoinBlockService,
-    private interval: number
+    private bitcoinBlockService: BitcoinBlockService
   ) { }
-
-  public getInterval(): number {
-    return this.interval
-  }
 
   public async run(): Promise<void> {
     try {

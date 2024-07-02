@@ -1,41 +1,48 @@
 export interface Task {
-  run(): void | Promise<void>
-  getInterval(): number
+  run(): Promise<void>
 }
 
 export interface TaskManager {
-  add(task: Task): void
-  run(): void
+  add(key: string, task: Task, interval: number): void
+  remove(key: string): void
 }
 
 export class TaskManagerImpl implements TaskManager {
-  private tasks: Task[] = []
+  private tasks: { [key: string]: { task: Task, running: boolean, timerId: NodeJS.Timeout } } = {}
 
-  constructor(...tasks: Task[]) {
-    this.tasks = tasks
+  constructor() {
   }
 
-  public add(task: Task) {
-    this.tasks.push(task)
-  }
+  public add(key: string, task: Task, interval: number): void {
+    if (this.tasks[key]) {
+      return
+    }
 
-  public run(): void {
-    this.tasks.map(
-      async task => {
-        await task.run()
-
-        let isRunning = false
-        setInterval(async () => {
-          if (!isRunning) {
-            isRunning = true
+    task.run().then(() => {
+      this.tasks[key] = {
+        task,
+        running: false,
+        timerId: setInterval(async () => {
+          if (!this.tasks[key].running) {
+            this.tasks[key].running = true
             try {
               await task.run()
             } finally {
-              isRunning = false
+              this.tasks[key].running = false
             }
-        }
-        }, task.getInterval() * 1000)
+          }
+        }, interval * 1000)
       }
-    )
+    })
+  }
+
+  public remove(key: string): void {
+    const data = this.tasks[key]
+    if (!data) {
+      return
+    }
+
+    clearInterval(data.timerId)
+    delete this.tasks[key]
   }
 }
