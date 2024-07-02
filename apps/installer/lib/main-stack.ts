@@ -23,7 +23,6 @@ interface MainStackOutput {
   keyPair: IKeyPair
 
   tableData?: ITable
-  tableNotification?: ITable
   tableTimeSeries?: ITable
 
   bucketLog?: IBucket
@@ -304,14 +303,6 @@ function handler(event) {
       })
     }
 
-    if (output.tableNotification) {
-      new CfnOutput(this, withEnv('cloudformation_output_table_notification'), {
-        exportName: withEnv('table-notification', '-'),
-        value: output.tableNotification.tableName,
-        description: 'Table Notification name'
-      })
-    }
-
     if (output.tableTimeSeries) {
       new CfnOutput(this, withEnv('cloudformation_output_table_timeseries'), {
         exportName: withEnv('table-timeseries', '-'),
@@ -437,14 +428,6 @@ function handler(event) {
       projectionType: ProjectionType.ALL
     })
 
-    const tableNotification = new Table(this, withEnv(`ddb_${env('TABLE_NAME_NOTIFICATION')}`), {
-      tableName: withEnv(env('TABLE_NAME_NOTIFICATION')),
-      partitionKey: { name: 'pk', type: AttributeType.STRING },
-      sortKey: { name: 'sk', type: AttributeType.NUMBER },
-      billingMode: BillingMode.PAY_PER_REQUEST,
-      removalPolicy: RemovalPolicy.DESTROY
-    })
-
     const tableTimeSeries = new Table(this, withEnv(`ddb_${env('TABLE_NAME_TIME_SERIES')}`), {
       tableName: withEnv(env('TABLE_NAME_TIME_SERIES')),
       partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -455,7 +438,6 @@ function handler(event) {
     })
 
     output.tableData = tableData
-    output.tableNotification = tableNotification
     output.tableTimeSeries = tableTimeSeries
   }
 
@@ -507,7 +489,6 @@ function handler(event) {
             PINO_CONFIG: env('PINO_CONFIG'),
             TABLE_NAME: output.tableData?.tableName ?? '',
             TABLE_NAME_TIME_SERIES: output.tableTimeSeries?.tableName ?? '',
-            TABLE_NAME_NOTIFICATION: output.tableNotification?.tableName ?? '',
             BUCKET_NAME_DATA: output.bucketData?.bucketName ?? '',
             METRIC_RANGO_NAMESPACE: output.alarmMetricRango?.namespace ?? '',
             METRIC_RANGO_NAME: output.alarmMetricRango?.metricName ?? '',

@@ -10,7 +10,7 @@ import { DynamoService } from '../services/dynamo.service'
 import { decryptString, encryptString } from '../utils/crypto-utils'
 
 export class BitcoinDaoImpl implements BitcoinDao {
-  private static readonly PK_PREFIX = 'bitcoin'
+  private static readonly PK_PREFIX = 'btc'
   private static readonly PK_LATEST_PROCESSED_BLOCK_HEIGHT_PREFIX = 'block_processed_height_latest'
   private static readonly PK_FEE_RATE_PREFIX = 'fee_rate'
   private static readonly PK_WALLET_PREFIX = 'wallet'

@@ -15,6 +15,8 @@ import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrappe
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
+import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
+import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
@@ -238,12 +240,19 @@ container.register(
   )
 )
 container.register(
-  'notificationTask',
-  new NotificationTask(
-    {
-      'payment': container.resolve<NotificationObserver>('paymentStatusNotificationObserver'),
-      'ipn': container.resolve<NotificationObserver>('ipnNotificationObserver')
-    },
+  'ipnNotificationTask',
+  new NotificationTask<PaymentLog>(
+    NotificationType.IPN,
+    container.resolve<NotificationObserver>('ipnNotificationObserver'),
+    container.resolve<NotificationService>('notificationService'),
+    NOTIFICATION_TASK_INTERVAL_SECONDS
+  )
+)
+container.register(
+  'paymentStatusNotificationTask',
+  new NotificationTask<PaymentLog>(
+    NotificationType.PAYMENT,
+    container.resolve<NotificationObserver>('paymentStatusNotificationObserver'),
     container.resolve<NotificationService>('notificationService'),
     NOTIFICATION_TASK_INTERVAL_SECONDS
   )
@@ -261,7 +270,8 @@ container.register(
   new TaskManagerImpl(
     container.resolve<Task>('bitcoinBlockTask'),
     container.resolve<Task>('paymentTask'),
-    container.resolve<Task>('notificationTask'),
+    container.resolve<Task>('ipnNotificationTask'),
+    container.resolve<Task>('paymentStatusNotificationTask'),
     container.resolve<Task>('metaTask')
   )
 )

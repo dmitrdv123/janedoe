@@ -24,10 +24,6 @@ if (!process.env.TABLE_NAME_TIME_SERIES) {
   throw new Error('TABLE_NAME_TIME_SERIES is not set')
 }
 
-if (!process.env.TABLE_NAME_NOTIFICATION) {
-  throw new Error('TABLE_NAME_NOTIFICATION is not set')
-}
-
 const stackProps = {
   env: {
     account: env('AWS_ACCOUNT'),

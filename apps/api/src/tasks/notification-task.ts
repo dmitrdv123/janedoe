@@ -1,4 +1,4 @@
-import { Notification } from '@repo/dao/dist/src/interfaces/notification'
+import { Notification, NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 
 import { MAX_NOTIFICATION_TIMESTAMP_DELTA_SEC } from '../constants'
 import { NotificationService } from '../services/notification-service'
@@ -6,9 +6,10 @@ import { NotificationObserver } from '../services/notifications/notification-obs
 import { logger } from '../utils/logger'
 import { Task } from './task-manager'
 
-export class NotificationTask implements Task {
+export class NotificationTask<T> implements Task {
   public constructor(
-    private observers: { [key: string]: NotificationObserver },
+    private notificationType: NotificationType,
+    private observer: NotificationObserver,
     private notificationService: NotificationService,
     private interval: number
   ) { }
@@ -22,7 +23,7 @@ export class NotificationTask implements Task {
       logger.info(`NotificationTask: notification task start`)
 
       logger.debug(`NotificationTask: start to find notifications`)
-      const notifications = await this.notificationService.loadNotifications()
+      const notifications = await this.notificationService.loadNotifications<T>(this.notificationType)
       logger.debug(`NotificationTask: found ${notifications.length} notifications`)
 
       await Promise.all(
@@ -41,18 +42,13 @@ export class NotificationTask implements Task {
     }
   }
 
-  private async process<T>(notification: Notification<T>): Promise<void> {
+  private async process(notification: Notification<T>): Promise<void> {
     logger.debug(`NotificationTask: start process notification ${notification.key}`)
     logger.debug(notification)
 
-    let processed = false
-    const observer = this.observers[notification.notificationType]
-    if (observer) {
-      logger.debug(`NotificationTask: start to notify observer about notification ${notification.key}`)
-      processed = await observer.notify(notification)
-    } else {
-      logger.debug(`NotificationTask: observer not found for notification ${notification.notificationType}`)
-    }
+    logger.debug(`NotificationTask: start to notify observer about notification ${notification.key}`)
+    const processed = await this.observer.notify(notification)
+    logger.debug('NotificationTask: end to notify observer')
 
     if (processed) {
       logger.debug(`NotificationTask: start to remove notification ${notification.key}`)

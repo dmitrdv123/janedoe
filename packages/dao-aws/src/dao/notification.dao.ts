@@ -5,7 +5,7 @@ import { Notification, NotificationType } from '@repo/dao/dist/src/interfaces/no
 import appConfig from '@repo/common/dist/src/app-config'
 
 import { DynamoService } from '../services/dynamo.service'
-import { generateKey, scanItems } from '../utils/dynamo-utils'
+import { generateKey, queryItems } from '../utils/dynamo-utils'
 
 export class NotificationDaoImpl implements NotificationDao {
   private static readonly PK_PREFIX = 'notification'
@@ -14,23 +14,24 @@ export class NotificationDaoImpl implements NotificationDao {
     private dynamoService: DynamoService
   ) { }
 
-  public async listNotifications<T>(): Promise<Notification<T>[]> {
+  public async listNotifications<T>(notificationType: NotificationType): Promise<Notification<T>[]> {
     const request = {
-      TableName: appConfig.TABLE_NAME_NOTIFICATION,
-      FilterExpression: 'begins_with(pk, :pk_prefix)',
+      TableName: appConfig.TABLE_NAME,
+      KeyConditionExpression: 'pk = :pk_value',
       ExpressionAttributeValues: marshall({
-        ':pk_prefix': `${NotificationDaoImpl.PK_PREFIX}#`
+        ':pk_value': generateKey(NotificationDaoImpl.PK_PREFIX, notificationType)
       })
     }
-    return await scanItems<Notification<T>>(this.dynamoService, 'notification', request)
+
+    return await queryItems<Notification<T>>(this.dynamoService, 'notification', request)
   }
 
   public async saveNotification<T>(notification: Notification<T>): Promise<void> {
     await this.dynamoService.putItem({
-      TableName: appConfig.TABLE_NAME_NOTIFICATION,
+      TableName: appConfig.TABLE_NAME,
       Item: marshall({
-        pk: generateKey(NotificationDaoImpl.PK_PREFIX, notification.notificationType, notification.key.toLocaleLowerCase()),
-        sk: notification.timestamp,
+        pk: generateKey(NotificationDaoImpl.PK_PREFIX, notification.notificationType),
+        sk: generateKey(notification.key.toLocaleLowerCase(), notification.timestamp),
         notification: {
           key: notification.key,
           notificationType: notification.notificationType.toString(),
@@ -43,10 +44,10 @@ export class NotificationDaoImpl implements NotificationDao {
 
   public async deleteNotification(key: string, notificationType: NotificationType, timestamp: number): Promise<void> {
     await this.dynamoService.deleteItem({
-      TableName: appConfig.TABLE_NAME_NOTIFICATION,
+      TableName: appConfig.TABLE_NAME,
       Key: marshall({
-        pk: generateKey(NotificationDaoImpl.PK_PREFIX, notificationType, key.toLocaleLowerCase()),
-        sk: timestamp
+        pk: generateKey(NotificationDaoImpl.PK_PREFIX, notificationType),
+        sk: generateKey(key.toLocaleLowerCase(), timestamp),
       })
     })
   }

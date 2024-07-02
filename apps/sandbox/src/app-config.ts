@@ -85,10 +85,6 @@ export function createAppConfig() {
     throw new Error('TABLE_NAME_TIME_SERIES is not set')
   }
 
-  if (!process.env.TABLE_NAME_NOTIFICATION) {
-    throw new Error('TABLE_NAME_NOTIFICATION is not set')
-  }
-
   if (!process.env.BUCKET_NAME_DATA) {
     throw new Error('BUCKET_NAME_DATA is not set')
   }
@@ -139,7 +135,6 @@ export function createAppConfig() {
     PINO_CONFIG: process.env.PINO_CONFIG,
     TABLE_NAME: process.env.TABLE_NAME,
     TABLE_NAME_TIME_SERIES: process.env.TABLE_NAME_TIME_SERIES,
-    TABLE_NAME_NOTIFICATION: process.env.TABLE_NAME_NOTIFICATION,
     BUCKET_NAME_DATA: process.env.BUCKET_NAME_DATA,
     METRIC_RANGO_NAMESPACE: process.env.METRIC_RANGO_NAMESPACE,
     METRIC_RANGO_NAME: process.env.METRIC_RANGO_NAME,

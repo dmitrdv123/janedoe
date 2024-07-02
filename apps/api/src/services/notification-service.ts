@@ -4,7 +4,7 @@ import { Notification, NotificationType } from '@repo/dao/dist/src/interfaces/no
 import { logger } from '../utils/logger'
 
 export interface NotificationService {
-  loadNotifications<T>(): Promise<Notification<T>[]>
+  loadNotifications<T>(notificationType: NotificationType): Promise<Notification<T>[]>
   createNotification<T>(key: string, notificationType: NotificationType, timestamp: number, data: T): Promise<void>
   removeNotification<T>(notification: Notification<T>): Promise<void>
 }
@@ -14,9 +14,9 @@ export class NotificationServiceImpl implements NotificationService {
     private notificationDao: NotificationDao
   ) { }
 
-  public async loadNotifications<T>(): Promise<Notification<T>[]> {
+  public async loadNotifications<T>(notificationType: NotificationType): Promise<Notification<T>[]> {
     logger.debug('NotificationService: start to load notifications')
-    const notifications = await this.notificationDao.listNotifications<T>()
+    const notifications = await this.notificationDao.listNotifications<T>(notificationType)
     logger.debug(`NotificationService: end to load notifications. Found ${notifications.length} to load notifications`)
     logger.debug(notifications)
 

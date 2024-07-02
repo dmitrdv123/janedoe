@@ -189,7 +189,6 @@ improvement backlog:
 - account: AccountServiceImpl.loadPaymentHistory we are loading full history and then cut it. Need to load only specific portion from DDB. Remove total size.
 - bitcoin: BitcoinUtilsServiceImpl, createTransaction do not add input if amount is less than possible fee for this input
 - api: split PaymentTask to separate tasks. So if we have issue with one blockchain then another will be not affected
-- api: split NotificationTask to separate tasks. So if we have issue with IPN then email will be not affected
 - aws:
   - aws: make appservice private to access only from api gateway
   - aws: configure cloudformation logs to delete when stack destroyed and retain

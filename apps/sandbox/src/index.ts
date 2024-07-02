@@ -471,12 +471,30 @@ async function notificationDaoTests(): Promise<void> {
   })
   console.log(`debug >> save notification done`)
 
-  const notifications = await notificationDao.listNotifications<IpnKey>()
-  console.log(`debug >> loading notifications done: found ${notifications.length} notifications`)
+  ipnKey = {
+    accountId: 'accountId3',
+    paymentId: 'paymentId3',
+    blockchain: 'blockchain3',
+    transaction: 'transaction3',
+    index: 1
+  }
+  await notificationDao.saveNotification({
+    key: 'key3',
+    notificationType: NotificationType.PAYMENT,
+    timestamp: 3,
+    data: ipnKey
+  })
+  console.log(`debug >> save notification done`)
+
+  let notificationType = NotificationType.IPN
+  let notifications = await notificationDao.listNotifications<IpnKey>(notificationType)
+  console.log(`debug >> loading notifications for ${notificationType} done: found ${notifications.length} notifications`)
   console.log(JSON.stringify(notifications))
 
-  const notificationType = notifications[0].notificationType
-  console.log(`debug >> notificationType of first element ${notificationType} is equal ${notificationType === NotificationType.IPN} to NotificationType.IPN`)
+  notificationType = NotificationType.PAYMENT
+  notifications = await notificationDao.listNotifications<IpnKey>(notificationType)
+  console.log(`debug >> loading notifications for ${notificationType} done: found ${notifications.length} notifications`)
+  console.log(JSON.stringify(notifications))
 }
 
 async function main() {
