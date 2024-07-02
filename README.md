@@ -211,7 +211,6 @@ disputable backlog:
 - account: sign in form, button should be blocked even when modal is open and not only when api request is processing
 - api: resend ipn should be done based on payment log and not based on saved ipn. Because in other case we can have situation when user can see payment but cannot resend ipn due to missing for some reasons saved ipn
 - payment: token without conversion should have higher priority in dropdown
-- aws: configure bitcoincore EC2 to be accessible only from apprunner. Disputable since we need to manage it outside
 - payment: after success payment we need to check whether tx is read by api. Then we need to get amount received and show rest of sum if necessary to pay additionally or redirect to success. Disputable since user should wait until tx will be processed. It could take longer than expected and bring additional unnecessary dependency of user from backend.
 - payment: use increaseAllowance instead of reset and set allowance. Disputable since openzeppelin ERC20 related classes does not have this method
 - account: if we open some account page in new tab then user will be unauthenticated in all tabs in chrome. It is related to disabling metamask extension. Disputable since user wallet should be connected
