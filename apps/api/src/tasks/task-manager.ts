@@ -4,6 +4,7 @@ export interface Task {
 }
 
 export interface TaskManager {
+  add(task: Task): void
   run(): void
 }
 
@@ -12,6 +13,10 @@ export class TaskManagerImpl implements TaskManager {
 
   constructor(...tasks: Task[]) {
     this.tasks = tasks
+  }
+
+  public add(task: Task) {
+    this.tasks.push(task)
   }
 
   public run(): void {

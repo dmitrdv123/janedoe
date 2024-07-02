@@ -491,10 +491,18 @@ async function notificationDaoTests(): Promise<void> {
   console.log(`debug >> loading notifications for ${notificationType} done: found ${notifications.length} notifications`)
   console.log(JSON.stringify(notifications))
 
+  await Promise.all(
+    notifications.map(notification => notificationDao.deleteNotification(notification.key, notification.notificationType, notification.timestamp))
+  )
+
   notificationType = NotificationType.PAYMENT
   notifications = await notificationDao.listNotifications<IpnKey>(notificationType)
   console.log(`debug >> loading notifications for ${notificationType} done: found ${notifications.length} notifications`)
   console.log(JSON.stringify(notifications))
+
+  await Promise.all(
+    notifications.map(notification => notificationDao.deleteNotification(notification.key, notification.notificationType, notification.timestamp))
+  )
 }
 
 async function main() {

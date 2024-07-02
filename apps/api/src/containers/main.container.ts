@@ -12,7 +12,6 @@ import { SettingsDao } from '@repo/dao/dist/src/dao/settings.dao'
 import { EmailTemplateDao } from '@repo/dao/dist/src/dao/email-template.dao'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
 import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrapper-service'
-import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
 import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
@@ -20,7 +19,6 @@ import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
-import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
 import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.container'
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 
@@ -33,7 +31,6 @@ import { PaymentService, PaymentServiceImpl } from '../services/payment-service'
 import { SettingsService, SettingsServiceImpl } from '../services/settings-service'
 import { BITCOIN_BLOCK_TASK_INTERVAL_SECONDS, META_TASK_INTERVAL_SECONDS, NOTIFICATION_TASK_INTERVAL_SECONDS, PAYMENT_TASK_INTERVAL_SECONDS } from '../constants'
 import { Task, TaskManagerImpl } from '../tasks/task-manager'
-import { PaymentTask } from '../tasks/payment-task'
 import { EmailService, EmailServiceImpl } from '../services/email-service'
 import { EmailTemplateService, EmailTemplateServiceImpl } from '../services/email-template-service'
 import { NotificationService, NotificationServiceImpl } from '../services/notification-service'
@@ -226,20 +223,6 @@ container.register(
   )
 )
 container.register(
-  'paymentTask',
-  new PaymentTask(
-    container.resolve<AccountService>('accountService'),
-    evmContainer.resolve<EvmService>('evmService'),
-    bitcoinContainer.resolve<BitcoinBlockService>('bitcoinBlockService'),
-    container.resolve<MetaService>('metaService'),
-    container.resolve<NotificationService>('notificationService'),
-    container.resolve<PaymentLogService>('paymentLogService'),
-    container.resolve<CryptoService>('cryptoService'),
-    container.resolve<SettingsService>('settingsService'),
-    PAYMENT_TASK_INTERVAL_SECONDS
-  )
-)
-container.register(
   'ipnNotificationTask',
   new NotificationTask<PaymentLog>(
     NotificationType.IPN,
@@ -269,7 +252,6 @@ container.register(
   'taskManager',
   new TaskManagerImpl(
     container.resolve<Task>('bitcoinBlockTask'),
-    container.resolve<Task>('paymentTask'),
     container.resolve<Task>('ipnNotificationTask'),
     container.resolve<Task>('paymentStatusNotificationTask'),
     container.resolve<Task>('metaTask')

@@ -17,6 +17,7 @@ import { SettingsService } from '../services/settings-service'
 
 export class PaymentTask implements Task {
   public constructor(
+    private blockchain: BlockchainMeta,
     private accountService: AccountService,
     private evmService: EvmService,
     private bitcoinBlockService: BitcoinBlockService,
@@ -34,40 +35,18 @@ export class PaymentTask implements Task {
 
   public async run(): Promise<void> {
     try {
-      logger.info(`PaymentTask: payment task start`)
-
-      const [appSettings, meta] = await Promise.all([
-        this.settingsService.loadAppSettings(),
-        this.metaService.meta()
-      ])
-
-      await Promise.all(
-        appSettings.paymentBlockchains.map(async paymentBlockchain => {
-          try {
-            const blockchain = meta.blockchains.find(item => item.name.toLocaleLowerCase() === paymentBlockchain.blockchain.toLocaleLowerCase())
-            if (!blockchain) {
-              logger.debug(`PaymentTask: blockchain ${paymentBlockchain} not found`)
-              return
-            }
-
-            logger.debug(`PaymentTask: start to process payment logs for ${blockchain.name}`)
-            await this.processBlockchain(blockchain)
-          } catch (error) {
-            logger.error(`PaymentTask: error happens for ${paymentBlockchain.blockchain}`)
-            logger.error(error)
-          }
-        })
-      )
+      logger.info(`PaymentTask: payment task start for ${this.blockchain.name}`)
+      await this.processBlockchain()
     } catch (error) {
-      logger.error(`PaymentTask: error happens`)
+      logger.error(`PaymentTask: error happens for ${this.blockchain.name}`)
       logger.error(error)
     }
   }
 
-  private async processBlockchain(blockchain: BlockchainMeta): Promise<void> {
-    const blockchainSettings = await this.settingsService.loadBlockchainSettings(blockchain.name)
+  private async processBlockchain(): Promise<void> {
+    const blockchainSettings = await this.settingsService.loadBlockchainSettings(this.blockchain.name)
     const lastProcessed = blockchainSettings?.block ?? undefined
-    logger.debug(`PaymentTask, ${blockchain.name}: last processed payments logs ${lastProcessed ?? 'undefined'}`)
+    logger.debug(`PaymentTask, ${this.blockchain.name}: last processed payments logs ${lastProcessed ?? 'undefined'}`)
 
     const iterator = await new PaymentLogsIteratorBuilder(
       this.settingsService,
@@ -77,27 +56,26 @@ export class PaymentTask implements Task {
       this.metaService
     )
       .withSkip(lastProcessed)
-      .build(blockchain)
+      .build(this.blockchain)
 
-    logger.debug(`PaymentTask, ${blockchain.name}: start to find payments logs`)
     const logs = await iterator.nextBatch()
-    logger.debug(`PaymentTask, ${blockchain.name}: found ${logs.length} payments logs`)
+    logger.debug(`PaymentTask, ${this.blockchain.name}: found ${logs.length} payments logs`)
 
-    logger.debug(`PaymentTask, ${blockchain.name}: start to create notifications`)
+    logger.debug(`PaymentTask, ${this.blockchain.name}: start to create notifications`)
     await Promise.all(
       logs.map(async (log) => await this.processPaymentLog(log))
     )
 
     if (lastProcessed === iterator.lastProcessed()) {
-      logger.debug(`PaymentTask, ${blockchain.name}: skip to save last processed payment logs since no new blocks found`)
+      logger.debug(`PaymentTask, ${this.blockchain.name}: skip to save last processed payment logs since no new blocks found`)
     } else {
-      logger.debug(`PaymentTask, ${blockchain.name}: start to save last processed payment logs ${iterator.lastProcessed()}`)
+      logger.debug(`PaymentTask, ${this.blockchain.name}: start to save last processed payment logs ${iterator.lastProcessed()}`)
       await this.settingsService.saveBlockchainSettings({
-        blockchain: blockchain.name,
+        blockchain: this.blockchain.name,
         block: iterator.lastProcessed()
       })
     }
-    logger.debug(`PaymentTask, ${blockchain.name}: end to save last processed payment logs ${iterator.lastProcessed()}`)
+    logger.debug(`PaymentTask, ${this.blockchain.name}: end to save last processed payment logs ${iterator.lastProcessed()}`)
   }
 
   private async processPaymentLog(log: PaymentLog): Promise<void> {

@@ -8,17 +8,65 @@ import express from 'express'
 import { pinoHttp } from 'pino-http'
 
 import appConfig from '@repo/common/dist/src/app-config'
+import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
+import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.container'
 
 import { createAppConfig } from './app-config'
 import { routes } from './routes'
 import { logger } from './utils/logger'
 import container from './containers/main.container'
 import { TaskManager } from './tasks/task-manager'
+import { SettingsService } from './services/settings-service'
+import { PaymentTask } from './tasks/payment-task'
+import { MetaService } from './services/meta-service'
+import { PAYMENT_TASK_INTERVAL_SECONDS } from './constants'
+import { AccountService } from './services/account-service'
+import { EvmService } from '@repo/evm/dist/src/services/evm-service'
+import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
+import { NotificationService } from './services/notification-service'
+import { PaymentLogService } from './services/payment-log-service'
+import { CryptoService } from './services/crypto-service'
+
+const initTaskManager = async () => {
+  const taskManager = container.resolve<TaskManager>('taskManager')
+  const settingsService = container.resolve<SettingsService>('settingsService')
+  const metaService = container.resolve<MetaService>('metaService')
+
+  const [appSettings, meta] = await Promise.all([
+    settingsService.loadAppSettings(),
+    metaService.meta()
+  ])
+
+  appSettings.paymentBlockchains.map(async paymentBlockchain => {
+    const blockchain = meta.blockchains.find(item => item.name.toLocaleLowerCase() === paymentBlockchain.blockchain.toLocaleLowerCase())
+    if (!blockchain) {
+      logger.debug(`PaymentTask: blockchain ${paymentBlockchain} not found`)
+      return
+    }
+
+    logger.debug(`PaymentTask: start to process payment logs for ${blockchain.name}`)
+
+    const task = new PaymentTask(
+      blockchain,
+      container.resolve<AccountService>('accountService'),
+      evmContainer.resolve<EvmService>('evmService'),
+      bitcoinContainer.resolve<BitcoinBlockService>('bitcoinBlockService'),
+      container.resolve<MetaService>('metaService'),
+      container.resolve<NotificationService>('notificationService'),
+      container.resolve<PaymentLogService>('paymentLogService'),
+      container.resolve<CryptoService>('cryptoService'),
+      container.resolve<SettingsService>('settingsService'),
+      PAYMENT_TASK_INTERVAL_SECONDS
+    )
+
+    taskManager.add(task)
+  })
+
+  taskManager.run()
+}
 
 createAppConfig()
-
-const taskManager = container.resolve<TaskManager>('taskManager')
-taskManager.run()
+initTaskManager()
 
 const app = express()
 
