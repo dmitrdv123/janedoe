@@ -123,24 +123,14 @@ async function saveEvmBlockchainSettings(contracts: AppSettingsContracts[], evmC
   await Promise.all(
     contracts
       .map(async contract => {
-        let shouldSave = false
-        if (process.env.IS_DEV) {
-          shouldSave = true
-        } else {
-          const existingSettings = await settingsDao.loadSettings<BlockchainSettings>(BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
-          shouldSave = !existingSettings
+        const evmClientConfig = evmClientConfigs.find(config => config.blockchain.toLocaleLowerCase() === contract.blockchain.toLocaleLowerCase())
+        const blockNumber = await evmService.blockNumber(evmClientConfig, contract.chainId)
+        const blockchainSettings: BlockchainSettings = {
+          blockchain: contract.blockchain,
+          block: blockNumber.toString()
         }
 
-        if (shouldSave) {
-          const evmClientConfig = evmClientConfigs.find(config => config.blockchain.toLocaleLowerCase() === contract.blockchain.toLocaleLowerCase())
-          const blockNumber = await evmService.blockNumber(evmClientConfig, contract.chainId)
-          const blockchainSettings: BlockchainSettings = {
-            blockchain: contract.blockchain,
-            block: blockNumber.toString()
-          }
-
-          await settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
-        }
+        await settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, contract.blockchain)
       })
   )
 }
@@ -150,27 +140,17 @@ async function saveBitcoinBlockchainSettings(): Promise<void> {
   const bitcoinCoreService = bitcoinContainer.resolve<BitcoinCoreService>('bitcoinCoreService')
   const bitcoinDao = dynamoContainer.resolve<BitcoinDao>('bitcoinDao')
 
-  let shouldSave = false
-  if (process.env.IS_DEV) {
-    shouldSave = true
-  } else {
-    const existingSettings = await settingsDao.loadSettings<BlockchainSettings>(BLOCKCHAIN_SETTINGS_PREFIX, BLOCKCHAIN_BTC)
-    shouldSave = !existingSettings
+  const latestBitcoinBlockHeight = await bitcoinCoreService.getLatestBlockHeight()
+
+  const blockchainSettings: BlockchainSettings = {
+    blockchain: BLOCKCHAIN_BTC,
+    block: latestBitcoinBlockHeight.toString()
   }
 
-  if (shouldSave) {
-    const latestBitcoinBlockHeight = await bitcoinCoreService.getLatestBlockHeight()
-
-    const blockchainSettings: BlockchainSettings = {
-      blockchain: BLOCKCHAIN_BTC,
-      block: latestBitcoinBlockHeight.toString()
-    }
-
-    await Promise.all([
-      settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, BLOCKCHAIN_BTC),
-      bitcoinDao.saveLatestProcessedBlockHeight(latestBitcoinBlockHeight)
-    ])
-  }
+  await Promise.all([
+    settingsDao.saveSettings(blockchainSettings, BLOCKCHAIN_SETTINGS_PREFIX, BLOCKCHAIN_BTC),
+    bitcoinDao.saveLatestProcessedBlockHeight(latestBitcoinBlockHeight)
+  ])
 }
 
 async function saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs: BlockchainEvmClientConfig[]): Promise<void> {
