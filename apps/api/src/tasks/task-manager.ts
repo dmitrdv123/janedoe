@@ -23,11 +23,15 @@ export class TaskManagerImpl implements TaskManager {
         task,
         running: false,
         timerId: setInterval(async () => {
-          if (!this.tasks[key].running) {
-            this.tasks[key].running = true
-            try {
-              await task.run()
-            } finally {
+          if (this.tasks[key]?.running) {
+            return
+          }
+
+          this.tasks[key].running = true
+          try {
+            await task.run()
+          } finally {
+            if (this.tasks[key]?.running) {
               this.tasks[key].running = false
             }
           }
