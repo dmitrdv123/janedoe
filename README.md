@@ -177,6 +177,7 @@ others:
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
   - api: create and use email to send notification using sns and proper domain
+  - validate project at walletconnect.com
 
 improvement backlog:
 

@@ -7,6 +7,7 @@ import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
 import { ServiceError } from '../types/errors/service-error'
 import { PaymentConversionError } from '../types/errors/payment-conversion-error'
 import { TokenWithBalance } from '../types/token-with-balance'
+import { PUBLIC_NODE_RPCS } from '../constants'
 
 export function cutString(str: string, num: number = 4, max: number = 11): string {
   if (str.length <= max || str.length <= 2 * num) {
@@ -399,13 +400,22 @@ export function serializeErrorForRedux(error: unknown): unknown {
 }
 
 export function getTransport(chainId: number, projectId: string): Transport {
-  const rpc = CoreHelperUtil.getBlockchainApiUrl()
-  if (!PresetsUtil.WalletConnectRpcChainIds.includes(chainId)) {
+  const publicNodeRpc = PUBLIC_NODE_RPCS[chainId.toString()]
+  const walletConnectRpc = PresetsUtil.WalletConnectRpcChainIds.includes(chainId)
+    ? `${CoreHelperUtil.getBlockchainApiUrl()}/v1?chainId=${ConstantsUtil.EIP155}:${chainId}&projectId=${projectId}`
+    : undefined
+
+  if (!publicNodeRpc && !walletConnectRpc) {
     return http()
   }
 
-  return fallback([
-    http(),
-    http(`${rpc}/v1/?chainId=${ConstantsUtil.EIP155}:${chainId}&projectId=${projectId}`)
-  ])
+  const arr = [http()]
+  if (publicNodeRpc) {
+    arr.push(http(publicNodeRpc))
+  }
+  if (walletConnectRpc) {
+    arr.push(http(walletConnectRpc))
+  }
+
+  return fallback(arr)
 }

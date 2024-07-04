@@ -48,3 +48,14 @@ export const CHAINS: [Chain, ...Chain[]] = import.meta.env.VITE_APP_IS_DEV
   : [
     arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, zkSync
   ]
+
+export const PUBLIC_NODE_RPCS: { [key: string]: string } = {
+  "56": "https://bsc-rpc.publicnode.com",
+  "137": "https://polygon-bor-rpc.publicnode.com",
+  "42161": "https://arbitrum-one-rpc.publicnode.com",
+  "10": "https://optimism-rpc.publicnode.com",
+  "8453": "https://base-rpc.publicnode.com",
+  "43114": "https://avalanche-c-chain-rpc.publicnode.com",
+  "25": "https://cronos-evm-rpc.publicnode.com",
+  "1": "https://ethereum-rpc.publicnode.com"
+}

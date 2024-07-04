@@ -6,7 +6,7 @@ import { Address, Transport, fallback, formatUnits, getAddress, http, isAddress 
 import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountRbacSettings, AccountTeamSettings, Permission, PermissionKey } from '../types/account-settings'
 import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
 import { ServiceError } from '../types/service-error'
-import { PERMISSION_PRIORITY } from '../constants'
+import { PERMISSION_PRIORITY, PUBLIC_NODE_RPCS } from '../constants'
 
 export function authDataKey(): string {
   return `${import.meta.env.VITE_APP_APP_PREFIX ?? 'janedoe'}:authData`
@@ -390,15 +390,24 @@ export function serializeErrorForRedux(error: unknown): unknown {
 }
 
 export function getTransport(chainId: number, projectId: string): Transport {
-  const rpc = CoreHelperUtil.getBlockchainApiUrl()
-  if (!PresetsUtil.WalletConnectRpcChainIds.includes(chainId)) {
+  const publicNodeRpc = PUBLIC_NODE_RPCS[chainId.toString()]
+  const walletConnectRpc = PresetsUtil.WalletConnectRpcChainIds.includes(chainId)
+    ? `${CoreHelperUtil.getBlockchainApiUrl()}/v1?chainId=${ConstantsUtil.EIP155}:${chainId}&projectId=${projectId}`
+    : undefined
+
+  if (!publicNodeRpc && !walletConnectRpc) {
     return http()
   }
 
-  return fallback([
-    http(),
-    http(`${rpc}/v1/?chainId=${ConstantsUtil.EIP155}:${chainId}&projectId=${projectId}`)
-  ])
+  const arr = [http()]
+  if (publicNodeRpc) {
+    arr.push(http(publicNodeRpc))
+  }
+  if (walletConnectRpc) {
+    arr.push(http(walletConnectRpc))
+  }
+
+  return fallback(arr)
 }
 
 export function hasPermission(rbacSettings: AccountRbacSettings | undefined, requiredKeys: PermissionKey[], requiredPermission: Permission): boolean {
