@@ -159,7 +159,7 @@ const PaymentSettings: React.FC = () => {
                 ...currentAccountPaymentSettings,
                 disableConversion: e.target.checked
               })}
-              readOnly={!rbacSettings?.isOwner && rbacSettings?.permissions['payment_settings'] !== 'Modify'}
+              disabled={!rbacSettings?.isOwner && rbacSettings?.permissions['payment_settings'] !== 'Modify'}
             />
             <Form.Text className="text-muted">
               {t('components.payment_settings.disable_conversion_desc')}

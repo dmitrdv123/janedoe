@@ -1,3 +1,4 @@
+import { Chain, arbitrum, avalanche, base, bsc, cronos, hardhat, linea, mainnet, optimism, polygon, zkSync } from 'viem/chains'
 import { Permission } from './types/account-settings'
 
 export const DEFAULT_CURRENCY_DECIMAL_PLACES = 4
@@ -39,3 +40,11 @@ export const PERMISSION_KEYS = ['balances', 'payments', 'common_settings', 'noti
 export const DEFAULT_PERMISSIONS = Object.fromEntries(PERMISSION_KEYS.map(key => [key, 'View' as Permission]))
 export const PERMISSION_PRIORITY = { 'Disable': 0, 'View': 1, 'Modify': 2 }
 export const SUPPORTED_LANGUAGES = ['en', 'ru']
+
+export const CHAINS: [Chain, ...Chain[]] = import.meta.env.VITE_APP_IS_DEV
+  ? [
+    hardhat, arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, zkSync
+  ]
+  : [
+    arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, zkSync
+  ]

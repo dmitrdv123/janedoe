@@ -48,7 +48,8 @@
     "errors": {
       "default": "Произошла неизвестная ошибка",
       "param_not_set": "Параметр {{name}} не задан или пуст",
-      "param_exceed_max_length": "Длина {{length}} параметра {{name}} превышает максимальную длину {{max_length}}"
+      "param_exceed_max_length": "Длина {{length}} параметра {{name}} превышает максимальную длину {{max_length}}",
+      "param_not_valid_url": "Параметр {{name}} не является корректным URL"
     }
   }
 }

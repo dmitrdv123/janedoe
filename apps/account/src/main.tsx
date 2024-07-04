@@ -6,7 +6,6 @@ import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Transport } from 'viem'
-import { Chain, arbitrum, avalanche, base, bsc, cronos, hardhat, linea, mainnet, optimism, polygon, zkSync } from 'viem/chains'
 import { WagmiProvider } from 'wagmi'
 
 import './index.css'
@@ -24,6 +23,7 @@ import Loader from './components/Loader'
 import Main from './pages/Sandbox/Main'
 import ConfigProvider from './context/config/context'
 import { getTransport } from './libs/utils'
+import { CHAINS } from './constants'
 
 if (!import.meta.env.VITE_APP_PROJECT_ID) {
   throw new Error('You need to provide VITE_APP_PROJECT_ID env variable')
@@ -43,28 +43,20 @@ const metadata = {
   icons: []
 }
 
-const chains: [Chain, ...Chain[]] = [
-  arbitrum, avalanche, base, bsc, cronos, linea, mainnet, optimism, polygon, zkSync
-]
-if (import.meta.env.VITE_APP_IS_DEV) {
-  chains.push(hardhat)
-}
-
-const transports: { [key: number]: Transport } = chains.reduce((acc, chain) => {
+const transports: { [key: number]: Transport } = CHAINS.reduce((acc, chain) => {
   acc[chain.id] = getTransport(chain.id, projectId)
   return acc
 }, {} as { [key: number]: Transport })
 
 const wagmiConfig = defaultWagmiConfig({
-  chains,
   projectId,
   metadata,
   transports,
+  chains: CHAINS,
   enableInjected: true,
   enableEIP6963: true,
   enableCoinbase: true,
   enableWalletConnect: true,
-  enableEmail: false
 })
 
 // 3. Create modal
@@ -78,7 +70,6 @@ root.render(
       <ConfigProvider>
         <WagmiProvider config={wagmiConfig}>
           <QueryClientProvider client={queryClient}>
-
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={

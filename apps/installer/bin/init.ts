@@ -87,7 +87,7 @@ async function saveSettings(): Promise<void> {
     saveAppSettings(contracts),
     saveEvmBlockchainSettings(contracts, evmClientConfigs),
     saveBitcoinBlockchainSettings(),
-    saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs)
+    saveBlockchainEvmClientConfigSettings(evmClientConfigs)
   ])
 
   console.log('End to save settings')
@@ -153,7 +153,7 @@ async function saveBitcoinBlockchainSettings(): Promise<void> {
   ])
 }
 
-async function saveBlockchainBlockchainEvmClientConfigSettings(evmClientConfigs: BlockchainEvmClientConfig[]): Promise<void> {
+async function saveBlockchainEvmClientConfigSettings(evmClientConfigs: BlockchainEvmClientConfig[]): Promise<void> {
   console.log(`Start to save blockchain transport settings for ${evmClientConfigs.length} blockchains`)
 
   const settingsDao = dynamoContainer.resolve<SettingsDao>('settingsDao')

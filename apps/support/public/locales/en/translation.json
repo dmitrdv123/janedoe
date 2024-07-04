@@ -72,7 +72,8 @@
     "errors": {
       "default": "Unknown error happens",
       "param_not_set": "Parameter {{name}} is not set or empty",
-      "param_exceed_max_length": "Length {{length}} of parameter {{name}} is exceed maximum length {{max_length}}"
+      "param_exceed_max_length": "Length {{length}} of parameter {{name}} is exceed maximum length {{max_length}}",
+      "param_not_valid_url": "Parameter {{name}} is not a valid URL"
     }
   }
 }

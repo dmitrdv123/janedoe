@@ -39,8 +39,8 @@ const projectId = import.meta.env.VITE_APP_PROJECT_ID
 // 2. Create wagmiConfig
 const metadata = {
   name: 'janedoe',
-  description: 'Web3Modal Example',
-  url: 'https://web3modal.com', // origin must match your domain & subdomain
+  description: 'JaneDoe Account',
+  url: 'http://localhost:3002', // origin must match your domain & subdomain
   icons: []
 }
 
@@ -49,12 +49,11 @@ const transports: { [key: number]: Transport } = CHAINS.reduce((acc, chain) => {
   return acc
 }, {} as { [key: number]: Transport })
 
-
 const wagmiConfig = defaultWagmiConfig({
-  chains: CHAINS,
   projectId,
   metadata,
   transports,
+  chains: CHAINS,
   enableInjected: true,
   enableEIP6963: true,
   enableCoinbase: true,

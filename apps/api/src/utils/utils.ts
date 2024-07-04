@@ -49,6 +49,14 @@ export function assertObjectParam<T>(name: string, value: T): void {
   }
 }
 
+export function assertUrl(name: string, value: string): void {
+  try {
+    new URL(value)
+  } catch {
+    throw new ServiceError(`${name} is not valid url`, 'common.errors.param_not_valid_url', { name })
+  }
+}
+
 export function isNullOrEmptyOrWhitespaces(str: string | null | undefined): boolean {
   return str === undefined || str === null || str.trim() === ''
 }

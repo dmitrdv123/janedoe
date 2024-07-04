@@ -6,7 +6,7 @@ import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSetti
 import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 
-import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, minifyToken, processControllerError } from '../utils/utils'
+import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, assertUrl, minifyToken, processControllerError } from '../utils/utils'
 import { AccountService } from '../services/account-service'
 import { ExchangeRateApiService } from '../services/exchange-rate-api-service'
 import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, CALLBACK_URL_MAX_LENGTH, CURRENCY_MAX_LENGTH, DEFAULT_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, PERMISSION_PRIORITY, SECRET_KEY_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
@@ -128,6 +128,10 @@ export class AccountController {
       const settings: AccountNotificationSettings = req.body
       assertMaxLength('callback url', settings.callbackUrl, CALLBACK_URL_MAX_LENGTH)
       assertMaxLength('secret key', settings.secretKey, SECRET_KEY_MAX_LENGTH)
+
+      if (settings.callbackUrl) {
+        assertUrl('callback url', settings.callbackUrl)
+      }
 
       await this.accountService.saveAccountNotificationSettings(req.params.id, settings)
       res.send({})
