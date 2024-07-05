@@ -53,6 +53,10 @@ export function createAppConfig() {
     throw new Error('BITCOIN_FEE_RPC is not set')
   }
 
+  if (!process.env.BITCOIN_NETWORK) {
+    throw new Error('BITCOIN_NETWORK is not set')
+  }
+
   if (!process.env.PORT) {
     throw new Error('PORT is not set')
   }
@@ -133,6 +137,7 @@ export function createAppConfig() {
     PAYMENT_URL: process.env.PAYMENT_URL,
     SUPPORT_URL: process.env.SUPPORT_URL,
     PINO_CONFIG: process.env.PINO_CONFIG,
+    BITCOIN_NETWORK: process.env.BITCOIN_NETWORK,
     TABLE_NAME: process.env.TABLE_NAME,
     TABLE_NAME_TIME_SERIES: process.env.TABLE_NAME_TIME_SERIES,
     BUCKET_NAME_DATA: process.env.BUCKET_NAME_DATA,

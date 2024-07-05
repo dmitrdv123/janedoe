@@ -487,6 +487,7 @@ function handler(event) {
             PAYMENT_URL: `https://${output.cloudfrontPayment?.distributionDomainName}` ?? '',
             SUPPORT_URL: `https://${output.cloudfrontSupport?.distributionDomainName}` ?? '',
             PINO_CONFIG: env('PINO_CONFIG'),
+            BITCOIN_NETWORK: env('BITCOIN_NETWORK'),
             TABLE_NAME: output.tableData?.tableName ?? '',
             TABLE_NAME_TIME_SERIES: output.tableTimeSeries?.tableName ?? '',
             BUCKET_NAME_DATA: output.bucketData?.bucketName ?? '',

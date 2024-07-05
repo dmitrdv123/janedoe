@@ -53,6 +53,10 @@ export function createAppConfig() {
     throw new Error('BITCOIN_FEE_RPC is not set')
   }
 
+  if (!process.env.BITCOIN_NETWORK) {
+    throw new Error('BITCOIN_NETWORK is not set')
+  }
+
   if (!process.env.SEED_BTC_WALLET_FROM) {
     throw new Error('SEED_BTC_WALLET_FROM is not set')
   }
@@ -76,6 +80,7 @@ export function createAppConfig() {
     BITCOIN_FEE_RPC,
     IS_DEV: process.env.IS_DEV ?? 'false',
     SEED_BTC_WALLET_FROM: process.env.SEED_BTC_WALLET_FROM,
+    BITCOIN_NETWORK: process.env.BITCOIN_NETWORK,
     TABLE_NAME: process.env.TABLE_NAME
   })
 }
