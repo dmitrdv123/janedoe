@@ -386,8 +386,8 @@ export function serializeErrorForRedux(error: unknown): unknown {
     return { name, message, code, args, stack }
   } else if (error instanceof PaymentConversionError) {
     const err = error as PaymentConversionError
-    const { name, message, stack, data } = err
-    return { name, message, stack, data }
+    const { name, message, stack, data, txId, requestId } = err
+    return { name, message, stack, data, txId, requestId }
   } else if (error instanceof Error) {
     const message = convertErrorToMessage(error, '')
     const { name, stack } = error

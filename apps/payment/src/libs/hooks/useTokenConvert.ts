@@ -21,7 +21,7 @@ export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
   const [details, setDetails] = useState<string | undefined>(undefined)
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [error, setError] = useState<Error | undefined>(undefined)
-  const [requestId, setRequestId] = useState<string | undefined>(undefined)
+  const [requestId, setRequestId] = useState<string | undefined>('75482fab-09a3-479f-a17c-e13d5b07c0ab')
 
   const { status: switchChainStatus, error: switchChainError, switchChain } = useSwitchChain()
   const { chainId: currentChainId } = useAccount()
@@ -37,12 +37,14 @@ export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
   const {
     status: approveStatus,
     error: approveError,
+    data: approveData,
     handle: approveHandle
   } = useTokenConvertTransactionApproval()
 
   const {
     status: mainStatus,
     error: mainError,
+    data: mainData,
     handle: mainHandle
   } = useTokenConvertTransactionMain()
 
@@ -175,7 +177,7 @@ export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
         break
       case 'error':
         setError(approveError)
-        setDetails(t('hooks.token_convert.token_approve_error'))
+        setDetails(approveData)
         setStage(TokenConvertStage.TokenApprove)
         setStatus('error')
         statusRef.current = 'error'
@@ -190,7 +192,7 @@ export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
 
         break
     }
-  }, [approveError, approveStatus, t, approveSuccessHandler])
+  }, [approveError, approveStatus, approveData, t, approveSuccessHandler])
 
   useEffect(() => {
     if (statusRef.current !== 'processing' || stageRef.current !== TokenConvertStage.TokenConvert) {
@@ -206,7 +208,7 @@ export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
         break
       case 'error':
         setError(mainError)
-        setDetails(t('hooks.token_convert.token_convert_error'))
+        setDetails(mainData)
         setStage(TokenConvertStage.TokenConvert)
         setStatus('error')
         statusRef.current = 'error'
@@ -219,7 +221,7 @@ export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
         statusRef.current = 'success'
         break
     }
-  }, [mainError, mainStatus, t])
+  }, [mainError, mainStatus, mainData, t])
 
   return {
     status,

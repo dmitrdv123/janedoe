@@ -121,7 +121,9 @@
       "payment_conversion_error_output_details_reverted_to_input": "Token conversion transaction failed and user should receive back the input token.",
       "payment_conversion_error_output_details_desired_output": "Token conversion transaction succeeded.",
       "payment_conversion_error_output_details_amount": "Amount",
-      "payment_conversion_diagnosis_url": "Please follow this <1>guide</1>."
+      "payment_conversion_diagnosis_url": "Please follow this <1>guide</1>.",
+      "payment_conversion_request_id": "Request Id",
+      "payment_conversion_tx_id": "Main Swap Transaction"
     }
   },
   "states": {

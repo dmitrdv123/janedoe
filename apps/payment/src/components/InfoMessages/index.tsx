@@ -40,6 +40,15 @@ const InfoMessages: React.FC = () => {
           </div>
         )}
 
+        <div className="mb-2">
+          <div>
+            {t('components.info_messages.payment_conversion_request_id')}: {error.requestId}
+          </div>
+          <div>
+            {t('components.info_messages.payment_conversion_tx_id')}: {error.txId}
+          </div>
+        </div>
+
         {!!(error.data as any).diagnosisUrl && (
           <div className="mb-2">
             <Trans i18nKey="components.info_messages.payment_conversion_diagnosis_url">

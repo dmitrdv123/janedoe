@@ -121,7 +121,9 @@
       "payment_conversion_error_output_details_reverted_to_input": "Транзакция конвертации токена не удалась, и пользователь должен получить обратно входной токен.",
       "payment_conversion_error_output_details_desired_output": "Транзакция конвертации токена прошла успешно.",
       "payment_conversion_error_output_details_amount": "Сумма",
-      "payment_conversion_diagnosis_url": "Пожалуйста, следуйте этому <1>руководству</1>."
+      "payment_conversion_diagnosis_url": "Пожалуйста, следуйте этому <1>руководству</1>.",
+      "payment_conversion_request_id": "Идентификатор запроса",
+      "payment_conversion_tx_id": "Основная транзакция конвертации"
     }
   },
   "states": {

@@ -9,6 +9,7 @@ import { useConfig } from '../../context/config/hook'
 import useDoUntil from './useDoUntil'
 import { getAddressOrDefault, tryParseInt } from '../utils'
 import { CHAINS } from '../../constants'
+import { ServiceError } from '../../types/errors/service-error'
 
 export default function useTokenConvertTransactionApproval() {
   const statusRef = useRef<ApiRequestStatus>('idle')
@@ -41,8 +42,8 @@ export default function useTokenConvertTransactionApproval() {
               return true
             case TransactionStatus.FAILED:
               setData(t('hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
-              setError(undefined)
-              setStatus('processing')
+              setError(new ServiceError('Approval transaction error', 'hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
+              setStatus('error')
               statusRef.current = 'error'
               return true
             default:
@@ -53,8 +54,8 @@ export default function useTokenConvertTransactionApproval() {
           }
         } catch (err) {
           setData(t('hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
-          setError(undefined)
-          setStatus('processing')
+          setError(err as Error)
+          setStatus('error')
           return false
         }
       })

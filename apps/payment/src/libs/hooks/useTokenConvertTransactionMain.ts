@@ -9,6 +9,7 @@ import { useConfig } from '../../context/config/hook'
 import useDoUntil from './useDoUntil'
 import { getAddressOrDefault, tryParseInt } from '../utils'
 import { CHAINS } from '../../constants'
+import { PaymentConversionError } from '../../types/errors/payment-conversion-error'
 
 export default function useTokenConvertTransactionMain() {
   const statusRef = useRef<ApiRequestStatus>('idle')
@@ -41,8 +42,8 @@ export default function useTokenConvertTransactionMain() {
               return true
             case TransactionStatus.FAILED:
               setData(t('hooks.token_conversion_main.transaction_waiting_error', { requestId, txId }))
-              setError(undefined)
-              setStatus('processing')
+              setError(new PaymentConversionError('Token conversion transaction failed', result, requestId, txId))
+              setStatus('error')
               statusRef.current = 'error'
               return true
             default:
@@ -53,8 +54,8 @@ export default function useTokenConvertTransactionMain() {
           }
         } catch (err) {
           setData(t('hooks.token_conversion_main.transaction_waiting_error', { requestId, txId }))
-          setError(undefined)
-          setStatus('processing')
+          setError(err as Error)
+          setStatus('error')
           return false
         }
       })
