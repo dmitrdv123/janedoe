@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SwapResponse } from 'rango-sdk-basic'
 
-import { sameToken, tokenAmountToCurrency } from '../utils'
+import { currencyToUsd, sameToken, tokenAmountToCurrency } from '../utils'
 import useApiRequest from './useApiRequest'
 import { PaymentDetails } from '../../types/payment-details'
 import { ApiWrapper } from '../services/api-wrapper'
@@ -34,6 +34,8 @@ export default function useTokenConvertSwap() {
     setError(undefined)
     setStatus('processing')
 
+    const amountUsd = currencyToUsd(paymentDetails.currencyAmount, exchangeRate)
+
     loadSwap(
       ApiWrapper.instance.swapRequest({
         fromAddress: paymentDetails.fromAddress,
@@ -44,7 +46,9 @@ export default function useTokenConvertSwap() {
         slippage: paymentDetails.slippage ? paymentDetails.slippage.toString() : '',
         contractCall: false,
         disableEstimate: false,
-        enableCentralizedSwappers: true
+        enableCentralizedSwappers: true,
+        swappers: amountUsd <= 1 ? ['MayaProtocol'] : undefined,
+        swappersExclude: amountUsd <= 1 ? true : undefined
       })
     )
       .then((response): void => {

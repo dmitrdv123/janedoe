@@ -232,6 +232,12 @@ export function currencyToTokenAmount(amountCurrency: number, usdPrice: number, 
   return parseToBigNumber(amountCurrency / (exchangeRate * usdPrice), decimals).toString()
 }
 
+export function currencyToUsd(amountCurrency: number, exchangeRate: number): number {
+  return amountCurrency === 0 || exchangeRate === 0
+    ? 0
+    : amountCurrency / exchangeRate
+}
+
 export function tokenAmountToTokenAmount(fromAmount: string, fromUsdPrice: number, fromDecimals: number, toUsdPrice: number, toDecimals: number): string {
   const fromAmountUsd = tokenAmountToUsd(fromAmount, fromUsdPrice, fromDecimals)
   return usdToTokenAmount(fromAmountUsd, toUsdPrice, toDecimals)

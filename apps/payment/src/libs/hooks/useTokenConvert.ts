@@ -79,6 +79,7 @@ export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
   }, [currentChainId, approveHandle, mainHandle, switchChain])
 
   const approveSuccessHandler = useCallback(() => {
+    stageRef.current = TokenConvertStage.TokenConvert
     mainHandle(requestIdRef.current, evmTxRef.current)
   }, [mainHandle])
 

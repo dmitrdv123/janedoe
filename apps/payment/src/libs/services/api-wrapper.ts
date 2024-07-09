@@ -52,45 +52,53 @@ export class ApiWrapper {
     }
   }
 
-  public quoteRequest(quoteRequest: QuoteRequest, slippage: number): ApiRequest {
+  public quoteRequest(request: QuoteRequest, slippage: number): ApiRequest {
     const params: { [key: string]: string } = {
       slippage: slippage.toString()
     }
 
-    if (quoteRequest.sourceContract) {
-      params['sourceContract'] = quoteRequest.sourceContract
+    if (request.sourceContract) {
+      params['sourceContract'] = request.sourceContract
     }
 
-    if (quoteRequest.destinationContract) {
-      params['destinationContract'] = quoteRequest.destinationContract
+    if (request.destinationContract) {
+      params['destinationContract'] = request.destinationContract
     }
 
-    if (quoteRequest.imMessage) {
-      params['imMessage'] = quoteRequest.imMessage
+    if (request.imMessage) {
+      params['imMessage'] = request.imMessage
     }
 
-    if (quoteRequest.amount) {
-      params['amount'] = quoteRequest.amount
+    if (request.amount) {
+      params['amount'] = request.amount
     }
 
-    if (quoteRequest.from) {
-      params['from'] = assetToString(quoteRequest.from)
+    if (request.from) {
+      params['from'] = assetToString(request.from)
     }
 
-    if (quoteRequest.to) {
-      params['to'] = assetToString(quoteRequest.to)
+    if (request.to) {
+      params['to'] = assetToString(request.to)
     }
 
-    if (quoteRequest.contractCall) {
+    if (request.contractCall) {
       params['contractCall'] = 'true'
     } else {
       params['contractCall'] = 'false'
     }
 
-    if (quoteRequest.enableCentralizedSwappers) {
+    if (request.enableCentralizedSwappers) {
       params['enableCentralizedSwappers'] = 'true'
     } else {
       params['enableCentralizedSwappers'] = 'false'
+    }
+
+    if (request.swappers !== undefined && request.swappers.length > 0) {
+      params['swappers'] = request.swappers.join(',')
+    }
+
+    if (request.swappersExclude !== undefined) {
+      params['swappersExclude'] = request.swappersExclude ? 'true' : 'false'
     }
 
     return {
@@ -138,6 +146,14 @@ export class ApiWrapper {
       params['disableEstimate'] = 'true'
     } else {
       params['disableEstimate'] = 'false'
+    }
+
+    if (request.swappers !== undefined && request.swappers.length > 0) {
+      params['swappers'] = request.swappers.join(',')
+    }
+
+    if (request.swappersExclude !== undefined) {
+      params['swappersExclude'] = request.swappersExclude ? 'true' : 'false'
     }
 
     return {

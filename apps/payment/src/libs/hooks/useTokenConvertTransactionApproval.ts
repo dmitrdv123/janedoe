@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { EvmTransaction, TransactionStatus } from 'rango-sdk-basic'
-import { useWalletClient } from 'wagmi'
+import { EvmTransaction } from 'rango-sdk-basic'
+import { useWaitForTransactionReceipt, useWalletClient } from 'wagmi'
 
 import { ApiRequestStatus } from '../../types/api-request'
-import { ApiManager } from '../services/api-manager'
-import { useConfig } from '../../context/config/hook'
-import useDoUntil from './useDoUntil'
 import { getAddressOrDefault, tryParseInt } from '../utils'
 import { CHAINS } from '../../constants'
 import { ServiceError } from '../../types/errors/service-error'
@@ -16,53 +13,39 @@ export default function useTokenConvertTransactionApproval() {
 
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [data, setData] = useState<string | undefined>(undefined)
-  const [txId, setTxId] = useState<string | undefined>(undefined)
+  const [txId, setTxId] = useState<`0x${string}` | undefined>(undefined)
   const [requestId, setRequestId] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
 
-  const config = useConfig()
   const { t } = useTranslation()
   const { data: signer } = useWalletClient()
-  const doUntilHandler = useDoUntil()
+  const { status: waitStatus, error: waitError} = useWaitForTransactionReceipt({ hash: txId })
 
   useEffect(() => {
-    if (status === 'processing' && txId && requestId && config.config) {
-      const baseUrlApi = config.config.baseUrlApi
-
-      const clearInterval = doUntilHandler(1000, async () => {
-        try {
-          const result = await ApiManager.instance.checkApproval(baseUrlApi, requestId, txId)
-
-          switch (result.txStatus) {
-            case TransactionStatus.SUCCESS:
-              setData(undefined)
-              setError(undefined)
-              setStatus('success')
-              statusRef.current = 'success'
-              return true
-            case TransactionStatus.FAILED:
-              setData(t('hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
-              setError(new ServiceError('Approval transaction error', 'hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
-              setStatus('error')
-              statusRef.current = 'error'
-              return true
-            default:
-              setData(t('hooks.token_conversion_approval.transaction_waiting', { requestId, txId }))
-              setError(undefined)
-              setStatus('processing')
-              return false
-          }
-        } catch (err) {
-          setData(t('hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
-          setError(err as Error)
-          setStatus('error')
-          return false
-        }
-      })
-
-      return clearInterval
+    if (!requestId || !txId) {
+      return
     }
-  }, [config.config, requestId, status, t, txId, doUntilHandler])
+
+    switch (waitStatus) {
+      case 'success':
+        setData(undefined)
+        setError(undefined)
+        setStatus('success')
+        statusRef.current = 'success'
+        break
+      case 'error':
+        setData(t('hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
+        setError(new ServiceError(waitError.message, 'hooks.token_conversion_approval.transaction_waiting_error', { requestId, txId }))
+        setStatus('error')
+        statusRef.current = 'error'
+        break
+      default:
+        setData(t('hooks.token_conversion_approval.transaction_waiting', { requestId, txId }))
+        setError(undefined)
+        setStatus('processing')
+        break
+    }
+  }, [requestId, t, txId, waitStatus, waitError])
 
   const handle = useCallback(async (requestIdToUse: string | undefined, evmTx: EvmTransaction | undefined) => {
     if (statusRef.current === 'processing') {

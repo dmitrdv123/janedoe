@@ -43,7 +43,9 @@ export class PaymentConversionManager {
         to: toToken,
         amount: tokenAmount,
         contractCall: false,
-        enableCentralizedSwappers: true
+        enableCentralizedSwappers: true,
+        swappers: totalAmountUsd <= 1 ? ['MayaProtocol'] : undefined,
+        swappersExclude: totalAmountUsd <= 1 ? true : undefined
       }, slippage)
       const quote = await ApiWrapper.instance.send<QuoteResponse>({
         ...request,
