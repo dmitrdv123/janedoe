@@ -142,6 +142,7 @@
       "timestamp_col": "Время",
       "download_btn": "Скачать ({{count}} записей)",
       "clear_btn": "Очистить фильтры",
+      "found_new_records": "Найдено {{count}} новый записей, пожалуйста очистите фильтры и обновите",
       "success_btn": "Успех",
       "error_btn": "Ошибка",
       "not_send_btn": "Не отправлено",

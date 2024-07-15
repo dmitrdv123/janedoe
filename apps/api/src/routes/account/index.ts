@@ -126,6 +126,12 @@ accountRouter.route('/payments/csv/:id').post(
   cacheMiddleware(DEFAULT_ROUTE_ACCOUNT_PAYMENT_CACHING_SECONDS),
   controller.paymentsCsv.bind(controller)
 )
+accountRouter.route('/payments/updates/:id').post(
+  expressjwt(jwtConfig),
+  rbacMiddleware('payments', 'View'),
+  cacheMiddleware(DEFAULT_ROUTE_ACCOUNT_PAYMENT_CACHING_SECONDS),
+  controller.paymentUpdates.bind(controller)
+)
 
 accountRouter.route('/exchange/:currency').post(
   expressjwt(jwtConfig), cacheMiddleware(DEFAULT_ROUTE_ACCOUNT_PAYMENT_CACHING_SECONDS), controller.exchangeRates.bind(controller)

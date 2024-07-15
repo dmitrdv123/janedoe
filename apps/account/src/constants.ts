@@ -1,5 +1,6 @@
 import { Chain, arbitrum, avalanche, base, bsc, cronos, hardhat, linea, mainnet, optimism, polygon, zkSync } from 'viem/chains'
 import { Permission } from './types/account-settings'
+import { PaymentHistoryDataFilter } from './types/payment-history'
 
 export const DEFAULT_CURRENCY_DECIMAL_PLACES = 4
 
@@ -58,4 +59,14 @@ export const PUBLIC_NODE_RPCS: { [key: string]: string } = {
   "43114": "https://avalanche-c-chain-rpc.publicnode.com",
   "25": "https://cronos-evm-rpc.publicnode.com",
   "1": "https://ethereum-rpc.publicnode.com"
+}
+
+export const EMPTY_PAYMENT_HISTORY_DATA_FILTER: PaymentHistoryDataFilter = {
+  paymentId: '',
+  timestampFrom: '',
+  timestampTo: '',
+  from: '',
+  to: '',
+  blockchains: [],
+  transactionHash: ''
 }

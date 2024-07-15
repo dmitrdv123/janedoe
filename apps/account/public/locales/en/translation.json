@@ -142,6 +142,7 @@
       "timestamp_col": "Timestamp",
       "download_btn": "Download ({{count}} records)",
       "clear_btn": "Clear Filters",
+      "found_new_records": "Found {{count}} new records, please clear filters and refresh",
       "success_btn": "Success",
       "error_btn": "Error",
       "not_send_btn": "Not Send",

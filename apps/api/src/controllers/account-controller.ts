@@ -251,6 +251,18 @@ export class AccountController {
     }
   }
 
+  public async paymentUpdates(req: Request, res: Response, _next: NextFunction) {
+    try {
+      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
+      assertNumberParam('from', req.body.from)
+
+      const size = await this.accountService.checkPaymentHistoryUpdates(req.params.id, req.body.from)
+      res.send({ size })
+    } catch (err) {
+      processControllerError(res, err as Error)
+    }
+  }
+
   public async meta(_req: Request, res: Response, _next: NextFunction) {
     try {
       const meta = await this.metaService.meta()

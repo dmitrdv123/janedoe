@@ -81,3 +81,7 @@ export interface PaymentHistoryDataFilter {
   blockchains: string[]
   transactionHash: string
 }
+
+export interface PaymentHistoryUpdatesResponse {
+  size: number
+}

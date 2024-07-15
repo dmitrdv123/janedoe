@@ -49,6 +49,7 @@ export interface AccountService {
   withdraw(id: string, blockchain: string, address: string): Promise<string | undefined>
   sendIpn(ipnKey: IpnKey): Promise<IpnResult>
 
+  checkPaymentHistoryUpdates(id: string, from: number): Promise<number>
   loadPaymentHistory(id: string, filter: PaymentFilter, last: PaymentLogKey | undefined, size: number | undefined): Promise<PaymentHistoryResponse>
   loadPaymentHistoryDataAsCsv(id: string, filter: PaymentFilter): Promise<string[][]>
 }
@@ -64,6 +65,14 @@ export class AccountServiceImpl implements AccountService {
     private metaService: MetaService,
     private accountDao: AccountDao
   ) { }
+
+  public async checkPaymentHistoryUpdates(id: string, from: number): Promise<number> {
+    const filteredPaymentLogs = await this.loadPaymentLogs(id, {
+      timestampFrom: from + 1
+    })
+
+    return filteredPaymentLogs.length
+  }
 
   public async loadPaymentHistory(id: string, filter: PaymentFilter, last: PaymentLogKey | undefined, size: number | undefined): Promise<PaymentHistoryResponse> {
     const filteredPaymentLogs = await this.loadPaymentLogs(id, filter)

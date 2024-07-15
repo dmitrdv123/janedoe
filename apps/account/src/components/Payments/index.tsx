@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Spinner, Table } from 'react-bootstrap'
+import { Alert, Button, Spinner, Table } from 'react-bootstrap'
 import { CheckCircle, ExclamationCircle } from 'react-bootstrap-icons'
+import isEqual from 'lodash.isequal'
 
 import { convertErrorToMessage, convertTimestampToDate } from '../../libs/utils'
 import { PaymentHistoryData, PaymentHistoryDataFilter } from '../../types/payment-history'
 import { useInfoMessages, useToggleModal } from '../../states/application/hook'
-import { CURRENCY_USD_SYMBOL, INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
+import { CURRENCY_USD_SYMBOL, EMPTY_PAYMENT_HISTORY_DATA_FILTER, INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
 import TextWithCopy from './components/TextWithCopy'
 import TableFilterText from './components/TableFilterText'
 import TableFilterDate from './components/TableFilterDate'
@@ -22,19 +23,15 @@ import usePaymentHistory from '../../libs/hooks/usePaymentHistory'
 import useApiRequest from '../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
 import TokenDetails from '../TokenDetails'
+import usePaymentHistoryUpdates from '../../libs/hooks/usePaymentHistoryUpdates'
 
 const Payments: React.FC = () => {
+  const [paymentHistoryLoadTimestamp, setPaymentHistoryLoadTimestamp] = useState<number>(Math.floor(Date.now() / 1000))
   const [paymentHistoryData, setPaymentHistoryData] = useState<PaymentHistoryData[] | undefined>(undefined)
   const [selectedPaymentHistory, setSelectedPaymentHistory] = useState<PaymentHistoryData | undefined>(undefined)
-  const [paymentHistoryDataFilter, setPaymentHistoryDataFilter] = useState<PaymentHistoryDataFilter>({
-    paymentId: '',
-    timestampFrom: '',
-    timestampTo: '',
-    from: '',
-    to: '',
-    blockchains: [],
-    transactionHash: ''
-  })
+  const [paymentHistoryDataFilter, setPaymentHistoryDataFilter] = useState<PaymentHistoryDataFilter>(EMPTY_PAYMENT_HISTORY_DATA_FILTER)
+
+  const paymentHistoryDataFilterRef = useRef<PaymentHistoryDataFilter>(paymentHistoryDataFilter)
   const observer = useRef<IntersectionObserver>()
 
   const { t } = useTranslation()
@@ -51,6 +48,10 @@ const Payments: React.FC = () => {
     loadNext: loadNextPaymentHistory,
     reload: reloadPaymentHistory
   } = usePaymentHistory(paymentHistoryDataFilter)
+
+  const {
+    data: paymentHistoryUpdates
+  } = usePaymentHistoryUpdates(paymentHistoryLoadTimestamp)
 
   useEffect(() => {
     if (paymentHistoryError) {
@@ -80,6 +81,14 @@ const Payments: React.FC = () => {
     setPaymentHistoryData(paymentHistory)
   }, [paymentHistory])
 
+  useEffect(() => {
+    if (isEqual(paymentHistoryDataFilter, EMPTY_PAYMENT_HISTORY_DATA_FILTER) && !isEqual(paymentHistoryDataFilterRef.current, EMPTY_PAYMENT_HISTORY_DATA_FILTER)) {
+      setPaymentHistoryLoadTimestamp(Math.floor(Date.now() / 1000))
+    }
+
+    paymentHistoryDataFilterRef.current = paymentHistoryDataFilter
+  }, [paymentHistoryDataFilter])
+
   const updateIpnResultHandler = useCallback((origPaymentHistory: PaymentHistoryData, updatedIpnResult: IpnResult) => {
     setPaymentHistoryData(
       arr => arr?.map(item => {
@@ -96,21 +105,18 @@ const Payments: React.FC = () => {
     )
   }, [])
 
+  const refreshPaymentHistoryHandler = useCallback(() => {
+    setPaymentHistoryLoadTimestamp(Math.floor(Date.now() / 1000))
+    reloadPaymentHistory()
+  }, [reloadPaymentHistory])
+
   const openIpnModalHandler = useCallback((paymentHistoryToShow: PaymentHistoryData) => {
     setSelectedPaymentHistory(paymentHistoryToShow)
     openIpnModal()
   }, [openIpnModal])
 
   const clearFiltersHandler = () => {
-    setPaymentHistoryDataFilter({
-      paymentId: '',
-      timestampFrom: '',
-      timestampTo: '',
-      from: '',
-      to: '',
-      blockchains: [],
-      transactionHash: ''
-    })
+    setPaymentHistoryDataFilter(EMPTY_PAYMENT_HISTORY_DATA_FILTER)
   }
 
   const timestampFilterHandler = (filterTimestampFrom: string, filterTimestampTo: string) => {
@@ -263,7 +269,7 @@ const Payments: React.FC = () => {
       <IpnModal paymentHistory={selectedPaymentHistory} onUpdate={updateIpnResultHandler} />
 
       <div className='mb-3'>
-        <Button variant="primary" onClick={() => reloadPaymentHistory()} disabled={paymentHistoryStatus === 'processing'}>
+        <Button variant="primary" onClick={refreshPaymentHistoryHandler} disabled={paymentHistoryStatus === 'processing'}>
           {t('common.refresh_btn')}
           {paymentHistoryStatus === 'processing' && (
             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true">
@@ -302,6 +308,12 @@ const Payments: React.FC = () => {
         )}
 
       </div>
+
+      {!!paymentHistoryUpdates && (
+        <Alert variant='primary'>
+          {t('components.payments.found_new_records', { count: paymentHistoryUpdates })}
+        </Alert>
+      )}
 
       <Table borderless responsive size="sm">
         <thead>

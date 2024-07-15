@@ -206,6 +206,19 @@ export class ApiWrapper {
     }
   }
 
+  public accountPaymentHistoryUpdatesRequest(from: number): ApiRequest {
+    return {
+      url: this.getAccountPaymentHistoryUpdatesUrl(),
+      method: 'POST',
+      body: JSON.stringify(
+        {
+          from
+        }
+      ),
+      authRequired: true
+    }
+  }
+
   public sendIpnRequest(paymentId: string, blockchain: string, transaction: string, index: number): ApiRequest {
     return {
       url: this.getSendIpnUrl(),
@@ -303,6 +316,10 @@ export class ApiWrapper {
 
   private getAccountPaymentHistoryAsCsvUrl(): string {
     return `{baseUrlApi}/api/account/payments/csv/{id}`
+  }
+
+  private getAccountPaymentHistoryUpdatesUrl(): string {
+    return `{baseUrlApi}/api/account/payments/updates/{id}`
   }
 
   private getSendIpnUrl(): string {
