@@ -219,6 +219,14 @@ export class ApiWrapper {
     }
   }
 
+  public loadIpnRequest(paymentId: string, blockchain: string, transaction: string, index: number): ApiRequest {
+    return {
+      url: this.getLoadIpnUrl(paymentId, blockchain, transaction, index),
+      method: 'GET',
+      authRequired: true
+    }
+  }
+
   public sendIpnRequest(paymentId: string, blockchain: string, transaction: string, index: number): ApiRequest {
     return {
       url: this.getSendIpnUrl(),
@@ -320,6 +328,10 @@ export class ApiWrapper {
 
   private getAccountPaymentHistoryUpdatesUrl(): string {
     return `{baseUrlApi}/api/account/payments/updates/{id}`
+  }
+
+  private getLoadIpnUrl(paymentId: string, blockchain: string, transaction: string, index: number): string {
+    return `{baseUrlApi}/api/account/ipn/{id}/${paymentId}/${blockchain}/${transaction}/${index}`
   }
 
   private getSendIpnUrl(): string {

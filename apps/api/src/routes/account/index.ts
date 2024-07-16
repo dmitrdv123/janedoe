@@ -51,6 +51,11 @@ accountRouter.route('/withdraw/:id/:blockchain/:address').post(
   rbacMiddleware('balances', 'Modify'),
   controller.withdraw.bind(controller)
 )
+accountRouter.route('/ipn/:id/:paymentId/:blockchain/:transaction/:index').get(
+  expressjwt(jwtConfig),
+  rbacMiddleware('payments', 'View'),
+  controller.ipn.bind(controller)
+)
 accountRouter.route('/ipn/:id').post(
   expressjwt(jwtConfig),
   rbacMiddleware('payments', 'Modify'),

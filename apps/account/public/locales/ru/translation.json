@@ -159,7 +159,8 @@
       "date_from": "С даты",
       "date_to": "По дату",
       "errors": {
-        "fail_send_notification": "Не удалось отправить уведомление"
+        "fail_send_notification": "Не удалось отправить уведомление",
+        "fail_load_notification": "Не удалось загрузить уведомление"
       }
     },
     "payment_settings": {

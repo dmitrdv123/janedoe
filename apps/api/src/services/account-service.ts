@@ -1,7 +1,7 @@
 import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import { Account, AccountProfile } from '@repo/dao/dist/src/interfaces/account-profile'
 import { SharedAccount } from '@repo/dao/dist/src/interfaces/shared-account'
-import { IpnKey, IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
+import { IpnData, IpnKey, IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { AccountApiSettings, AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountSettings, AccountTeamSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
@@ -47,6 +47,7 @@ export interface AccountService {
 
   balance(id: string, blockchain: string): Promise<number>
   withdraw(id: string, blockchain: string, address: string): Promise<string | undefined>
+  loadIpn(ipnKey: IpnKey): Promise<IpnData | undefined>
   sendIpn(ipnKey: IpnKey): Promise<IpnResult>
 
   checkPaymentHistoryUpdates(id: string, from: number): Promise<number>
@@ -418,6 +419,15 @@ export class AccountServiceImpl implements AccountService {
         logger.error(`AccountService: unsupported blockchain ${blockchain}`)
         throw new Error(`Unsupported blockchain ${blockchain}`)
     }
+  }
+
+  public async loadIpn(ipnKey: IpnKey): Promise<IpnData | undefined> {
+    logger.debug('IpnNotificationObserver: start to load ipn')
+    const ipn = await this.ipnService.loadIpnData(ipnKey)
+    logger.debug('IpnNotificationObserver: end to load ipn')
+    logger.debug(ipn)
+
+    return ipn
   }
 
   public async sendIpn(ipnKey: IpnKey): Promise<IpnResult> {

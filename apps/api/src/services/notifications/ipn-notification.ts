@@ -33,6 +33,12 @@ export class IpnNotificationObserver implements NotificationObserver {
     logger.debug('IpnNotificationObserver: end to load settings')
     logger.debug(settings)
 
+    const currency = settings?.commonSettings.currency ?? COMMON_SETTINGS_DEFAULT_CURRENCY
+    const currencyExchangeRate = await this.exchangeRateApiService.exchangeRate(currency, paymentLog.timestamp)
+    const amountCurrency = paymentLog.amountUsd && currencyExchangeRate
+      ? paymentLog.amountUsd * currencyExchangeRate
+      : null
+
     const payments = await this.paymentService.loadPaymentHistory(paymentLog.accountId, paymentLog.paymentId)
     const totalAmountUsd = payments.reduce((acc, cur) => {
       if (cur.amountUsd) {
@@ -57,12 +63,6 @@ export class IpnNotificationObserver implements NotificationObserver {
 
       return acc
     }, null as number | null)
-
-    const currency = settings?.commonSettings.currency ?? COMMON_SETTINGS_DEFAULT_CURRENCY
-    const currencyExchangeRate = await this.exchangeRateApiService.exchangeRate(currency, paymentLog.timestamp)
-    const amountCurrency = paymentLog.amountUsd && currencyExchangeRate
-      ? paymentLog.amountUsd * currencyExchangeRate
-      : null
 
     const ipn: IpnData = {
       accountId: paymentLog.accountId,

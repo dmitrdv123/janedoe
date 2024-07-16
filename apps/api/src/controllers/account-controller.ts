@@ -6,7 +6,7 @@ import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSetti
 import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 
-import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, assertUrl, minifyToken, processControllerError } from '../utils/utils'
+import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, assertUrl, minifyToken, processControllerError, tryParseInt } from '../utils/utils'
 import { AccountService } from '../services/account-service'
 import { ExchangeRateApiService } from '../services/exchange-rate-api-service'
 import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, CALLBACK_URL_MAX_LENGTH, CURRENCY_MAX_LENGTH, DEFAULT_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, PERMISSION_PRIORITY, SECRET_KEY_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
@@ -271,6 +271,28 @@ export class AccountController {
         tokens: meta.tokens.map(minifyToken),
         swappers: meta.swappers
       })
+    } catch (err) {
+      processControllerError(res, err as Error)
+    }
+  }
+
+  public async ipn(req: Request, res: Response, _next: NextFunction) {
+    try {
+      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
+      assertParam('paymentId', req.params.paymentId, PAYMENT_ID_MAX_LENGTH)
+      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
+      assertParam('transaction', req.params.transaction, TRANSACTION_MAX_LENGTH)
+      const index = tryParseInt(req.params.index)
+      assertNumberParam('index', index)
+
+      const result = await this.accountService.loadIpn({
+        accountId: req.params.id,
+        paymentId: req.params.paymentId,
+        blockchain: req.params.blockchain,
+        transaction: req.params.transaction,
+        index: index as number
+      })
+      res.send(result)
     } catch (err) {
       processControllerError(res, err as Error)
     }

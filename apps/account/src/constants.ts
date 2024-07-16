@@ -22,6 +22,7 @@ export const INFO_MESSAGE_ACCOUNT_TEAM_SETTINGS_SAVING_ERROR = 'account_team_set
 export const INFO_MESSAGE_AUTH_ERROR = 'auth_error'
 export const INFO_MESSAGE_PAYMENT_HISTORY_ERROR = 'payment_history_error'
 export const INFO_MESSAGE_PAYMENT_HISTORY_IPN_ERROR = 'payment_history_ipn_error'
+export const INFO_MESSAGE_PAYMENT_HISTORY_LOAD_IPN_ERROR = 'payment_history_load_ipn_error'
 export const INFO_MESSAGE_PAYMENT_HISTORY_SEND_IPN_ERROR = 'payment_history_send_ipn_error'
 export const INFO_MESSAGE_PAYMENT_HISTORY_PAST_TOKEN_ERROR = 'payment_history_past_token_error'
 export const INFO_MESSAGE_BALANCE_ERROR = 'balance_error'

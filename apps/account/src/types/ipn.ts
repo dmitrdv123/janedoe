@@ -12,6 +12,9 @@ export interface Ipn {
   amountUsd: number | null
   amountCurrency: number | null
 
+  totalAmountUsd: number | null
+  totalAmountCurrency: number | null
+
   blockchain: string
   tokenAddress: string | null
   tokenSymbol: string | null

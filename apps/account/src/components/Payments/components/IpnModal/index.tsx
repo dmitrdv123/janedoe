@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {Form, Modal } from 'react-bootstrap'
+import { Form, Modal } from 'react-bootstrap'
 
-import { useModalIsOpen, useToggleModal } from '../../../../states/application/hook'
+import { useInfoMessages, useModalIsOpen, useToggleModal } from '../../../../states/application/hook'
 import { ApplicationModal } from '../../../../types/application-modal'
 import { Ipn, IpnResult } from '../../../../types/ipn'
 import { PaymentHistoryData } from '../../../../types/payment-history'
 import RbacGuard from '../../../Guards/RbacGuard'
 import IpnModalButton from '../IpnModalButton'
-import { DEFAULT_CURRENCY_DECIMAL_PLACES } from '../../../../constants'
-import { roundNumber } from '../../../../libs/utils'
+import useApiRequest from '../../../../libs/hooks/useApiRequest'
+import { ApiWrapper } from '../../../../libs/services/api-wrapper'
+import { INFO_MESSAGE_PAYMENT_HISTORY_LOAD_IPN_ERROR } from '../../../../constants'
 
 interface IpnModalProps {
   paymentHistory: PaymentHistoryData | undefined
@@ -24,35 +25,37 @@ const IpnModal: React.FC<IpnModalProps> = (props) => {
   const [ipn, setIpn] = useState<Ipn | undefined>(undefined)
   const [ipnResult, setIpnResult] = useState<IpnResult | undefined>(undefined)
 
+  const { process: loadIpn } = useApiRequest<Ipn>()
+  const { addInfoMessage, removeInfoMessage } = useInfoMessages()
+
   useEffect(() => {
-    setIpn(props.paymentHistory
-      ? {
-        paymentId: props.paymentHistory.paymentId,
+    const fetchIpn = async (paymentId: string, blockchain: string, transaction: string, index: number) => {
+      removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_LOAD_IPN_ERROR)
 
-        block: props.paymentHistory.block,
-        timestamp: props.paymentHistory.timestamp,
-        transaction: props.paymentHistory.transaction,
-        index: props.paymentHistory.index,
-
-        from: props.paymentHistory.from,
-        to: props.paymentHistory.to,
-        amount: props.paymentHistory.amount,
-        amountUsd: props.paymentHistory.amountUsdAtPaymentTime === null ? null : roundNumber(props.paymentHistory.amountUsdAtPaymentTime, DEFAULT_CURRENCY_DECIMAL_PLACES),
-        amountCurrency: props.paymentHistory.amountCurrencyAtPaymentTime === null ? null : roundNumber(props.paymentHistory.amountCurrencyAtPaymentTime, DEFAULT_CURRENCY_DECIMAL_PLACES),
-
-        blockchain: props.paymentHistory.blockchain?.name ?? '',
-        tokenAddress: props.paymentHistory.token?.address ?? '',
-        tokenSymbol: props.paymentHistory.token?.symbol ?? '',
-        tokenDecimals: props.paymentHistory.token?.decimals ?? null,
-        tokenUsdPrice: props.paymentHistory.tokenUsdPriceAtPaymentTime,
-
-        currency: props.paymentHistory.currency,
-        currencyExchangeRate: props.paymentHistory.currencyExchangeRateAtPaymentTime
+      try {
+        const result = await loadIpn(ApiWrapper.instance.loadIpnRequest(
+          paymentId,
+          blockchain,
+          transaction,
+          index
+        ))
+        setIpn(result)
+      } catch (error) {
+        setIpn(undefined)
+        addInfoMessage(
+          t('components.payments.errors.fail_load_notification'),
+          INFO_MESSAGE_PAYMENT_HISTORY_LOAD_IPN_ERROR,
+          'danger',
+          error
+        )
       }
-      : undefined)
+    }
 
+    if (props.paymentHistory) {
+      fetchIpn(props.paymentHistory.paymentId, props.paymentHistory.blockchainName, props.paymentHistory.transaction, props.paymentHistory.index)
+    }
     setIpnResult(props.paymentHistory?.ipnResult ?? undefined)
-  }, [props.paymentHistory])
+  }, [props.paymentHistory, t, loadIpn, addInfoMessage, removeInfoMessage])
 
   const updateHandler = useCallback((updatedIpnResult: IpnResult) => {
     setIpnResult(updatedIpnResult)

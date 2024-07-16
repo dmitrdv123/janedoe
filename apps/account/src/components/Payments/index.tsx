@@ -202,8 +202,6 @@ const Payments: React.FC = () => {
                 blockchain={blockchain}
               />
             )}
-
-
           </td>
           <td>
             <TokenAmount amount={paymentHistoryItem.amount} decimals={paymentHistoryItem.tokenDecimals} symbol={paymentHistoryItem.tokenSymbol} />
