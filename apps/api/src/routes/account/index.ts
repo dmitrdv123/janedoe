@@ -131,7 +131,7 @@ accountRouter.route('/payments/csv/:id').post(
   cacheMiddleware(DEFAULT_ROUTE_ACCOUNT_PAYMENT_CACHING_SECONDS),
   controller.paymentsCsv.bind(controller)
 )
-accountRouter.route('/payments/updates/:id').post(
+accountRouter.route('/payments/updates/:id/:from').get(
   expressjwt(jwtConfig),
   rbacMiddleware('payments', 'View'),
   cacheMiddleware(DEFAULT_ROUTE_ACCOUNT_PAYMENT_CACHING_SECONDS),

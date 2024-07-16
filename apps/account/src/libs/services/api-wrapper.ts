@@ -208,13 +208,8 @@ export class ApiWrapper {
 
   public accountPaymentHistoryUpdatesRequest(from: number): ApiRequest {
     return {
-      url: this.getAccountPaymentHistoryUpdatesUrl(),
-      method: 'POST',
-      body: JSON.stringify(
-        {
-          from
-        }
-      ),
+      url: this.getAccountPaymentHistoryUpdatesUrl(from),
+      method: 'GET',
       authRequired: true
     }
   }
@@ -326,8 +321,8 @@ export class ApiWrapper {
     return `{baseUrlApi}/api/account/payments/csv/{id}`
   }
 
-  private getAccountPaymentHistoryUpdatesUrl(): string {
-    return `{baseUrlApi}/api/account/payments/updates/{id}`
+  private getAccountPaymentHistoryUpdatesUrl(from: number): string {
+    return `{baseUrlApi}/api/account/payments/updates/{id}/${from}`
   }
 
   private getLoadIpnUrl(paymentId: string, blockchain: string, transaction: string, index: number): string {
