@@ -115,150 +115,148 @@ const Payments: React.FC = () => {
     openIpnModal()
   }, [openIpnModal])
 
-  const clearFiltersHandler = () => {
+  const clearFiltersHandler = useCallback(() => {
     setPaymentHistoryDataFilter(EMPTY_PAYMENT_HISTORY_DATA_FILTER)
-  }
+  }, [])
 
-  const timestampFilterHandler = (filterTimestampFrom: string, filterTimestampTo: string) => {
+  const timestampFilterHandler = useCallback((filterTimestampFrom: string, filterTimestampTo: string) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
       timestampFrom: filterTimestampFrom,
       timestampTo: filterTimestampTo
     }))
-  }
+  }, [])
 
-  const blockchainFilterHandler = (filterBlockchains: string[]) => {
+  const blockchainFilterHandler = useCallback((filterBlockchains: string[]) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
       blockchains: filterBlockchains
     }))
-  }
+  }, [])
 
-  const fromFilterHandler = (filterFrom: string) => {
+  const fromFilterHandler = useCallback((filterFrom: string) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
       from: filterFrom
     }))
-  }
+  }, [])
 
-  const toFilterHandler = (filterTo: string) => {
+  const toFilterHandler = useCallback((filterTo: string) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
       to: filterTo
     }))
-  }
+  }, [])
 
-  const paymentIdFilterHandler = (filterPaymentId: string) => {
+  const paymentIdFilterHandler = useCallback((filterPaymentId: string) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
       paymentId: filterPaymentId
     }))
-  }
+  }, [])
 
-  const transactionHashFilterHandler = (filterTransactionHash: string) => {
+  const transactionHashFilterHandler = useCallback((filterTransactionHash: string) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
       transactionHash: filterTransactionHash
     }))
-  }
+  }, [])
 
-  const getPaymentHistory = (paymentHistoryToShow: PaymentHistoryData[]) => {
-    return paymentHistoryToShow.map((paymentHistoryItem, i) => {
-      const blockchain = paymentHistoryItem.blockchain ?? undefined
-      const token = paymentHistoryItem.token ?? undefined
+  const getPaymentHistory = useCallback((paymentHistoryItem: PaymentHistoryData, last: boolean) => {
+    const blockchain = paymentHistoryItem.blockchain ?? undefined
+    const token = paymentHistoryItem.token ?? undefined
 
-      const dt = convertTimestampToDate(paymentHistoryItem.timestamp)
+    const dt = convertTimestampToDate(paymentHistoryItem.timestamp)
 
-      return (
-        <tr
-          className='border'
-          key={`payment_${paymentHistoryItem.paymentId}_${paymentHistoryItem.blockchain?.name}_${paymentHistoryItem.transaction}_${paymentHistoryItem.index}_${paymentHistoryItem.timestamp}`}
-          ref={i === paymentHistoryToShow.length - 1 ? lastPaymentElementRef : null}
-        >
-          <td>
-            {dt.toLocaleDateString()} {dt.toLocaleTimeString()}
-          </td>
-          <td>{blockchain?.displayName ?? paymentHistoryItem.blockchainName}</td>
-          <td>
-            <WalletAddress blockchain={blockchain} address={paymentHistoryItem.from} />
-          </td>
-          <td>
-            <WalletAddress blockchain={blockchain} address={paymentHistoryItem.to} />
-          </td>
-          <td>
-            {!!token && (
-              <TokenDetails
-                tokenSymbol={token.symbol}
-                tokenName={token.name}
-                tokenAddress={token.address}
-                blockchain={blockchain}
-              />
-            )}
+    return (
+      <tr
+        className='border'
+        key={`payment_${paymentHistoryItem.paymentId}_${paymentHistoryItem.blockchain?.name}_${paymentHistoryItem.transaction}_${paymentHistoryItem.index}_${paymentHistoryItem.timestamp}`}
+        ref={last ? lastPaymentElementRef : null}
+      >
+        <td>
+          {dt.toLocaleDateString()} {dt.toLocaleTimeString()}
+        </td>
+        <td>{blockchain?.displayName ?? paymentHistoryItem.blockchainName}</td>
+        <td>
+          <WalletAddress blockchain={blockchain} address={paymentHistoryItem.from} />
+        </td>
+        <td>
+          <WalletAddress blockchain={blockchain} address={paymentHistoryItem.to} />
+        </td>
+        <td>
+          {!!token && (
+            <TokenDetails
+              tokenSymbol={token.symbol}
+              tokenName={token.name}
+              tokenAddress={token.address}
+              blockchain={blockchain}
+            />
+          )}
 
-            {!token && (
-              <TokenDetails
-                tokenSymbol={paymentHistoryItem.tokenSymbol ?? paymentHistoryItem.tokenAddress ?? ''}
-                tokenAddress={paymentHistoryItem.tokenAddress}
-                blockchain={blockchain}
-              />
-            )}
-          </td>
-          <td>
-            <TokenAmount amount={paymentHistoryItem.amount} decimals={paymentHistoryItem.tokenDecimals} symbol={paymentHistoryItem.tokenSymbol} />
+          {!token && (
+            <TokenDetails
+              tokenSymbol={paymentHistoryItem.tokenSymbol ?? paymentHistoryItem.tokenAddress ?? ''}
+              tokenAddress={paymentHistoryItem.tokenAddress}
+              blockchain={blockchain}
+            />
+          )}
+        </td>
+        <td>
+          <TokenAmount amount={paymentHistoryItem.amount} decimals={paymentHistoryItem.tokenDecimals} symbol={paymentHistoryItem.tokenSymbol} />
 
-            {(paymentHistoryItem.amountCurrencyAtPaymentTime && paymentHistoryItem.currency && paymentHistoryItem.currency.toLocaleLowerCase() !== CURRENCY_USD_SYMBOL) && (
-              <div>
-                {t('components.payments.at_payment_time')} <CurrencyAmount amount={paymentHistoryItem.amountCurrencyAtPaymentTime} currency={paymentHistoryItem.currency} />
-              </div>
-            )}
-            {(paymentHistoryItem.amountUsdAtPaymentTime) && (
-              <div>
-                {t('components.payments.at_payment_time')} <CurrencyAmount amount={paymentHistoryItem.amountUsdAtPaymentTime} currency={CURRENCY_USD_SYMBOL} />
-              </div>
-            )}
+          {(paymentHistoryItem.amountCurrencyAtPaymentTime && paymentHistoryItem.currency && paymentHistoryItem.currency.toLocaleLowerCase() !== CURRENCY_USD_SYMBOL) && (
+            <div>
+              {t('components.payments.at_payment_time')} <CurrencyAmount amount={paymentHistoryItem.amountCurrencyAtPaymentTime} currency={paymentHistoryItem.currency} />
+            </div>
+          )}
+          {(paymentHistoryItem.amountUsdAtPaymentTime) && (
+            <div>
+              {t('components.payments.at_payment_time')} <CurrencyAmount amount={paymentHistoryItem.amountUsdAtPaymentTime} currency={CURRENCY_USD_SYMBOL} />
+            </div>
+          )}
 
-            {(paymentHistoryItem.amountCurrencyAtCurTime && paymentHistoryItem.currency && paymentHistoryItem.currency.toLocaleLowerCase() !== CURRENCY_USD_SYMBOL) && (
-              <div>
-                {t('components.payments.at_cur_time')} <CurrencyAmount amount={paymentHistoryItem.amountCurrencyAtCurTime} currency={paymentHistoryItem.currency} />
-              </div>
-            )}
-            {(paymentHistoryItem.amountUsdAtCurTime) && (
-              <div>
-                {t('components.payments.at_cur_time')} <CurrencyAmount amount={paymentHistoryItem.amountUsdAtCurTime} currency={CURRENCY_USD_SYMBOL} />
-              </div>
-            )}
-          </td>
-          <td>
-            <TextWithCopy value={paymentHistoryItem.paymentId} />
-          </td>
-          <td>
-            <TransactionHash blockchain={blockchain} transactionHash={paymentHistoryItem.transaction} />
-          </td>
-          <td>
-            {(!paymentHistoryItem.ipnResult) && (
-              <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
-                {t('components.payments.not_send_btn')}
-              </Button>
-            )}
+          {(paymentHistoryItem.amountCurrencyAtCurTime && paymentHistoryItem.currency && paymentHistoryItem.currency.toLocaleLowerCase() !== CURRENCY_USD_SYMBOL) && (
+            <div>
+              {t('components.payments.at_cur_time')} <CurrencyAmount amount={paymentHistoryItem.amountCurrencyAtCurTime} currency={paymentHistoryItem.currency} />
+            </div>
+          )}
+          {(paymentHistoryItem.amountUsdAtCurTime) && (
+            <div>
+              {t('components.payments.at_cur_time')} <CurrencyAmount amount={paymentHistoryItem.amountUsdAtCurTime} currency={CURRENCY_USD_SYMBOL} />
+            </div>
+          )}
+        </td>
+        <td>
+          <TextWithCopy value={paymentHistoryItem.paymentId} />
+        </td>
+        <td>
+          <TransactionHash blockchain={blockchain} transactionHash={paymentHistoryItem.transaction} />
+        </td>
+        <td>
+          {(!paymentHistoryItem.ipnResult) && (
+            <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
+              {t('components.payments.not_send_btn')}
+            </Button>
+          )}
 
-            {paymentHistoryItem.ipnResult?.error && (
-              <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
-                <ExclamationCircle className='text-danger me-1' />
-                {t('components.payments.error_btn')}
-              </Button>
-            )}
+          {paymentHistoryItem.ipnResult?.error && (
+            <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
+              <ExclamationCircle className='text-danger me-1' />
+              {t('components.payments.error_btn')}
+            </Button>
+          )}
 
-            {(!paymentHistoryItem.ipnResult?.error && !!paymentHistoryItem.ipnResult?.result) && (
-              <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
-                <CheckCircle className='text-danger me-1' />
-                {t('components.payments.success_btn')}
-              </Button>
-            )}
-          </td>
-        </tr>
-      )
-    })
-  }
+          {(!paymentHistoryItem.ipnResult?.error && !!paymentHistoryItem.ipnResult?.result) && (
+            <Button variant="secondary-link" onClick={() => openIpnModalHandler(paymentHistoryItem)}>
+              <CheckCircle className='text-danger me-1' />
+              {t('components.payments.success_btn')}
+            </Button>
+          )}
+        </td>
+      </tr>
+    )
+  }, [t, lastPaymentElementRef, openIpnModalHandler])
 
   return (
     <>
@@ -390,17 +388,15 @@ const Payments: React.FC = () => {
               </td>
             </tr>
           )}
-          {(paymentHistoryData && paymentHistoryData.length === 0) && (
+          {(!!paymentHistoryData && paymentHistoryData.length === 0) && (
             <tr>
               <td colSpan={8}>
                 {t('components.payments.no_payment')}
               </td>
             </tr>
           )}
-          {(paymentHistoryData && paymentHistoryData.length > 0) && (
-            <>
-              {getPaymentHistory(paymentHistoryData)}
-            </>
+          {(!!paymentHistoryData && paymentHistoryData.length > 0) && (
+            paymentHistoryData.map((item, i) => getPaymentHistory(item, i === paymentHistoryData.length - 1))
           )}
         </tbody>
       </Table>
