@@ -31,8 +31,7 @@ import { AccountService, AccountServiceImpl } from '../services/account-service'
 import { AuthService, AuthServiceImpl } from '../services/auth-service'
 import { PaymentService, PaymentServiceImpl } from '../services/payment-service'
 import { SettingsService, SettingsServiceImpl } from '../services/settings-service'
-import { BITCOIN_BLOCK_TASK_INTERVAL_SECONDS, META_TASK_INTERVAL_SECONDS, NOTIFICATION_TASK_INTERVAL_SECONDS, PAYMENT_TASK_INTERVAL_SECONDS } from '../constants'
-import { Task, TaskManager, TaskManagerImpl } from '../tasks/task-manager'
+import { TaskManager, TaskManagerImpl } from '../tasks/task-manager'
 import { EmailService, EmailServiceImpl } from '../services/email-service'
 import { EmailTemplateService, EmailTemplateServiceImpl } from '../services/email-template-service'
 import { NotificationService, NotificationServiceImpl } from '../services/notification-service'
@@ -55,6 +54,7 @@ import { MetaTask } from '../tasks/meta-task'
 import { RangoService, RangoServiceImpl } from '../services/rango-service'
 import { BitcoinBlockTask } from '../tasks/bitcoin-block.task'
 import { PaymentManagerTask } from '../tasks/payment-manager-task'
+import { ExchangeRateTask } from '../tasks/currency-task'
 
 const container = new Container()
 
@@ -247,6 +247,14 @@ container.register(
   'metaTask',
   new MetaTask(
     container.resolve<MetaService>('metaService'),
+    container.resolve<SettingsService>('settingsService')
+  )
+)
+container.register(
+  'exchangeRateTask',
+  new ExchangeRateTask(
+    container.resolve<ExchangeRateApiService>('exchangeRateApiService'),
+    container.resolve<ExchangeRateApiWrapperService>('exchangeRateApiWrapperService'),
     container.resolve<SettingsService>('settingsService')
   )
 )

@@ -40,7 +40,7 @@ export class MetaTask implements Task {
       })
       logger.debug('MetaTask: end to save token settings')
     } catch (error) {
-      logger.error(`NotificationTask: error happens`)
+      logger.error(`MetaTask: error happens`)
       logger.error(error)
     }
   }

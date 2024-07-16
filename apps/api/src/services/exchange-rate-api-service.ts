@@ -1,4 +1,5 @@
 import { ExchangeRateDao } from '@repo/dao/dist/src/dao/exchange-rate.dao'
+import { ExchangeRate } from '@repo/dao/dist/src/interfaces/exchange-rate'
 
 import { CURRENCY_USD, EXCHANGE_RATE_SAVING_SAMPLING_SECONDS } from '../constants'
 import { logger } from '../utils/logger'
@@ -7,6 +8,7 @@ import { ExchangeRateApiWrapperService } from './exchange-rate-api-wrapper-servi
 export interface ExchangeRateApiService {
   exchangeRate(currency: string, timestamp?: number | undefined): Promise<number | null>
   exchangeRates(currency: string, timestamps: number[]): Promise<{ [timestamp: number]: number | null }>
+  saveExchangeRates(exchangeRates: ExchangeRate[]): Promise<void>
 }
 
 export class ExchangeRateApiServiceImpl implements ExchangeRateApiService {
@@ -52,11 +54,16 @@ export class ExchangeRateApiServiceImpl implements ExchangeRateApiService {
     return exchangeRates
   }
 
+  public async saveExchangeRates(exchangeRates: ExchangeRate[]): Promise<void> {
+    logger.debug('ExchangeRateApiService: start to save exchange rates')
+    await this.exchangeRateDao.saveExchangeRates(exchangeRates)
+    logger.debug('ExchangeRateApiService: end to save exchange rates')
+  }
+
   private async loadExchangeRate(currency: string, timestamp?: number | undefined): Promise<number | null> {
     logger.debug(`ExchangeRateApiService: start to find exchange rate for currency ${currency} and timestamp ${timestamp}`)
 
     const timestampNow = Math.floor(Date.now() / 1000)
-    const samplingTimestampNow = Math.floor(timestampNow / EXCHANGE_RATE_SAVING_SAMPLING_SECONDS) * EXCHANGE_RATE_SAVING_SAMPLING_SECONDS
     const timestampRequired = timestamp ?? timestampNow
     const samplingTimestamp = Math.floor(timestampRequired / EXCHANGE_RATE_SAVING_SAMPLING_SECONDS) * EXCHANGE_RATE_SAVING_SAMPLING_SECONDS
 
@@ -76,16 +83,6 @@ export class ExchangeRateApiServiceImpl implements ExchangeRateApiService {
     const exchangeRates = await this.exchangeRateApiWrapperService.exchangeRates()
     logger.debug('ExchangeRateApiService: end to load exchange rates from api')
     logger.debug(exchangeRates)
-
-    logger.debug('ExchangeRateApiService: start to save exchange rates')
-    await this.exchangeRateDao.saveExchangeRates(
-      Object.entries(exchangeRates.conversion_rates).map(([currency, exchangeRate]) => ({
-        currency,
-        usdPrice: exchangeRate,
-        timestamp: samplingTimestampNow,
-      }))
-    )
-    logger.debug('ExchangeRateApiService: end to save exchange rates')
 
     const matchingKey = Object.keys(exchangeRates.conversion_rates)
       .find(key => key.toLocaleLowerCase() === currency.toLocaleLowerCase())

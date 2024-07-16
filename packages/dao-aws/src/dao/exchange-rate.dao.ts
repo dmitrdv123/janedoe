@@ -6,6 +6,7 @@ import appConfig from '@repo/common/dist/src/app-config'
 
 import { DynamoService } from '../services/dynamo.service'
 import { generateKey, batchWriteItemsByChunks } from '../utils/dynamo-utils'
+import { TTL_EXCHANGE_RATE } from '../constants'
 
 export class ExchangeRateDaoImpl implements ExchangeRateDao {
   private static readonly PK_PREFIX = 'exchange_rate'
@@ -32,7 +33,8 @@ export class ExchangeRateDaoImpl implements ExchangeRateDao {
         Item: marshall({
           pk: generateKey(ExchangeRateDaoImpl.PK_PREFIX, exchangeRate.currency.toLocaleLowerCase(), exchangeRate.timestamp),
           sk: exchangeRate.timestamp,
-          exchangeRate
+          exchangeRate,
+          ttl: exchangeRate.timestamp + TTL_EXCHANGE_RATE
         })
       }
     }))

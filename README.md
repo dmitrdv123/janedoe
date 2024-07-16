@@ -174,7 +174,6 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- api: add task to save currencies. Refactor service classes accordingly
 - after production deployment:
   - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
   - api: create and use email to send notification using sns and proper domain

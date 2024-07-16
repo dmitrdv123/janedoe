@@ -14,7 +14,7 @@ import { routes } from './routes'
 import { logger } from './utils/logger'
 import container from './containers/main.container'
 import { Task, TaskManager } from './tasks/task-manager'
-import { BITCOIN_BLOCK_TASK_INTERVAL_SECONDS, META_TASK_INTERVAL_SECONDS, NOTIFICATION_TASK_INTERVAL_SECONDS, PAYMENT_MANAGER_TASK_INTERVAL_SECONDS } from './constants'
+import { BITCOIN_BLOCK_TASK_INTERVAL_SECONDS, EXCHANGE_RATE_TASK_INTERVAL_SECONDS, META_TASK_INTERVAL_SECONDS, NOTIFICATION_TASK_INTERVAL_SECONDS, PAYMENT_MANAGER_TASK_INTERVAL_SECONDS } from './constants'
 
 createAppConfig()
 
@@ -23,6 +23,7 @@ taskManager.add('bitcoinBlockTask', container.resolve<Task>('bitcoinBlockTask'),
 taskManager.add('ipnNotificationTask', container.resolve<Task>('ipnNotificationTask'), NOTIFICATION_TASK_INTERVAL_SECONDS)
 taskManager.add('paymentStatusNotificationTask', container.resolve<Task>('paymentStatusNotificationTask'), NOTIFICATION_TASK_INTERVAL_SECONDS)
 taskManager.add('metaTask', container.resolve<Task>('metaTask'), META_TASK_INTERVAL_SECONDS)
+taskManager.add('exchangeRateTask', container.resolve<Task>('exchangeRateTask'), EXCHANGE_RATE_TASK_INTERVAL_SECONDS)
 taskManager.add('paymentManagerTask', container.resolve<Task>('paymentManagerTask'), PAYMENT_MANAGER_TASK_INTERVAL_SECONDS)
 
 const app = express()
