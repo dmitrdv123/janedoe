@@ -4,8 +4,6 @@ import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { PaymentSuccessInfo } from '@repo/dao/dist/src/interfaces/payment-success-info'
 import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 
-import appConfig from '@repo/common/dist/src/app-config'
-
 import { BLOCKCHAIN_BTC } from '../constants'
 import { logger } from '../utils/logger'
 import { PaymentSettings } from '../interfaces/payment-settings'

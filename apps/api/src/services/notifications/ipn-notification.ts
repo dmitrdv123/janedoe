@@ -10,10 +10,12 @@ import { ExchangeRateApiService } from '../exchange-rate-api-service'
 import { COMMON_SETTINGS_DEFAULT_CURRENCY, DEFAULT_FIAT_DECIMAL_PLACES } from '../../constants'
 import { AccountService } from '../account-service'
 import { roundNumber } from '../../utils/utils'
+import { PaymentService } from '../payment-service'
 
 export class IpnNotificationObserver implements NotificationObserver {
   public constructor(
     private accountService: AccountService,
+    private paymentService: PaymentService,
     private ipnService: IpnService,
     private exchangeRateApiService: ExchangeRateApiService
   ) { }
@@ -30,6 +32,31 @@ export class IpnNotificationObserver implements NotificationObserver {
     const settings = await this.accountService.loadAccountSettings(paymentLog.accountId)
     logger.debug('IpnNotificationObserver: end to load settings')
     logger.debug(settings)
+
+    const payments = await this.paymentService.loadPaymentHistory(paymentLog.accountId, paymentLog.paymentId)
+    const totalAmountUsd = payments.reduce((acc, cur) => {
+      if (cur.amountUsd) {
+        acc = acc ? acc + cur.amountUsd : cur.amountUsd
+      }
+
+      return acc
+    }, null as number | null)
+
+    const amountCurrencies = await Promise.all(
+      payments.map(async payment => {
+        const currencyExchangeRate = await this.exchangeRateApiService.exchangeRate(currency, payment.timestamp)
+        return payment.amountUsd && currencyExchangeRate
+          ? payment.amountUsd * currencyExchangeRate
+          : null
+      })
+    )
+    const totalAmountCurrency = amountCurrencies.reduce((acc, cur) => {
+      if (cur) {
+        acc = acc ? acc + cur : cur
+      }
+
+      return acc
+    }, null as number | null)
 
     const currency = settings?.commonSettings.currency ?? COMMON_SETTINGS_DEFAULT_CURRENCY
     const currencyExchangeRate = await this.exchangeRateApiService.exchangeRate(currency, paymentLog.timestamp)
@@ -51,6 +78,9 @@ export class IpnNotificationObserver implements NotificationObserver {
       amount: paymentLog.amount,
       amountUsd: paymentLog.amountUsd === null ? null : roundNumber(paymentLog.amountUsd, DEFAULT_FIAT_DECIMAL_PLACES),
       amountCurrency: amountCurrency === null ? null : roundNumber(amountCurrency, DEFAULT_FIAT_DECIMAL_PLACES),
+
+      totalAmountUsd: totalAmountUsd === null ? null : roundNumber(totalAmountUsd, DEFAULT_FIAT_DECIMAL_PLACES),
+      totalAmountCurrency: totalAmountCurrency === null ? null : roundNumber(totalAmountCurrency, DEFAULT_FIAT_DECIMAL_PLACES),
 
       blockchain: paymentLog.blockchain,
       tokenAddress: paymentLog.tokenAddress,

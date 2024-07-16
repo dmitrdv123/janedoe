@@ -212,6 +212,7 @@ container.register(
   'ipnNotificationObserver',
   new IpnNotificationObserver(
     container.resolve<AccountService>('accountService'),
+    container.resolve<PaymentService>('paymentService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService')
   )
