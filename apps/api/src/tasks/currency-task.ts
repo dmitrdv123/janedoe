@@ -14,7 +14,7 @@ export class ExchangeRateTask implements Task {
 
   public async run(): Promise<void> {
     try {
-      logger.info('ExchangeRateTask: task start')
+      logger.debug('ExchangeRateTask: task start')
 
       logger.debug('ExchangeRateTask: start to get exchange rate settings')
       const exchangeRateSettings = await this.settingsService.loadExchangeRateSettings()

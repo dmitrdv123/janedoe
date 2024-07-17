@@ -79,8 +79,8 @@ export class RangoServiceImpl implements RangoService {
       const response = await this.rangoWrapperService.status(params)
 
       if (response.status === TransactionStatus.FAILED) {
-        logger.info(`RangoService: payment with conversion failed for ${params}`)
-        logger.info(response)
+        logger.warn(`RangoService: payment with conversion failed for ${params}`)
+        logger.warn(response)
 
         await this.metricDao.putRangoConversionErrorMetric(1)
       }

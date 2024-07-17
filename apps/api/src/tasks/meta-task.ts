@@ -12,7 +12,7 @@ export class MetaTask implements Task {
 
   public async run(): Promise<void> {
     try {
-      logger.info('MetaTask: task start')
+      logger.debug('MetaTask: task start')
 
       logger.debug('MetaTask: start to get token settings')
       const tokenSettings = await this.settingsService.loadTokenSettings()

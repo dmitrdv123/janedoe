@@ -10,7 +10,7 @@ export class BitcoinBlockTask implements Task {
 
   public async run(): Promise<void> {
     try {
-      logger.info('BitcoinBlockTask: task start')
+      logger.debug('BitcoinBlockTask: task start')
 
       let latestProcessedBlockHeight = await this.bitcoinBlockService.getLatestProcessedBlockHeight()
       if (latestProcessedBlockHeight === undefined) {

@@ -15,7 +15,7 @@ export class NotificationTask<T> implements Task {
 
   public async run(): Promise<void> {
     try {
-      logger.info(`NotificationTask ${this.notificationType}: notification task start`)
+      logger.debug(`NotificationTask ${this.notificationType}: notification task start`)
 
       logger.debug(`NotificationTask ${this.notificationType}: start to find notifications`)
       const notifications = await this.notificationService.loadNotifications<T>(this.notificationType)

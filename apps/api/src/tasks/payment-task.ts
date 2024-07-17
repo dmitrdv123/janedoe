@@ -30,7 +30,7 @@ export class PaymentTask implements Task {
 
   public async run(): Promise<void> {
     try {
-      logger.info(`PaymentTask: payment task start for ${this.blockchain.name}`)
+      logger.debug(`PaymentTask: payment task start for ${this.blockchain.name}`)
       await this.processBlockchain()
     } catch (error) {
       logger.error(`PaymentTask: error happens for ${this.blockchain.name}`)

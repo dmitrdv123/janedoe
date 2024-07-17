@@ -1,3 +1,5 @@
+import { logger } from '../utils/logger'
+
 export interface Task {
   run(): Promise<void>
 }
@@ -18,6 +20,7 @@ export class TaskManagerImpl implements TaskManager {
       return
     }
 
+    logger.info(`TaskManager: add and run task ${key} with interval ${interval} seconds`)
     task.run().then(() => {
       this.tasks[key] = {
         task,

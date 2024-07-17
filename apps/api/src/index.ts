@@ -2,10 +2,8 @@ import * as dotenv from 'dotenv'
 dotenv.config({ path: `.env.${process.env.NODE_ENV}`.trim() })
 
 import * as http from 'http'
-import morgan from 'morgan'
 import cors from 'cors'
 import express from 'express'
-import { pinoHttp } from 'pino-http'
 
 import appConfig from '@repo/common/dist/src/app-config'
 
@@ -30,10 +28,8 @@ const app = express()
 
 app
   .use(cors())
-  .use(morgan('dev'))
   .use(express.urlencoded({ extended: true }))
   .use(express.json())
-  .use(pinoHttp({ logger }))
 
 // Mount REST on /api
 app.use('/api', routes)

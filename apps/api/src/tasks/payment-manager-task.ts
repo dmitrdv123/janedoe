@@ -30,7 +30,7 @@ export class PaymentManagerTask implements Task {
 
   public async run(): Promise<void> {
     try {
-      logger.info(`PaymentManagerTask: task start`)
+      logger.debug(`PaymentManagerTask: task start`)
       await this.process()
     } catch (error) {
       logger.error(`PaymentManagerTask: error happens`)
