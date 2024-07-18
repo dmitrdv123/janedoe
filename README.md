@@ -79,7 +79,12 @@ NODE_ENV=development pnpm run init --filter=installer
 # Run production
 
 ```sh
+# build
 VITE_APP_ENV=production NODE_ENV=production pnpm build
+# deploy resources in aws
+NODE_ENV=production pnpm run deploy --filter=installer
+# init necessary data into db and bitcoin
+NODE_ENV=production pnpm run init --filter=installer
 # deploy contract
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network bsc
 NODE_ENV=production pnpm run deploy --filter=protocol -- --network polygon
@@ -193,6 +198,7 @@ improvement backlog:
   - aws: make appservice private to access only from api gateway
   - aws: configure cloudformation logs to delete when stack destroyed and retain
   - api: set limits for requests using aws
+  - api: use rest api with edge optimized endpoint instead of http api which does not support it
 
 long term backlog:
 

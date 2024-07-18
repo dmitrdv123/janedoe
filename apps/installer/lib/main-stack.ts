@@ -1,11 +1,10 @@
 import * as apprunner from '@aws-cdk/aws-apprunner-alpha'
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront'
 import { Alarm, Metric, TreatMissingData, ComparisonOperator, Stats } from 'aws-cdk-lib/aws-cloudwatch'
-
 import { Stack, StackProps, RemovalPolicy, CfnOutput, Duration } from 'aws-cdk-lib'
 import { Table, AttributeType, BillingMode, ProjectionType, ITable } from 'aws-cdk-lib/aws-dynamodb'
 import { Bucket, BucketAccessControl, IBucket } from 'aws-cdk-lib/aws-s3'
-import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, IHttpApi } from 'aws-cdk-lib/aws-apigatewayv2'
+import { DomainName, EndpointType, HttpApi, HttpMethod, HttpRoute, HttpRouteKey, IHttpApi } from 'aws-cdk-lib/aws-apigatewayv2'
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager'
 import { Repository } from 'aws-cdk-lib/aws-ecr'
 import { AnyPrincipal, Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam'
@@ -15,12 +14,17 @@ import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations'
 import { CfnAutoScalingConfiguration, CfnService } from 'aws-cdk-lib/aws-apprunner'
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins'
 import { Construct } from 'constructs'
+import { HostedZone, ARecord, RecordTarget, AaaaRecord, IHostedZone, IAliasRecordTarget } from 'aws-cdk-lib/aws-route53'
+import { ApiGatewayv2DomainProperties, CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets'
+import { Certificate, ICertificate } from 'aws-cdk-lib/aws-certificatemanager'
 
 import { env, envName, withEnv } from './utils'
 
 interface MainStackOutput {
   vpc: IVpc
   keyPair: IKeyPair
+  zone?: IHostedZone
+  certificate?: ICertificate
 
   tableData?: ITable
   tableTimeSeries?: ITable
@@ -43,6 +47,7 @@ interface MainStackOutput {
   cloudfrontResponseFunction?: cloudfront.IFunction
 
   httpApi?: HttpApi
+  domainName?: DomainName
   service?: apprunner.Service
 
   alarmMetricRango?: Metric
@@ -58,7 +63,16 @@ export class MainStack extends Stack {
       vpc: Vpc.fromLookup(this, withEnv('vpc'), {
         vpcId: env('VPC')
       }),
-      keyPair: KeyPair.fromKeyPairName(this, withEnv('keypair'), env('KEY_PAIR_NAME'))
+      keyPair: KeyPair.fromKeyPairName(this, withEnv('keypair'), env('KEY_PAIR_NAME')),
+      zone: process.env.HOSTED_ZONE_ID && process.env.HOSTED_ZONE_NAME
+        ? HostedZone.fromHostedZoneAttributes(this, withEnv(`hosted_zone`), {
+          hostedZoneId: process.env.HOSTED_ZONE_ID,
+          zoneName: process.env.HOSTED_ZONE_NAME
+        })
+        : undefined,
+      certificate: process.env.CERTIFICATE_ARN
+        ? Certificate.fromCertificateArn(this, withEnv(`certificate`), process.env.CERTIFICATE_ARN)
+        : undefined
     }
 
     if (process.env.NODE_ENV !== 'local') {
@@ -74,11 +88,30 @@ export class MainStack extends Stack {
       this.deployFrontendSettings(output)
     }
 
+    if (process.env.NODE_ENV === 'production') {
+      this.deployHostedZoneSettings(output)
+    }
+
     this.deployOutputs(output)
   }
 
   private deployApiGateway(output: MainStackOutput) {
-    output.httpApi = new HttpApi(this, withEnv('api'))
+    output.domainName = process.env.NODE_ENV === 'production' && output.certificate
+      ? new DomainName(this, withEnv('api_domain'), {
+        domainName: `api.${process.env.ROOT_DOMAIN_NAME}`,
+        certificate: output.certificate,
+        endpointType: EndpointType.REGIONAL
+      })
+      : undefined
+
+    output.httpApi = new HttpApi(this, withEnv('api'), {
+      apiName: withEnv('api'),
+      defaultDomainMapping: output.domainName
+        ? {
+          domainName: output.domainName
+        }
+        : undefined
+    })
   }
 
   private deployBackend(output: MainStackOutput) {
@@ -91,7 +124,7 @@ export class MainStack extends Stack {
   }
 
   private deployFrontend(output: MainStackOutput) {
-    const cloudfrontRequestFunction = new cloudfront.Function(this, withEnv('cloudfront_function_request'), {
+    output.cloudfrontRequestFunction = new cloudfront.Function(this, withEnv('cloudfront_function_request'), {
       functionName: withEnv('function_request'),
       code: cloudfront.FunctionCode.fromInline(`
 function handler(event) {
@@ -109,7 +142,7 @@ function handler(event) {
       `)
     })
 
-    const cloudfrontResponseFunction = new cloudfront.Function(this, withEnv('cloudfront_function_response'), {
+    output.cloudfrontResponseFunction = new cloudfront.Function(this, withEnv('cloudfront_function_response'), {
       functionName: withEnv('function_response'),
       code: cloudfront.FunctionCode.fromInline(`
 function handler(event) {
@@ -138,14 +171,11 @@ function handler(event) {
     const bucketPayment = this.deployBucket(env('BUCKET_NAME_HOSTING_PAYMENT'))
     const bucketSupport = this.deployBucket(env('BUCKET_NAME_HOSTING_SUPPORT'))
 
-    const cloudfrontLanding = this.deployCloudfront(env('BUCKET_NAME_HOSTING_LANDING'), bucketLanding, bucketLog, cloudfrontRequestFunction, cloudfrontResponseFunction)
-    const cloudfrontAccount = this.deployCloudfront(env('BUCKET_NAME_HOSTING_ACCOUNT'), bucketAccount, bucketLog, cloudfrontRequestFunction, cloudfrontResponseFunction)
-    const cloudfrontDocs = this.deployCloudfront(env('BUCKET_NAME_HOSTING_DOCS'), bucketDocs, bucketLog, cloudfrontRequestFunction, cloudfrontResponseFunction)
-    const cloudfrontPayment = this.deployCloudfront(env('BUCKET_NAME_HOSTING_PAYMENT'), bucketPayment, bucketLog, cloudfrontRequestFunction, cloudfrontResponseFunction)
-    const cloudfrontSupport = this.deployCloudfront(env('BUCKET_NAME_HOSTING_SUPPORT'), bucketSupport, bucketLog, cloudfrontRequestFunction, cloudfrontResponseFunction)
-
-    output.cloudfrontRequestFunction = cloudfrontRequestFunction
-    output.cloudfrontResponseFunction = cloudfrontResponseFunction
+    const cloudfrontLanding = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_LANDING'), bucketLanding, bucketLog, [`www.${process.env.ROOT_DOMAIN_NAME}`, `${process.env.ROOT_DOMAIN_NAME}`])
+    const cloudfrontAccount = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_ACCOUNT'), bucketAccount, bucketLog, [`account.${process.env.ROOT_DOMAIN_NAME}`])
+    const cloudfrontDocs = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_DOCS'), bucketDocs, bucketLog, [`docs.${process.env.ROOT_DOMAIN_NAME}`])
+    const cloudfrontPayment = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_PAYMENT'), bucketPayment, bucketLog, [`payment.${process.env.ROOT_DOMAIN_NAME}`])
+    const cloudfrontSupport = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_SUPPORT'), bucketSupport, bucketLog, [`support.${process.env.ROOT_DOMAIN_NAME}`])
 
     output.bucketLog = bucketLog
     output.bucketLanding = bucketLanding
@@ -224,14 +254,23 @@ function handler(event) {
   }
 
   private deployFrontendSettings(output: MainStackOutput) {
-    const config = {
-      baseUrlApi: output.httpApi?.apiEndpoint,
-      baseUrlAccount: `https://${output.cloudfrontAccount?.distributionDomainName}`,
-      baseUrlDocs: `https://${output.cloudfrontDocs?.distributionDomainName}`,
-      baseUrlPayment: `https://${output.cloudfrontPayment?.distributionDomainName}`,
-      baseUrlSupport: `https://${output.cloudfrontSupport?.distributionDomainName}`,
-      baseUrlLanding: `https://${output.cloudfrontLanding?.distributionDomainName}`
-    }
+    const config = process.env.NODE_ENV === 'production'
+      ? {
+        baseUrlApi: `https://api.${process.env.ROOT_DOMAIN_NAME}`,
+        baseUrlAccount: `https://account.${process.env.ROOT_DOMAIN_NAME}`,
+        baseUrlDocs: `https://docs.${process.env.ROOT_DOMAIN_NAME}`,
+        baseUrlPayment: `https://payment.${process.env.ROOT_DOMAIN_NAME}`,
+        baseUrlSupport: `https://support.${process.env.ROOT_DOMAIN_NAME}`,
+        baseUrlLanding: `https://${process.env.ROOT_DOMAIN_NAME}`
+      }
+      : {
+        baseUrlApi: output.httpApi?.apiEndpoint,
+        baseUrlAccount: `https://${output.cloudfrontAccount?.distributionDomainName}`,
+        baseUrlDocs: `https://${output.cloudfrontDocs?.distributionDomainName}`,
+        baseUrlPayment: `https://${output.cloudfrontPayment?.distributionDomainName}`,
+        baseUrlSupport: `https://${output.cloudfrontSupport?.distributionDomainName}`,
+        baseUrlLanding: `https://${output.cloudfrontLanding?.distributionDomainName}`
+      }
 
     const configFile = `.config.${envName()}.json`
 
@@ -282,6 +321,50 @@ function handler(event) {
           Source.jsonData(configFile, config)
         ],
         destinationBucket: output.bucketSupport
+      })
+    }
+  }
+
+  private deployHostedZoneSettings(output: MainStackOutput) {
+    if (output.httpApi && output.domainName) {
+      this.deployHostedZoneRecords(output, new ApiGatewayv2DomainProperties(output.domainName.regionalDomainName, output.domainName.regionalHostedZoneId), 'api', false)
+    }
+    if (output.cloudfrontLanding) {
+      this.deployHostedZoneRecords(output, new CloudFrontTarget(output.cloudfrontLanding), undefined, true)
+      this.deployHostedZoneRecords(output, new CloudFrontTarget(output.cloudfrontLanding), 'www', true)
+    }
+    if (output.cloudfrontAccount) {
+      this.deployHostedZoneRecords(output, new CloudFrontTarget(output.cloudfrontAccount), 'account', true)
+    }
+    if (output.cloudfrontDocs) {
+      this.deployHostedZoneRecords(output, new CloudFrontTarget(output.cloudfrontDocs), 'docs', true)
+    }
+    if (output.cloudfrontPayment) {
+      this.deployHostedZoneRecords(output, new CloudFrontTarget(output.cloudfrontPayment), 'payment', true)
+    }
+    if (output.cloudfrontSupport) {
+      this.deployHostedZoneRecords(output, new CloudFrontTarget(output.cloudfrontSupport), 'support', true)
+    }
+  }
+
+  private deployHostedZoneRecords(output: MainStackOutput, aliasTarget: IAliasRecordTarget, recordName: string | undefined, ipV6: boolean) {
+    if (!output.zone) {
+      return
+    }
+
+    const target = RecordTarget.fromAlias(aliasTarget)
+
+    new ARecord(this, withEnv(`alias_${recordName}_a_record`), {
+      target,
+      recordName,
+      zone: output.zone
+    })
+
+    if (ipV6) {
+      new AaaaRecord(this, withEnv(`alias_${recordName}_aaaa_record`), {
+        target,
+        recordName,
+        zone: output.zone
       })
     }
   }
@@ -534,8 +617,7 @@ function handler(event) {
     })
   }
 
-
-  private deployCloudfront(cloudfrontName: string, bucket: IBucket, bucketLogs: Bucket, requestFunc: cloudfront.IFunction, responseFunc: cloudfront.IFunction) {
+  private deployCloudfront(output: MainStackOutput, cloudfrontName: string, bucket: IBucket, bucketLogs: Bucket, domains?: string[] | undefined) {
     const oac = new cloudfront.CfnOriginAccessControl(this, withEnv(`oac_${cloudfrontName}`), {
       originAccessControlConfig: {
         name: withEnv(cloudfrontName),
@@ -545,25 +627,32 @@ function handler(event) {
       },
     })
 
+    const functionAssociations: cloudfront.FunctionAssociation[] = []
+    if (output.cloudfrontRequestFunction) {
+      functionAssociations.push({
+        eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+        function: output.cloudfrontRequestFunction,
+      })
+    }
+    if (output.cloudfrontResponseFunction) {
+      functionAssociations.push({
+        eventType: cloudfront.FunctionEventType.VIEWER_RESPONSE,
+        function: output.cloudfrontResponseFunction,
+      })
+    }
+
     const distribution = new cloudfront.Distribution(this, withEnv(`cloudfront_${cloudfrontName}`), {
       logBucket: bucketLogs,
       logFilePrefix: cloudfrontName,
       priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
       defaultRootObject: 'index.html',
+      domainNames: domains,
+      certificate: output.certificate,
       defaultBehavior: {
         origin: new S3Origin(bucket),
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        functionAssociations: [
-          {
-            eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-            function: requestFunc,
-          },
-          {
-            eventType: cloudfront.FunctionEventType.VIEWER_RESPONSE,
-            function: responseFunc,
-          }
-        ]
+        functionAssociations: functionAssociations.length > 0 ? functionAssociations : undefined
       }
     })
 
