@@ -9,7 +9,8 @@
       "no_integration": "Не требуется интеграция",
       "supported": "{{blockchains}} блокчейнов, {{tokens}} токенов и {{currencies}} валют",
       "auto_convert": "Автоматическая конвертация токенов",
-      "read_more": "Прочитать подробнее"
+      "read_more": "Прочитать подробнее",
+      "contact": "Контакты"
     }
   },
   "components": {

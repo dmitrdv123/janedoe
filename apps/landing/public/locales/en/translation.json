@@ -9,7 +9,8 @@
       "no_integration": "No integration required",
       "supported": "{{blockchains}} blockchains, {{tokens}} tokens and {{currencies}} currencies",
       "auto_convert": "Automatic token conversion",
-      "read_more": "Read more"
+      "read_more": "Read more",
+      "contact": "Contacts"
     }
   },
   "components": {

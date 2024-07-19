@@ -7,12 +7,16 @@ import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../components/navbars/LendingNavbar'
 import { useConfig } from '../../context/config/hook'
+import { MAILTO } from '../../constants'
 
 const Landing: React.FC = () => {
   const { t } = useTranslation()
   const { hash } = useLocation()
 
   const config = useConfig()
+
+  const contact = 'janedoeboss'
+  const domain = 'proton.me'
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -50,6 +54,21 @@ const Landing: React.FC = () => {
           </Row>
         </Container>
       </main>
+
+      <footer className="mt-auto py-3">
+        <Container>
+          <Row>
+            <Col className="text-center">
+              <p className="mb-0">
+                {t('pages.landing.contact')}
+                <a target="_blank" rel="noopener noreferrer" className='ms-2' href={`${MAILTO}:${contact}@${domain}`}>
+                  <span>{contact}</span><span>@</span><span>{domain}</span>
+                </a>
+              </p>
+            </Col>
+          </Row>
+        </Container>
+      </footer>
     </div >
   )
 }
