@@ -40,7 +40,7 @@ const projectId = import.meta.env.VITE_APP_PROJECT_ID
 const metadata = {
   name: 'janedoe',
   description: 'JaneDoe Account',
-  url: 'http://localhost:3002', // origin must match your domain & subdomain
+  url: 'https://payment.janedoe.fi', // origin must match your domain & subdomain
   icons: []
 }
 

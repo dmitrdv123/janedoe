@@ -7,13 +7,13 @@ import useLocalStorageState from 'use-local-storage-state'
 import './index.css'
 
 import { useInfoMessages } from '../../states/application/hook'
-import { authDataKey, convertErrorToMessage } from '../../libs/utils'
+import { convertErrorToMessage } from '../../libs/utils'
 import SettingsLoader from '../../states/settings/loader'
 import { AuthData } from '../../types/auth-data'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
 import useApiRequestImmediate from '../../libs/hooks/useApiRequestImmediate'
 import { SharedAccountProfileResponse } from '../../types/account-profile'
-import { INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR } from '../../constants'
+import { AUTH_DATA_KEY, INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR } from '../../constants'
 import AuthNavbar from '../../components/navbars/AuthNavbar'
 import InfoMessages from '../../components/InfoMessages'
 
@@ -21,7 +21,7 @@ const Accounts: React.FC = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { hash } = useLocation()
-  const [authData] = useLocalStorageState<AuthData>(authDataKey())
+  const [authData] = useLocalStorageState<AuthData>(AUTH_DATA_KEY)
 
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 

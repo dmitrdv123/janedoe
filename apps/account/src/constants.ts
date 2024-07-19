@@ -2,6 +2,7 @@ import { Chain, arbitrum, avalanche, base, bsc, cronos, hardhat, linea, mainnet,
 import { Permission } from './types/account-settings'
 import { PaymentHistoryDataFilter } from './types/payment-history'
 
+export const AUTH_DATA_KEY = 'janedoe:authData'
 export const DEFAULT_CURRENCY_DECIMAL_PLACES = 4
 
 export const INFO_MESSAGE_SETTINGS_ERROR = 'settings_load_error'

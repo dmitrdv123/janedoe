@@ -9,8 +9,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import './index.css'
 
 import { useInfoMessages } from '../../states/application/hook'
-import { authDataKey, convertErrorToMessage } from '../../libs/utils'
-import { INFO_MESSAGE_AUTH_ERROR } from '../../constants'
+import { convertErrorToMessage } from '../../libs/utils'
+import { AUTH_DATA_KEY, INFO_MESSAGE_AUTH_ERROR } from '../../constants'
 import { AuthData } from '../../types/auth-data'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
 import useApiRequest from '../../libs/hooks/useApiRequest'
@@ -27,7 +27,7 @@ const Auth: React.FC = () => {
   const { open } = useWeb3Modal()
 
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
-  const [authData, setAuthData, { removeItem: removeAuthData }] = useLocalStorageState<AuthData>(authDataKey())
+  const [authData, setAuthData, { removeItem: removeAuthData }] = useLocalStorageState<AuthData>(AUTH_DATA_KEY)
   const { status: retrieveNonceStatus, process: retrieveNonce } = useApiRequest<AccountNonce>()
   const { status: authStatus, process: auth } = useApiRequest<AuthData>()
 

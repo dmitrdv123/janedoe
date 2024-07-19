@@ -180,12 +180,11 @@ NODE_ENV=production pnpm run init --filter=installer
 others:
 
 - after production deployment:
-  - docs: Screenshot contains links to localhost, after starting to use domains we need to change images
-  - api: create and use email to send notification using sns and proper domain
-  - validate project at walletconnect.com
+  - api: create and use email to send notification using ses and proper domain
 
 improvement backlog:
 
+- payment: have a warning about hardhat and payment error. Start to type email, this warn start to blink. Since there is a unnecessary refresh
 - support, account: submit button is enabled even if form is not valid
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).
 - frontend: if user choose language and then go to another frontend then it should be set to the same lang
@@ -210,6 +209,7 @@ long term backlog:
 
 disputable backlog:
 
+- api: if we fail to send email then it start to send it infinitely every time. We need to mark it as failed. Disputable since email should be send in any way. Later delivery can fail. But email server should work and we need to add one more time. But for improvement we can introduce max attempts
 - all: start to use bun instead of nodejs - https://bun.sh/guides. Since it should be much faster
 - account: payments - should add page num to url to be resistant to refreshing. From another side maybe we dont need to reload all that data since it can be heavy
 - account, protocol: move logic of withdrawEthTo to withdrawTo (protocol), remove useNativeTokenWithdraw (account), withdrawEthTo (protocol)

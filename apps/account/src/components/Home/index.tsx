@@ -1,13 +1,13 @@
 import { Trans, useTranslation } from 'react-i18next'
 import useLocalStorageState from 'use-local-storage-state'
 
-import { authDataKey } from '../../libs/utils'
 import { AuthData } from '../../types/auth-data'
 import { useConfig } from '../../context/config/hook'
+import { AUTH_DATA_KEY } from '../../constants'
 
 const Home: React.FC = () => {
   const { t } = useTranslation()
-  const [authData] = useLocalStorageState<AuthData>(authDataKey())
+  const [authData] = useLocalStorageState<AuthData>(AUTH_DATA_KEY)
   const config = useConfig()
 
   return (

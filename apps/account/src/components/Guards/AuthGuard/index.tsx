@@ -3,11 +3,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useLocalStorageState from 'use-local-storage-state'
 
 import { AuthData } from '../../../types/auth-data'
-import { authDataKey } from '../../../libs/utils'
 import { ApiWrapper } from '../../../libs/services/api-wrapper'
 import useApiRequest from '../../../libs/hooks/useApiRequest'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useInfoMessages } from '../../../states/application/hook'
+import { AUTH_DATA_KEY } from '../../../constants'
 
 interface AuthGuardProps {
   element: React.ReactElement
@@ -19,7 +19,7 @@ const AuthGuard: React.FC<AuthGuardProps> = (props) => {
 
   const navigate = useNavigate()
   const { hash } = useLocation()
-  const [, , { removeItem: removeAuthData }] = useLocalStorageState<AuthData>(authDataKey())
+  const [, , { removeItem: removeAuthData }] = useLocalStorageState<AuthData>(AUTH_DATA_KEY)
   const { isConnected, address } = useAccount()
   const {disconnect} = useDisconnect()
 

@@ -3,11 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom'
 import useLocalStorageState from 'use-local-storage-state'
 
 import { AuthData } from '../../types/auth-data'
-import { authDataKey } from '../utils'
 import { UnathError } from '../../types/unauth-error'
 import { ApiWrapper } from '../services/api-wrapper'
 import { ApiRequest, ApiRequestResult, ApiRequestStatus } from '../../types/api-request'
 import { useConfig } from '../../context/config/hook'
+import { AUTH_DATA_KEY } from '../../constants'
 
 export default function useApiRequest<T>(): ApiRequestResult<T> {
   const [data, setData] = useState<T | undefined>(undefined)
@@ -15,7 +15,7 @@ export default function useApiRequest<T>(): ApiRequestResult<T> {
   const [error, setError] = useState<Error | undefined>(undefined)
 
   const { id } = useParams()
-  const [authData, , { removeItem: removeAuthData }] = useLocalStorageState<AuthData>(authDataKey())
+  const [authData, , { removeItem: removeAuthData }] = useLocalStorageState<AuthData>(AUTH_DATA_KEY)
   const navigate = useNavigate()
   const config = useConfig()
 

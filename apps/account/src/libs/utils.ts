@@ -8,10 +8,6 @@ import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
 import { ServiceError } from '../types/service-error'
 import { PERMISSION_PRIORITY, PUBLIC_NODE_RPCS } from '../constants'
 
-export function authDataKey(): string {
-  return `${import.meta.env.VITE_APP_APP_PREFIX ?? 'janedoe'}:authData`
-}
-
 export function convertErrorToMessage(error: any, defaultMessage: string, curDepth: number = 1, maxDepth: number = 10): string {
   if ('string' === typeof error) {
     return error

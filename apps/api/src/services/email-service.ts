@@ -15,7 +15,7 @@ export class EmailServiceImpl implements EmailService {
       to,
       subject,
       html,
-      from: 'dmitrdv@mail.ru'
+      from: appConfig.PAYMENT_NOTIFICATION_FROM_EMAIL
     }
 
     logger.debug('EmailService: mail option created')

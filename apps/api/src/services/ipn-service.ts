@@ -101,7 +101,6 @@ export class IpnServiceImpl implements IpnService {
           error: 'Internal server error'
         }
     }
-    const id = [ipnKey.accountId, ipnKey.paymentId, ipnKey.blockchain.toLocaleLowerCase(), ipnKey.transaction, ipnKey.index].join(':')
 
     logger.debug(`IpnService: start to save ipn result`)
     logger.debug(ipnKey)
