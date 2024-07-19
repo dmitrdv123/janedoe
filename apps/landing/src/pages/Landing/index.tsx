@@ -62,7 +62,9 @@ const Landing: React.FC = () => {
               <p className="mb-0">
                 {t('pages.landing.contact')}
                 <a target="_blank" rel="noopener noreferrer" className='ms-2' href={`${MAILTO}:${contact}@${domain}`}>
-                  <span>{contact}</span><span>@</span><span>{domain}</span>
+                  <span>{contact}</span>
+                  <span>@</span>
+                  <span>{domain}</span>
                 </a>
               </p>
             </Col>
