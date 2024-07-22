@@ -18,6 +18,7 @@ import { SettingsService } from '../services/settings-service'
 export class PaymentTask implements Task {
   public constructor(
     private blockchain: BlockchainMeta,
+    private lastProcessed: string | undefined,
     private accountService: AccountService,
     private evmService: EvmService,
     private bitcoinBlockService: BitcoinBlockService,
@@ -25,7 +26,7 @@ export class PaymentTask implements Task {
     private notificationService: NotificationService,
     private paymentLogService: PaymentLogService,
     private cryptoService: CryptoService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
   ) { }
 
   public async run(): Promise<void> {
@@ -39,9 +40,7 @@ export class PaymentTask implements Task {
   }
 
   private async processBlockchain(): Promise<void> {
-    const blockchainSettings = await this.settingsService.loadBlockchainSettings(this.blockchain.name)
-    const lastProcessed = blockchainSettings?.block ?? undefined
-    logger.debug(`PaymentTask, ${this.blockchain.name}: last processed payments logs ${lastProcessed ?? 'undefined'}`)
+    logger.debug(`PaymentTask, ${this.blockchain.name}: last processed payments logs ${this.lastProcessed ?? 'undefined'}`)
 
     const iterator = await new PaymentLogsIteratorBuilder(
       this.settingsService,
@@ -50,7 +49,7 @@ export class PaymentTask implements Task {
       this.bitcoinBlockService,
       this.metaService
     )
-      .withSkip(lastProcessed)
+      .withSkip(this.lastProcessed)
       .build(this.blockchain)
 
     const logs = await iterator.nextBatch()
@@ -61,7 +60,7 @@ export class PaymentTask implements Task {
       logs.map(async (log) => await this.processPaymentLog(log))
     )
 
-    if (lastProcessed === iterator.lastProcessed()) {
+    if (this.lastProcessed === iterator.lastProcessed()) {
       logger.debug(`PaymentTask, ${this.blockchain.name}: skip to save last processed payment logs since no new blocks found`)
     } else {
       logger.debug(`PaymentTask, ${this.blockchain.name}: start to save last processed payment logs ${iterator.lastProcessed()}`)
@@ -69,6 +68,8 @@ export class PaymentTask implements Task {
         blockchain: this.blockchain.name,
         block: iterator.lastProcessed()
       })
+
+      this.lastProcessed = iterator.lastProcessed()
     }
     logger.debug(`PaymentTask, ${this.blockchain.name}: end to save last processed payment logs ${iterator.lastProcessed()}`)
   }

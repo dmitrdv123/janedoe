@@ -74,6 +74,7 @@ container.register(
 container.register(
   'settingsService',
   new SettingsServiceImpl(
+    commonContainer.resolve<CacheService>('cacheService'),
     awsContainer.resolve<SettingsDao>('settingsDao')
   )
 )

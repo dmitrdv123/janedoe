@@ -3,9 +3,10 @@ import { BlockchainSettings } from '@repo/dao/dist/src/interfaces/blockchain-set
 import { AppSettings } from '@repo/dao/dist/src/interfaces/settings'
 import { AccountPaymentSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 import { BlockchainEvmClientConfig } from '@repo/dao/dist/src/interfaces/blockchain-evm-client-config'
+import { CacheService } from '@repo/common/dist/src/services/cache-service'
 
 import { logger } from '../utils/logger'
-import { APP_SETTINGS_PREFIX, BLOCKCHAIN_EVM_CLIENT_CONFIG_SETTINGS_PREFIX, BLOCKCHAIN_SETTINGS_PREFIX, DEFAULT_ACCOUNT_PAYMENT_SETTINGS_PREFIX, EXCHANGE_RATE_SETTINGS_PREFIX, TOKEN_SETTINGS_PREFIX } from '../constants'
+import { APP_SETTINGS_PREFIX, BLOCKCHAIN_EVM_CLIENT_CONFIG_SETTINGS_PREFIX, BLOCKCHAIN_SETTINGS_PREFIX, DEFAULT_ACCOUNT_PAYMENT_SETTINGS_PREFIX, DEFAULT_SETTINGS_CACHING_SECONDS, EXCHANGE_RATE_SETTINGS_PREFIX, TOKEN_SETTINGS_PREFIX } from '../constants'
 import { ExchangeRateSettings, TokenSettings } from '../interfaces/settings'
 
 export interface SettingsService {
@@ -26,18 +27,27 @@ export interface SettingsService {
 
 export class SettingsServiceImpl implements SettingsService {
   public constructor(
+    private cacheService: CacheService,
     private settingsDao: SettingsDao
   ) { }
 
   public async loadAppSettings(): Promise<AppSettings> {
-    logger.debug('SettingsService: start to load app settings')
-    const settings = await this.settingsDao.loadSettings<AppSettings>(APP_SETTINGS_PREFIX)
-    if (!settings) {
-      throw new Error('SettingsService: app settings not found')
-    }
-    logger.debug('SettingsService: end to load app settings')
+    return this.cacheService.run(
+      'settings#app_settings',
+      DEFAULT_SETTINGS_CACHING_SECONDS,
+      async () => {
+        logger.debug('SettingsService: start to load app settings')
+        const settings = await this.settingsDao.loadSettings<AppSettings>(APP_SETTINGS_PREFIX)
+        if (!settings) {
+          throw new Error('SettingsService: app settings not found')
+        }
+        logger.debug('SettingsService: end to load app settings')
 
-    return settings
+        return settings
+      }
+    )
+
+
   }
 
   public async loadTokenSettings(): Promise<TokenSettings | undefined> {

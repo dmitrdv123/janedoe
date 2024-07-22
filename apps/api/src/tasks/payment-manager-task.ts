@@ -46,35 +46,41 @@ export class PaymentManagerTask implements Task {
       this.metaService.meta()
     ])
 
-    appSettings.paymentBlockchains.forEach(paymentBlockchain => {
-      logger.debug(`PaymentManagerTask: start to add payment task for ${paymentBlockchain.blockchain} into task manager`)
+    await Promise.all(
+      appSettings.paymentBlockchains.map(async paymentBlockchain => {
+        logger.debug(`PaymentManagerTask: start to add payment task for ${paymentBlockchain.blockchain} into task manager`)
 
-      if (this.prevPaymentBlockchains.find(item => item.blockchain.toLocaleLowerCase() === paymentBlockchain.blockchain.toLocaleLowerCase())) {
-        return
-      }
+        if (this.prevPaymentBlockchains.find(item => item.blockchain.toLocaleLowerCase() === paymentBlockchain.blockchain.toLocaleLowerCase())) {
+          return
+        }
 
-      const blockchain = meta.blockchains.find(item => item.name.toLocaleLowerCase() === paymentBlockchain.blockchain.toLocaleLowerCase())
-      if (!blockchain) {
-        logger.debug(`PaymentManagerTask: blockchain ${paymentBlockchain} not found`)
-        return
-      }
+        const blockchain = meta.blockchains.find(item => item.name.toLocaleLowerCase() === paymentBlockchain.blockchain.toLocaleLowerCase())
+        if (!blockchain) {
+          logger.debug(`PaymentManagerTask: blockchain ${paymentBlockchain} not found`)
+          return
+        }
 
-      const task = new PaymentTask(
-        blockchain,
-        this.accountService,
-        this.evmService,
-        this.bitcoinBlockService,
-        this.metaService,
-        this.notificationService,
-        this.paymentLogService,
-        this.cryptoService,
-        this.settingsService,
-      )
+        const blockchainSettings = await this.settingsService.loadBlockchainSettings(blockchain.name)
+        const lastProcessed = blockchainSettings?.block ?? undefined
 
-      this.taskManager.add(paymentBlockchain.blockchain, task, PAYMENT_TASK_INTERVAL_SECONDS)
+        const task = new PaymentTask(
+          blockchain,
+          lastProcessed,
+          this.accountService,
+          this.evmService,
+          this.bitcoinBlockService,
+          this.metaService,
+          this.notificationService,
+          this.paymentLogService,
+          this.cryptoService,
+          this.settingsService,
+        )
 
-      logger.debug(`PaymentManagerTask: end to add payment task for ${paymentBlockchain.blockchain} into task manager`)
-    })
+        this.taskManager.add(paymentBlockchain.blockchain, task, PAYMENT_TASK_INTERVAL_SECONDS)
+
+        logger.debug(`PaymentManagerTask: end to add payment task for ${paymentBlockchain.blockchain} into task manager`)
+      })
+    )
 
     this.prevPaymentBlockchains.forEach(paymentBlockchain => {
       logger.debug(`PaymentManagerTask: start to delete payment task for ${paymentBlockchain.blockchain} from task manager`)
