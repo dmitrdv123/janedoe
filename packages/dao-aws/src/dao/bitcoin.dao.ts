@@ -5,7 +5,7 @@ import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWalle
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
 import appConfig from '@repo/common/dist/src/app-config'
 
-import { batchWriteItemsByChunks, generateKey, queryItems, scanItems } from '../utils/dynamo-utils'
+import { batchWriteItemsByChunks, generateKey, queryItems } from '../utils/dynamo-utils'
 import { DynamoService } from '../services/dynamo.service'
 import { decryptString, encryptString } from '../utils/crypto-utils'
 
@@ -108,8 +108,8 @@ export class BitcoinDaoImpl implements BitcoinDao {
     await this.dynamoService.putItem({
       TableName: appConfig.TABLE_NAME,
       Item: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, walletAddress.walletName),
-        sk: walletAddress.label,
+        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX),
+        sk: generateKey(walletAddress.walletName, walletAddress.label),
         walletAddress: walletAddressToSave
       })
     })
@@ -122,7 +122,7 @@ export class BitcoinDaoImpl implements BitcoinDao {
       TableName: appConfig.TABLE_NAME,
       Key: marshall({
         pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, walletName),
-        sk: label,
+        sk: generateKey(walletName, label),
       })
     })
 
@@ -137,9 +137,10 @@ export class BitcoinDaoImpl implements BitcoinDao {
   public async listWalletAddresses(walletName: string): Promise<BitcoinWalletAddress[]> {
     const walletAddresses: BitcoinWalletAddress[] = await queryItems(this.dynamoService, 'walletAddress', {
       TableName: appConfig.TABLE_NAME,
-      KeyConditionExpression: 'pk = :pk',
+      KeyConditionExpression: 'pk = :pk and begins_with(sk, :sk_prefix)',
       ExpressionAttributeValues: marshall({
-        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, walletName)
+        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX),
+        ':sk_prefix': generateKey(walletName, '')
       })
     })
 
@@ -151,15 +152,13 @@ export class BitcoinDaoImpl implements BitcoinDao {
   }
 
   public async listAllWalletAddresses(): Promise<BitcoinWalletAddress[]> {
-    const request = {
+    return await queryItems(this.dynamoService, 'walletAddress', {
       TableName: appConfig.TABLE_NAME,
-      FilterExpression: 'begins_with(pk, :pk_prefix)',
+      KeyConditionExpression: 'pk = :pk',
       ExpressionAttributeValues: marshall({
-        ':pk_prefix': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, '')
+        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX)
       })
-    }
-
-    return await scanItems(this.dynamoService, 'walletAddress', request)
+    })
   }
 
   public async updateWalletAddressCounter(walletName: string): Promise<number> {
@@ -183,8 +182,8 @@ export class BitcoinDaoImpl implements BitcoinDao {
     const putRequests = utxos.map(utxo => ({
       PutRequest: {
         Item: marshall({
-          pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, utxo.data.txid),
-          sk: utxo.data.vout.toString(),
+          pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX),
+          sk: generateKey(utxo.data.txid, utxo.data.vout),
           gsi_pk1: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, utxo.walletName),
           gsi_sk1: utxo.label,
           active,
@@ -206,8 +205,8 @@ export class BitcoinDaoImpl implements BitcoinDao {
     const deleteRequests = keys.map(key => ({
       DeleteRequest: {
         Key: marshall({
-          pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, key.txid),
-          sk: key.vout.toString()
+          pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX),
+          sk: generateKey(key.txid, key.vout)
         })
       }
     }))
@@ -249,15 +248,13 @@ export class BitcoinDaoImpl implements BitcoinDao {
   }
 
   public async listAllUtxos(): Promise<BitcoinUtxo[]> {
-    const request = {
+    return await queryItems(this.dynamoService, 'utxo', {
       TableName: appConfig.TABLE_NAME,
-      FilterExpression: 'begins_with(pk, :pk_prefix)',
+      KeyConditionExpression: 'pk = :pk',
       ExpressionAttributeValues: marshall({
-        ':pk_prefix': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, '')
+        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX)
       })
-    }
-
-    return await scanItems(this.dynamoService, 'utxo', request)
+    })
   }
 
   public async loadWalletBalance(walletName: string): Promise<number> {
