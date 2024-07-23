@@ -26,12 +26,24 @@ export class MetaTask implements Task {
         return
       }
 
-      logger.debug(`MetaTask: start to get meta`)
-      const meta = await this.metaService.meta()
+      logger.debug(`MetaTask: start to get meta and app settings`)
+      const [meta, appSettings] = await Promise.all([
+        this.metaService.meta(),
+        this.settingsService.loadAppSettings()
+      ])
+      logger.debug(`MetaTask: end to get meta and app settings`)
       logger.debug(`MetaTask: found ${meta.tokens.length} tokens`)
 
-      logger.debug(`MetaTask: start to save ${meta.tokens.length} tokens`)
-      await this.metaService.saveTokens(timestampSampling, meta.tokens)
+      logger.debug(`MetaTask: start to filter tokens by payment blockchains`)
+      const tokens = meta.tokens.filter(token =>
+        appSettings.paymentBlockchains.some(paymentBlockchain =>
+          paymentBlockchain.blockchain.toLocaleLowerCase() === token.blockchain.toLocaleLowerCase()
+        )
+      )
+      logger.debug(`MetaTask: filtered tokens count ${tokens.length}`);
+
+      logger.debug(`MetaTask: start to save ${tokens.length} tokens`)
+      await this.metaService.saveTokens(timestampSampling, tokens)
       logger.debug(`MetaTask: end to save tokens`)
 
       logger.debug('MetaTask: start to save token settings')
