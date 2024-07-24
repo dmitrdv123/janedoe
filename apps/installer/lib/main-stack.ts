@@ -556,8 +556,8 @@ function handler(event) {
       instanceRole,
       serviceName: withEnv('janedoe'),
       autoDeploymentsEnabled: true,
-      cpu: apprunner.Cpu.ONE_VCPU,
-      memory: apprunner.Memory.TWO_GB,
+      cpu: apprunner.Cpu.HALF_VCPU,
+      memory: apprunner.Memory.ONE_GB,
       source: apprunner.Source.fromEcr({
         repository: Repository.fromRepositoryName(this, withEnv('repo_janedoe'), env('IMAGE_REPO')),
         imageConfiguration: {
@@ -566,9 +566,15 @@ function handler(event) {
             PORT: env('PORT'),
             IS_DEV: env('IS_DEV'),
             APP_NAME: env('APP_NAME'),
-            APP_URL: `https://${output.cloudfrontLanding?.distributionDomainName}` ?? '',
-            PAYMENT_URL: `https://${output.cloudfrontPayment?.distributionDomainName}` ?? '',
-            SUPPORT_URL: `https://${output.cloudfrontSupport?.distributionDomainName}` ?? '',
+            APP_URL: process.env.NODE_ENV === 'production'
+              ? `https://${process.env.ROOT_DOMAIN_NAME}`
+              : `https://${output.cloudfrontLanding?.distributionDomainName}`,
+            PAYMENT_URL: process.env.NODE_ENV === 'production'
+              ? `https://payment.${process.env.ROOT_DOMAIN_NAME}`
+              : `https://${output.cloudfrontPayment?.distributionDomainName}`,
+            SUPPORT_URL: process.env.NODE_ENV === 'production'
+              ? `https://support.${process.env.ROOT_DOMAIN_NAME}`
+              : `https://${output.cloudfrontSupport?.distributionDomainName}`,
             PINO_CONFIG: env('PINO_CONFIG'),
             BITCOIN_NETWORK: env('BITCOIN_NETWORK'),
             TABLE_NAME: output.tableData?.tableName ?? '',
