@@ -15,8 +15,8 @@ const Landing: React.FC = () => {
 
   const config = useConfig()
 
-  const contact = 'janedoeboss'
-  const domain = 'proton.me'
+  const contact = 'boss'
+  const domain = 'mail.janedoe.fi'
 
   return (
     <div className="d-flex flex-column min-vh-100">
