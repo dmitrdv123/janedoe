@@ -24,7 +24,7 @@ const ReceivePayments: React.FC = () => {
 
           <p>
             Link format:<br />
-            <code>http://localhost:3001/your account ID/payment ID/currency/amount</code>
+            <code>http://{config.config?.baseUrlPayment}/your account ID/payment ID/currency/amount</code>
           </p>
           <ul>
             <li>
@@ -86,7 +86,7 @@ const ReceivePayments: React.FC = () => {
 
           <p>
             Формат ссылки:<br />
-            <code>http://localhost:3001/идентификатор вашего аккаунта/идентификатор платежа/валюта/сумма</code>
+            <code>http://{config.config?.baseUrlPayment}/идентификатор вашего аккаунта/идентификатор платежа/валюта/сумма</code>
           </p>
           <ul>
             <li>

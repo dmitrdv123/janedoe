@@ -29,21 +29,21 @@ const Home: React.FC = () => {
           </p>
 
           <h2>
-            No fees
+            No Fees
           </h2>
           <p>
             We do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token conversion.
           </p>
 
           <h2>
-            No custodial wallets
+            No Custodial Wallets
           </h2>
           <p>
             We do not store your funds in custodial wallets in the case of Ethereum compatible blockchains. Your funds are stored in a smart contract based on the <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>ERC1155 standard</a> and can be withdrawn to your wallet. Smart contract addresses can be found in <a href='#resources_contracts'>Contract Addresses</a>.
           </p>
 
           <h2>
-            No integration required
+            No Integration Required
           </h2>
           <p>
             You just need to post links in a specific format to accept payments. For example, <code>{config.config?.baseUrlPayment}/000000000001/123/usd/100</code>. Links can be created independently on your side, no integration required. More details in <a href='#tutorials_receive_payments'>How to receive payments</a>.
@@ -56,17 +56,17 @@ const Home: React.FC = () => {
           </p>
 
           <h2>
-            N blockchains, M tokens and K currencies
+            11 Blockchains, 9275 Tokens and 161 Fiat Currencies
           </h2>
           <p>
-            We support N blockchains, M tokens and K currencies as payment methods. More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
+            We support 11 blockchains, 9275 tokens and 161 fiat currencies as payment methods. More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
           </p>
 
           <h2>
-            Automatic token conversion
+            Automatic Token Conversion
           </h2>
           <p>
-            Let's say you decide to only accept payments on the Ethereum blockchain in USDT. Your client only has USDC on the Polygon blockchain. He will still be able to make the payment. USDC will be automatically converted to USDT and sent to your.
+            Let's say you decide to only accept payments in USDT. And your client only has USDC. He will still be able to make the payment. USDC will be automatically converted to USDT and sent to your.
           </p>
         </>
       )}
@@ -115,17 +115,17 @@ const Home: React.FC = () => {
           </p>
 
           <h2>
-            N блокчейнов, M токенов и K валют
+            11 блокчейнов, 9275 токенов и 161 фиатная валюта
           </h2>
           <p>
-            Мы поддерживаем N блокчейнов, М токенов и K валют в качестве способов оплаты. Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
+            Мы поддерживаем 11 блокчейнов, 9275 токенов и 161 фиатную валюту в качестве способов оплаты. Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
           </p>
 
           <h2>
             Автоматическая конвертация токенов
           </h2>
           <p>
-            Предположим, вы решили принимать платежи только в блокчейне Ethereum в USDT. И ваш клиент имеет только USDC в блокчейне Polygon. Он все равно сможет совершить оплату. USDC будут автоматически конвертированы в USDT и отправлены вам.
+            Предположим, вы решили принимать платежи только в USDT. А ваш клиент имеет только USDC. Он все равно сможет совершить оплату. USDC будут автоматически конвертированы в USDT и отправлены вам.
           </p>
         </>
       )}
