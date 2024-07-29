@@ -4,14 +4,14 @@ import * as ecc from 'tiny-secp256k1'
 import { BIP32Factory } from 'bip32'
 import ECPairFactory from 'ecpair'
 
-import { BitcoinUtxo, BitcoinWalletAddressData, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinUtxoData, BitcoinWalletAddressData, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
 import { parseBigIntToNumber, parseToBigNumber } from '../utils/bitcoin-utils'
 import { BITCOIN_DECIMALS } from '../constants'
 
 export interface BitcoinUtilsService {
   generateRootWallet(): BitcoinWalletData
   generateChildWallet(rootWalletData: BitcoinWalletData, index: number): BitcoinWalletAddressData
-  createTransaction(walletAddressData: BitcoinWalletAddressData[], utxos: BitcoinUtxo[], address: string, feeRate: number): bitcoin.Transaction
+  createTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], address: string, feeRate: number): bitcoin.Transaction
 }
 
 export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
@@ -56,20 +56,20 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     return { wif, address }
   }
 
-  public createTransaction(walletAddressData: BitcoinWalletAddressData[], utxos: BitcoinUtxo[], address: string, feeRate: number): bitcoin.Transaction {
-    const totalInputValue = utxos.reduce(
-      (acc, utxo) => acc += parseToBigNumber(utxo.data.amount, BITCOIN_DECIMALS), BigInt(0)
+  public createTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], address: string, feeRate: number): bitcoin.Transaction {
+    const totalInputValue = utxosData.reduce(
+      (acc, utxoData) => acc + parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS), BigInt(0)
     )
 
-    const estimateFeeTx = this.doCreateTransaction(walletAddressData, utxos, feeRate, address, parseBigIntToNumber(totalInputValue))
+    const estimateFeeTx = this.doCreateTransaction(walletAddressData, utxosData, feeRate, address, parseBigIntToNumber(totalInputValue), true)
 
     const fee = BigInt(Math.ceil(estimateFeeTx.virtualSize() * feeRate))
     const outputValue = totalInputValue - fee
 
-    return this.doCreateTransaction(walletAddressData, utxos, feeRate, address, parseBigIntToNumber(outputValue))
+    return this.doCreateTransaction(walletAddressData, utxosData, feeRate, address, parseBigIntToNumber(outputValue))
   }
 
-  public doCreateTransaction(walletAddressData: BitcoinWalletAddressData[], utxos: BitcoinUtxo[], feeRate: number, address: string, value: number): bitcoin.Transaction {
+  private doCreateTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, value: number, disableFeeCheck?: boolean): bitcoin.Transaction {
     if (value <= 0) {
       throw new Error(`Incorrect output value ${value}`)
     }
@@ -79,21 +79,21 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     const psbt = new bitcoin.Psbt({ network: this.network })
 
     const wifs: string[] = []
-    utxos.forEach(utxo => {
-      const data = walletAddressData.find(item => item.address === utxo.data.address)
+    utxosData.forEach(utxoData => {
+      const data = walletAddressData.find(item => item.address.toLocaleLowerCase() === utxoData.address.toLocaleLowerCase())
       if (!data) {
-        return
+        throw new Error('Wallet address data not found')
       }
 
       wifs.push(data.wif)
 
-      const amount = parseToBigNumber(utxo.data.amount, BITCOIN_DECIMALS)
+      const amount = parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS)
 
       psbt.addInput({
-        hash: utxo.data.txid,
-        index: utxo.data.vout,
+        hash: utxoData.txid,
+        index: utxoData.vout,
         witnessUtxo: {
-          script: bitcoin.address.toOutputScript(utxo.data.address, this.network),
+          script: bitcoin.address.toOutputScript(utxoData.address, this.network),
           value: parseBigIntToNumber(amount)
         }
       })
@@ -109,6 +109,6 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     psbt.finalizeAllInputs()
     psbt.setMaximumFeeRate(Math.ceil(feeRate))
 
-    return psbt.extractTransaction()
+    return psbt.extractTransaction(disableFeeCheck)
   }
 }

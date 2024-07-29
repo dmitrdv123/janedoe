@@ -1,5 +1,5 @@
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressData } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinUtxoData, BitcoinWallet, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
 import { BitcoinUtilsService } from './bitcoin-utils.service'
@@ -85,26 +85,29 @@ export class BitcoinServiceImpl implements BitcoinService {
       return undefined
     }
 
-    const walletAddresses = await Promise.all(
-      Array
-        .from(
-          new Set(utxos.map(item => item.label))
-        )
-        .map(
-          async label => this.bitcoinDao.loadWalletAddress(walletName, label)
-        )
-    )
-    const walletAddressData = walletAddresses.reduce((acc, item) => {
-      if (item) {
-        acc.push(item.data)
-      }
-      return acc
-    }, [] as BitcoinWalletAddressData[])
-    if (walletAddressData.length === 0) {
+    const walletAddresses = await this.bitcoinDao.loadWalletAddresses(utxos.map(utxo => ({
+      walletName, label: utxo.label
+    })))
+    const walletAddressesData = walletAddresses.map(item => item.data)
+    if (walletAddressesData.length === 0) {
       return undefined
     }
 
-    const tx = this.bitcoinUtilsService.createTransaction(walletAddressData, utxos, address, feeRate)
+    const utxosDataFiltered = utxos.reduce((acc, utxo) => {
+      const exist = walletAddressesData.findIndex(
+        item => item.address.toLocaleLowerCase() === utxo.data.address.toLocaleLowerCase()
+      ) !== -1
+      if (exist) {
+        acc.push(utxo.data)
+      }
+
+      return acc
+    }, [] as BitcoinUtxoData[])
+    if (utxosDataFiltered.length === 0) {
+      return undefined
+    }
+
+    const tx = this.bitcoinUtilsService.createTransaction(walletAddressesData, utxosDataFiltered, address, feeRate)
     await this.bitcoinCoreService.sendTransaction(tx)
     await this.bitcoinDao.saveUtxos(utxos, false)
 

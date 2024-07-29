@@ -1,6 +1,5 @@
 import * as dotenv from 'dotenv'
 dotenv.config({ path: `.env.${process.env.NODE_ENV}`.trim() })
-import * as bitcoin from 'bitcoinjs-lib'
 
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 
@@ -16,10 +15,11 @@ import { BitcoinBlockServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin
 import { BitcoinBlock, BitcoinUtxo } from '@repo/dao/dist/src/interfaces/bitcoin';
 import { IpnKey } from '@repo/dao/dist/src/interfaces/ipn'
 import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
+import { CacheServiceImpl } from '@repo/common/dist/src/services/cache-service'
+import { getBitcoinNetwork } from '@repo/bitcoin/dist/src/utils/bitcoin-utils'
 
 import { createAppConfig } from './app-config'
-import { loadFile, saveFile } from './utils'
-import { CacheServiceImpl } from '@repo/common/dist/src/services/cache-service'
+import { loadFile } from './utils'
 
 createAppConfig()
 
@@ -29,7 +29,7 @@ const accountDao = new AccountDaoImpl(dynamoService)
 const bitcoinDao = new BitcoinDaoImpl(dynamoService, cacheService)
 const paymentLogDao = new PaymentLogDaoImpl(dynamoService)
 const notificationDao = new NotificationDaoImpl(dynamoService)
-const bitcoinUtilsService = new BitcoinUtilsServiceImpl(bitcoin.networks.regtest)
+const bitcoinUtilsService = new BitcoinUtilsServiceImpl(getBitcoinNetwork())
 const bitcoinCoreService = new BitcoinCoreServiceImpl()
 const bitcoinService = new BitcoinServiceImpl(bitcoinCoreService, bitcoinUtilsService, bitcoinDao)
 const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, cacheService, bitcoinDao)
@@ -37,6 +37,10 @@ const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, cach
 async function bitcoinCoreServiceTests(): Promise<void> {
   const feeRate = await bitcoinCoreService.getFeeRate(3)
   console.log(`feeRate ${feeRate}`)
+}
+
+async function bitcoinServiceProdTests(): Promise<void> {
+  await bitcoinService.withdraw('42oz0b2cnmh', 'bc1qtk2hkcqqjdtcmgcpjt9363uypsr0z0kpft9rst')
 }
 
 async function transactionTests(): Promise<void> {
@@ -508,6 +512,7 @@ async function notificationDaoTests(): Promise<void> {
 async function main() {
   console.log(`hello world!`)
 
+  // await bitcoinServiceProdTests()
   // await bitcoinPaymentLogsIteratorTests()
   // await bitcoinBlockTaskTests()
   // await bitcoinCoreServiceTests()

@@ -408,6 +408,8 @@ export class AccountServiceImpl implements AccountService {
         } catch (err) {
           if (err instanceof BitcoinCoreError) {
             const bitcoinCoreError = err as BitcoinCoreError
+            logger.warn(`AccountService: bitcoin core error happens with code ${bitcoinCoreError.code} and name ${bitcoinCoreError.name} and message ${bitcoinCoreError.message}`)
+
             if (bitcoinCoreError.code === -6) {
               throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.not_enough_funds_error')
             }

@@ -1,11 +1,11 @@
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressKey } from '@repo/dao/dist/src/interfaces/bitcoin'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
 import appConfig from '@repo/common/dist/src/app-config'
 
-import { batchWriteItemsByChunks, generateKey, queryItems } from '../utils/dynamo-utils'
+import { batchReadItemsByChunks, batchWriteItemsByChunks, generateKey, queryItems } from '../utils/dynamo-utils'
 import { DynamoService } from '../services/dynamo.service'
 import { decryptString, encryptString } from '../utils/crypto-utils'
 
@@ -121,7 +121,7 @@ export class BitcoinDaoImpl implements BitcoinDao {
     const result = await this.dynamoService.readItem({
       TableName: appConfig.TABLE_NAME,
       Key: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX, walletName),
+        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX),
         sk: generateKey(walletName, label),
       })
     })
@@ -132,6 +132,25 @@ export class BitcoinDaoImpl implements BitcoinDao {
     }
 
     return walletAddress
+  }
+
+  public async loadWalletAddresses(walletAddressKeys: BitcoinWalletAddressKey[]): Promise<BitcoinWalletAddress[]> {
+    const keys = walletAddressKeys.map(walletAddressKey => ({
+      pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX),
+      sk: generateKey(walletAddressKey.walletName, walletAddressKey.label)
+    }))
+
+    const walletAddresses = await batchReadItemsByChunks<BitcoinWalletAddress>(
+      this.dynamoService,
+      appConfig.TABLE_NAME,
+      'walletAddress',
+      keys.map(key => marshall(key))
+    )
+
+    return walletAddresses.map(walletAddress => {
+      walletAddress.data.wif = decryptString(walletAddress.data.wif, appConfig.CRYPTO_SEED)
+      return walletAddress
+    })
   }
 
   public async listWalletAddresses(walletName: string): Promise<BitcoinWalletAddress[]> {

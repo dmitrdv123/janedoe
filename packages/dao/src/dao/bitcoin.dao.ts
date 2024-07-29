@@ -1,4 +1,4 @@
-import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } from '../interfaces/bitcoin'
+import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressKey } from '../interfaces/bitcoin'
 
 export interface BitcoinDao {
   loadLatestProcessedBlockHeight(): Promise<number | undefined>
@@ -11,6 +11,7 @@ export interface BitcoinDao {
   loadWallet(walletName: string): Promise<BitcoinWallet | undefined>
   saveWalletAddress(wallet: BitcoinWalletAddress): Promise<void>
   loadWalletAddress(walletName: string, label: string): Promise<BitcoinWalletAddress | undefined>
+  loadWalletAddresses(walletAddressKeys: BitcoinWalletAddressKey[]): Promise<BitcoinWalletAddress[]>
   listWalletAddresses(walletName: string): Promise<BitcoinWalletAddress[]>
   listAllWalletAddresses(): Promise<BitcoinWalletAddress[]>
   updateWalletAddressCounter(walletName: string): Promise<number>
