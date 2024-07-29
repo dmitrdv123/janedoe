@@ -8,7 +8,10 @@ import { logger } from '../utils/logger'
 export class SandboxController {
   public async callback(req: Request, res: Response, next: NextFunction) {
     try {
-      saveFile('data/sandbox', `${Date.now()}.json`, req.body)
+      saveFile('data/sandbox', `${Date.now()}.json`, JSON.stringify({
+        body: req.body,
+        headers: req.headers
+      }))
 
       const randomBool = Math.random() < 0.5;
       if (randomBool) {
