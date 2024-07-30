@@ -17,6 +17,7 @@ import { IpnKey } from '@repo/dao/dist/src/interfaces/ipn'
 import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { CacheServiceImpl } from '@repo/common/dist/src/services/cache-service'
 import { getBitcoinNetwork } from '@repo/bitcoin/dist/src/utils/bitcoin-utils'
+import { BitcoinCoreError } from '@repo/bitcoin/dist/src/errors/bitcoin-core-error'
 
 import { createAppConfig } from './app-config'
 import { loadFile } from './utils'
@@ -40,7 +41,18 @@ async function bitcoinCoreServiceTests(): Promise<void> {
 }
 
 async function bitcoinServiceProdTests(): Promise<void> {
-  await bitcoinService.withdraw('42oz0b2cnmh', 'bc1qtk2hkcqqjdtcmgcpjt9363uypsr0z0kpft9rst')
+  try {
+    await bitcoinService.withdraw('42oz0b2cnmh', 'bc1qtk2hkcqqjdtcmgcpjt9363uypsr0z0kpft9rst')
+  } catch (err) {
+    if (err instanceof BitcoinCoreError) {
+      const bitcoinCoreError = err as BitcoinCoreError
+      console.error(`debug >> bitcoin core error happens`)
+      console.error(bitcoinCoreError)
+    } else {
+      console.error(`debug >> error happens`)
+      console.error(err)
+    }
+  }
 }
 
 async function transactionTests(): Promise<void> {

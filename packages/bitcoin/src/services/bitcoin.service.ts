@@ -3,6 +3,8 @@ import { BitcoinUtxoData, BitcoinWallet, BitcoinWalletAddress } from '@repo/dao/
 
 import { BitcoinCoreService } from './bitcoin-core.service'
 import { BitcoinUtilsService } from './bitcoin-utils.service'
+import { BITCOIN_DUST_AMOUNT, BITCOIN_DUST_AMOUNT_SATOSHI } from '../constants'
+import { BitcoinCoreError } from '../errors/bitcoin-core-error'
 
 export interface BitcoinService {
   createWallet(walletName: string): Promise<BitcoinWallet>
@@ -85,7 +87,12 @@ export class BitcoinServiceImpl implements BitcoinService {
       return undefined
     }
 
-    const walletAddresses = await this.bitcoinDao.loadWalletAddresses(utxos.map(utxo => ({
+    const utxosFiltered = utxos.filter(utxo => utxo.data.amount > BITCOIN_DUST_AMOUNT)
+    if (utxosFiltered.length === 0) {
+      throw new BitcoinCoreError(-26, `All input UTXOs is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+    }
+
+    const walletAddresses = await this.bitcoinDao.loadWalletAddresses(utxosFiltered.map(utxo => ({
       walletName, label: utxo.label
     })))
     const walletAddressesData = walletAddresses.map(item => item.data)
@@ -93,7 +100,7 @@ export class BitcoinServiceImpl implements BitcoinService {
       return undefined
     }
 
-    const utxosDataFiltered = utxos.reduce((acc, utxo) => {
+    const utxosDataFiltered = utxosFiltered.reduce((acc, utxo) => {
       const exist = walletAddressesData.findIndex(
         item => item.address.toLocaleLowerCase() === utxo.data.address.toLocaleLowerCase()
       ) !== -1
@@ -108,6 +115,12 @@ export class BitcoinServiceImpl implements BitcoinService {
     }
 
     const tx = this.bitcoinUtilsService.createTransaction(walletAddressesData, utxosDataFiltered, address, feeRate)
+
+    const dustIndex = tx.outs.findIndex(out => out.value <= BITCOIN_DUST_AMOUNT_SATOSHI)
+    if (dustIndex !== -1) {
+      throw new BitcoinCoreError(-26, `Output amount after extracting network fee is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+    }
+
     await this.bitcoinCoreService.sendTransaction(tx)
     await this.bitcoinDao.saveUtxos(utxos, false)
 

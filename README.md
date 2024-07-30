@@ -179,8 +179,12 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
-- after production deployment:
-  - api: create and use email to send notification using ses and proper domain
+-  account: auth bug:
+  - login to account with shared accounts
+  - close browser
+  - open browser
+  - go to account home page
+  As a result during opening balance page you will be redirected to login page
 
 improvement backlog:
 

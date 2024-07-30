@@ -75,7 +75,7 @@
     {
       "blockchain": "POLYGON",
       "symbol": "USDT",
-      "address": "0x3553f861dec0257bada9f8ed268bf0d74e45e89c"
+      "address": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
     },
     {
       "blockchain": "POLYGON",
@@ -109,11 +109,6 @@
     },
     {
       "blockchain": "CRONOS",
-      "symbol": "USDC",
-      "address": "0xc21223249ca28397b4b6541dffaecc539bff0c59"
-    },
-    {
-      "blockchain": "CRONOS",
       "symbol": "CRO",
       "address": null
     },
@@ -136,11 +131,6 @@
       "blockchain": "LINEA",
       "symbol": "USDT",
       "address": "0xa219439258ca9da29e9cc4ce5596924745e12b93"
-    },
-    {
-      "blockchain": "LINEA",
-      "symbol": "USDC",
-      "address": "0x176211869ca2b568f2a7d4ee941e073a821ee1ff"
     },
     {
       "blockchain": "LINEA",

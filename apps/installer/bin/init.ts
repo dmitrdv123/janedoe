@@ -18,7 +18,7 @@ import { BitcoinCoreService } from '@repo/bitcoin/dist/src/services/bitcoin-core
 import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
 import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.container'
 
-import { env, loadFileAsJson, withEnv } from '../lib/utils'
+import { loadFileAsJson, withEnv } from '../lib/utils'
 import { APP_SETTINGS_PREFIX, BLOCKCHAIN_BTC, BLOCKCHAIN_EVM_CLIENT_CONFIG_SETTINGS_PREFIX, BLOCKCHAIN_SETTINGS_PREFIX, DEFAULT_ACCOUNT_PAYMENT_SETTINGS_PREFIX } from '../lib/constants'
 
 async function saveDefaultAccountPaymentSettings(): Promise<void> {

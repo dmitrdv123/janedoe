@@ -264,7 +264,28 @@
     "errors": {
       "request_error": "Не удалось отправить запрос",
       "bitcoin_errors": {
-        "not_enough_funds_error": "Недостаточно средств"
+        "not_enough_funds_error": "Недостаточно средств",
+        "internal_server_error": "Внутренняя ошибка сервера",
+        "command_handling_error": "Ошибка обработки команды",
+        "unexpected_parameter": "Передан неверный параметр",
+        "invalid_address_or_key": "Неверный адрес или ключ",
+        "missing_or_duplicate_parameter": "Недопустимый, отсутствующий или дублирующийся параметр",
+        "parsing_or_validation_raw_format_error": "Ошибка при разборе или проверке структуры в необработанном формате",
+        "transaction_or_block_submission_error": "Общая ошибка при отправке транзакции или блока",
+        "transaction_or_block_rejected_error": "Транзакция или блок были отклонены правилами сети",
+        "transaction_already_in_chain_error": "Транзакция уже в цепочке",
+        "unspecified_wallet_error": "Неопределенная проблема с кошельком (ключ не найден и т.д.)",
+        "invalid_label_error": "Недопустимое имя метки",
+        "wallet_passphrase_error": "Сначала введите пароль кошелька",
+        "invalid_wallet_passphrase_error": "Введенный пароль кошелька неверен",
+        "invalid_command_encryption_error": "Команда дана в неправильном состоянии шифрования кошелька (шифрование уже зашифрованного кошелька и т.д.)",
+        "encrypt_wallet_error": "Не удалось зашифровать кошелек",
+        "wallet_already_unlocked_error": "Кошелек уже разблокирован",
+        "invalid_wallet_specified_error": "Указан недопустимый кошелек",
+        "no_wallet_specified_error": "Не указан кошелек (ошибка при загрузке нескольких кошельков)",
+        "wallet_already_loaded_error": "Такой же кошелек уже загружен",
+        "wallet_already_exist_error": "Кошелек с таким именем уже существует",
+        "transaction_rejected_dust_error": "Транзакция была отклонена из-за очень маленькой суммы, которая считается 'dust'"
       }
     }
   },

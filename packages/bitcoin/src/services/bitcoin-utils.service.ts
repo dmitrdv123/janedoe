@@ -6,7 +6,7 @@ import ECPairFactory from 'ecpair'
 
 import { BitcoinUtxoData, BitcoinWalletAddressData, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
 import { parseBigIntToNumber, parseToBigNumber } from '../utils/bitcoin-utils'
-import { BITCOIN_DECIMALS } from '../constants'
+import { BITCOIN_DECIMALS, BITCOIN_DUST_AMOUNT } from '../constants'
 
 export interface BitcoinUtilsService {
   generateRootWallet(): BitcoinWalletData
@@ -70,10 +70,6 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
   }
 
   private doCreateTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, value: number, disableFeeCheck?: boolean): bitcoin.Transaction {
-    if (value <= 0) {
-      throw new Error(`Incorrect output value ${value}`)
-    }
-
     const factory = ECPairFactory(ecc)
 
     const psbt = new bitcoin.Psbt({ network: this.network })
@@ -85,10 +81,13 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
         throw new Error('Wallet address data not found')
       }
 
+      if (utxoData.amount <= BITCOIN_DUST_AMOUNT) {
+        return
+      }
+
       wifs.push(data.wif)
 
       const amount = parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS)
-
       psbt.addInput({
         hash: utxoData.txid,
         index: utxoData.vout,
@@ -99,7 +98,7 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
       })
     })
 
-    psbt.addOutput({ address, value: value })
+    psbt.addOutput({ address, value })
 
     for (let i = 0; i < psbt.inputCount; ++i) {
       const keyPair = factory.fromWIF(wifs[i], this.network)

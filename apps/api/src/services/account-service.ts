@@ -410,8 +410,153 @@ export class AccountServiceImpl implements AccountService {
             const bitcoinCoreError = err as BitcoinCoreError
             logger.warn(`AccountService: bitcoin core error happens with code ${bitcoinCoreError.code} and name ${bitcoinCoreError.name} and message ${bitcoinCoreError.message}`)
 
-            if (bitcoinCoreError.code === -6) {
-              throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.not_enough_funds_error')
+            switch (bitcoinCoreError.code) {
+              // RPC_INVALID_REQUEST is internally mapped to HTTP_BAD_REQUEST (400).
+              // It should not be used for application-layer errors.
+              case -32600:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // RPC_METHOD_NOT_FOUND is internally mapped to HTTP_NOT_FOUND (404).
+              // It should not be used for application-layer errors.
+              case -32601:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              case -32602:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // RPC_INTERNAL_ERROR should only be used for genuine errors in bitcoind
+              // (for example datadir corruption).
+              case -32603:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              case -32700:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+
+              //! General application defined errors
+
+              // std::exception thrown in command handling
+              case -1:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.command_handling_error')
+              // Unexpected type was passed as parameter
+              case -3:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.unexpected_parameter')
+              // Invalid address or key
+              case -5:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.invalid_address_or_key')
+              // Ran out of memory during operation
+              case -7:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Invalid, missing or duplicate parameter
+              case -8:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.missing_or_duplicate_parameter')
+
+              // Database error
+              case -20:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Error parsing or validating structure in raw format
+              case -22:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.parsing_or_validation_raw_format_error')
+              // General error during transaction or block submission
+              case -25:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.transaction_or_block_submission_error')
+              // Transaction or block was rejected by network rules
+              case -26:
+                if (bitcoinCoreError.message.trim().toLocaleLowerCase() === 'dust') {
+                  // transaction you are attempting to send includes an output that is considered "dust." In the context of Bitcoin, "dust" refers to a very small amount of cryptocurrency that is less than the network fee required to send it, rendering it economically unfeasible to spend.
+                  throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.transaction_rejected_dust_error')
+                } else {
+                  throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.transaction_or_block_rejected_error')
+                }
+
+              // Transaction already in chain
+              case -27:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.transaction_already_in_chain_error')
+              // Client still warming up
+              case -28:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // RPC method is deprecated
+              case -32:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+
+              //! P2P client errors
+
+              // Bitcoin is not connected
+              case -9:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Still downloading initial blocks
+              case -10:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Node is already added
+              case -23:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Node has not been added before
+              case -24:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Node to disconnect not found in connected nodes
+              case -29:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Invalid IP/Subnet
+              case -30:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // No valid connection manager instance found
+              case -31:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Max number of outbound or block-relay connections already open
+              case -34:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+
+              //! Chain errors
+
+              // No mempool instance found
+              case -33:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+
+              //! Wallet errors
+
+              // Unspecified problem with wallet (key not found etc.)
+              case -4:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.unspecified_wallet_error')
+              // Not enough funds in wallet or account
+              case -6:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.not_enough_funds_error')
+              // Invalid label name
+              case -11:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.invalid_label_error')
+              // Keypool ran out, call keypoolrefill first
+              case -12:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+              // Enter the wallet passphrase with walletpassphrase first
+              case -13:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.wallet_passphrase_error')
+              // The wallet passphrase entered was incorrect
+              case -14:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.invalid_wallet_passphrase_error')
+              // Command given in wrong wallet encryption state (encrypting an encrypted wallet etc.)
+              case -15:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.invalid_command_encryption_error')
+              // Failed to encrypt the wallet
+              case -16:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.encrypt_wallet_error')
+              // Wallet is already unlocked
+              case -17:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.wallet_already_unlocked_error')
+              // Invalid wallet specified
+              case -18:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.invalid_wallet_specified_error')
+              // No wallet specified (error when there are multiple wallets loaded)
+              case -19:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.no_wallet_specified_error')
+              // This same wallet is already loaded
+              case -35:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.wallet_already_loaded_error')
+              // There is already a wallet with the same name
+              case -36:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.wallet_already_exist_error')
+
+              //! Unused reserved codes, kept around for backwards compatibility. Do not reuse.
+
+              // Server is in safe mode, and command is not allowed in safe mode
+              case -2:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
+
+              default:
+                throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
             }
           }
 

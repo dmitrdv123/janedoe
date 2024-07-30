@@ -264,7 +264,28 @@
     "errors": {
       "request_error": "Failed to send request",
       "bitcoin_errors": {
-        "not_enough_funds_error": "Not enough funds"
+        "not_enough_funds_error": "Not enough funds",
+        "internal_server_error": "Internal server error",
+        "command_handling_error": "Command handling error",
+        "unexpected_parameter": "Unexpected type was passed as parameter",
+        "invalid_address_or_key": "Invalid address or key",
+        "missing_or_duplicate_parameter": "Invalid, missing or duplicate parameter",
+        "parsing_or_validation_raw_format_error": "Error parsing or validating structure in raw format",
+        "transaction_or_block_submission_error": "General error during transaction or block submission",
+        "transaction_or_block_rejected_error": "Transaction or block was rejected by network rules",
+        "transaction_already_in_chain_error": "Transaction already in chain",
+        "unspecified_wallet_error": "Unspecified problem with wallet (key not found etc.)",
+        "invalid_label_error": "Invalid label name",
+        "wallet_passphrase_error": "Enter the wallet passphrase first",
+        "invalid_wallet_passphrase_error": "The wallet passphrase entered was incorrect",
+        "invalid_command_encryption_error": "Command given in wrong wallet encryption state (encrypting an encrypted wallet etc.)",
+        "encrypt_wallet_error": "Failed to encrypt the wallet",
+        "wallet_already_unlocked_error": "Wallet is already unlocked",
+        "invalid_wallet_specified_error": "Invalid wallet specified",
+        "no_wallet_specified_error": "No wallet specified (error when there are multiple wallets loaded)",
+        "wallet_already_loaded_error": "Same wallet is already loaded",
+        "wallet_already_exist_error": "There is already a wallet with the same name",
+        "transaction_rejected_dust_error": "Transaction was rejected due to a very small amount that is considered as 'dust'"
       }
     }
   },
