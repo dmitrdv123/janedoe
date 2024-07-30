@@ -87,9 +87,9 @@ export class AuthServiceImpl implements AuthService {
         )
       }
     } finally {
-      logger.error(`AuthService: start to delete nonce ${nonceId}`)
+      logger.debug(`AuthService: start to delete nonce ${nonceId}`)
       await this.authDao.deleteNonce(nonceId)
-      logger.error('AuthService: end to delete nonce')
+      logger.debug('AuthService: end to delete nonce')
     }
   }
 }

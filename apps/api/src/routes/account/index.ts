@@ -27,7 +27,7 @@ const jwtConfig = {
 
     const accountProfile = await accountService.loadAccountProfile(id)
     if (!accountProfile) {
-      throw new UnauthorizedError('invalid_token', new Error('Account profile not found'))
+      throw new UnauthorizedError('invalid_token', new Error(`Account profile ${id} not found`))
     }
 
     return accountProfile.secret
