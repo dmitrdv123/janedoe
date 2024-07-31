@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useLocalStorageState from 'use-local-storage-state'
+import { Spinner } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 
 import { AuthData } from '../../../types/auth-data'
 import { ApiWrapper } from '../../../libs/services/api-wrapper'
@@ -20,18 +22,23 @@ const AuthGuard: React.FC<AuthGuardProps> = (props) => {
   const navigate = useNavigate()
   const { hash } = useLocation()
   const [, , { removeItem: removeAuthData }] = useLocalStorageState<AuthData>(AUTH_DATA_KEY)
-  const { isConnected, address } = useAccount()
-  const {disconnect} = useDisconnect()
+  const { address, status: connectStatus } = useAccount()
+  const { disconnect } = useDisconnect()
+  const { t } = useTranslation()
 
   const { process: sendPing } = useApiRequest()
   const { clearInfoMessage } = useInfoMessages()
 
   useEffect(() => {
-    setPrevAddress(address)
-  }, [address])
+    if (connectStatus === 'connected' && address) {
+      setPrevAddress(address)
+    } else {
+      setPrevAddress(undefined)
+    }
+  }, [connectStatus, address])
 
   useEffect(() => {
-    if (prevAddress && prevAddress !== address) {
+    if (prevAddress && address && prevAddress !== address) {
       disconnect()
     }
   }, [address, prevAddress, disconnect])
@@ -50,18 +57,28 @@ const AuthGuard: React.FC<AuthGuardProps> = (props) => {
       }
     }
 
-    if (isConnected) {
+    if (connectStatus === 'connected') {
       ping()
-    } else {
+    } else if (connectStatus === 'disconnected') {
       setShouldRender(false)
       removeAuthData()
       clearInfoMessage()
 
       navigate(`/${hash}`)
     }
-  }, [isConnected, hash, clearInfoMessage, sendPing, removeAuthData, navigate])
+  }, [hash, connectStatus, clearInfoMessage, sendPing, removeAuthData, navigate])
 
-  return <>{shouldRender && props.element}</>
+  return (
+    <>
+      {!shouldRender && (
+        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
+          <span className="visually-hidden">{t('common.saving')}</span>
+        </Spinner>
+      )}
+
+      {shouldRender && props.element}
+    </>
+  )
 }
 
 export default AuthGuard

@@ -46,7 +46,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const [isForceRefreshToken, setIsForceRefreshToken] = useState(false)
 
   const { t } = useTranslation()
-  const { address, isConnected } = useAccount()
+  const { address, status: connectStatus } = useAccount()
 
   const { id, paymentId, currency } = usePaymentData()
   const paymentSettings = usePaymentSettings()
@@ -178,17 +178,17 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         <EmailInput email={email} onChange={changeEmailHandler} />
       </div>
 
-      {(isConnected && !!paymentDetailsCurrent) && (
+      {(connectStatus === 'connected' && !!paymentDetailsCurrent) && (
         <PaymentDetailsInfo paymentDetails={paymentDetailsCurrent} restCurrencyAmount={restCurrencyAmount} receivedCurrencyAmount={receivedCurrencyAmount} />
       )}
 
-      {!isConnected && (
+      {(connectStatus !== 'connected') && (
         <div className="d-grid mb-2">
           <ConnectButton />
         </div>
       )}
 
-      {(isConnected && !paymentDetailsCurrent) && (
+      {(connectStatus === 'connected' && !paymentDetailsCurrent) && (
         <div className="d-grid mb-2">
           <Button variant="primary" size="lg" disabled>
             {t('components.evm_payment.pay')}
@@ -196,7 +196,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetailsCurrent && !isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeAsset(paymentDetailsCurrent.toBlockchain, paymentDetailsCurrent.toToken)) && (
+      {(connectStatus === 'connected' && !!paymentDetailsCurrent && !isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeAsset(paymentDetailsCurrent.toBlockchain, paymentDetailsCurrent.toToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             title={t('components.evm_payment.swap_and_pay')}
@@ -212,7 +212,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetailsCurrent && !isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeAsset(paymentDetailsCurrent.toBlockchain, paymentDetailsCurrent.toToken)) && (
+      {(connectStatus === 'connected' && !!paymentDetailsCurrent && !isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeAsset(paymentDetailsCurrent.toBlockchain, paymentDetailsCurrent.toToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             title={t('components.evm_payment.swap_and_pay')}
@@ -228,7 +228,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetailsCurrent && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
+      {(connectStatus === 'connected' && !!paymentDetailsCurrent && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             title={t('components.evm_payment.pay')}
@@ -242,7 +242,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
         </div>
       )}
 
-      {(isConnected && !!paymentDetailsCurrent && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
+      {(connectStatus === 'connected' && !!paymentDetailsCurrent && isAssetEqualToToken(paymentDetailsCurrent.toToken, paymentDetailsCurrent.fromToken) && !isNativeToken(blockchain, paymentDetailsCurrent.fromToken)) && (
         <div className="d-grid mb-2">
           <PayButton
             title={t('components.evm_payment.pay')}
