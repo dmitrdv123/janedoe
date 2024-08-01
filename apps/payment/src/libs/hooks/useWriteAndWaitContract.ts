@@ -22,7 +22,7 @@ export default function useWriteAndWaitContract(): ContractCallResult<{
   const [error, setError] = useState<Error | undefined>(undefined)
   const [chainId, setChainId] = useState<number | undefined>(undefined)
 
-  const { status: connectStatus, chainId: currentChainId } = useAccount()
+  const { isConnected, chainId: currentChainId } = useAccount()
   const { t } = useTranslation()
 
   const { status: switchChainStatus, error: switchChainError, switchChain } = useSwitchChain()
@@ -39,7 +39,7 @@ export default function useWriteAndWaitContract(): ContractCallResult<{
   }) => {
     const { chainId: chainIdToUse, address, functionName, abi, args, value } = t
 
-    if (statusRef.current === 'processing' || connectStatus !== 'connected' || chainIdToUse === undefined || !address) {
+    if (statusRef.current === 'processing' || !isConnected || chainIdToUse === undefined || !address) {
       return
     }
     statusRef.current = 'processing'
@@ -71,7 +71,7 @@ export default function useWriteAndWaitContract(): ContractCallResult<{
         chainId: chainIdToUse
       })
     }
-  }, [connectStatus, currentChainId, switchChain, writeContract])
+  }, [isConnected, currentChainId, switchChain, writeContract])
 
   useEffect(() => {
     if (statusRef.current !== 'processing') {

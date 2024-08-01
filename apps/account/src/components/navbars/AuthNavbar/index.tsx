@@ -7,7 +7,7 @@ import WalletDropdown from '../components/WalletDropdown'
 import { useConfig } from '../../../context/config/hook'
 
 const AuthNavbar: React.FC = () => {
-  const { address, status } = useAccount()
+  const { address, isConnected } = useAccount()
   const { t } = useTranslation()
   const config = useConfig()
 
@@ -26,7 +26,7 @@ const AuthNavbar: React.FC = () => {
               {t('components.navbar.support')}
             </Nav.Link>
             <LanguageDropdown />
-            {(status === 'connected' && address) && (
+            {(isConnected && address) && (
               <WalletDropdown address={address} />
             )}
           </Nav>

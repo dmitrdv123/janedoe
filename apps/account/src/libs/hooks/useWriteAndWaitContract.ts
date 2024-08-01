@@ -23,7 +23,7 @@ export default function useWriteAndWaitContract(
   const [data, setData] = useState<string | undefined>(undefined)
   const [error, setError] = useState<Error | undefined>(undefined)
 
-  const { status: connectStatus, chainId: currentChainId } = useAccount()
+  const { isConnected, chainId: currentChainId } = useAccount()
   const { t } = useTranslation()
 
   const { status: switchChainStatus, error: switchChainError, switchChain } = useSwitchChain()
@@ -118,7 +118,7 @@ export default function useWriteAndWaitContract(
     setError(undefined)
     setData(undefined)
 
-    if (connectStatus !== 'connected' || chainId === undefined || !address) {
+    if (!isConnected || chainId === undefined || !address) {
       setStatus('idle')
       statusRef.current = 'idle'
 
@@ -151,7 +151,7 @@ export default function useWriteAndWaitContract(
         value,
       })
     }
-  }, [abi, address, args, chainId, currentChainId, functionName, connectStatus, value, switchChain, writeContract, onProcessing])
+  }, [abi, address, args, chainId, currentChainId, functionName, isConnected, value, switchChain, writeContract, onProcessing])
 
   return {
     status,

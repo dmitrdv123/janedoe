@@ -22,7 +22,7 @@ const Auth: React.FC = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { hash } = useLocation()
-  const { address, status: connectStatus } = useAccount()
+  const { address, isConnected } = useAccount()
   const { data: signer } = useWalletClient()
   const { open } = useWeb3Modal()
 
@@ -95,7 +95,7 @@ const Auth: React.FC = () => {
                   {import.meta.env.VITE_APP_APP_NAME ?? 'Jane Doe'}
                 </h1>
 
-                {(connectStatus !== 'connected') && (
+                {!isConnected && (
                   <Button variant="primary" className="btn-lg w-100" onClick={connectHandler} disabled={retrieveNonceStatus === 'processing' || authStatus === 'processing'}>
                     {t('pages.auth.connect')}
                     {(retrieveNonceStatus === 'processing' || authStatus === 'processing') && (
@@ -106,7 +106,7 @@ const Auth: React.FC = () => {
                   </Button>
                 )}
 
-                {(connectStatus === 'connected') && (
+                {isConnected && (
                   <Button variant="primary" className="btn-lg w-100" onClick={authHandler} disabled={retrieveNonceStatus === 'processing' || authStatus === 'processing'}>
                     {t('pages.auth.button')}
                     {(retrieveNonceStatus === 'processing' || authStatus === 'processing') && (

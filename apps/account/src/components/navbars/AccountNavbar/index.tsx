@@ -6,7 +6,7 @@ import LanguageDropdown from '../components/LanguageDropdown'
 import WalletDropdown from '../components/WalletDropdown'
 
 const AccountNavbar: React.FC = () => {
-  const { address, status } = useAccount()
+  const { address, isConnected } = useAccount()
 
   return (
     <Navbar expand="md" className="bg-body-tertiary" sticky='top'>
@@ -16,7 +16,7 @@ const AccountNavbar: React.FC = () => {
           <Nav>
             <LanguageDropdown />
             <AccountsDropdown />
-            {(status === 'connected' && address) && (
+            {(isConnected && address) && (
               <WalletDropdown address={address} />
             )}
           </Nav>

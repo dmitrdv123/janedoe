@@ -8,7 +8,7 @@ import { SUPPORTED_LANGUAGES } from '../../constants'
 import { useConfig } from '../../context/config/hook'
 
 const PaymentNavbar: React.FC = () => {
-  const { address, status } = useAccount()
+  const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
   const { t, i18n } = useTranslation()
 
@@ -39,7 +39,7 @@ const PaymentNavbar: React.FC = () => {
                 ))}
               </NavDropdown>
 
-              {(status === 'connected' && address) && (
+              {(isConnected && address) && (
                 <NavDropdown
                   title={t('components.payment_navbar.connected_in', { address: cutString(address.toString()) })}
                   align='end'
