@@ -179,13 +179,6 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 
--  account: auth bug:
-  - login to account with shared accounts
-  - close browser
-  - open browser
-  - go to account home page
-  As a result during opening balance page you will be redirected to login page
-
 improvement backlog:
 
 - payment: have a warning about hardhat and payment error. Start to type email, this warn start to blink. Since there is a unnecessary refresh
