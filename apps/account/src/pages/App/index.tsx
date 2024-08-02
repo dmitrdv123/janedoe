@@ -18,7 +18,7 @@ import AccountSettings from '../../components/AccountSettings'
 import PaymentSettings from '../../components/PaymentSettings'
 import ExchangeRateUpdater from '../../states/exchange-rate/updater'
 import RbacGuard from '../../components/Guards/RbacGuard'
-import AccountNavbar from '../../components/navbars/AccountNavbar'
+import AppNavbar from '../../components/navbars/AppNavbar'
 import AccountSupport from '../../components/AccountSupport'
 import { useConfig } from '../../context/config/hook'
 import InfoMessages from '../../components/InfoMessages'
@@ -163,7 +163,7 @@ const App: React.FC = () => {
         </Col>
 
         <Col className="overflow-auto vh-100">
-          <AccountNavbar />
+          <AppNavbar />
 
           <Container fluid className="p-3">
             <InfoMessages />

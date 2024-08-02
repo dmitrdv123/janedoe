@@ -1,11 +1,12 @@
 import { Container, Nav, Navbar } from 'react-bootstrap'
 import { useAccount } from 'wagmi'
 
+import AccountsDropdown from '../components/AccountsDropdown'
 import LanguageDropdown from '../components/LanguageDropdown'
 import WalletDropdown from '../components/WalletDropdown'
 import LogoutButton from '../components/LogoutButton'
 
-const AccountNavbar: React.FC = () => {
+const AppNavbar: React.FC = () => {
   const { address, isConnected } = useAccount()
 
   return (
@@ -15,6 +16,7 @@ const AccountNavbar: React.FC = () => {
         <Navbar.Collapse className="justify-content-end">
           <Nav>
             <LanguageDropdown />
+            <AccountsDropdown />
             {(isConnected && address) && (
               <WalletDropdown address={address} />
             )}
@@ -26,4 +28,4 @@ const AccountNavbar: React.FC = () => {
   )
 }
 
-export default AccountNavbar
+export default AppNavbar

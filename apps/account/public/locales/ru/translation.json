@@ -93,6 +93,7 @@
       "withdraw_all_btn": "Снять все",
       "wallet_address_placeholder": "Адрес кошелька",
       "withdraw_btn": "Снять",
+      "connect_btn": "Подключить кошелек",
       "errors": {
         "read_balance_error": "Произошла ошибка при загрузке балансов",
         "token_price_error": "Цена токена не определена",
@@ -122,7 +123,8 @@
       "shared_accounts": "Общие аккаунты",
       "my_account": "Мой Аккаунт",
       "language": "Язык: {{language}}",
-      "support": "Поддержка"
+      "support": "Поддержка",
+      "logout_btn": "Выйти"
     },
     "payments": {
       "title": "Платежи",

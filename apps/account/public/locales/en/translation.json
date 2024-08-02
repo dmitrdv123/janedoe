@@ -93,6 +93,7 @@
       "withdraw_all_btn": "Withdraw All",
       "wallet_address_placeholder": "Wallet address",
       "withdraw_btn": "Withdraw",
+      "connect_btn": "Connect Wallet",
       "errors": {
         "read_balance_error": "Error happens during loading balances",
         "token_price_error": "Token price is not defined",
@@ -122,7 +123,8 @@
       "shared_accounts": "Shared Accounts",
       "my_account": "My Account",
       "language": "Language: {{language}}",
-      "support": "Support"
+      "support": "Support",
+      "logout_btn": "Logout"
     },
     "payments": {
       "title": "Payments",

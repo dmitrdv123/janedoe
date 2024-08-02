@@ -14,7 +14,7 @@ import { ApiWrapper } from '../../libs/services/api-wrapper'
 import useApiRequestImmediate from '../../libs/hooks/useApiRequestImmediate'
 import { SharedAccountProfileResponse } from '../../types/account-profile'
 import { AUTH_DATA_KEY, INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR } from '../../constants'
-import AuthNavbar from '../../components/navbars/AuthNavbar'
+import AccountNavbar from '../../components/navbars/AccountNavbar'
 import InfoMessages from '../../components/InfoMessages'
 
 const Accounts: React.FC = () => {
@@ -51,7 +51,7 @@ const Accounts: React.FC = () => {
     <>
       <SettingsLoader />
 
-      <AuthNavbar />
+      <AccountNavbar />
 
       <main>
         <Container className="p-3">

@@ -16,6 +16,7 @@ const WalletDropdown: React.FC<WalletDropdownProps> = (props) => {
   const { t } = useTranslation()
   const { chainId } = useAccount()
   const { disconnect } = useDisconnect()
+
   const blockchains = useBlockchains()
 
   const blockchain = useMemo(() => {

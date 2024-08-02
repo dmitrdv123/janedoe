@@ -2,6 +2,8 @@ import { useCallback } from 'react'
 import { BlockchainMeta } from 'rango-sdk-basic'
 import { Spinner, Button } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useAccount } from 'wagmi'
 
 import useTokensWithdraw from '../../../../libs/hooks/useTokensWithdraw'
 import useReadBalances from '../../../../libs/hooks/useReadBalances'
@@ -20,6 +22,9 @@ const WithdrawAllButton: React.FC<BalancesBlockchainEvmProps> = (props) => {
   const { blockchain, isDisable, onProcessing, onSuccess } = props
 
   const { t } = useTranslation()
+  const { isConnected } = useAccount()
+  const { open } = useWeb3Modal()
+
   const readBalancesResult = useReadBalances(blockchain)
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
@@ -50,14 +55,25 @@ const WithdrawAllButton: React.FC<BalancesBlockchainEvmProps> = (props) => {
     processingCallback
   )
 
+  const withdrawHandler = useCallback(() => {
+    if (isConnected) {
+      withdraw()
+    } else {
+      open()
+    }
+  }, [isConnected, open, withdraw])
+
   return (
-    <Button variant="primary" onClick={withdraw} disabled={withdrawStatus === 'processing' || isDisable || !readBalancesResult.tokens || readBalancesResult.tokens.length === 0}>
+    <Button variant="primary" onClick={withdrawHandler} disabled={withdrawStatus === 'processing' || isDisable || !readBalancesResult.tokens || readBalancesResult.tokens.length === 0}>
       {(withdrawStatus === 'processing') && (
         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true">
           <span className="visually-hidden">{t('common.loading')}</span>
         </Spinner>
       )}
-      {t('components.balances.withdraw_all_btn')}
+
+      {isConnected && (t('components.balances.withdraw_all_btn'))}
+      {!isConnected && (t('components.balances.connect_btn'))}
+
     </Button>
   )
 }

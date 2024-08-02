@@ -1,6 +1,7 @@
 import { Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
+import { useAccount } from 'wagmi'
 
 import { isBlockchainNativeToken, tokenAmountToCurrency } from '../../../../libs/utils'
 import { CURRENCY_USD_SYMBOL } from '../../../../constants'
@@ -26,6 +27,8 @@ const BalancesBlockchainEvmToken: React.FC<BalancesBlockchainEvmTokenProps> = (p
   const { blockchain, token, balance, isDisable, onProcessing, onSuccess } = props
 
   const { t } = useTranslation()
+  const { isConnected } = useAccount()
+
   const exchangeRate = useExchangeRate()
   const commonSettings = useAccountCommonSettings()
 
@@ -72,16 +75,18 @@ const BalancesBlockchainEvmToken: React.FC<BalancesBlockchainEvmTokenProps> = (p
         </div>
       </td>
       <td>
-        <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
-          <>
-            {isBlockchainNativeToken(blockchain, token) && (
-              <WithdrawEvmNativeTokenButton blockchain={blockchain} amount={balance} isDisable={isDisable} onProcessing={onProcessing} onSuccess={onSuccess} />
-            )}
-            {!isBlockchainNativeToken(blockchain, token) && (
-              <WithdrawEvmTokenButton blockchain={blockchain} token={token} amount={balance} isDisable={isDisable} onProcessing={onProcessing} onSuccess={onSuccess} />
-            )}
-          </>
-        } />
+        {isConnected && (
+          <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
+            <>
+              {isBlockchainNativeToken(blockchain, token) && (
+                <WithdrawEvmNativeTokenButton blockchain={blockchain} amount={balance} isDisable={isDisable} onProcessing={onProcessing} onSuccess={onSuccess} />
+              )}
+              {!isBlockchainNativeToken(blockchain, token) && (
+                <WithdrawEvmTokenButton blockchain={blockchain} token={token} amount={balance} isDisable={isDisable} onProcessing={onProcessing} onSuccess={onSuccess} />
+              )}
+            </>
+          } />
+        )}
       </td>
     </tr>
   )
