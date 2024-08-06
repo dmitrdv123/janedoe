@@ -178,9 +178,10 @@ NODE_ENV=production pnpm run init --filter=installer
 ## TODO
 
 others:
+- account: на странице balance, как то сообщать если подключенный кошелек не имеет право выводить баланс
 
 improvement backlog:
-
+- landing: заменить на "без комиссий сервиса". Сделать всплывающее окно с пояснением каждого пункта
 - payment: have a warning about hardhat and payment error. Start to type email, this warn start to blink. Since there is a unnecessary refresh
 - support, account: submit button is enabled even if form is not valid
 - payment: Payment settings is 1 - usdt, 2 - bnb. I have bnb and I dont have usdt. When I am switching to bnb blockchain I need to automatically choose bnb (need to choose token with no conversion and with enough balance).
