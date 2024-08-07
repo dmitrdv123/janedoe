@@ -12,7 +12,7 @@ export default function usePaymentDetails(
   id: string,
   paymentId : string,
   fromAddress: Address | undefined,
-  toAddress: Address | undefined,
+  toAddress: string | undefined,
   fromBlockchain: BlockchainMeta,
   fromToken: Token | undefined,
   toBlockchain: BlockchainMeta,

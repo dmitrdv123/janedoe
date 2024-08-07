@@ -65,7 +65,7 @@ export default function useTokenConvertAndTokenPay(): ContractCallResult<Payment
       fromToken: paymentDetailsRef.current.toToken,
       toBlockchain: paymentDetailsRef.current.toBlockchain,
       toToken: paymentDetailsRef.current.toToken,
-      fromAddress: paymentDetailsRef.current.toAddress,
+      fromAddress: paymentDetailsRef.current.fromAddress,
       toAddress: paymentDetailsRef.current.toAddress,
       fromContracts: paymentDetailsRef.current.toContracts,
       toContracts: paymentDetailsRef.current.toContracts,

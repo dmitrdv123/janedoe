@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { useAccount } from 'wagmi'
 
-import { currencyToTokenAmount, isAssetEqualToToken, isNativeAsset, isNativeToken } from '../../libs/utils'
+import { currencyToTokenAmount, isAssetEqualToToken, isNativeAsset, isNativeToken, sameToken } from '../../libs/utils'
 import TokenConversionCard from './components/TokenConversionCard'
 import EmailInput from './components/EmailInput'
 import ConnectButton from './components/ConnectButton'
@@ -42,6 +42,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
   const [toTokenSwapAmount, setToTokenSwapAmount] = useState<string | undefined>(undefined)
   const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE)
   const [email, setEmail] = useState('')
+  const [toAddress, setToAddress] = useState<string | undefined>(undefined)
   const [isForceRefreshConversion, setIsForceRefreshConversion] = useState(false)
   const [isForceRefreshToken, setIsForceRefreshToken] = useState(false)
 
@@ -50,7 +51,7 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
 
   const { id, paymentId, currency } = usePaymentData()
   const paymentSettings = usePaymentSettings()
-  const paymentDetails = usePaymentDetails(id, paymentId, address, address, blockchain, fromToken, blockchain, toToken, fromTokenAmount, toTokenAmount, toTokenSwapAmount, slippage, restCurrencyAmount, currency)
+  const paymentDetails = usePaymentDetails(id, paymentId, address, toAddress, blockchain, fromToken, blockchain, toToken, fromTokenAmount, toTokenAmount, toTokenSwapAmount, slippage, restCurrencyAmount, currency)
   const exchangeRate = useExchangeRate()
 
   const navigateSuccessHandler = useNavigateSuccess(blockchain?.name, email)
@@ -88,10 +89,25 @@ const EvmPayment: React.FC<EvmPaymentProps> = (props) => {
     setSlippage(DEFAULT_SLIPPAGE)
   }, [restCurrencyAmount, exchangeRate, fromToken, toToken, needConversion])
 
+  useEffect(() => {
+    const toAddressTmp = paymentSettings && toToken
+      ? paymentSettings.wallets.find(wallet => wallet.blockchain.toLocaleLowerCase() == toToken.blockchain.toLocaleLowerCase())
+      : undefined
+
+    setToAddress(toAddressTmp?.address)
+  }, [paymentSettings, toToken])
+
   const selectTokenHandler = useCallback((tokenToUpdate: Token | undefined) => {
-    clearInfoMessage()
+    if (
+      (tokenToUpdate && !fromToken) ||
+      (!tokenToUpdate && fromToken) ||
+      (tokenToUpdate && fromToken && !sameToken(tokenToUpdate, fromToken))
+    ) {
+      clearInfoMessage()
+    }
+
     setFromToken(tokenToUpdate)
-  }, [clearInfoMessage])
+  }, [fromToken, clearInfoMessage])
 
   const updateConversionHandler = useCallback((toTokenToUpdate: Token | undefined, fromTokenAmountToUpdate: string | undefined, toTokenSwapAmountToUpdate: string | undefined, slippageToUpdate: number) => {
     const toTokenAmountToUpdate = toTokenToUpdate?.usdPrice && exchangeRate
