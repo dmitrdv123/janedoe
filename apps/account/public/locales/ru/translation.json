@@ -94,6 +94,7 @@
       "wallet_address_placeholder": "Адрес кошелька",
       "withdraw_btn": "Снять",
       "connect_btn": "Подключить кошелек",
+      "change_wallet_withdraw_alert": "Пожалуйста, подключите кошелек {{address}}, чтобы иметь возможность снять средства из EVM блокчейнов",
       "errors": {
         "read_balance_error": "Произошла ошибка при загрузке балансов",
         "token_price_error": "Цена токена не определена",

@@ -75,6 +75,7 @@ export class AuthServiceImpl implements AuthService {
 
       return {
         id: accountProfile.id,
+        address: accountProfile.address,
         accessToken: jwt.sign(
           {
             id: accountProfile.id,

@@ -94,6 +94,7 @@
       "wallet_address_placeholder": "Wallet address",
       "withdraw_btn": "Withdraw",
       "connect_btn": "Connect Wallet",
+      "change_wallet_withdraw_alert": "Please, connect wallet {{address}} to be able to withdraw from EVM blockchains",
       "errors": {
         "read_balance_error": "Error happens during loading balances",
         "token_price_error": "Token price is not defined",

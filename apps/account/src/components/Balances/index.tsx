@@ -2,6 +2,8 @@ import { useCallback, useMemo, useState } from 'react'
 import { Alert, Button, Spinner, Table } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta } from 'rango-sdk-basic'
+import useLocalStorageState from 'use-local-storage-state'
+import { useAccount } from 'wagmi'
 
 import { useBlockchains } from '../../states/meta/hook'
 import { findBlockchainByName } from '../../libs/utils'
@@ -9,9 +11,14 @@ import BalancesBlockchain from './components/BalancesBlockchain'
 import { useSettings } from '../../states/settings/hook'
 import TransactionHash from '../TransactionHash'
 import { WithdrawResult } from '../../types/withdraw_result'
+import RbacGuard from '../Guards/RbacGuard'
+import { AuthData } from '../../types/auth-data'
+import { AUTH_DATA_KEY } from '../../constants'
 
 const Balances: React.FC = () => {
   const { t } = useTranslation()
+  const [authData] = useLocalStorageState<AuthData>(AUTH_DATA_KEY)
+  const { address } = useAccount()
 
   const appSettings = useSettings()
   const blockchains = useBlockchains()
@@ -76,6 +83,16 @@ const Balances: React.FC = () => {
           {t('components.balances.success', { blockchain: result.blockchain.displayName })} {result.hash && (<TransactionHash blockchain={result.blockchain} transactionHash={result.hash} />)}
         </Alert>
       ))}
+
+      <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
+        <>
+          {(authData && address && authData.address.toLocaleLowerCase() !== address.toLocaleLowerCase()) && (
+            <Alert variant='warning' className='text-wrap text-truncate'>
+              {t('components.balances.change_wallet_withdraw_alert', { address: authData?.address })}
+            </Alert>
+          )}
+        </>
+      } />
 
       {(!targetBlockchains) && (
         <div>
