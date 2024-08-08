@@ -7,7 +7,7 @@
       "no_fees": "Без комиссий",
       "no_custodial": "Без кастодиальных кошельков",
       "no_integration": "Не требуется интеграция",
-      "supported": "{{blockchains}} блокчейнов, {{tokens}} токенов и {{currencies}} валюта",
+      "supported": "{{blockchains}} блокчейнов, {{tokens}} токенов, {{currencies}} фиатная валюта и {{wallets}} крипто кошельков",
       "auto_convert": "Автоматическая конвертация токенов",
       "read_more": "Прочитать подробнее",
       "contact": "Контакты"

@@ -44,7 +44,7 @@ const Landing: React.FC = () => {
                 <li>{t('pages.landing.no_fees')}</li>
                 <li>{t('pages.landing.no_custodial')}</li>
                 <li>{t('pages.landing.no_integration')}</li>
-                <li>{t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161' })}</li>
+                <li>{t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}</li>
                 <li>{t('pages.landing.auto_convert')}</li>
               </ul>
               <a href={config.config?.baseUrlDocs} target='_blank'>

@@ -56,10 +56,10 @@ const Home: React.FC = () => {
           </p>
 
           <h2>
-            11 Blockchains, 9275 Tokens and 161 Fiat Currencies
+            11 Blockchains, 9275 Tokens, 161 Fiat Currencies and 420 Crypto Wallets
           </h2>
           <p>
-            We support 11 blockchains, 9275 tokens and 161 fiat currencies as payment methods. More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
+            We support 11 blockchains, 9275 tokens, 161 fiat currencies and 420 crypto wallets as payment methods. More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
           </p>
 
           <h2>
@@ -115,10 +115,10 @@ const Home: React.FC = () => {
           </p>
 
           <h2>
-            11 блокчейнов, 9275 токенов и 161 фиатная валюта
+            11 блокчейнов, 9275 токенов, 161 фиатная валюта и 420 крипто кошельков
           </h2>
           <p>
-            Мы поддерживаем 11 блокчейнов, 9275 токенов и 161 фиатную валюту в качестве способов оплаты. Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
+            Мы поддерживаем 11 блокчейнов, 9275 токенов, 161 фиатную валюту и 420 крипто кошельков в качестве способов оплаты. Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
           </p>
 
           <h2>
