@@ -178,9 +178,9 @@ NODE_ENV=production pnpm run init --filter=installer
 ## TODO
 
 others:
-- account: на странице balance, как то сообщать если подключенный кошелек не имеет право выводить баланс
 
 improvement backlog:
+- api: send notification email for newly created support tickets
 - payment: не подписаны блокчейн и токен на форме платежа. Так что Паша подумал что выбирать нужно два токена один source и второй dest
 - landing: заменить на "без комиссий сервиса". Сделать всплывающее окно с пояснением каждого пункта
 - payment: have a warning about hardhat and payment error. Start to type email, this warn start to blink. Since there is a unnecessary refresh
@@ -200,6 +200,7 @@ improvement backlog:
 
 long term backlog:
 
+- api: command line tools to extract statistics about new accounts, payments, errors and etc
 - account, payment: return payment that is less than expected, return amount that is over the price
 - account: news page
 - protocol: hide shop address using https://railgun.org/wallets.html or something based on zksync alg
