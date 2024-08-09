@@ -10,7 +10,9 @@
       "supported": "{{blockchains}} блокчейнов, {{tokens}} токенов, {{currencies}} фиатная валюта и {{wallets}} крипто кошельков",
       "auto_convert": "Автоматическая конвертация токенов",
       "read_more": "Прочитать подробнее",
-      "contact": "Контакты"
+      "contact": "Контакты",
+      "questions": "Вопросы?",
+      "to_top": "Вернуться наверх"
     }
   },
   "components": {

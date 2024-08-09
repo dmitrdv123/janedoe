@@ -10,7 +10,9 @@
       "supported": "{{blockchains}} blockchains, {{tokens}} tokens, {{currencies}} fiat currencies and {{wallets}} crypto wallets",
       "auto_convert": "Automatic token conversion",
       "read_more": "Read more",
-      "contact": "Contacts"
+      "contact": "Contacts",
+      "questions": "Questions?",
+      "to_top": "Back to top"
     }
   },
   "components": {
