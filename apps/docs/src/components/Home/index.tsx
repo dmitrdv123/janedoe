@@ -66,7 +66,7 @@ const Home: React.FC = () => {
             Automatic Token Conversion
           </h2>
           <p>
-            Let's say you decide to only accept payments in USDT. And your client only has USDC. He will still be able to make the payment. USDC will be automatically converted to USDT and sent to your.
+            Let's say you decide to only accept payments in USDT. And your client only has USDC. He will still be able to make the payment. USDC will be automatically converted to USDT and sent to you.
           </p>
         </>
       )}
