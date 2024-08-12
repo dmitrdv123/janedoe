@@ -64,6 +64,8 @@ NODE_ENV=local pnpm run init --filter=installer
 NODE_ENV=local pnpm run seed --filter=protocol -- --network localhost
 # start api
 NODE_ENV=local pnpm start --filter=api
+#statistics
+NODE_ENV=local pnpm run statistics
 ```
 
 ## Run development
@@ -74,11 +76,15 @@ VITE_APP_ENV=development NODE_ENV=development pnpm build
 NODE_ENV=development pnpm run deploy --filter=installer
 # init necessary data into db and bitcoin
 NODE_ENV=development pnpm run init --filter=installer
+#statistics
+NODE_ENV=development pnpm run statistics
 ```
 
 # Run production
 
 ```sh
+#statistics
+NODE_ENV=production pnpm run statistics
 # build
 VITE_APP_ENV=production NODE_ENV=production pnpm build
 # deploy resources in aws

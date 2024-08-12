@@ -45,6 +45,9 @@
     "destroy": {
       "cache": false,
       "dependsOn": ["^build"]
+    },
+    "statistics": {
+      "cache": false
     }
   }
 }

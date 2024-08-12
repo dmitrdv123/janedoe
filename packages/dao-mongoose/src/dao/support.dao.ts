@@ -15,4 +15,8 @@ export class SupportDaoImpl implements SupportDao {
 
     return id
   }
+
+  public async listTickets(): Promise<SupportTicket[]> {
+    throw new Error('Method not implemented.')
+  }
 }

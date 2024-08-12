@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
+    "statistics": "node dist/statistics.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -r pino-pretty -r node-cache -q dist/index.js\""
   },
   "dependencies": {
