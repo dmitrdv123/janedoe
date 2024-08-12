@@ -180,7 +180,6 @@ NODE_ENV=production pnpm run init --filter=installer
 others:
 
 improvement backlog:
-- api: send notification email for newly created support tickets
 - payment: не подписаны блокчейн и токен на форме платежа. Так что Паша подумал что выбирать нужно два токена один source и второй dest
 - payment: have a warning about hardhat and payment error. Start to type email, this warn start to blink. Since there is a unnecessary refresh
 - support, account: submit button is enabled even if form is not valid

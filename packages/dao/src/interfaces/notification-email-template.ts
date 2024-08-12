@@ -3,3 +3,8 @@ export interface PaymentNotificationEmailTemplate {
   receipt: string
   receiptItem: string
 }
+
+export interface SupportNotificationEmailTemplate {
+  title: string
+  content: string
+}

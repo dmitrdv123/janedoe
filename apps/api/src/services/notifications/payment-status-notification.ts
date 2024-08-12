@@ -1,5 +1,6 @@
 import { Notification, NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
+import appConfig from '@repo/common/dist/src/app-config'
 
 import { EmailService } from '../email-service'
 import { EmailTemplateService } from '../email-template-service'
@@ -38,7 +39,7 @@ export class PaymentStatusNotificationObserver implements NotificationObserver {
       const emailContent = await this.emailTemplateService.paymentNotificationEmail(paymentLog.accountId, paymentLog.paymentId, successData.currency, successData.amountCurrency, successData.language, successData.description ?? '', [paymentLog])
 
       logger.debug(`PaymentStatusNotificationObserver: start to send email to ${emailAddress} with subject "${emailContent.subject}"`)
-      await this.emailService.sendEmail(emailAddress, emailContent.subject, emailContent.body)
+      await this.emailService.sendEmail(appConfig.PAYMENT_NOTIFICATION_FROM_EMAIL, emailAddress, emailContent.subject, emailContent.body)
       logger.debug('PaymentStatusNotificationObserver: end to send email')
     } else {
       logger.debug('PaymentStatusNotificationObserver: email address is not valid or no set')

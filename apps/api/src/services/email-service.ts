@@ -3,11 +3,11 @@ import appConfig from '@repo/common/dist/src/app-config'
 import { logger } from '../utils/logger'
 
 export interface EmailService {
-  sendEmail(to: string, subject: string, html: string): Promise<void>
+  sendEmail(from: string, to: string, subject: string, html: string): Promise<void>
 }
 
 export class EmailServiceImpl implements EmailService {
-  public async sendEmail(to: string, subject: string, html: string): Promise<void> {
+  public async sendEmail(from: string, to: string, subject: string, html: string): Promise<void> {
     const transport = JSON.parse(appConfig.EMAIL_CONFIG)
     const transporter = nodemailer.createTransport(transport)
 
@@ -15,7 +15,7 @@ export class EmailServiceImpl implements EmailService {
       to,
       subject,
       html,
-      from: appConfig.PAYMENT_NOTIFICATION_FROM_EMAIL
+      from
     }
 
     logger.debug('EmailService: mail option created')

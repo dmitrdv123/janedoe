@@ -12,3 +12,8 @@ export interface SupportTicket {
   transaction: string
   desc: string
 }
+
+
+export interface SupportTicketWithId extends SupportTicket {
+  id: string
+}

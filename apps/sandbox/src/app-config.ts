@@ -97,6 +97,10 @@ export function createAppConfig() {
     throw new Error('PAYMENT_NOTIFICATION_FROM_EMAIL is not set')
   }
 
+  if (!process.env.SUPPORT_NOTIFICATION_TO_EMAIL) {
+    throw new Error('SUPPORT_NOTIFICATION_TO_EMAIL is not set')
+  }
+
   if (!process.env.METRIC_RANGO_NAMESPACE) {
     throw new Error('METRIC_RANGO_NAMESPACE is not set')
   }
@@ -146,6 +150,7 @@ export function createAppConfig() {
     TABLE_NAME_TIME_SERIES: process.env.TABLE_NAME_TIME_SERIES,
     BUCKET_NAME_DATA: process.env.BUCKET_NAME_DATA,
     PAYMENT_NOTIFICATION_FROM_EMAIL: process.env.PAYMENT_NOTIFICATION_FROM_EMAIL,
+    SUPPORT_NOTIFICATION_TO_EMAIL: process.env.SUPPORT_NOTIFICATION_TO_EMAIL,
     METRIC_RANGO_NAMESPACE: process.env.METRIC_RANGO_NAMESPACE,
     METRIC_RANGO_NAME: process.env.METRIC_RANGO_NAME,
     METRIC_RANGO_CONVERSION_NAMESPACE: process.env.METRIC_RANGO_CONVERSION_NAMESPACE,

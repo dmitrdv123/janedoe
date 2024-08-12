@@ -581,6 +581,7 @@ function handler(event) {
             TABLE_NAME_TIME_SERIES: output.tableTimeSeries?.tableName ?? '',
             BUCKET_NAME_DATA: output.bucketData?.bucketName ?? '',
             PAYMENT_NOTIFICATION_FROM_EMAIL: env('PAYMENT_NOTIFICATION_FROM_EMAIL'),
+            SUPPORT_NOTIFICATION_TO_EMAIL: env('SUPPORT_NOTIFICATION_TO_EMAIL'),
             METRIC_RANGO_NAMESPACE: output.alarmMetricRango?.namespace ?? '',
             METRIC_RANGO_NAME: output.alarmMetricRango?.metricName ?? '',
             METRIC_RANGO_CONVERSION_NAMESPACE: output.alarmMetricRangoConversion?.namespace ?? '',

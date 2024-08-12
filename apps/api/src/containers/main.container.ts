@@ -17,6 +17,7 @@ import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-blo
 import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
+import { SupportTicketWithId } from '@repo/dao/dist/src/interfaces/support-ticket'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
@@ -55,15 +56,11 @@ import { RangoService, RangoServiceImpl } from '../services/rango-service'
 import { BitcoinBlockTask } from '../tasks/bitcoin-block.task'
 import { PaymentManagerTask } from '../tasks/payment-manager-task'
 import { ExchangeRateTask } from '../tasks/currency-task'
+import { SupportNotificationObserver } from '../services/notifications/support-notification-observer'
 
 const container = new Container()
 
 // Services
-container.register(
-  'supportService', new SupportServiceImpl(
-    awsContainer.resolve<SupportDao>('supportDao')
-  )
-)
 container.register('emailService', new EmailServiceImpl())
 container.register(
   'emailTemplateService',
@@ -98,6 +95,12 @@ container.register(
   'notificationService',
   new NotificationServiceImpl(
     awsContainer.resolve<NotificationDao>('notificationDao')
+  )
+)
+container.register(
+  'supportService', new SupportServiceImpl(
+    container.resolve<NotificationService>('notificationService'),
+    awsContainer.resolve<SupportDao>('supportDao')
   )
 )
 container.register(
@@ -218,6 +221,13 @@ container.register(
     container.resolve<ExchangeRateApiService>('exchangeRateApiService')
   )
 )
+container.register(
+  'supportNotificationObserver',
+  new SupportNotificationObserver(
+    container.resolve<EmailService>('emailService'),
+    container.resolve<EmailTemplateService>('emailTemplateService')
+  )
+)
 
 // Tasks
 container.register('taskManager', new TaskManagerImpl())
@@ -241,6 +251,14 @@ container.register(
   new NotificationTask<PaymentLog>(
     NotificationType.PAYMENT,
     container.resolve<NotificationObserver>('paymentStatusNotificationObserver'),
+    container.resolve<NotificationService>('notificationService')
+  )
+)
+container.register(
+  'supportNotificationTask',
+  new NotificationTask<SupportTicketWithId>(
+    NotificationType.SUPPORT,
+    container.resolve<NotificationObserver>('supportNotificationObserver'),
     container.resolve<NotificationService>('notificationService')
   )
 )

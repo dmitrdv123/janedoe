@@ -1,6 +1,7 @@
 export enum NotificationType {
   PAYMENT = 'payment',
-  IPN = 'ipn'
+  IPN = 'ipn',
+  SUPPORT = 'support'
 }
 
 export interface Notification<T> {
