@@ -90,13 +90,12 @@ export class PaymentServiceImpl implements PaymentService {
 
   public async loadPaymentHistory(id: string, paymentId: string): Promise<PaymentHistory[]> {
     logger.debug(`PaymentService: start to list payment logs for id ${id} and payment id ${paymentId}`)
-    const paymentLogs = await this.paymentLogService.listPaymentLogs(id)
-    const filteredPaymentLogs = paymentLogs.filter(item => item.paymentId.toLocaleLowerCase() === paymentId.toLocaleLowerCase())
-    logger.debug(`PaymentService: found ${filteredPaymentLogs.length} payment logs`)
-    logger.debug(filteredPaymentLogs)
+    const paymentLogs = await this.paymentLogService.listPaymentLogs(id, { paymentId })
+    logger.debug(`PaymentService: found ${paymentLogs.length} payment logs`)
+    logger.debug(paymentLogs)
 
     logger.debug(`PaymentService: start to convert to payment history`)
-    const paymentHistory = filteredPaymentLogs.map(paymentLog => this.convertPaymentLogToPaymentHistory(paymentLog))
+    const paymentHistory = paymentLogs.map(paymentLog => this.convertPaymentLogToPaymentHistory(paymentLog))
     logger.debug(`PaymentService: end to convert to payment history`)
     logger.debug(paymentHistory)
 
