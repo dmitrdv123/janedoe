@@ -20,11 +20,13 @@ async function accountStatistics() {
   const accounts = await accountDao.listAccountProfiles()
   console.log(`Statistics: found ${accounts.length} accounts`)
 
-  accounts.map(async account => {
-    const payments = await paymentLogDao.listPaymentLogs(account.id)
-    const totalAmountUsd = payments.reduce((acc, payment) => acc + (payment.amountUsd ?? 0), 0)
-    console.log(`Statistics: account ${account.id} - ${payments.length} payments, total amount usd ${totalAmountUsd}`)
-  })
+  await Promise.all(
+    accounts.map(async account => {
+      const payments = await paymentLogDao.listPaymentLogs(account.id)
+      const totalAmountUsd = payments.reduce((acc, payment) => acc + (payment.amountUsd ?? 0), 0)
+      console.log(`Statistics: account ${account.id} - ${payments.length} payments, total amount usd ${totalAmountUsd}`)
+    })
+  )
 }
 
 async function supportStatistics() {
