@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button, Col, Container, Row } from 'react-bootstrap'
+import { Bank, Circle, CurrencyBitcoin, CurrencyExchange, Envelope, Globe, Wallet } from 'react-bootstrap-icons'
 
 import './index.css'
 
@@ -23,9 +24,9 @@ const Landing: React.FC = () => {
       <LandingNavbar />
 
       <main>
-        <Container className='px-4 py-5 my-5'>
+        <Container className='d-flex flex-column justify-content-center align-items-center min-vh-100'>
           <Row className="justify-content-center">
-            <Col md={8} className='text-center mx-auto'>
+            <Col md={8} className='text-center'>
               <h1 className="display-1">
                 {import.meta.env.VITE_APP_APP_NAME ?? 'Jane Doe'}
               </h1>
@@ -40,23 +41,41 @@ const Landing: React.FC = () => {
             </Col>
             <Col md={4}>
               <ul className="list-unstyled lead text-body-secondary">
-                <li>
-                  {t('pages.landing.no_kyc')}
+                <li >
+                  <Circle className='me-2' size={10} />
+                  <a href="#supported" className="text-secondary text-decoration-none">
+                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
+                  </a>
                 </li>
-                <li>
-                  {t('pages.landing.no_fees')}
+                <li >
+                  <Circle className='me-2' size={10} />
+                  <a href="#no_fees" className="text-secondary text-decoration-none">
+                    {t('pages.landing.no_fees')}
+                  </a>
                 </li>
-                <li>
-                  {t('pages.landing.no_custodial')}
+                <li >
+                  <Circle className='me-2' size={10} />
+                  <a href="#no_custodial" className="text-secondary text-decoration-none">
+                    {t('pages.landing.no_custodial')}
+                  </a>
                 </li>
-                <li>
-                  {t('pages.landing.no_integration')}
+                <li >
+                  <Circle className='me-2' size={10} />
+                  <a href="#no_integration" className="text-secondary text-decoration-none">
+                    {t('pages.landing.no_integration')}
+                  </a>
                 </li>
-                <li>
-                  {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
+                <li >
+                  <Circle className='me-2' size={10} />
+                  <a href="#no_kyc" className="text-secondary text-decoration-none">
+                    {t('pages.landing.no_kyc')}
+                  </a>
                 </li>
-                <li>
-                  {t('pages.landing.auto_convert')}
+                <li >
+                  <Circle className='me-2' size={10} />
+                  <a href="#auto_convert" className="text-secondary text-decoration-none">
+                    {t('pages.landing.auto_convert')}
+                  </a>
                 </li>
               </ul>
               <a href={config.config?.baseUrlDocs} target='_blank'>
@@ -74,18 +93,17 @@ const Landing: React.FC = () => {
             <>
               <Row className="featurette">
                 <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1">
-                    {t('pages.landing.no_kyc')}
+                  <h2 className="featurette-heading fw-normal lh-1" id='supported'>
+                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
                   </h2>
                   <p className="lead">
-                    You do not need to go through the KYC procedure to start using our service. You only need to have a cryptowallet with which you can log in and to which you will withdraw funds. More details in <a href='#tutorials_create_account'>How to create account</a> and <a href='#tutorials_withdraw'>How to withdraw funds</a>.
-                  </p>
-                  <p className="lead">
-                    You may be blocked only if you accept payments for illegal services or goods. However, you will still be able to interact with the smart contract directly, for example through <a href="https://etherscan.io/" target='_blank'>etherscan</a> and withdraw all funds. Since smart contracts are not changeable and there is no mechanism for blocking funds in our smart contracts.
+                    We support 11 blockchains, 9275 tokens, 161 fiat currencies and 420 crypto wallets as payment methods. More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
                   </p>
                 </Col>
                 <Col md={5} className="d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <CurrencyBitcoin size={100} />
+                  </div>
                 </Col>
               </Row>
 
@@ -93,7 +111,7 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1">
+                  <h2 className="featurette-heading fw-normal lh-1" id='no_fees'>
                     {t('pages.landing.no_fees')}
                   </h2>
                   <p className="lead">
@@ -101,7 +119,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="order-md-1 d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    0%
+                  </div>
                 </Col>
               </Row>
 
@@ -109,7 +129,7 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1">
+                  <h2 className="featurette-heading fw-normal lh-1" id='no_custodial'>
                     {t('pages.landing.no_custodial')}
                   </h2>
                   <p className="lead">
@@ -117,7 +137,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <Wallet size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -125,7 +147,7 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1">
+                  <h2 className="featurette-heading fw-normal lh-1" id='no_integration'>
                     {t('pages.landing.no_integration')}
                   </h2>
                   <p className="lead">
@@ -139,7 +161,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="order-md-1 d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <Globe size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -147,15 +171,20 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1">
-                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
+                  <h2 className="featurette-heading fw-normal lh-1" id='no_kyc'>
+                    {t('pages.landing.no_kyc')}
                   </h2>
                   <p className="lead">
-                    We support 11 blockchains, 9275 tokens, 161 fiat currencies and 420 crypto wallets as payment methods. More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
+                    You do not need to go through the KYC procedure to start using our service. You only need to have a cryptowallet with which you can log in and to which you will withdraw funds. More details in <a href='#tutorials_create_account'>How to create account</a> and <a href='#tutorials_withdraw'>How to withdraw funds</a>.
+                  </p>
+                  <p className="lead">
+                    You may be blocked only if you accept payments for illegal services or goods. However, you will still be able to interact with the smart contract directly, for example through <a href="https://etherscan.io/" target='_blank'>etherscan</a> and withdraw all funds. Since smart contracts are not changeable and there is no mechanism for blocking funds in our smart contracts.
                   </p>
                 </Col>
                 <Col md={5} className="d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <Bank size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -163,7 +192,7 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1">
+                  <h2 className="featurette-heading fw-normal lh-1" id='auto_convert'>
                     {t('pages.landing.auto_convert')}
                   </h2>
                   <p className="lead">
@@ -171,7 +200,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="order-md-1 d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <CurrencyExchange size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -192,7 +223,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <Envelope size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -204,18 +237,17 @@ const Landing: React.FC = () => {
             <>
               <Row className="featurette">
                 <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1">
-                    {t('pages.landing.no_kyc')}
+                  <h2 className="featurette-heading fw-normal lh-1" id='supported'>
+                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
                   </h2>
                   <p className="lead">
-                    Вам не нужно проходить процедуру KYC, чтобы начать пользоваться нашим сервисом. Вам необходимо только иметь криптокошелек, с помощью которого вы сможете авторизоваться и на который вы будете выводить средства. Более подробная информация в <a href='#tutorials_create_account'>Как создать учетную запись</a> и <a href='#tutorials_withdraw'>Как выводить средства</a>.
-                  </p>
-                  <p className="lead">
-                    Вас могут заблокировать только в том случае, если вы принимаете платежи за незаконные услуги или товары. Однако вы по-прежнему сможете напрямую взаимодействовать со смарт-контрактом, например, через <a href="https://etherscan.io/" target='_blank'>etherscan</a> и выводить все средства. Так как смарт-контракты не изменяемы и в наших смарт-контрактах нет механизма блокировки средств.
+                    Мы поддерживаем 11 блокчейнов, 9275 токенов, 161 фиатную валюту и 420 крипто кошельков в качестве способов оплаты. Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
                   </p>
                 </Col>
                 <Col md={5} className="d-none d-md-block d-xs-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <CurrencyBitcoin size={100} />
+                  </div>
                 </Col>
               </Row>
 
@@ -223,7 +255,7 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1">
+                  <h2 className="featurette-heading fw-normal lh-1" id='no_fees'>
                     {t('pages.landing.no_fees')}
                   </h2>
                   <p className="lead">
@@ -231,7 +263,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="order-md-1 d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    0%
+                  </div>
                 </Col>
               </Row>
 
@@ -239,7 +273,7 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1">
+                  <h2 className="featurette-heading fw-normal lh-1" id='no_custodial'>
                     {t('pages.landing.no_custodial')}
                   </h2>
                   <p className="lead">
@@ -247,7 +281,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <Wallet size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -255,7 +291,7 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1">
+                  <h2 className="featurette-heading fw-normal lh-1" id='no_integration'>
                     {t('pages.landing.no_integration')}
                   </h2>
                   <p className="lead">
@@ -269,7 +305,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="order-md-1 d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <Globe size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -277,15 +315,20 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1">
-                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
+                  <h2 className="featurette-heading fw-normal lh-1" id='no_kyc'>
+                    {t('pages.landing.no_kyc')}
                   </h2>
                   <p className="lead">
-                    Мы поддерживаем 11 блокчейнов, 9275 токенов, 161 фиатную валюту и 420 крипто кошельков в качестве способов оплаты. Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
+                    Вам не нужно проходить процедуру KYC, чтобы начать пользоваться нашим сервисом. Вам необходимо только иметь криптокошелек, с помощью которого вы сможете авторизоваться и на который вы будете выводить средства. Более подробная информация в <a href='#tutorials_create_account'>Как создать учетную запись</a> и <a href='#tutorials_withdraw'>Как выводить средства</a>.
+                  </p>
+                  <p className="lead">
+                    Вас могут заблокировать только в том случае, если вы принимаете платежи за незаконные услуги или товары. Однако вы по-прежнему сможете напрямую взаимодействовать со смарт-контрактом, например, через <a href="https://etherscan.io/" target='_blank'>etherscan</a> и выводить все средства. Так как смарт-контракты не изменяемы и в наших смарт-контрактах нет механизма блокировки средств.
                   </p>
                 </Col>
                 <Col md={5} className="d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <Bank size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -293,7 +336,7 @@ const Landing: React.FC = () => {
 
               <Row className="featurette">
                 <Col md={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1">
+                  <h2 className="featurette-heading fw-normal lh-1" id='auto_convert'>
                     {t('pages.landing.auto_convert')}
                   </h2>
                   <p className="lead">
@@ -301,7 +344,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="order-md-1 d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <CurrencyExchange size={100}/>
+                  </div>
                 </Col>
               </Row>
 
@@ -322,7 +367,9 @@ const Landing: React.FC = () => {
                   </p>
                 </Col>
                 <Col md={5} className="d-none d-md-block">
-                  <svg className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"></rect></svg>
+                  <div className='featurette-image'>
+                    <Envelope size={100}/>
+                  </div>
                 </Col>
               </Row>
 

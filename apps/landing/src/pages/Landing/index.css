@@ -22,6 +22,16 @@
 /* Featurettes
 ------------------------- */
 
+.featurette-image {
+  width: 500px;
+  height: 500px;
+  background-color: var(--bs-secondary-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 100px;
+}
+
 .featurette-divider {
   margin: 5rem 0; /* Space out the Bootstrap <hr> more */
 }
