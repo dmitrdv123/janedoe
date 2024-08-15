@@ -276,6 +276,8 @@
     "nothing": "Нет записей...",
     "copy_btn": "Копировать",
     "refresh_btn": "Обновить",
+    "expand_btn": "Развернуть",
+    "collapse_btn": "Свернуть",
     "settings": "Настройки",
     "balance": "Баланс:",
     "details": "Детали",

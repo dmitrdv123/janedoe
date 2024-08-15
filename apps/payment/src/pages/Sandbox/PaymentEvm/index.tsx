@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Card, Col, Container, Dropdown, Form, ListGroup, Row } from 'react-bootstrap'
+import { InfoCircle } from 'react-bootstrap-icons'
 
 import './index.css'
 
 import PaymentNavbar from '../../../components/PaymentNavbar'
 
 const PaymentEvm: React.FC = () => {
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(true)
+
   return (
     <>
       <PaymentNavbar />
@@ -42,21 +45,29 @@ const PaymentEvm: React.FC = () => {
               </Form.Text>
             </Form.Group>
 
+
+
             <Card className="mb-2">
-              <Card.Header className='p-2'>
-                <div className="d-flex justify-content-between">
+              <Card.Header className={isCollapsed ? 'p-2 bg-transparent border-bottom-0' : 'p-2 bg-transparent'}>
+                <div className="d-flex justify-content-between align-items-center">
                   <div>
-                    <div>Необходима конвертация</div>
-                    <small className='text-muted'>магазин не принимает USDT в качестве оплаты</small>
+                    <InfoCircle /> Будет проведена конвертация
                   </div>
                   <div>
+                    <Button variant="link" className="text-decoration-none" size='sm' onClick={() => setIsCollapsed(!isCollapsed)}>
+                      {isCollapsed ? 'Развернуть' : 'Свернуть'}
+                    </Button>
                     <Button variant="link" className="text-decoration-none" size='sm'>
                       Обновить
                     </Button>
                   </div>
                 </div>
+                <div>
+                  0.0001 ETH (0.5 USD) на 0.0005 USDT (0.5 USD)
+                </div>
+                <small className='text-muted'>магазин не принимает USDT в качестве оплаты</small>
               </Card.Header>
-              <Card.Body className='p-2'>
+              <Card.Body className={isCollapsed ? 'd-none' : 'p-2'}>
                 <Row>
                   <Col sm={4}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">

@@ -34,6 +34,7 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
   const [toTokenCur, setToTokenCur] = useState<Token | undefined>(toToken)
   const [slippageCur, setSlippageCur] = useState<number>(slippage)
   const [customSlippageCur, setCustomSlippageCur] = useState<string>('')
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(true)
 
   const { t } = useTranslation()
 
@@ -158,13 +159,15 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
       />
 
       <Card>
-        <Card.Header className='p-2'>
+        <Card.Header className={isCollapsed ? 'p-2 bg-transparent border-bottom-0' : 'p-2 bg-transparent'}>
           <div className="d-flex justify-content-between">
             <div>
-              <div>{t('components.evm_payment.conversion_title')}</div>
-              <small className='text-muted'>
-                {t('components.evm_payment.explain', { token: `${fromToken.symbol}` })}
-              </small>
+              {t('components.evm_payment.conversion_title')}
+              {paymentConversionStatus === 'processing' && (
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
+                  <span className="visually-hidden">{t('common.loading')}</span>
+                </Spinner>
+              )}
             </div>
             <div>
               <Button
@@ -176,10 +179,51 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
               >
                 {t('common.refresh_btn')}
               </Button>
+
+              <Button
+                variant="link"
+                className="text-decoration-none me-2"
+                size='sm'
+                onClick={() => setIsCollapsed(!isCollapsed)}
+              >
+                {isCollapsed ? t('common.expand_btn') : t('common.collapse_btn')}
+              </Button>
             </div>
           </div>
+
+          {(!!paymentConversionData) && (
+            <div>
+              <TokenAmountWithCurrency
+                tokenAmount={paymentConversionData.amount}
+                tokenSymbol={paymentConversionData.quote.from.symbol}
+                tokenDecimals={paymentConversionData.quote.from.decimals}
+                currencyAmount={paymentConversionData.quote.from.usdPrice && exchangeRate
+                  ? tokenAmountToCurrency(paymentConversionData.amount, paymentConversionData.quote.from.usdPrice, paymentConversionData.quote.from.decimals, exchangeRate)
+                  : null
+                }
+                currency={currency}
+              />
+              &nbsp;{t('components.evm_payment.to')}
+              &nbsp;<TokenAmountWithCurrency
+                tokenAmount={paymentConversionData.quote.outputAmount}
+                tokenSymbol={paymentConversionData.quote.to.symbol}
+                tokenDecimals={paymentConversionData.quote.to.decimals}
+                currencyAmount={paymentConversionData.quote.to.usdPrice && exchangeRate
+                  ? tokenAmountToCurrency(paymentConversionData.quote.outputAmount, paymentConversionData.quote.to.usdPrice, paymentConversionData.quote.to.decimals, exchangeRate)
+                  : null
+                }
+                currency={currency}
+              />
+            </div>
+          )}
+
+          <div>
+            <small className='text-muted'>
+              {t('components.evm_payment.explain', { token: `${fromToken.symbol}` })}
+            </small>
+          </div>
         </Card.Header>
-        <Card.Body className='p-2'>
+        <Card.Body className={isCollapsed ? 'd-none' : 'p-2'}>
           <Row>
             <Col sm={4}>
               <Form.Group className="mb-3">
@@ -230,12 +274,6 @@ const TokenConversionCard: React.FC<TokenConversionCardProps> = (props) => {
               </Form.Group>
             </Col>
             <Col sm={8}>
-              {paymentConversionStatus === 'processing' && (
-                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
-                  <span className="visually-hidden">{t('common.loading')}</span>
-                </Spinner>
-              )}
-
               {paymentConversionStatus === 'error' && (
                 <Alert variant='warning' className='mb-0'>
                   {t('components.evm_payment.conversion_error_alert')}

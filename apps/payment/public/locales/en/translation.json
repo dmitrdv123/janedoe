@@ -276,6 +276,8 @@
     "nothing": "No records...",
     "copy_btn": "Copy",
     "refresh_btn": "Refresh",
+    "expand_btn": "Expand",
+    "collapse_btn": "Collapse",
     "settings": "Settings",
     "balance": "Balance:",
     "details": "Details",
