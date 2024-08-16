@@ -1,6 +1,6 @@
 import React from 'react'
-import { Button, Col, Container, Row } from 'react-bootstrap'
-import { Bank, Circle, CurrencyBitcoin, CurrencyExchange, Envelope, Globe, Wallet } from 'react-bootstrap-icons'
+import { Badge, Button, Col, Container, Row } from 'react-bootstrap'
+import { Asterisk, Circle, CurrencyBitcoin, CurrencyExchange, Envelope, Globe, Wallet } from 'react-bootstrap-icons'
 
 import './index.css'
 
@@ -43,12 +43,6 @@ const Landing: React.FC = () => {
               <ul className="list-unstyled lead text-body-secondary">
                 <li >
                   <Circle className='me-2' size={10} />
-                  <a href="#supported" className="text-secondary text-decoration-none">
-                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
-                  </a>
-                </li>
-                <li >
-                  <Circle className='me-2' size={10} />
                   <a href="#no_fees" className="text-secondary text-decoration-none">
                     {t('pages.landing.no_fees')}
                   </a>
@@ -67,14 +61,14 @@ const Landing: React.FC = () => {
                 </li>
                 <li >
                   <Circle className='me-2' size={10} />
-                  <a href="#no_kyc" className="text-secondary text-decoration-none">
-                    {t('pages.landing.no_kyc')}
+                  <a href="#supported" className="text-secondary text-decoration-none">
+                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
                   </a>
                 </li>
                 <li >
                   <Circle className='me-2' size={10} />
                   <a href="#auto_convert" className="text-secondary text-decoration-none">
-                    {t('pages.landing.auto_convert')}
+                    {t('pages.landing.auto_convert', { exchangers: '107' })}
                   </a>
                 </li>
               </ul>
@@ -92,33 +86,42 @@ const Landing: React.FC = () => {
           {(i18n.language.toLocaleLowerCase() === 'en' || SUPPORTED_LANGUAGES.findIndex(lang => lang === i18n.language.toLocaleLowerCase()) === -1) && (
             <>
               <Row className="featurette">
-                <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1" id='supported'>
-                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
-                  </h2>
-                  <p className="lead">
-                    We support 11 blockchains, 9275 tokens, 161 fiat currencies and 420 crypto wallets as payment methods. More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
+                <Col>
+                  <blockquote className="blockquote border-start border-5 ps-3">
+                    <h2 className="featurette-heading fw-normal lh-1">
+                      Why do I need an intermediary to accept cryptocurrency payments at all?
+                    </h2>
+                    <p>
+                      Blockchains themselves are a kind of payment systems that is designed to send payments. Why can't just accept payments to my own wallet address?
+                    </p>
+                  </blockquote>
+
+                  <p className='lead'>
+                    Let's estimate the complexity of JaneDoe proposal
                   </p>
-                </Col>
-                <Col md={5} className="d-none d-md-block">
-                  <div className='featurette-image'>
-                    <CurrencyBitcoin size={100} />
-                  </div>
+
+                  <p className='lead'>
+                    <Badge bg="secondary">Complexity</Badge> = f ( <Badge bg="secondary">11 Blockchains</Badge> <Asterisk size={8} /> <Badge bg="secondary">9275 Tokens</Badge> <Asterisk size={8} /> <Badge bg="secondary">161 Fiat Currencies</Badge> <Asterisk size={8} /> <Badge bg="secondary">420 Crypto Wallets</Badge> <Asterisk size={8} /> <Badge bg="secondary">107 Exchangers</Badge>  <Asterisk size={8} /> <Badge bg="secondary">Number of Payments</Badge> )
+                  </p>
+
+                  <p className='lead'>
+                    It is almost impossible to manage such system in the manual mode, even if you have a small number of payments. Therefore JaneDoe offers you a payment system to accept payments in cryptocurrency with zero fees.
+                  </p>
                 </Col>
               </Row>
 
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7} className="order-md-2">
+                <Col lg={7} className="order-md-2">
                   <h2 className="featurette-heading fw-normal lh-1" id='no_fees'>
                     {t('pages.landing.no_fees')}
                   </h2>
                   <p className="lead">
-                    We do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token conversion.
+                    JaneDoe do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token conversion.
                   </p>
                 </Col>
-                <Col md={5} className="order-md-1 d-none d-md-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block">
                   <div className='featurette-image'>
                     0%
                   </div>
@@ -128,17 +131,23 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7}>
+                <Col lg={7}>
                   <h2 className="featurette-heading fw-normal lh-1" id='no_custodial'>
                     {t('pages.landing.no_custodial')}
                   </h2>
                   <p className="lead">
-                    We do not store your funds in custodial wallets in the case of Ethereum compatible blockchains. Your funds are stored in a smart contract based on the <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>ERC1155 standard</a> and can be withdrawn to your wallet. Smart contract addresses can be found in <a href='#resources_contracts'>Contract Addresses</a>.
+                    JaneDoe do not store your funds in custodial wallets in the case of Ethereum compatible blockchains. Your funds are stored in a smart contracts based on the <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>ERC1155 standard</a>.
+                  </p>
+                  <p className='lead'>
+                    Smart contracts are not changeable and there is no mechanism for blocking your funds in our smart contracts. You even be able to interact with the smart contract directly, for example through <a href="https://etherscan.io/" target='_blank'>etherscan</a> to withdraw all your funds.
+                  </p>
+                  <p className='lead'>
+                    Smart contract addresses can be found in <a href={`${config.config?.baseUrlDocs}/#resources_contracts`} target='_blank'>Contract Addresses</a>.
                   </p>
                 </Col>
-                <Col md={5} className="d-none d-md-block">
+                <Col lg={5} className="d-none d-lg-block">
                   <div className='featurette-image'>
-                    <Wallet size={100}/>
+                    <Wallet size={100} />
                   </div>
                 </Col>
               </Row>
@@ -146,23 +155,23 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7} className="order-md-2">
+                <Col lg={7} className="order-md-2">
                   <h2 className="featurette-heading fw-normal lh-1" id='no_integration'>
                     {t('pages.landing.no_integration')}
                   </h2>
                   <p className="lead">
-                    You just need to post links in a specific format to accept payments. For example, <code>{config.config?.baseUrlPayment}/000000000001/123/usd/100</code>. Links can be created independently on your side, no integration required. More details in <a href='#tutorials_receive_payments'>How to receive payments</a>.
+                    You need to use payment links to accept payments. Links can be created independently on your side, no integration required. More details in <a href='#tutorials_receive_payments'>How to receive payments</a>.
                   </p>
                   <p className="lead">
-                    But if you need to receive payment history, you can integrate with our API. More details in <a href='#tutorials_api'>How to use API</a>.
+                    If you need JaneDoe can send notifications about new payments to your system. More details in <a href='#tutorials_notifications'>How to receive notifications about payments</a>.
                   </p>
                   <p className="lead">
-                    In addition, you can configure to receive notifications about new payments. More details in <a href='#tutorials_notifications'>How to receive notifications about payments</a>.
+                    In addition, you can integrate with our API to retrieve payment history. More details in <a href='#tutorials_api'>How to use API</a>.
                   </p>
                 </Col>
-                <Col md={5} className="order-md-1 d-none d-md-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block">
                   <div className='featurette-image'>
-                    <Globe size={100}/>
+                    <Globe size={100} />
                   </div>
                 </Col>
               </Row>
@@ -170,20 +179,23 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1" id='no_kyc'>
-                    {t('pages.landing.no_kyc')}
+                <Col lg={7}>
+                  <h2 className="featurette-heading fw-normal lh-1" id='supported'>
+                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
                   </h2>
                   <p className="lead">
-                    You do not need to go through the KYC procedure to start using our service. You only need to have a cryptowallet with which you can log in and to which you will withdraw funds. More details in <a href='#tutorials_create_account'>How to create account</a> and <a href='#tutorials_withdraw'>How to withdraw funds</a>.
+                    A wide range of supported blockchains, tokens and crypto wallets will provide you with a wide range of client. Your clients will be able to pay in a way convenient for them.
                   </p>
                   <p className="lead">
-                    You may be blocked only if you accept payments for illegal services or goods. However, you will still be able to interact with the smart contract directly, for example through <a href="https://etherscan.io/" target='_blank'>etherscan</a> and withdraw all funds. Since smart contracts are not changeable and there is no mechanism for blocking funds in our smart contracts.
+                    You will be able to set the payment amount in a fiat currency convenient for you. JaneDoe will automatically calculate the payment amount in tokens taking into account its price and fiat currency exchange rates.
+                  </p>
+                  <p className="lead">
+                    More details in <a href={`${config.config?.baseUrlDocs}/#resources_blockchains`} target='_blank'>Supported Blockchains</a>, <a href={`${config.config?.baseUrlDocs}/#resources_tokens`} target='_blank'>Supported Tokens</a> and <a href={`${config.config?.baseUrlDocs}/#resources_currencies`} target='_blank'>Supported Currencies</a>.
                   </p>
                 </Col>
-                <Col md={5} className="d-none d-md-block">
+                <Col lg={5} className="d-none d-lg-block">
                   <div className='featurette-image'>
-                    <Bank size={100}/>
+                    <CurrencyBitcoin size={100} />
                   </div>
                 </Col>
               </Row>
@@ -191,17 +203,20 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7} className="order-md-2">
+                <Col lg={7} className="order-md-2">
                   <h2 className="featurette-heading fw-normal lh-1" id='auto_convert'>
-                    {t('pages.landing.auto_convert')}
+                    {t('pages.landing.auto_convert', { exchangers: '107' })}
                   </h2>
                   <p className="lead">
-                    Let's say you decide to only accept payments in USDT. And your client only has USDC. He will still be able to make the payment. USDC will be automatically converted to USDT and sent to you.
+                    Let's say you decide to accept payments only in USDT. And your client has only ETH. He will still be able to make a payment. ETH will be automatically converted to USDT and sent to you in the amount you need.
+                  </p>
+                  <p className="lead">
+                    This way, your clients will be able to pay in the tokens they like, and you will receive the required amount in the tokens you need. To ensure the most favorable conversion rate, JaneDoe is integrated with 107 exchangers.
                   </p>
                 </Col>
-                <Col md={5} className="order-md-1 d-none d-md-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block">
                   <div className='featurette-image'>
-                    <CurrencyExchange size={100}/>
+                    <CurrencyExchange size={100} />
                   </div>
                 </Col>
               </Row>
@@ -209,7 +224,7 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7}>
+                <Col lg={7}>
                   <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.questions')}
                   </h2>
@@ -222,9 +237,9 @@ const Landing: React.FC = () => {
                     </a>
                   </p>
                 </Col>
-                <Col md={5} className="d-none d-md-block">
+                <Col lg={5} className="d-none d-lg-block">
                   <div className='featurette-image'>
-                    <Envelope size={100}/>
+                    <Envelope size={100} />
                   </div>
                 </Col>
               </Row>
@@ -236,33 +251,42 @@ const Landing: React.FC = () => {
           {(i18n.language.toLocaleLowerCase() === 'ru') && (
             <>
               <Row className="featurette">
-                <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1" id='supported'>
-                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
-                  </h2>
-                  <p className="lead">
-                    Мы поддерживаем 11 блокчейнов, 9275 токенов, 161 фиатную валюту и 420 крипто кошельков в качестве способов оплаты. Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
+                <Col>
+                  <blockquote className="blockquote border-start border-5 ps-3">
+                    <h2 className="featurette-heading fw-normal lh-1">
+                      Зачем вообще мне нужен посредник для приема платежей в криптовалюте?
+                    </h2>
+                    <p>
+                      Блокчейны сами по себе это своего рода платежные системы, которые предназначены для отправки платежей. Почему нельзя просто принимать платежи на адрес своего кошелька?
+                    </p>
+                  </blockquote>
+
+                  <p className='lead'>
+                    Давайте оценим сложность того, что предлагает JaneDoe
                   </p>
-                </Col>
-                <Col md={5} className="d-none d-md-block d-xs-block">
-                  <div className='featurette-image'>
-                    <CurrencyBitcoin size={100} />
-                  </div>
+
+                  <p className='lead'>
+                    <Badge bg="secondary">Сложность</Badge> = f ( <Badge bg="secondary">11 блокчейнов</Badge> <Asterisk size={8} /> <Badge bg="secondary">9275 токенов</Badge> <Asterisk size={8} /> <Badge bg="secondary">161 фиатная валюта</Badge> <Asterisk size={8} /> <Badge bg="secondary">420 крипто кошельков</Badge> <Asterisk size={8} /> <Badge bg="secondary">107 обменников</Badge>  <Asterisk size={8} /> <Badge bg="secondary">Количество платежей</Badge> )
+                  </p>
+
+                  <p className='lead'>
+                    Управлять таким в ручном режиме практически невозможно, даже если платежей немного. Поэтому JaneDoe предлагает вам автоматизированную систему для приема платежей в криптовалюте с нулевыми комиссиями.
+                  </p>
                 </Col>
               </Row>
 
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7} className="order-md-2">
+                <Col lg={7} className="order-md-2">
                   <h2 className="featurette-heading fw-normal lh-1" id='no_fees'>
                     {t('pages.landing.no_fees')}
                   </h2>
                   <p className="lead">
-                    Мы не берем комиссии. Комиссии могут брать только сами блокчейны за газ либо третьи сервисы, в случае конвертации токенов.
+                    JaneDoe не берет комиссии. Комиссии могут брать только сами блокчейны за газ либо третьи сервисы, в случае конвертации токенов.
                   </p>
                 </Col>
-                <Col md={5} className="order-md-1 d-none d-md-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block">
                   <div className='featurette-image'>
                     0%
                   </div>
@@ -272,17 +296,23 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7}>
+                <Col lg={7}>
                   <h2 className="featurette-heading fw-normal lh-1" id='no_custodial'>
                     {t('pages.landing.no_custodial')}
                   </h2>
                   <p className="lead">
-                    Мы не храним ваши средства в кастодиальных кошельках в случае EVM совместимых блокчейнов. Ваши средства хранятся в смарт контракте на основе <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>стандарта ERC1155</a> и могут быть выведены на ваш кошелек. Адреса смартконтрактов можно посмотреть в <a href='#resources_contracts'>Адреса контрактов</a>.
+                    JaneDoe не хранит ваши средства в кастодиальных кошельках в случае EVM совместимых блокчейнов. Ваши средства хранятся в смарт контрактах на основе <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>стандарта ERC1155</a>.
+                  </p>
+                  <p className='lead'>
+                    Cмарт-контракты не изменяемы и в наших смарт-контрактах нет механизма блокировки ваших средств. Вы даже сможете напрямую взаимодействовать со смарт-контрактом, например, через <a href="https://etherscan.io/" target='_blank'>etherscan</a>, чтобы вывести все свои средства.
+                  </p>
+                  <p className='lead'>
+                    Адреса смартконтрактов можно посмотреть в <a href={`${config.config?.baseUrlDocs}/#resources_contracts`} target='_blank'>Адреса контрактов</a>.
                   </p>
                 </Col>
-                <Col md={5} className="d-none d-md-block">
+                <Col lg={5} className="d-none d-lg-block">
                   <div className='featurette-image'>
-                    <Wallet size={100}/>
+                    <Wallet size={100} />
                   </div>
                 </Col>
               </Row>
@@ -290,23 +320,23 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7} className="order-md-2">
+                <Col lg={7} className="order-md-2">
                   <h2 className="featurette-heading fw-normal lh-1" id='no_integration'>
                     {t('pages.landing.no_integration')}
                   </h2>
                   <p className="lead">
-                    Вам нужно просто размещать ссылки в определенном формате, чтобы принять платежи. Например, <code>{config.config?.baseUrlPayment}/000000000001/123/usd/100</code>. Ссылки могут быть созданы независимо на вашей стороне, никакой интеграции не требуется. Более подробная информация в <a href='#tutorials_receive_payments'>Как получать платежи</a>.
+                    Чтобы получать платежи вам нужно использовать платежные ссылки. Ссылки могут быть созданы независимо на вашей стороне, никакой интеграции не требуется. Более подробная информация в <a href='#tutorials_receive_payments'>Как получать платежи</a>.
                   </p>
                   <p className="lead">
-                    Но если вам требуется получать историю платежей вы сможете интегрироваться с нашим API. Более подробная информация в <a href='#tutorials_api'>Как интегрироваться с API</a>.
+                    Если вам потребуется JaneDoe может слать уведомления о новых платежах в вашу систему. Более подробная информация в <a href='#tutorials_notifications'>Как получать уведомления о платежах</a>.
                   </p>
                   <p className="lead">
-                    В дополнении вы можете настроить получение уведомлений о новых платежах. Более подробная информация в <a href='#tutorials_notifications'>Как получать уведомления о платежах</a>.
+                    В дополнении вы можете интегрироваться с нашим API для получения истории платежей. Более подробная информация в <a href='#tutorials_api'>Как интегрироваться с API</a>.
                   </p>
                 </Col>
-                <Col md={5} className="order-md-1 d-none d-md-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block">
                   <div className='featurette-image'>
-                    <Globe size={100}/>
+                    <Globe size={100} />
                   </div>
                 </Col>
               </Row>
@@ -314,20 +344,26 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7}>
-                  <h2 className="featurette-heading fw-normal lh-1" id='no_kyc'>
-                    {t('pages.landing.no_kyc')}
+                <Col lg={7}>
+                  <h2 className="featurette-heading fw-normal lh-1" id='supported'>
+                    {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
                   </h2>
+
                   <p className="lead">
-                    Вам не нужно проходить процедуру KYC, чтобы начать пользоваться нашим сервисом. Вам необходимо только иметь криптокошелек, с помощью которого вы сможете авторизоваться и на который вы будете выводить средства. Более подробная информация в <a href='#tutorials_create_account'>Как создать учетную запись</a> и <a href='#tutorials_withdraw'>Как выводить средства</a>.
+                    Широкий набор поддерживаемых блокчейнов, токенов и криптокошельков обеспечит вам широкий круг клиентов. Ваши клиенты смогут платить удобным им способом.
                   </p>
+
                   <p className="lead">
-                    Вас могут заблокировать только в том случае, если вы принимаете платежи за незаконные услуги или товары. Однако вы по-прежнему сможете напрямую взаимодействовать со смарт-контрактом, например, через <a href="https://etherscan.io/" target='_blank'>etherscan</a> и выводить все средства. Так как смарт-контракты не изменяемы и в наших смарт-контрактах нет механизма блокировки средств.
+                    Вы сможете задать сумму платежа в удобной вам фиатной валюте. JaneDoe автоматически рассчитает сумму платежа в токене учитывая его стоимость и курсы фиатных валют.
+                  </p>
+
+                  <p className="lead">
+                    Более подробная информация в <a href={`${config.config?.baseUrlDocs}/#resources_blockchains`} target='_blank'>Поддерживаемые блокчейны</a>, <a href={`${config.config?.baseUrlDocs}/#resources_tokens`} target='_blank'>Поддерживаемые токены</a> и <a href={`${config.config?.baseUrlDocs}/#resources_currencies`} target='_blank'>Поддерживаемые валюты</a>.
                   </p>
                 </Col>
-                <Col md={5} className="d-none d-md-block">
+                <Col lg={5} className="d-none d-lg-block">
                   <div className='featurette-image'>
-                    <Bank size={100}/>
+                    <CurrencyBitcoin size={100} />
                   </div>
                 </Col>
               </Row>
@@ -335,17 +371,20 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7} className="order-md-2">
+                <Col lg={7} className="order-md-2">
                   <h2 className="featurette-heading fw-normal lh-1" id='auto_convert'>
-                    {t('pages.landing.auto_convert')}
+                    {t('pages.landing.auto_convert', { exchangers: '107' })}
                   </h2>
                   <p className="lead">
-                    Предположим, вы решили принимать платежи только в USDT. А ваш клиент имеет только USDC. Он все равно сможет совершить оплату. USDC будут автоматически конвертированы в USDT и отправлены вам.
+                    Предположим, вы решили принимать платежи только в USDT. А ваш клиент имеет только ETH. Он все равно сможет совершить оплату. ETH будут автоматически конвертированы в USDT и отправлены вам в нужной вам сумме.
+                  </p>
+                  <p className="lead">
+                    Таким образом, ваши клиенты смогут платить в удобном им токене, а вы будете получать требуемую сумму в нужном вам токене. Чтобы обеспечить максимально выгодный курс конвертации JaneDoe интегрирована со 107 обменниками.
                   </p>
                 </Col>
-                <Col md={5} className="order-md-1 d-none d-md-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block">
                   <div className='featurette-image'>
-                    <CurrencyExchange size={100}/>
+                    <CurrencyExchange size={100} />
                   </div>
                 </Col>
               </Row>
@@ -353,7 +392,7 @@ const Landing: React.FC = () => {
               <hr className="featurette-divider" />
 
               <Row className="featurette">
-                <Col md={7}>
+                <Col lg={7}>
                   <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.questions')}
                   </h2>
@@ -366,9 +405,9 @@ const Landing: React.FC = () => {
                     </a>
                   </p>
                 </Col>
-                <Col md={5} className="d-none d-md-block">
+                <Col lg={5} className="d-none d-lg-block">
                   <div className='featurette-image'>
-                    <Envelope size={100}/>
+                    <Envelope size={100} />
                   </div>
                 </Col>
               </Row>
