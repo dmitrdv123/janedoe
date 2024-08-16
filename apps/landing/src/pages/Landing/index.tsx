@@ -81,7 +81,7 @@ const Landing: React.FC = () => {
 
         <div className="container marketing">
 
-          <hr className="featurette-divider" />
+          <hr className="featurette-divider" id="common"/>
 
           {(i18n.language.toLocaleLowerCase() === 'en' || SUPPORTED_LANGUAGES.findIndex(lang => lang === i18n.language.toLocaleLowerCase()) === -1) && (
             <>
@@ -110,29 +110,29 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='no_fees'/>
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1" id='no_fees'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.no_fees')}
                   </h2>
                   <p className="lead">
                     JaneDoe do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token conversion.
                   </p>
                 </Col>
-                <Col lg={5} className="order-md-1 d-none d-lg-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     0%
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='no_custodial'/>
 
               <Row className="featurette">
                 <Col lg={7}>
-                  <h2 className="featurette-heading fw-normal lh-1" id='no_custodial'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.no_custodial')}
                   </h2>
                   <p className="lead">
@@ -145,18 +145,18 @@ const Landing: React.FC = () => {
                     Smart contract addresses can be found in <a href={`${config.config?.baseUrlDocs}/#resources_contracts`} target='_blank'>Contract Addresses</a>.
                   </p>
                 </Col>
-                <Col lg={5} className="d-none d-lg-block">
+                <Col lg={5} className="d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <Wallet size={100} />
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='no_integration'/>
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1" id='no_integration'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.no_integration')}
                   </h2>
                   <p className="lead">
@@ -169,18 +169,18 @@ const Landing: React.FC = () => {
                     In addition, you can integrate with our API to retrieve payment history. More details in <a href='#tutorials_api'>How to use API</a>.
                   </p>
                 </Col>
-                <Col lg={5} className="order-md-1 d-none d-lg-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <Globe size={100} />
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='supported'/>
 
               <Row className="featurette">
                 <Col lg={7}>
-                  <h2 className="featurette-heading fw-normal lh-1" id='supported'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
                   </h2>
                   <p className="lead">
@@ -193,18 +193,18 @@ const Landing: React.FC = () => {
                     More details in <a href={`${config.config?.baseUrlDocs}/#resources_blockchains`} target='_blank'>Supported Blockchains</a>, <a href={`${config.config?.baseUrlDocs}/#resources_tokens`} target='_blank'>Supported Tokens</a> and <a href={`${config.config?.baseUrlDocs}/#resources_currencies`} target='_blank'>Supported Currencies</a>.
                   </p>
                 </Col>
-                <Col lg={5} className="d-none d-lg-block">
+                <Col lg={5} className="d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <CurrencyBitcoin size={100} />
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='auto_convert'/>
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1" id='auto_convert'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.auto_convert', { exchangers: '107' })}
                   </h2>
                   <p className="lead">
@@ -214,14 +214,38 @@ const Landing: React.FC = () => {
                     This way, your clients will be able to pay in the tokens they like, and you will receive the required amount in the tokens you need. To ensure the most favorable conversion rate, JaneDoe is integrated with 107 exchangers.
                   </p>
                 </Col>
-                <Col lg={5} className="order-md-1 d-none d-lg-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <CurrencyExchange size={100} />
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='use_case'/>
+
+              <Row className="featurette">
+                <Col lg={12}>
+                  <blockquote className="blockquote border-start border-5 ps-3">
+                    <h2 className="featurette-heading fw-normal lh-1" >
+                      <small className='text-body-secondary'>Use Cases 1.</small> VPN Service with Payment via Messenger Bot
+                    </h2>
+                    <p>
+                      VPN service with a several thousands users. It interacts with its users via a bot in the Telegram messenger. It processes thousands of small payments. The bot's logic requires cryptocurrency payments to be implemented.
+                    </p>
+                  </blockquote>
+                  <p className="lead">
+                    The user in the Telegram bot selects a tariff and clicks the pay button. The user is shown a list of payment methods. A new method is added to this list - <code>Payment in Сryptocurrency</code>.
+                  </p>
+                  <p className="lead">
+                    This method is a link in the format <code>{config.config?.baseUrlPayment}/000000000001/payment id/currency/amount</code>. Links are created independently on the VPN service side without any interaction with JaneDoe. The internal payment identifier is used as the <code>payment id</code>. <code>USD</code> is always used as the <code>currency</code>. The payment amount for the selected tariff is used as the <code>amount</code>.
+                  </p>
+                  <p className="lead">
+                    When user clicks on the link, the JaneDoe payment form opens in the browser, where the user makes the payment. After successful payment, JaneDoe sends a payment notification to the VPN service backend. There, the incoming amount is compared with the expected amount. After which the access key is activated.
+                  </p>
+                </Col>
+              </Row>
+
+              <hr className="featurette-divider" id='contacts'/>
 
               <Row className="featurette">
                 <Col lg={7}>
@@ -237,7 +261,7 @@ const Landing: React.FC = () => {
                     </a>
                   </p>
                 </Col>
-                <Col lg={5} className="d-none d-lg-block">
+                <Col lg={5} className="d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <Envelope size={100} />
                   </div>
@@ -275,29 +299,29 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='no_fees'/>
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1" id='no_fees'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.no_fees')}
                   </h2>
                   <p className="lead">
                     JaneDoe не берет комиссии. Комиссии могут брать только сами блокчейны за газ либо третьи сервисы, в случае конвертации токенов.
                   </p>
                 </Col>
-                <Col lg={5} className="order-md-1 d-none d-lg-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     0%
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='no_custodial'/>
 
               <Row className="featurette">
                 <Col lg={7}>
-                  <h2 className="featurette-heading fw-normal lh-1" id='no_custodial'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.no_custodial')}
                   </h2>
                   <p className="lead">
@@ -310,18 +334,18 @@ const Landing: React.FC = () => {
                     Адреса смартконтрактов можно посмотреть в <a href={`${config.config?.baseUrlDocs}/#resources_contracts`} target='_blank'>Адреса контрактов</a>.
                   </p>
                 </Col>
-                <Col lg={5} className="d-none d-lg-block">
+                <Col lg={5} className="d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <Wallet size={100} />
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='no_integration'/>
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1" id='no_integration'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.no_integration')}
                   </h2>
                   <p className="lead">
@@ -334,18 +358,18 @@ const Landing: React.FC = () => {
                     В дополнении вы можете интегрироваться с нашим API для получения истории платежей. Более подробная информация в <a href='#tutorials_api'>Как интегрироваться с API</a>.
                   </p>
                 </Col>
-                <Col lg={5} className="order-md-1 d-none d-lg-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <Globe size={100} />
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='supported'/>
 
               <Row className="featurette">
                 <Col lg={7}>
-                  <h2 className="featurette-heading fw-normal lh-1" id='supported'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.supported', { blockchains: '11', tokens: '9275', currencies: '161', wallets: '420' })}
                   </h2>
 
@@ -361,18 +385,18 @@ const Landing: React.FC = () => {
                     Более подробная информация в <a href={`${config.config?.baseUrlDocs}/#resources_blockchains`} target='_blank'>Поддерживаемые блокчейны</a>, <a href={`${config.config?.baseUrlDocs}/#resources_tokens`} target='_blank'>Поддерживаемые токены</a> и <a href={`${config.config?.baseUrlDocs}/#resources_currencies`} target='_blank'>Поддерживаемые валюты</a>.
                   </p>
                 </Col>
-                <Col lg={5} className="d-none d-lg-block">
+                <Col lg={5} className="d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <CurrencyBitcoin size={100} />
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='auto_convert'/>
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
-                  <h2 className="featurette-heading fw-normal lh-1" id='auto_convert'>
+                  <h2 className="featurette-heading fw-normal lh-1">
                     {t('pages.landing.auto_convert', { exchangers: '107' })}
                   </h2>
                   <p className="lead">
@@ -382,14 +406,38 @@ const Landing: React.FC = () => {
                     Таким образом, ваши клиенты смогут платить в удобном им токене, а вы будете получать требуемую сумму в нужном вам токене. Чтобы обеспечить максимально выгодный курс конвертации JaneDoe интегрирована со 107 обменниками.
                   </p>
                 </Col>
-                <Col lg={5} className="order-md-1 d-none d-lg-block">
+                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <CurrencyExchange size={100} />
                   </div>
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" />
+              <hr className="featurette-divider" id='use_case'/>
+
+              <Row className="featurette">
+                <Col lg={12}>
+                  <blockquote className="blockquote border-start border-5 ps-3">
+                    <h2 className="featurette-heading fw-normal lh-1">
+                      <small className='text-body-secondary'>Пример использования.</small> VPN сервис с оплатой через бота в мессенджере
+                    </h2>
+                    <p>
+                      VPN сервис с несколькими тысячами пользователей. Он взаимодействует со своими пользователями с помощью бота в мессенджере Telegram. Обрабатывает тысячи мелких платежей. В логику работы бота требуется внедрить оплату в криптовалюте.
+                    </p>
+                  </blockquote>
+                  <p className="lead">
+                    Пользователь в Telegram боте выбирает тариф и нажимает кнопку оплатить. Пользователю показываются список способов платежей. В этот список добавляется новый способ - <code>Платеж в криптовалюте</code>.
+                  </p>
+                  <p className="lead">
+                    Этот способ - это ссылка в формате <code>{config.config?.baseUrlPayment}/000000000001/payment id/currency/amount</code>. Ссылки создаются независимо на стороне VPN сервиса без какого либо взаимодействия с JaneDoe. В качестве <code>payment id</code> используется внутренний идентификатор платежа. В качестве <code>currency</code> всегда используется <code>USD</code>. В качестве <code>amount</code> используется сумма платежа для выбранного тарифа.
+                  </p>
+                  <p className="lead">
+                    При нажатии на ссылку в браузере открывается платежная форма JaneDoe, где пользователь совершает оплату. После успешной оплаты JaneDoe отправляет уведомление о платеже в бэкенд VPN сервиса. Там происходит сверка пришедшей суммы с ожидаемой. После чего активируется ключ доступа.
+                  </p>
+                </Col>
+              </Row>
+
+              <hr className="featurette-divider" id='contacts'/>
 
               <Row className="featurette">
                 <Col lg={7}>
@@ -405,7 +453,7 @@ const Landing: React.FC = () => {
                     </a>
                   </p>
                 </Col>
-                <Col lg={5} className="d-none d-lg-block">
+                <Col lg={5} className="d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <Envelope size={100} />
                   </div>

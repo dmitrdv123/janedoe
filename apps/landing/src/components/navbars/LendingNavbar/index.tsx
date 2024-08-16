@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar } from 'react-bootstrap'
+import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
 import LanguageDropdown from '../components/LanguageDropdown'
@@ -20,6 +20,19 @@ const LandingNavbar: React.FC = () => {
             <Nav.Link href={config.config?.baseUrlDocs} target="_blank">
               {t('components.navbar.documentation')}
             </Nav.Link>
+
+            <NavDropdown title={t('components.navbar.resources')} align='end'>
+              <NavDropdown.Item href="#common">
+                {t('components.navbar.advantages')}
+              </NavDropdown.Item>
+              <NavDropdown.Item href="#use_case">
+                {t('components.navbar.use_cases')}
+              </NavDropdown.Item>
+              <NavDropdown.Item href="#contacts">
+                {t('components.navbar.contacts')}
+              </NavDropdown.Item>
+            </NavDropdown>
+
             <LanguageDropdown />
           </Nav>
         </Navbar.Collapse>

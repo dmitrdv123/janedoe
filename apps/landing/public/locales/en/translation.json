@@ -25,7 +25,11 @@
       "my_account": "My Account",
       "language": "Language: {{language}}",
       "support": "Support",
-      "documentation": "Documentation"
+      "documentation": "Documentation",
+      "resources": "Resources",
+      "advantages": "Advantages",
+      "use_cases": "Use Cases",
+      "contacts": "Contacts"
     }
   },
   "services": {

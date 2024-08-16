@@ -25,7 +25,11 @@
       "my_account": "Мой Аккаунт",
       "language": "Язык: {{language}}",
       "support": "Поддержка",
-      "documentation": "Документация"
+      "documentation": "Документация",
+      "resources": "Ресурсы",
+      "advantages": "Преимущества",
+      "use_cases": "Примеры использования",
+      "contacts": "Контакты"
     }
   },
   "services": {
