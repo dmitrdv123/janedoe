@@ -81,7 +81,7 @@ const Landing: React.FC = () => {
 
         <div className="container marketing">
 
-          <hr className="featurette-divider" id="common"/>
+          <hr className="featurette-divider" id="common" />
 
           {(i18n.language.toLocaleLowerCase() === 'en' || SUPPORTED_LANGUAGES.findIndex(lang => lang === i18n.language.toLocaleLowerCase()) === -1) && (
             <>
@@ -110,7 +110,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='no_fees'/>
+              <hr className="featurette-divider" id='no_fees' />
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
@@ -128,7 +128,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='no_custodial'/>
+              <hr className="featurette-divider" id='no_custodial' />
 
               <Row className="featurette">
                 <Col lg={7}>
@@ -152,7 +152,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='no_integration'/>
+              <hr className="featurette-divider" id='no_integration' />
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
@@ -176,7 +176,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='supported'/>
+              <hr className="featurette-divider" id='supported' />
 
               <Row className="featurette">
                 <Col lg={7}>
@@ -200,7 +200,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='auto_convert'/>
+              <hr className="featurette-divider" id='auto_convert' />
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
@@ -221,7 +221,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='use_case'/>
+              <hr className="featurette-divider" id='use_case' />
 
               <Row className="featurette">
                 <Col lg={12}>
@@ -237,7 +237,7 @@ const Landing: React.FC = () => {
                     The user in the Telegram bot selects a tariff and clicks the pay button. The user is shown a list of payment methods. A new method is added to this list - <code>Payment in Сryptocurrency</code>.
                   </p>
                   <p className="lead">
-                    This method is a link in the format <code>{config.config?.baseUrlPayment}/000000000001/payment id/currency/amount</code>. Links are created independently on the VPN service side without any interaction with JaneDoe. The internal payment identifier is used as the <code>payment id</code>. <code>USD</code> is always used as the <code>currency</code>. The payment amount for the selected tariff is used as the <code>amount</code>.
+                    This method is a link in the format <code>{config.config?.baseUrlPayment}/000000000001/&lt;payment id&gt;/&lt;currency&gt;/&lt;amount&gt;</code>. Links are created independently on the VPN service side without any interaction with JaneDoe. The internal payment identifier is used as the <code>&lt;payment id&gt;</code>. <code>USD</code> is always used as the <code>&lt;currency&gt;</code>. The payment amount for the selected tariff is used as the <code>&lt;amount&gt;</code>.
                   </p>
                   <p className="lead">
                     When user clicks on the link, the JaneDoe payment form opens in the browser, where the user makes the payment. After successful payment, JaneDoe sends a payment notification to the VPN service backend. There, the incoming amount is compared with the expected amount. After which the access key is activated.
@@ -245,7 +245,31 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='contacts'/>
+              <hr className="featurette-divider" id='contacts' />
+
+              <Row className="featurette">
+                <Col lg={12}>
+                  <blockquote className="blockquote border-start border-5 ps-3">
+                    <h2 className="featurette-heading fw-normal lh-1">
+                      <small className='text-body-secondary'>Use Cases 2.</small> Gaming service with internal balance top-up
+                    </h2>
+                    <p>
+                      Gaming service with tens of thousands users. Users have internal balances from which they pay for the service. It is necessary to implement cryptocurrency top-up.
+                    </p>
+                  </blockquote>
+                  <p className="lead">
+                    The user selects the amount of top-up in fiat currency of their country (USD, EUR, etc.). Then selects the payment method - bank card, payment system, etc. A new method is being added to this list - <code>Payment in cryptocurrency</code>.
+                  </p>
+                  <p className="lead">
+                    This method is a link in the format <code>{config.config?.baseUrlPayment}/000000000001/&lt;payment id&gt;/&lt;currency&gt;/&lt;amount&gt;</code>. Links are created independently on the gaming service side without any interaction with JaneDoe. The internal identifier of top-up operation is used as the <code>&lt;payment id&gt;</code>. <code>&lt;Сurrency&gt;</code> is the currency of the user's country, such as the <code>USD</code>. <code>&lt;Amount&gt;</code> is the top-up amount specified by the user.
+                  </p>
+                  <p className="lead">
+                    When user clicks on the link, the JaneDoe payment form opens in the browser, where the user makes the payment. After successful payment, JaneDoe sends a payment notification to the gaming service backend. There, the user's balance is topped up on the received amount.
+                  </p>
+                </Col>
+              </Row>
+
+              <hr className="featurette-divider" id='contacts' />
 
               <Row className="featurette">
                 <Col lg={7}>
@@ -299,7 +323,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='no_fees'/>
+              <hr className="featurette-divider" id='no_fees' />
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
@@ -317,7 +341,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='no_custodial'/>
+              <hr className="featurette-divider" id='no_custodial' />
 
               <Row className="featurette">
                 <Col lg={7}>
@@ -341,7 +365,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='no_integration'/>
+              <hr className="featurette-divider" id='no_integration' />
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
@@ -365,7 +389,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='supported'/>
+              <hr className="featurette-divider" id='supported' />
 
               <Row className="featurette">
                 <Col lg={7}>
@@ -392,7 +416,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='auto_convert'/>
+              <hr className="featurette-divider" id='auto_convert' />
 
               <Row className="featurette">
                 <Col lg={7} className="order-md-2">
@@ -413,13 +437,13 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='use_case'/>
+              <hr className="featurette-divider" id='use_case' />
 
               <Row className="featurette">
                 <Col lg={12}>
                   <blockquote className="blockquote border-start border-5 ps-3">
                     <h2 className="featurette-heading fw-normal lh-1">
-                      <small className='text-body-secondary'>Пример использования.</small> VPN сервис с оплатой через бота в мессенджере
+                      <small className='text-body-secondary'>Пример использования 1.</small> VPN сервис с оплатой через бота в мессенджере
                     </h2>
                     <p>
                       VPN сервис с несколькими тысячами пользователей. Он взаимодействует со своими пользователями с помощью бота в мессенджере Telegram. Обрабатывает тысячи мелких платежей. В логику работы бота требуется внедрить оплату в криптовалюте.
@@ -429,7 +453,7 @@ const Landing: React.FC = () => {
                     Пользователь в Telegram боте выбирает тариф и нажимает кнопку оплатить. Пользователю показываются список способов платежей. В этот список добавляется новый способ - <code>Платеж в криптовалюте</code>.
                   </p>
                   <p className="lead">
-                    Этот способ - это ссылка в формате <code>{config.config?.baseUrlPayment}/000000000001/payment id/currency/amount</code>. Ссылки создаются независимо на стороне VPN сервиса без какого либо взаимодействия с JaneDoe. В качестве <code>payment id</code> используется внутренний идентификатор платежа. В качестве <code>currency</code> всегда используется <code>USD</code>. В качестве <code>amount</code> используется сумма платежа для выбранного тарифа.
+                    Этот способ - это ссылка в формате <code>{config.config?.baseUrlPayment}/000000000001/&lt;payment id&gt;/&lt;currency&gt;/&lt;amount&gt;</code>. Ссылки создаются независимо на стороне VPN сервиса без какого либо взаимодействия с JaneDoe. В качестве <code>&lt;payment id&gt;</code> используется внутренний идентификатор платежа. В качестве <code>&lt;currency&gt;</code> всегда используется <code>USD</code>. В качестве <code>&lt;amount&gt;</code> используется сумма платежа для выбранного тарифа.
                   </p>
                   <p className="lead">
                     При нажатии на ссылку в браузере открывается платежная форма JaneDoe, где пользователь совершает оплату. После успешной оплаты JaneDoe отправляет уведомление о платеже в бэкенд VPN сервиса. Там происходит сверка пришедшей суммы с ожидаемой. После чего активируется ключ доступа.
@@ -437,7 +461,31 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='contacts'/>
+              <hr className="featurette-divider" id='contacts' />
+
+              <Row className="featurette">
+                <Col lg={12}>
+                  <blockquote className="blockquote border-start border-5 ps-3">
+                    <h2 className="featurette-heading fw-normal lh-1">
+                      <small className='text-body-secondary'>Пример использования 2.</small> Игровой сервис с пополнением внутреннего баланса
+                    </h2>
+                    <p>
+                      Игровой сервис с несколькими десятками тысяч пользователей. Пользователи имеют внутренние балансы, с которых они оплачивают услуги сервиса. Необходимо внедрить пополнение баланса в криптовалюте.
+                    </p>
+                  </blockquote>
+                  <p className="lead">
+                    Пользователь выбирает сумму пополнения в фиатной валюте страны регистрации (USD, EUR и т.д.). Затем выбирает способ платежей - банковской картой, платежной системой и др. В этот список добавляется новый способ - <code>Платеж в криптовалюте</code>.
+                  </p>
+                  <p className="lead">
+                    Этот способ - это ссылка в формате <code>{config.config?.baseUrlPayment}/000000000001/&lt;payment id&gt;/&lt;currency&gt;/&lt;amount&gt;</code>. Ссылки создаются независимо на стороне игрового сервиса без какого либо взаимодействия с JaneDoe. В качестве <code>&lt;payment id&gt;</code> используется внутренний идентификатор пополнения счета. В качестве <code>&lt;currency&gt;</code> используется валюта страны пользователя, например, <code>USD</code>. В качестве <code>&lt;amount&gt;</code> используется сумма пополнения, заданная пользователем.
+                  </p>
+                  <p className="lead">
+                    При нажатии на ссылку в браузере открывается платежная форма JaneDoe, где пользователь совершает оплату. После успешной оплаты JaneDoe отправляет уведомление о платеже в бэкенд игрового сервиса. Там происходит пополнение баланса пользователя на основе пришедшей суммы.
+                  </p>
+                </Col>
+              </Row>
+
+              <hr className="featurette-divider" id='contacts' />
 
               <Row className="featurette">
                 <Col lg={7}>
