@@ -160,13 +160,13 @@ const Landing: React.FC = () => {
                     {t('pages.landing.no_integration')}
                   </h2>
                   <p className="lead">
-                    You need to use payment links to accept payments. Links can be created independently on your side, no integration required. More details in <a href='#tutorials_receive_payments'>How to receive payments</a>.
+                    You need to use payment links to accept payments. Links can be created independently on your side, no integration required. More details in <a href={`${config.config?.baseUrlDocs}/#tutorials_receive_payments`} target='_blank'>How to receive payments</a>.
                   </p>
                   <p className="lead">
-                    If you need JaneDoe can send notifications about new payments to your system. More details in <a href='#tutorials_notifications'>How to receive notifications about payments</a>.
+                    If you need JaneDoe can send notifications about new payments to your system. More details in <a href={`${config.config?.baseUrlDocs}/#tutorials_notifications`} target='_blank'>How to receive notifications about payments</a>.
                   </p>
                   <p className="lead">
-                    In addition, you can integrate with our API to retrieve payment history. More details in <a href='#tutorials_api'>How to use API</a>.
+                    In addition, you can integrate with our API to retrieve payment history. More details in <a href={`${config.config?.baseUrlDocs}/#tutorials_api`} target='_blank'>How to use API</a>.
                   </p>
                 </Col>
                 <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
@@ -349,13 +349,13 @@ const Landing: React.FC = () => {
                     {t('pages.landing.no_integration')}
                   </h2>
                   <p className="lead">
-                    Чтобы получать платежи вам нужно использовать платежные ссылки. Ссылки могут быть созданы независимо на вашей стороне, никакой интеграции не требуется. Более подробная информация в <a href='#tutorials_receive_payments'>Как получать платежи</a>.
+                    Чтобы получать платежи вам нужно использовать платежные ссылки. Ссылки могут быть созданы независимо на вашей стороне, никакой интеграции не требуется. Более подробная информация в <a href={`${config.config?.baseUrlDocs}/#tutorials_receive_payments`} target='_blank'>Как получать платежи</a>.
                   </p>
                   <p className="lead">
-                    Если вам потребуется JaneDoe может слать уведомления о новых платежах в вашу систему. Более подробная информация в <a href='#tutorials_notifications'>Как получать уведомления о платежах</a>.
+                    Если вам потребуется JaneDoe может слать уведомления о новых платежах в вашу систему. Более подробная информация в <a href={`${config.config?.baseUrlDocs}/#tutorials_notifications`} target='_blank'>Как получать уведомления о платежах</a>.
                   </p>
                   <p className="lead">
-                    В дополнении вы можете интегрироваться с нашим API для получения истории платежей. Более подробная информация в <a href='#tutorials_api'>Как интегрироваться с API</a>.
+                    В дополнении вы можете интегрироваться с нашим API для получения истории платежей. Более подробная информация в <a href={`${config.config?.baseUrlDocs}/#tutorials_api`} target='_blank'>Как интегрироваться с API</a>.
                   </p>
                 </Col>
                 <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">

@@ -1,10 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LANGUAGES } from '../../constants'
-import { useConfig } from '../../context/config/hook'
 
 const Home: React.FC = () => {
   const { t, i18n } = useTranslation()
-  const config = useConfig()
 
   return (
     <>
@@ -19,54 +17,59 @@ const Home: React.FC = () => {
           </p>
 
           <h2>
-            No KYC
-          </h2>
-          <p>
-            You do not need to go through the KYC procedure to start using our service. You only need to have a cryptowallet with which you can log in and to which you will withdraw funds. More details in <a href='#tutorials_create_account'>How to create account</a> and <a href='#tutorials_withdraw'>How to withdraw funds</a>.
-          </p>
-          <p>
-            You may be blocked only if you accept payments for illegal services or goods. However, you will still be able to interact with the smart contract directly, for example through <a href="https://etherscan.io/" target='_blank'>etherscan</a> and withdraw all funds. Since smart contracts are not changeable and there is no mechanism for blocking funds in our smart contracts.
-          </p>
-
-          <h2>
             No Fees
           </h2>
           <p>
-            We do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token conversion.
+            JaneDoe do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token conversion.
           </p>
 
           <h2>
             No Custodial Wallets
           </h2>
           <p>
-            We do not store your funds in custodial wallets in the case of Ethereum compatible blockchains. Your funds are stored in a smart contract based on the <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>ERC1155 standard</a> and can be withdrawn to your wallet. Smart contract addresses can be found in <a href='#resources_contracts'>Contract Addresses</a>.
+            JaneDoe do not store your funds in custodial wallets in the case of Ethereum compatible blockchains. Your funds are stored in a smart contracts based on the <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>ERC1155 standard</a>.
+          </p>
+          <p>
+            Smart contracts are not changeable and there is no mechanism for blocking your funds in our smart contracts. You even be able to interact with the smart contract directly, for example through <a href="https://etherscan.io/" target='_blank'>etherscan</a> to withdraw all your funds.
+          </p>
+          <p>
+            Smart contract addresses can be found in <a href='#resources_contracts'>Contract Addresses</a>.
           </p>
 
           <h2>
             No Integration Required
           </h2>
           <p>
-            You just need to post links in a specific format to accept payments. For example, <code>{config.config?.baseUrlPayment}/000000000001/123/usd/100</code>. Links can be created independently on your side, no integration required. More details in <a href='#tutorials_receive_payments'>How to receive payments</a>.
+            You need to use payment links to accept payments. Links can be created independently on your side, no integration required. More details in <a href='#tutorials_receive_payments'>How to receive payments</a>.
           </p>
           <p>
-            But if you need to receive payment history, you can integrate with our API. More details in <a href='#tutorials_api'>How to use API</a>.
+            If you need JaneDoe can send notifications about new payments to your system. More details in <a href='#tutorials_notifications'>How to receive notifications about payments</a>.
           </p>
           <p>
-            In addition, you can configure to receive notifications about new payments. More details in <a href='#tutorials_notifications'>How to receive notifications about payments</a>.
+            In addition, you can integrate with our API to retrieve payment history. More details in <a href='#tutorials_api'>How to use API</a>.
           </p>
 
           <h2>
             11 Blockchains, 9275 Tokens, 161 Fiat Currencies and 420 Crypto Wallets
           </h2>
           <p>
-            We support 11 blockchains, 9275 tokens, 161 fiat currencies and 420 crypto wallets as payment methods. More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
+            A wide range of supported blockchains, tokens and crypto wallets will provide you with a wide range of client. Your clients will be able to pay in a way convenient for them.
+          </p>
+          <p>
+            You will be able to set the payment amount in a fiat currency convenient for you. JaneDoe will automatically calculate the payment amount in tokens taking into account its price and fiat currency exchange rates.
+          </p>
+          <p>
+            More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
           </p>
 
           <h2>
-            Automatic Token Conversion
+            Automatic token conversion at a favorable rate through 107 exchangers
           </h2>
           <p>
-            Let's say you decide to only accept payments in USDT. And your client only has USDC. He will still be able to make the payment. USDC will be automatically converted to USDT and sent to you.
+            Let's say you decide to accept payments only in USDT. And your client has only ETH. He will still be able to make a payment. ETH will be automatically converted to USDT and sent to you in the amount you need.
+          </p>
+          <p>
+            This way, your clients will be able to pay in the tokens they like, and you will receive the required amount in the tokens you need. To ensure the most favorable conversion rate, JaneDoe is integrated with 107 exchangers.
           </p>
         </>
       )}
@@ -78,54 +81,59 @@ const Home: React.FC = () => {
           </p>
 
           <h2>
-            Без KYC
-          </h2>
-          <p>
-            Вам не нужно проходить процедуру KYC, чтобы начать пользоваться нашим сервисом. Вам необходимо только иметь криптокошелек, с помощью которого вы сможете авторизоваться и на который вы будете выводить средства. Более подробная информация в <a href='#tutorials_create_account'>Как создать учетную запись</a> и <a href='#tutorials_withdraw'>Как выводить средства</a>.
-          </p>
-          <p>
-            Вас могут заблокировать только в том случае, если вы принимаете платежи за незаконные услуги или товары. Однако вы по-прежнему сможете напрямую взаимодействовать со смарт-контрактом, например, через <a href="https://etherscan.io/" target='_blank'>etherscan</a> и выводить все средства. Так как смарт-контракты не изменяемы и в наших смарт-контрактах нет механизма блокировки средств.
-          </p>
-
-          <h2>
             Без комиссий
           </h2>
           <p>
-            Мы не берем комиссии. Комиссии могут брать только сами блокчейны за газ либо третьи сервисы, в случае конвертации токенов.
+            JaneDoe не берет комиссии. Комиссии могут брать только сами блокчейны за газ либо третьи сервисы, в случае конвертации токенов.
           </p>
 
           <h2>
             Без кастодиальных кошельков
           </h2>
           <p>
-            Мы не храним ваши средства в кастодиальных кошельках в случае EVM совместимых блокчейнов. Ваши средства хранятся в смарт контракте на основе <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>стандарта ERC1155</a> и могут быть выведены на ваш кошелек. Адреса смартконтрактов можно посмотреть в <a href='#resources_contracts'>Адреса контрактов</a>.
+            JaneDoe не хранит ваши средства в кастодиальных кошельках в случае EVM совместимых блокчейнов. Ваши средства хранятся в смарт контрактах на основе <a href="https://ethereum.org/ru/developers/docs/standards/tokens/erc-1155" target='blank'>стандарта ERC1155</a>.
+          </p>
+          <p>
+            Cмарт-контракты не изменяемы и в наших смарт-контрактах нет механизма блокировки ваших средств. Вы даже сможете напрямую взаимодействовать со смарт-контрактом, например, через <a href="https://etherscan.io/" target='_blank'>etherscan</a>, чтобы вывести все свои средства.
+          </p>
+          <p>
+            Адреса смартконтрактов можно посмотреть в <a href='#resources_contracts'>Адреса контрактов</a>.
           </p>
 
           <h2>
             Не требуется интеграция
           </h2>
           <p>
-            Вам нужно просто размещать ссылки в определенном формате, чтобы принять платежи. Например, <code>{config.config?.baseUrlPayment}/000000000001/123/usd/100</code>. Ссылки могут быть созданы независимо на вашей стороне, никакой интеграции не требуется. Более подробная информация в <a href='#tutorials_receive_payments'>Как получать платежи</a>.
+            Чтобы получать платежи вам нужно использовать платежные ссылки. Ссылки могут быть созданы независимо на вашей стороне, никакой интеграции не требуется. Более подробная информация в <a href='#tutorials_receive_payments'>Как получать платежи</a>.
           </p>
           <p>
-            Но если вам требуется получать историю платежей вы сможете интегрироваться с нашим API. Более подробная информация в <a href='#tutorials_api'>Как интегрироваться с API</a>.
+            Если вам потребуется JaneDoe может слать уведомления о новых платежах в вашу систему. Более подробная информация в <a href='#tutorials_notifications'>Как получать уведомления о платежах</a>.
           </p>
           <p>
-            В дополнении вы можете настроить получение уведомлений о новых платежах. Более подробная информация в <a href='#tutorials_notifications'>Как получать уведомления о платежах</a>.
+            В дополнении вы можете интегрироваться с нашим API для получения истории платежей. Более подробная информация в <a href='#tutorials_api'>Как интегрироваться с API</a>.
           </p>
 
           <h2>
             11 блокчейнов, 9275 токенов, 161 фиатная валюта и 420 крипто кошельков
           </h2>
           <p>
-            Мы поддерживаем 11 блокчейнов, 9275 токенов, 161 фиатную валюту и 420 крипто кошельков в качестве способов оплаты. Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
+            Широкий набор поддерживаемых блокчейнов, токенов и криптокошельков обеспечит вам широкий круг клиентов. Ваши клиенты смогут платить удобным им способом.
+          </p>
+          <p>
+            Вы сможете задать сумму платежа в удобной вам фиатной валюте. JaneDoe автоматически рассчитает сумму платежа в токене учитывая его стоимость и курсы фиатных валют.
+          </p>
+          <p>
+            Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
           </p>
 
           <h2>
-            Автоматическая конвертация токенов
+            Автоматическая конвертация токенов по выгодному курсу через 107 обменников
           </h2>
           <p>
-            Предположим, вы решили принимать платежи только в USDT. А ваш клиент имеет только USDC. Он все равно сможет совершить оплату. USDC будут автоматически конвертированы в USDT и отправлены вам.
+            Предположим, вы решили принимать платежи только в USDT. А ваш клиент имеет только ETH. Он все равно сможет совершить оплату. ETH будут автоматически конвертированы в USDT и отправлены вам в нужной вам сумме.
+          </p>
+          <p>
+            Таким образом, ваши клиенты смогут платить в удобном им токене, а вы будете получать требуемую сумму в нужном вам токене. Чтобы обеспечить максимально выгодный курс конвертации JaneDoe интегрирована со 107 обменниками.
           </p>
         </>
       )}
