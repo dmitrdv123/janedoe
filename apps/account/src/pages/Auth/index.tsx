@@ -37,10 +37,10 @@ const Auth: React.FC = () => {
     }
   }, [authData, hash, navigate])
 
-  const connectHandler = useCallback(async () => {
+  const connectHandler = useCallback(() => {
     try {
       removeInfoMessage(INFO_MESSAGE_AUTH_ERROR)
-      await open()
+      open({ view: 'Connect' })
     } catch (error) {
       addInfoMessage(convertErrorToMessage(error, t('common.errors.default')), INFO_MESSAGE_AUTH_ERROR, 'danger')
     }

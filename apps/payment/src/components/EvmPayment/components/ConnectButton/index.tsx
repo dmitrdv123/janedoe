@@ -9,7 +9,7 @@ const ConnectButton: React.FC = () => {
 
   const openHandler = useCallback((e: FormEvent) => {
     e.preventDefault()
-    open()
+    open({ view: 'Connect' })
   }, [open])
 
   return (

@@ -59,7 +59,7 @@ const WithdrawAllButton: React.FC<BalancesBlockchainEvmProps> = (props) => {
     if (isConnected) {
       withdraw()
     } else {
-      open()
+      open({ view: 'Connect' })
     }
   }, [isConnected, open, withdraw])
 
