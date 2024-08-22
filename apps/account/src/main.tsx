@@ -29,7 +29,7 @@ if (!import.meta.env.VITE_APP_PROJECT_ID) {
   throw new Error('You need to provide VITE_APP_PROJECT_ID env variable')
 }
 
-// 0. Setup queryClient for WAGMIv2
+// 0. Setup queryClient
 const queryClient = new QueryClient()
 
 // 1. Get projectId at https://cloud.walletconnect.com
@@ -57,10 +57,21 @@ const wagmiConfig = defaultWagmiConfig({
   enableEIP6963: true,
   enableCoinbase: true,
   enableWalletConnect: true,
+  auth: {
+    email: false,
+    socials: undefined,
+    showWallets: true,
+    walletFeatures: false
+  }
 })
 
 // 3. Create modal
-createWeb3Modal({ wagmiConfig, projectId })
+createWeb3Modal({
+  metadata,
+  wagmiConfig,
+  projectId,
+  enableAnalytics: false, // Optional - defaults to your Cloud configuration
+})
 
 const root = createRoot(document.getElementById("root") as HTMLElement)
 
@@ -68,7 +79,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <ConfigProvider>
-        <WagmiProvider config={wagmiConfig}>
+        <WagmiProvider config={wagmiConfig} reconnectOnMount>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
               <Routes>

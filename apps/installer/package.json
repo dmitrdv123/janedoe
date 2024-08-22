@@ -22,16 +22,15 @@
     "typescript": "^5.4.4"
   },
   "dependencies": {
-    "@aws-cdk/aws-apprunner-alpha": "2.149.0-alpha.0",
-    "@aws-sdk/client-cloudformation": "^3.536.0",
-    "@aws-solutions-constructs/aws-cloudfront-s3": "^2.62.0",
+    "@aws-cdk/aws-apprunner-alpha": "2.153.0-alpha.0",
+    "@aws-sdk/client-cloudformation": "^3.635.0",
     "@repo/bitcoin": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/dao": "workspace:*",
     "@repo/dao-aws": "workspace:*",
     "@repo/evm": "workspace:*",
-    "aws-cdk": "2.149.0",
-    "aws-cdk-lib": "2.149.0",
+    "aws-cdk": "2.153.0",
+    "aws-cdk-lib": "2.153.0",
     "constructs": "^10.3.0",
     "dotenv": "^16.4.4",
     "source-map-support": "^0.5.21"

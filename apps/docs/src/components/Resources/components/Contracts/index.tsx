@@ -1,12 +1,12 @@
 import { Spinner, Table } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+import { BlockchainMeta, EVMChainInfo, TransactionType } from 'rango-sdk-basic'
 
 import { useSettings } from '../../../../states/settings/hook'
 import { SUPPORTED_LANGUAGES } from '../../../../constants'
 import { findBlockchainByName, stringComparator } from '../../../../libs/utils'
 import { AppSettingsContracts } from '../../../../types/app-settings'
 import { useBlockchains } from '../../../../states/meta/hook'
-import { BlockchainMeta, EVMChainInfo, TransactionType } from 'rango-sdk-basic'
 
 const Contracts: React.FC = () => {
   const { t, i18n } = useTranslation()
