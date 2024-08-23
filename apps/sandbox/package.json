@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.635.0",
-    "@aws-sdk/client-s3": "^3.635.0",
     "@aws-sdk/client-dynamodb": "^3.635.0",
+    "@aws-sdk/client-s3": "^3.635.0",
     "@aws-sdk/client-secrets-manager": "^3.635.0",
     "@aws-sdk/util-dynamodb": "^3.635.0",
     "@repo/bitcoin": "workspace:*",
@@ -25,6 +25,7 @@
     "coininfo": "^5.2.1",
     "dotenv": "^16.4.5",
     "ecpair": "^2.1.0",
+    "node-telegram-bot-api": "^0.66.0",
     "tiny-secp256k1": "^2.2.3",
     "viem": "^2.19.8"
   },
@@ -32,6 +33,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "18",
+    "@types/node-telegram-bot-api": "^0.64.7",
     "eslint": "^8.56.0",
     "nodemon": "^2.0.20",
     "typescript": "^5.4.4"

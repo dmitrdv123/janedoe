@@ -31,6 +31,7 @@ interface MainStackOutput {
 
   bucketLog?: IBucket
   bucketData?: IBucket
+  bucketStatic?: IBucket
   bucketLanding?: IBucket
   bucketAccount?: IBucket
   bucketDocs?: IBucket
@@ -42,6 +43,7 @@ interface MainStackOutput {
   cloudfrontDocs?: cloudfront.IDistribution
   cloudfrontPayment?: cloudfront.IDistribution
   cloudfrontSupport?: cloudfront.IDistribution
+  cloudfrontStatic?: cloudfront.IDistribution
 
   cloudfrontRequestFunction?: cloudfront.IFunction
   cloudfrontResponseFunction?: cloudfront.IFunction
@@ -86,6 +88,7 @@ export class MainStack extends Stack {
 
     if (process.env.NODE_ENV !== 'local') {
       this.deployFrontendSettings(output)
+      this.deployStatic(output)
     }
 
     if (process.env.NODE_ENV === 'production') {
@@ -170,12 +173,14 @@ function handler(event) {
     const bucketDocs = this.deployBucket(env('BUCKET_NAME_HOSTING_DOCS'))
     const bucketPayment = this.deployBucket(env('BUCKET_NAME_HOSTING_PAYMENT'))
     const bucketSupport = this.deployBucket(env('BUCKET_NAME_HOSTING_SUPPORT'))
+    const bucketStatic = this.deployBucket(env('BUCKET_NAME_HOSTING_STATIC'))
 
     const cloudfrontLanding = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_LANDING'), bucketLanding, bucketLog, [`www.${process.env.ROOT_DOMAIN_NAME}`, `${process.env.ROOT_DOMAIN_NAME}`])
     const cloudfrontAccount = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_ACCOUNT'), bucketAccount, bucketLog, [`account.${process.env.ROOT_DOMAIN_NAME}`])
     const cloudfrontDocs = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_DOCS'), bucketDocs, bucketLog, [`docs.${process.env.ROOT_DOMAIN_NAME}`])
     const cloudfrontPayment = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_PAYMENT'), bucketPayment, bucketLog, [`payment.${process.env.ROOT_DOMAIN_NAME}`])
     const cloudfrontSupport = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_SUPPORT'), bucketSupport, bucketLog, [`support.${process.env.ROOT_DOMAIN_NAME}`])
+    const cloudfrontStatic = this.deployCloudfront(output, env('BUCKET_NAME_HOSTING_STATIC'), bucketStatic, bucketLog, [`static.${process.env.ROOT_DOMAIN_NAME}`])
 
     output.bucketLog = bucketLog
     output.bucketLanding = bucketLanding
@@ -183,12 +188,14 @@ function handler(event) {
     output.bucketDocs = bucketDocs
     output.bucketPayment = bucketPayment
     output.bucketSupport = bucketSupport
+    output.bucketStatic = bucketStatic
 
     output.cloudfrontLanding = cloudfrontLanding
     output.cloudfrontAccount = cloudfrontAccount
     output.cloudfrontDocs = cloudfrontDocs
     output.cloudfrontPayment = cloudfrontPayment
     output.cloudfrontSupport = cloudfrontSupport
+    output.cloudfrontStatic = cloudfrontStatic
   }
 
   private deployBackendSettings(output: MainStackOutput) {
@@ -198,6 +205,17 @@ function handler(event) {
           Source.asset('./data/data-bucket'),
         ],
         destinationBucket: output.bucketData
+      })
+    }
+  }
+
+  private deployStatic(output: MainStackOutput) {
+    if (output.bucketStatic) {
+      new BucketDeployment(this, withEnv(`s3_deployment_${env('BUCKET_NAME_HOSTING_STATIC')}`), {
+        sources: [
+          Source.asset('./data/static-bucket'),
+        ],
+        destinationBucket: output.bucketStatic
       })
     }
   }
@@ -345,6 +363,9 @@ function handler(event) {
     if (output.cloudfrontSupport) {
       this.deployHostedZoneRecords(output, new CloudFrontTarget(output.cloudfrontSupport), 'support', true)
     }
+    if (output.cloudfrontStatic) {
+      this.deployHostedZoneRecords(output, new CloudFrontTarget(output.cloudfrontStatic), 'static', true)
+    }
   }
 
   private deployHostedZoneRecords(output: MainStackOutput, aliasTarget: IAliasRecordTarget, recordName: string | undefined, ipV6: boolean) {
@@ -442,6 +463,14 @@ function handler(event) {
       })
     }
 
+    if (output.bucketStatic) {
+      new CfnOutput(this, withEnv('cloudformation_output_bucket_static'), {
+        exportName: withEnv('bucket-static', '-'),
+        value: output.bucketStatic.bucketName,
+        description: 'Bucket Static name'
+      })
+    }
+
     if (output.cloudfrontLanding) {
       new CfnOutput(this, withEnv('cloudformation_output_cloudfront_landing'), {
         exportName: withEnv('cloudfront-landing', '-'),
@@ -471,6 +500,14 @@ function handler(event) {
         exportName: withEnv('cloudfront-payment', '-'),
         value: output.cloudfrontPayment.distributionDomainName,
         description: 'Cloudfront Payment name'
+      })
+    }
+
+    if (output.cloudfrontStatic) {
+      new CfnOutput(this, withEnv('cloudformation_output_cloudfront_static'), {
+        exportName: withEnv('cloudfront-static', '-'),
+        value: output.cloudfrontStatic.distributionDomainName,
+        description: 'Cloudfront Static name'
       })
     }
 

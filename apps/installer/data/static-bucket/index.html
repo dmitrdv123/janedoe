@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <p>Redirecting, please wait...</p>
+
+    <script>
+        // Function to get query parameter by name
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Get the 'url' query parameter
+        const encodedUrl = getQueryParam('url');
+
+        if (encodedUrl) {
+            // Decode the URL
+            const decodedUrl = decodeURIComponent(encodedUrl);
+
+            // Redirect to the decoded URL
+            window.location.href = decodedUrl;
+        } else {
+            document.body.innerHTML = '<p>Error: No URL provided</p>';
+        }
+    </script>
+</body>
+</html>
