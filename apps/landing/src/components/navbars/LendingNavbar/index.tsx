@@ -25,11 +25,14 @@ const LandingNavbar: React.FC = () => {
               <NavDropdown.Item href="#common">
                 {t('components.navbar.advantages')}
               </NavDropdown.Item>
-              <NavDropdown.Item href="#use_case">
+              <NavDropdown.Item href="#use_cases">
                 {t('components.navbar.use_cases')}
               </NavDropdown.Item>
               <NavDropdown.Item href="#contacts">
                 {t('components.navbar.contacts')}
+              </NavDropdown.Item>
+              <NavDropdown.Item href="https://medium.com/@boss_1691" target='_blank'>
+                {t('components.navbar.blog')}
               </NavDropdown.Item>
             </NavDropdown>
 

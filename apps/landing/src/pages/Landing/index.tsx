@@ -221,7 +221,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='use_case' />
+              <hr className="featurette-divider" id='use_cases' />
 
               <Row className="featurette">
                 <Col lg={12}>
@@ -245,7 +245,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='contacts' />
+              <hr className="featurette-divider" />
 
               <Row className="featurette">
                 <Col lg={12}>
@@ -282,6 +282,12 @@ const Landing: React.FC = () => {
                       <span>{contact}</span>
                       <span>@</span>
                       <span>{domain}</span>
+                    </a>.
+                  </p>
+                  <p className="lead">
+                    Read interesting articles about us and the industry on
+                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
+                      our blog.
                     </a>
                   </p>
                 </Col>
@@ -437,7 +443,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='use_case' />
+              <hr className="featurette-divider" id='use_cases' />
 
               <Row className="featurette">
                 <Col lg={12}>
@@ -461,7 +467,7 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='contacts' />
+              <hr className="featurette-divider" />
 
               <Row className="featurette">
                 <Col lg={12}>
@@ -498,7 +504,13 @@ const Landing: React.FC = () => {
                       <span>{contact}</span>
                       <span>@</span>
                       <span>{domain}</span>
-                    </a>
+                    </a>.
+                  </p>
+                  <p className="lead">
+                    Читайте интересные статьи о нас и об отрасли в
+                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
+                      нашем блоге
+                    </a>.
                   </p>
                 </Col>
                 <Col lg={5} className="d-none d-lg-block bg-light">
