@@ -12,7 +12,8 @@
       "read_more": "Read more",
       "contact": "Contacts",
       "questions": "Questions?",
-      "to_top": "Back to top"
+      "to_top": "Back to top",
+      "social_media": "Social Media"
     }
   },
   "components": {
@@ -30,7 +31,7 @@
       "advantages": "Advantages",
       "use_cases": "Use Cases",
       "contacts": "Contacts",
-      "blog": "Blog"
+      "social_media": "Social Media"
     }
   },
   "services": {

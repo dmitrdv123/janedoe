@@ -1,6 +1,6 @@
 import React from 'react'
 import { Badge, Button, Col, Container, Row } from 'react-bootstrap'
-import { Asterisk, Circle, CurrencyBitcoin, CurrencyExchange, Envelope, Globe, Wallet } from 'react-bootstrap-icons'
+import { Asterisk, Circle, CurrencyBitcoin, CurrencyExchange, Envelope, Globe, Newspaper, Wallet } from 'react-bootstrap-icons'
 
 import './index.css'
 
@@ -284,16 +284,37 @@ const Landing: React.FC = () => {
                       <span>{domain}</span>
                     </a>.
                   </p>
-                  <p className="lead">
-                    Read interesting articles about us and the industry on
-                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
-                      our blog.
-                    </a>
-                  </p>
                 </Col>
                 <Col lg={5} className="d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <Envelope size={100} />
+                  </div>
+                </Col>
+              </Row>
+
+              <hr className="featurette-divider" id='social_media' />
+
+              <Row className="featurette">
+                <Col lg={7} className='order-md-2'>
+                  <h2 className="featurette-heading fw-normal lh-1">
+                    {t('pages.landing.social_media')}
+                  </h2>
+                  <p className="lead">
+                    Articles about us and the industry on
+                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
+                      our blog.
+                    </a>
+                  </p>
+                  <p className="lead">
+                    News and announcements on
+                    <a target="_blank" className='ms-2' href='https://t.me/janedoe_fi'>
+                      our telegram.
+                    </a>
+                  </p>
+                </Col>
+                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
+                  <div className='featurette-image'>
+                    <Newspaper size={100} />
                   </div>
                 </Col>
               </Row>
@@ -506,16 +527,37 @@ const Landing: React.FC = () => {
                       <span>{domain}</span>
                     </a>.
                   </p>
-                  <p className="lead">
-                    Читайте интересные статьи о нас и об отрасли в
-                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
-                      нашем блоге
-                    </a>.
-                  </p>
                 </Col>
                 <Col lg={5} className="d-none d-lg-block bg-light">
                   <div className='featurette-image'>
                     <Envelope size={100} />
+                  </div>
+                </Col>
+              </Row>
+
+              <hr className="featurette-divider" id='social_media' />
+
+              <Row className="featurette">
+                <Col lg={7} className='order-md-2'>
+                  <h2 className="featurette-heading fw-normal lh-1">
+                    {t('pages.landing.social_media')}
+                  </h2>
+                  <p className="lead">
+                    Статьи о нас и индустрии
+                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
+                      в нашем блоге.
+                    </a>
+                  </p>
+                  <p className="lead">
+                    Новости и анонсы
+                    <a target="_blank" className='ms-2' href='https://t.me/janedoe_fi'>
+                      в нашем телеграм канале.
+                    </a>
+                  </p>
+                </Col>
+                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
+                  <div className='featurette-image'>
+                    <Newspaper size={100} />
                   </div>
                 </Col>
               </Row>

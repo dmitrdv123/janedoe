@@ -41,7 +41,7 @@ git init . && git add . && git commit -m "Init"
 ```sh
 VITE_APP_ENV=local NODE_ENV=local pnpm build
 # run frontends
-VITE_APP_ENV=local pnpm dev --filter=account --filter=docs --filter=payment --filter=landing --filter=support
+VITE_APP_ENV=local pnpm dev --filter=landing --filter=docs --filter=account --filter=payment --filter=support
 # run protocol
 NODE_ENV=local pnpm dev --filter=protocol -- --network hardhat
 # run protocol on zksync (optionally)
