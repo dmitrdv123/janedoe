@@ -18,20 +18,22 @@ const paymentLogDao = new PaymentLogDaoImpl(dynamoService)
 
 async function accountStatistics() {
   const accounts = await accountDao.listAccountProfiles()
-  console.log(`Statistics: found ${accounts.length} accounts`)
+  console.log(`Account Statistics: found ${accounts.length} accounts`)
 
   await Promise.all(
-    accounts.map(async account => {
-      const payments = await paymentLogDao.listPaymentLogs(account.id)
-      const totalAmountUsd = payments.reduce((acc, payment) => acc + (payment.amountUsd ?? 0), 0)
-      console.log(`Statistics: account ${account.id} - ${payments.length} payments, total amount usd ${totalAmountUsd}`)
-    })
+    accounts
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .map(async account => {
+        const payments = await paymentLogDao.listPaymentLogs(account.id)
+        const totalAmountUsd = payments.reduce((acc, payment) => acc + (payment.amountUsd ?? 0), 0)
+        console.log(`account ${account.id}, ${account.address} - ${payments.length} payments, total amount usd ${totalAmountUsd}`)
+      })
   )
 }
 
 async function supportStatistics() {
   const tickets = await supportDao.listTickets()
-  console.log(`Statistics: found ${tickets.length} tickets`)
+  console.log(`Support Statistics: found ${tickets.length} tickets`)
 }
 
 async function main() {
