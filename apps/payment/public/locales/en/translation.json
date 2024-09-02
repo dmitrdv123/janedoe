@@ -34,17 +34,17 @@
       }
     },
     "evm_payment": {
-      "conversion_title": "Token swap required",
+      "conversion_title": "Token exchange required",
       "connect_wallet": "Connect Wallet",
       "send_details": "to send the payment details",
       "email_placeholder": "email@email.com",
       "pay": "Pay",
-      "swap_and_pay": "Swap and Pay",
+      "swap_and_pay": "Exchange and Pay",
       "received": "already paid",
       "select_token": "Select a token",
       "no_balance": "Not enough balance",
       "conversion_desc": "will be swapped",
-      "conversion_token": "swap for",
+      "conversion_token": "exchange for",
       "conversion_select_token": "Select a token",
       "conversion_slippage": "with slippage",
       "conversion_custom_slippage_placeholder": "custom",
@@ -52,12 +52,12 @@
       "conversion_output_amount": "Output amount:",
       "total_duration": "Duration: {{seconds}} seconds",
       "fee": "Fee:",
-      "conversion": "Conversion:",
-      "conversion_not_found_alert": "Conversion not found",
+      "conversion": "Exchange:",
+      "conversion_not_found_alert": "Token exchange not found",
       "explain": "shop does not accept {{token}} as payment",
       "to": "to",
-      "conversion_error_alert": "Failed to calculate сonversion path for token",
-      "pay_summary_swap": "Token swap:",
+      "conversion_error_alert": "Failed to calculate the token exchange",
+      "pay_summary_swap": "Token exchange:",
       "pay_summary_amount": "Payment amount:",
       "pay_summary_already_payed_amount": "Already paid:",
       "pay_summary_total_amount": "Total:",
@@ -65,21 +65,21 @@
       "errors": {
         "failed_pay": "Payment error",
         "token_required": "Select a token",
-        "conversion_failed": "Failed to calculate conversion path for token"
+        "conversion_failed": "Failed to calculate token exchange"
       }
     },
     "blockchain_modal": {
       "title": "Select a Blockchain",
       "search_placeholder": "Search by blockchain name",
-      "conversion_checkbox": "without conversion",
-      "conversion_checkbox_desc": "Conversion is possible if the store does not accept payment for the selected blockchain."
+      "conversion_checkbox": "without exchange",
+      "conversion_checkbox_desc": "Exchange is possible if the store does not accept payment for the selected blockchain."
     },
     "tokens_modal": {
       "title": "Select a Token",
       "search_placeholder": "Search by token name or address",
       "price_not_defined": "Token price is not defined",
-      "conversion_checkbox": "without conversion",
-      "conversion_checkbox_desc": "Conversion is possible if the store does not accept payment with the selected token."
+      "conversion_checkbox": "without exchange",
+      "conversion_checkbox_desc": "Exchange is possible if the store does not accept payment with the selected token."
     },
     "payment_processing_modal": {
       "title": "Payment is in progress"
@@ -115,15 +115,15 @@
     },
     "info_messages": {
       "payment_conversion_error_explorer_urls": "Transactions Details URL's:",
-      "payment_conversion_error_output_details": "Token Conversion Details:",
-      "payment_conversion_error_output_details_middle_asset_in_dest": "Token conversion transaction failed on the last step because of slippage.",
-      "payment_conversion_error_output_details_middle_asset_in_src": "Token conversion transaction failed on bridge step because of slippage or lack of liquidity or other reasons.",
-      "payment_conversion_error_output_details_reverted_to_input": "Token conversion transaction failed and user should receive back the input token.",
-      "payment_conversion_error_output_details_desired_output": "Token conversion transaction succeeded.",
+      "payment_conversion_error_output_details": "Token Exchange Details:",
+      "payment_conversion_error_output_details_middle_asset_in_dest": "Token exchange transaction failed on the last step because of slippage.",
+      "payment_conversion_error_output_details_middle_asset_in_src": "Token exchange transaction failed on bridge step because of slippage or lack of liquidity or other reasons.",
+      "payment_conversion_error_output_details_reverted_to_input": "Token exchange transaction failed and user should receive back the input token.",
+      "payment_conversion_error_output_details_desired_output": "Token exchange transaction succeeded.",
       "payment_conversion_error_output_details_amount": "Amount",
       "payment_conversion_diagnosis_url": "Please follow this <1>guide</1>.",
       "payment_conversion_request_id": "Request Id",
-      "payment_conversion_tx_id": "Main Swap Transaction"
+      "payment_conversion_tx_id": "Main Exchange Transaction"
     }
   },
   "states": {
@@ -146,7 +146,7 @@
     },
     "payment_conversion": {
       "errors": {
-        "default_error": "Failed to calculate token conversion details"
+        "default_error": "Failed to calculate token exchange details"
       }
     },
     "payment_data": {
@@ -164,11 +164,11 @@
       }
     },
     "token_convert_native_pay": {
-      "token_convert": "Token swap transaction",
+      "token_convert": "Token exchange transaction",
       "native_pay": "Payment transaction"
     },
     "token_convert_token_pay": {
-      "token_convert": "Token swap transaction",
+      "token_convert": "Token exchange transaction",
       "token_pay": "Payment transaction"
     },
     "token_convert": {
@@ -176,24 +176,24 @@
       "switch_chain_processing": "Blockchain switching is in progress",
       "switch_chain_error": "Blockchain switching failed",
       "switch_chain_success": "Blockchain switching was successful",
-      "token_swap": "Creating token swap transaction",
-      "token_swap_processing": "Creating token swap transaction is in progress",
-      "token_swap_error": "Creating token swap transaction failed",
-      "token_swap_success": "Creating token swap transaction was successful",
+      "token_swap": "Creating token exchange transaction",
+      "token_swap_processing": "Creating token exchange transaction is in progress",
+      "token_swap_error": "Creating token exchange transaction failed",
+      "token_swap_success": "Creating token exchange transaction was successful",
       "token_approve": "Setting token spending permissions",
       "token_approve_processing": "Setting token spending permissions is in progress",
       "token_approve_error": "Setting token spending permissions failed",
       "token_approve_success": "Setting token spending permissions was successful",
-      "token_convert": "Token swap transaction",
-      "token_convert_processing": "Token swap transaction is in progress",
-      "token_convert_error": "Token swap transaction failed",
-      "token_convert_success": "Token swap transaction was successful"
+      "token_convert": "Token exchange transaction",
+      "token_convert_processing": "Token exchange transaction is in progress",
+      "token_convert_error": "Token exchange transaction failed",
+      "token_convert_success": "Token exchange transaction was successful"
     },
     "token_conversion_swap": {
       "errors": {
-        "swap_not_defined": "Token swap transaction is undefined",
-        "swap_transaction_not_defined": "Token swap transaction is undefined",
-        "token_output_amount_less_than_required": "The output amount {{amountCurrency}} {{currency}} is less than the required amount {{amountCurrency}} {{currency}}. Please update your token conversion information and try payment again or select a different token."
+        "swap_not_defined": "Token exchange transaction is undefined",
+        "swap_transaction_not_defined": "Token exchange transaction is undefined",
+        "token_output_amount_less_than_required": "The output amount {{amountCurrency}} {{currency}} is less than the required amount {{amountCurrency}} {{currency}}. Please update your token exchange information and try payment again or select a different token."
       }
     },
     "token_conversion_approval": {
@@ -260,7 +260,7 @@
       "request_error": "Failed to send request",
       "wallet_not_found": "Cannot find wallet address for blockchain {{blockchain}}",
       "contract_not_found": "Cannot find janedoe contract address for blockchain {{blockchain}}",
-      "route_not_found": "Cannot find route to swap {{blockchain}} {{token}} for one of tokens",
+      "route_not_found": "Cannot find route to exchange {{blockchain}} {{token}} for one of tokens",
       "bitcoin_errors": {
         "not_enough_funds_error": "Not enough funds"
       },

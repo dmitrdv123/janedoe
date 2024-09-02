@@ -35,7 +35,7 @@ const PaymentSettings: React.FC = () => {
             As you can see, the payment form will tell him that his token will be converted into USDT on Ethereum and sent to the shop. It means, that you will receive not volatile ETH, but stablecoins USDT.
           </p>
           <p>
-            There are the following rules to initially choose a token into which the conversion will be made:
+            There are the following rules to initially choose a token into which the exchange will be made:
           </p>
           <ul>
             <li>
@@ -58,13 +58,13 @@ const PaymentSettings: React.FC = () => {
           </p>
           <ul>
             <li>
-              The algorithm will try to find conversion path from Ethereum ETH to Ethereum USDT.
+              The algorithm will try to find exchange path from Ethereum ETH to Ethereum USDT.
             </li>
             <li>
-              If failed, it will try to find conversion path from Ethereum ETH to Ethereum USDС.
+              If failed, it will try to find exchange path from Ethereum ETH to Ethereum USDС.
             </li>
             <li>
-              If failed, it will try to find conversion path from Ethereum ETH to Hardhat USDT.
+              If failed, it will try to find exchange path from Ethereum ETH to Hardhat USDT.
             </li>
           </ul>
 
@@ -82,7 +82,7 @@ const PaymentSettings: React.FC = () => {
               Choose popular blockchains with high TVL.
             </li>
             <li>
-              Place the blockchains with the lowest transaction fee at the top of the list. This is necessary for optimal working of the token conversion algorithm.
+              Place the blockchains with the lowest transaction fee at the top of the list. This is necessary for optimal working of the token exchange algorithm.
             </li>
           </ul>
         </>

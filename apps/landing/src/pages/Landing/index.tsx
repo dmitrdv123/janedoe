@@ -118,7 +118,7 @@ const Landing: React.FC = () => {
                     {t('pages.landing.no_fees')}
                   </h2>
                   <p className="lead">
-                    JaneDoe do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token conversion.
+                    JaneDoe do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token exchange.
                   </p>
                 </Col>
                 <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
@@ -211,7 +211,7 @@ const Landing: React.FC = () => {
                     Let's say you decide to accept payments only in USDT. And your client has only ETH. He will still be able to make a payment. ETH will be automatically converted to USDT and sent to you in the amount you need.
                   </p>
                   <p className="lead">
-                    This way, your clients will be able to pay in the tokens they like, and you will receive the required amount in the tokens you need. To ensure the most favorable conversion rate, JaneDoe is integrated with 107 exchangers.
+                    This way, your clients will be able to pay in the tokens they like, and you will receive the required amount in the tokens you need. To ensure the most favorable exchange rate, JaneDoe is integrated with 107 exchangers.
                   </p>
                 </Col>
                 <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">

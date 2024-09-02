@@ -183,7 +183,7 @@
       "blockchain_modal_search_placeholder": "Search by blockchain name",
       "token_modal_title": "Select a Token",
       "token_modal_search_placeholder": "Search by token name or address",
-      "disable_conversion": "Disable automatic token conversion",
+      "disable_conversion": "Disable automatic token exchange",
       "disable_conversion_desc": "Payment will only be possible in blockchains and tokens specified in the payment settings",
       "errors": {
         "fail_restore_default": "Failed to restore default settings",

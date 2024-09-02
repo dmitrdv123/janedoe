@@ -8,7 +8,7 @@
       "no_custodial": "No custodial wallets",
       "no_integration": "No integration required",
       "supported": "{{blockchains}} blockchains, {{tokens}} tokens, {{currencies}} fiat currencies and {{wallets}} crypto wallets",
-      "auto_convert": "Automatic token conversion at a favorable rate through {{exchangers}} exchangers",
+      "auto_convert": "Automatic token exchange at a favorable rate through {{exchangers}} exchangers",
       "read_more": "Read more",
       "contact": "Contacts",
       "questions": "Questions?",

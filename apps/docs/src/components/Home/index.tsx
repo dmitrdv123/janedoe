@@ -20,7 +20,7 @@ const Home: React.FC = () => {
             No Fees
           </h2>
           <p>
-            JaneDoe do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token conversion.
+            JaneDoe do not take fees. Fees could be taken only by the blockchains themselves for gas or by third-party services in the case of token exchange.
           </p>
 
           <h2>
@@ -63,13 +63,13 @@ const Home: React.FC = () => {
           </p>
 
           <h2>
-            Automatic token conversion at a favorable rate through 107 exchangers
+            Automatic token exchange at a favorable rate through 107 exchangers
           </h2>
           <p>
             Let's say you decide to accept payments only in USDT. And your client has only ETH. He will still be able to make a payment. ETH will be automatically converted to USDT and sent to you in the amount you need.
           </p>
           <p>
-            This way, your clients will be able to pay in the tokens they like, and you will receive the required amount in the tokens you need. To ensure the most favorable conversion rate, JaneDoe is integrated with 107 exchangers.
+            This way, your clients will be able to pay in the tokens they like, and you will receive the required amount in the tokens you need. To ensure the most favorable exchange rate, JaneDoe is integrated with 107 exchangers.
           </p>
         </>
       )}

@@ -35,7 +35,7 @@ const Landing: React.FC = () => {
                 <li>No custodial wallets</li>
                 <li>No integration required</li>
                 <li>N blockchains, M tokens and K currencies</li>
-                <li>Automatic token conversion</li>
+                <li>Automatic token exchange</li>
               </ul>
               <a href="#">Read more in documentation</a>
             </Col>
