@@ -15,7 +15,7 @@
     "verify": "turbo run verify",
     "destroy": "turbo run destroy",
     "balances": "turbo run balances",
-    "statistics": "turbo run statistics"
+    "script": "turbo run script"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

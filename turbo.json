@@ -12,16 +12,20 @@
       "outputs": ["coverage/**"],
       "dependsOn": []
     },
-    "lint": {},
-    "start": {
-      "cache": false,
-      "persistent": true
+    "script": {
+      "dotEnv": [".env.development.local", ".env.development", ".env.local", ".env"],
+      "dependsOn": ["^build"]
     },
     "dev": {
       "dotEnv": [".env.development.local", ".env.development", ".env.local", ".env"],
       "cache": false,
       "persistent": true
     },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {},
     "clean": {
       "cache": false
     },
@@ -45,9 +49,6 @@
     "destroy": {
       "cache": false,
       "dependsOn": ["^build"]
-    },
-    "statistics": {
-      "cache": false
     }
   }
 }

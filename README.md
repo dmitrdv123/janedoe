@@ -65,7 +65,8 @@ NODE_ENV=local pnpm run seed --filter=protocol -- --network localhost
 # start api
 NODE_ENV=local pnpm start --filter=api
 #statistics
-NODE_ENV=local pnpm run statistics
+NODE_ENV=local pnpm run script -- statistics
+NODE_ENV=local pnpm run script -- articles
 ```
 
 ## Run development
@@ -84,7 +85,8 @@ NODE_ENV=development pnpm run statistics
 
 ```sh
 #statistics
-NODE_ENV=production pnpm run statistics
+NODE_ENV=production pnpm run script -- statistics
+NODE_ENV=production pnpm run script -- articles
 # build
 VITE_APP_ENV=production NODE_ENV=production pnpm build
 # deploy resources in aws
