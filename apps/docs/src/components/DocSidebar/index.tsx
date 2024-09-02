@@ -17,7 +17,7 @@ const DocSidebar: React.FC<DocSidebarProps> = () => {
         <Container>
           <Navbar.Brand href="#home">
             <span className='fs-4'>
-              {import.meta.env.VITE_APP_APP_NAME ?? 'Jane Doe'}
+              {import.meta.env.VITE_APP_APP_NAME ?? 'JaneDoe Finance'}
             </span>
           </Navbar.Brand>
         </Container>

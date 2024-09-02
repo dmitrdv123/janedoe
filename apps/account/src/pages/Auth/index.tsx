@@ -92,7 +92,7 @@ const Auth: React.FC = () => {
             <Col xs={12} sm={8} md={6} lg={4}>
               <Form className="form-signin w-100 m-auto">
                 <h1 className='mb-3 text-center'>
-                  {import.meta.env.VITE_APP_APP_NAME ?? 'Jane Doe'}
+                  {import.meta.env.VITE_APP_APP_NAME ?? 'JaneDoe Finance'}
                 </h1>
 
                 {!isConnected && (

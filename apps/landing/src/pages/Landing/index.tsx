@@ -28,7 +28,7 @@ const Landing: React.FC = () => {
           <Row className="justify-content-center">
             <Col md={8} className='text-center'>
               <h1 className="display-1">
-                {import.meta.env.VITE_APP_APP_NAME ?? 'Jane Doe'}
+                {import.meta.env.VITE_APP_APP_NAME ?? 'JaneDoe Finance'}
               </h1>
               <p className="display-6 text-body-secondary">
                 {t('pages.landing.title_desc')}

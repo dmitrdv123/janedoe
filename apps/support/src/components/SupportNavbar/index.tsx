@@ -8,7 +8,7 @@ const AuthNavbar: React.FC = () => {
       <Container fluid>
         <Navbar.Brand href="/">
           <span className='fs-4'>
-            {import.meta.env.VITE_APP_APP_NAME ?? 'Jane Doe'}
+            {import.meta.env.VITE_APP_APP_NAME ?? 'JaneDoe Finance'}
           </span>
         </Navbar.Brand>
         <Navbar.Toggle />
