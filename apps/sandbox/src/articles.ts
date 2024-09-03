@@ -8,6 +8,7 @@ import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { Article } from '@repo/dao/dist/src/interfaces/article'
 import { DynamoServiceImpl } from '@repo/dao-aws/dist/src/services/dynamo.service'
 import { ArticleDaoImpl } from '@repo/dao-aws/dist/src/dao/article.dao'
+import appConfig from '@repo/common/dist/src/app-config'
 
 import { loadFile } from './utils'
 import { createAppConfig } from './app-config'
@@ -19,6 +20,8 @@ const articleDao = new ArticleDaoImpl(dynamoService)
 
 async function main() {
   const articlesFolder = 'data/articles'
+
+  console.log(`Start to process articles for ${appConfig.NODE_ENV}`)
 
   console.log(`Start to delete articles`)
   await articleDao.deleteArticles()
