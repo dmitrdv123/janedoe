@@ -1,6 +1,6 @@
 import React from 'react'
 import { Badge, Button, Col, Container, Row } from 'react-bootstrap'
-import { Asterisk, Circle, CurrencyBitcoin, CurrencyExchange, Envelope, Globe, Newspaper, Wallet } from 'react-bootstrap-icons'
+import { Asterisk, Circle, CurrencyBitcoin, CurrencyExchange, Envelope, Globe, Wallet } from 'react-bootstrap-icons'
 
 import './index.css'
 
@@ -9,15 +9,25 @@ import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../components/navbars/LendingNavbar'
 import { useConfig } from '../../context/config/hook'
 import { MAILTO, SUPPORTED_LANGUAGES } from '../../constants'
+import { ApiWrapper } from '../../libs/services/api-wrapper'
+import { Article } from '../../types/article'
+import useApiRequestImmediate from '../../libs/hooks/useApiRequestImmediate'
 
 const Landing: React.FC = () => {
+  const contact = 'boss'
+  const domain = 'mail.janedoe.fi'
+
   const { t, i18n } = useTranslation()
   const { hash } = useLocation()
 
   const config = useConfig()
 
-  const contact = 'boss'
-  const domain = 'mail.janedoe.fi'
+  const {
+    status: articleStatus,
+    data: article
+  } = useApiRequestImmediate<Article>(
+    ApiWrapper.instance.latestArticle()
+  )
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -269,12 +279,12 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='contacts' />
+              <hr className="featurette-divider" id='contact_and_links' />
 
               <Row className="featurette">
                 <Col lg={7}>
                   <h2 className="featurette-heading fw-normal lh-1">
-                    {t('pages.landing.questions')}
+                    {t('pages.landing.contact_and_links')}
                   </h2>
                   <p className="lead">
                     Hello, I am founder of JaneDoe.fi. Please, write me to
@@ -283,6 +293,24 @@ const Landing: React.FC = () => {
                       <span>@</span>
                       <span>{domain}</span>
                     </a>.
+                  </p>
+                  <p className="lead">
+                    Articles about us and the industry on
+                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
+                      our Medium blog.
+                    </a>
+                  </p>
+                  <p className="lead">
+                    News and announcements on
+                    <a target="_blank" className='ms-2' href='https://t.me/janedoe_fi'>
+                      our Telegram channel.
+                    </a>
+                  </p>
+                  <p className="lead">
+                    Useful videos on
+                    <a target="_blank" className='ms-2' href='https://www.youtube.com/@janedoefinance-q6x'>
+                      our YouTube channel.
+                    </a>
                   </p>
                 </Col>
                 <Col lg={5} className="d-none d-lg-block bg-light">
@@ -293,33 +321,6 @@ const Landing: React.FC = () => {
               </Row>
 
               <hr className="featurette-divider" id='social_media' />
-
-              <Row className="featurette">
-                <Col lg={7} className='order-md-2'>
-                  <h2 className="featurette-heading fw-normal lh-1">
-                    {t('pages.landing.social_media')}
-                  </h2>
-                  <p className="lead">
-                    Articles about us and the industry on
-                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
-                      our blog.
-                    </a>
-                  </p>
-                  <p className="lead">
-                    News and announcements on
-                    <a target="_blank" className='ms-2' href='https://t.me/janedoe_fi'>
-                      our telegram.
-                    </a>
-                  </p>
-                </Col>
-                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
-                  <div className='featurette-image'>
-                    <Newspaper size={100} />
-                  </div>
-                </Col>
-              </Row>
-
-              <hr className="featurette-divider" />
             </>
           )}
 
@@ -512,12 +513,12 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
-              <hr className="featurette-divider" id='contacts' />
+              <hr className="featurette-divider" id='contact_and_links' />
 
               <Row className="featurette">
                 <Col lg={7}>
                   <h2 className="featurette-heading fw-normal lh-1">
-                    {t('pages.landing.questions')}
+                    {t('pages.landing.contact_and_links')}
                   </h2>
                   <p className="lead">
                     Привет, я основатель JaneDoe.fi. Пожалуйста, напишите мне
@@ -526,6 +527,24 @@ const Landing: React.FC = () => {
                       <span>@</span>
                       <span>{domain}</span>
                     </a>.
+                  </p>
+                  <p className="lead">
+                    Статьи о нас и индустрии на
+                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
+                      нашем блоге на Medium.
+                    </a>
+                  </p>
+                  <p className="lead">
+                    Новости и анонсы в
+                    <a target="_blank" className='ms-2' href='https://t.me/janedoe_fi'>
+                      нашем Telegram канале.
+                    </a>
+                  </p>
+                  <p className="lead">
+                    Полезные видео на
+                    <a target="_blank" className='ms-2' href='https://www.youtube.com/@janedoefinance-q6x'>
+                       нашем YouTube канале.
+                    </a>
                   </p>
                 </Col>
                 <Col lg={5} className="d-none d-lg-block bg-light">
@@ -536,29 +555,28 @@ const Landing: React.FC = () => {
               </Row>
 
               <hr className="featurette-divider" id='social_media' />
+            </>
+          )}
 
+          {(articleStatus === 'success' && !!article) && (
+            <>
               <Row className="featurette">
-                <Col lg={7} className='order-md-2'>
+                <Col>
                   <h2 className="featurette-heading fw-normal lh-1">
-                    {t('pages.landing.social_media')}
+                    {article.title}
+                    <small className="text-body-secondary ms-3">
+                      ({new Date(1000 * article.timestamp).toLocaleDateString()})
+                    </small>
                   </h2>
+                  <div dangerouslySetInnerHTML={{ __html: article.content }} />
                   <p className="lead">
-                    Статьи о нас и индустрии
-                    <a target="_blank" className='ms-2' href='https://medium.com/@boss_1691'>
-                      в нашем блоге.
+                    <a target="_blank" href={article.link}>
+                      {t('pages.landing.read_more')}
+                    </a>
+                    <a className='ms-3' href='/blog'>
+                      {t('pages.landing.all_blog')}
                     </a>
                   </p>
-                  <p className="lead">
-                    Новости и анонсы
-                    <a target="_blank" className='ms-2' href='https://t.me/janedoe_fi'>
-                      в нашем телеграм канале.
-                    </a>
-                  </p>
-                </Col>
-                <Col lg={5} className="order-md-1 d-none d-lg-block bg-light">
-                  <div className='featurette-image'>
-                    <Newspaper size={100} />
-                  </div>
                 </Col>
               </Row>
 

@@ -9,11 +9,18 @@
       "no_integration": "Не требуется интеграция",
       "supported": "{{blockchains}} блокчейнов, {{tokens}} токенов, {{currencies}} фиатная валюта и {{wallets}} крипто кошельков",
       "auto_convert": "Автоматическая конвертация токенов по выгодному курсу через {{exchangers}} обменников",
-      "read_more": "Прочитать подробнее",
-      "contact": "Контакты",
-      "questions": "Вопросы?",
+      "read_more": "Прочитать далее",
+      "contact_and_links": "Контакты и ссылки",
       "to_top": "Вернуться наверх",
-      "social_media": "Социальные сети"
+      "all_blog": "Все статьи"
+    },
+    "blog": {
+      "read_more": "Прочитать далее",
+      "no_blogs": "Статей не найдено",
+      "to_top": "Вернуться наверх",
+      "errors": {
+        "load_error": "Ошибка загрузки статей"
+      }
     }
   },
   "components": {
@@ -30,8 +37,8 @@
       "resources": "Ресурсы",
       "advantages": "Преимущества",
       "use_cases": "Примеры использования",
-      "contacts": "Контакты",
-      "social_media": "Социальные сети"
+      "contact_and_links": "Контакты и ссылки",
+      "blog": "Блог"
     }
   },
   "services": {

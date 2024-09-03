@@ -26,6 +26,7 @@ import { SecretDaoImpl } from '../dao/secret.dao'
 import { CloudwatchService, CloudwatchServiceImpl } from '../services/cloudwatch.service'
 import { MetricDaoImpl } from '../dao/metric.dao'
 import { BitcoinDaoImpl } from '../dao/bitcoin.dao'
+import { ArticleDaoImpl } from '../dao/article.dao'
 
 export const daoContainer = new Container()
 
@@ -114,6 +115,12 @@ daoContainer.register(
   new BitcoinDaoImpl(
     daoContainer.resolve<DynamoService>('dynamoService'),
     commonContainer.resolve<CacheService>('cacheService')
+  )
+)
+daoContainer.register(
+  'articleDao',
+  new ArticleDaoImpl(
+    daoContainer.resolve<DynamoService>('dynamoService')
   )
 )
 daoContainer.register(

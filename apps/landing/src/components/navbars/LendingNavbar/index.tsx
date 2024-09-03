@@ -11,6 +11,11 @@ const LandingNavbar: React.FC = () => {
   return (
     <Navbar expand="sm" sticky='top'>
       <Container fluid>
+        <Navbar.Brand href="/">
+          <span className='fs-4'>
+            {import.meta.env.VITE_APP_APP_NAME ?? 'JaneDoe Finance'}
+          </span>
+        </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
           <Nav>
@@ -28,11 +33,11 @@ const LandingNavbar: React.FC = () => {
               <NavDropdown.Item href="#use_cases">
                 {t('components.navbar.use_cases')}
               </NavDropdown.Item>
-              <NavDropdown.Item href="#contacts">
-                {t('components.navbar.contacts')}
+              <NavDropdown.Item href="#contact_and_links">
+                {t('components.navbar.contact_and_links')}
               </NavDropdown.Item>
-              <NavDropdown.Item href="#social_media">
-                {t('components.navbar.social_media')}
+              <NavDropdown.Item href="/blog">
+                {t('components.navbar.blog')}
               </NavDropdown.Item>
             </NavDropdown>
 

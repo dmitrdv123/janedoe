@@ -1,3 +1,4 @@
+import { ArticleDao } from '@repo/dao/dist/src/dao/article.dao'
 import { MetricDao } from '@repo/dao/dist/src/dao/metric.dao'
 import { SupportDao } from '@repo/dao/dist/src/dao/support.dao'
 import { IpnDao } from '@repo/dao/dist/src/dao/ipn.dao'
@@ -25,6 +26,7 @@ import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.cont
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 import { evmContainer } from '@repo/evm/dist/src/containers/evm.container'
 
+import { LandingController } from '../controllers/landing-controller'
 import { AccountController } from '../controllers/account-controller'
 import { AuthController } from '../controllers/auth-controller'
 import { PaymentController } from '../controllers/payment-controller'
@@ -57,6 +59,7 @@ import { BitcoinBlockTask } from '../tasks/bitcoin-block.task'
 import { PaymentManagerTask } from '../tasks/payment-manager-task'
 import { ExchangeRateTask } from '../tasks/currency-task'
 import { SupportNotificationObserver } from '../services/notifications/support-notification-observer'
+import { ArticleService, ArticleServiceImpl } from '../services/article-service'
 
 const container = new Container()
 
@@ -143,6 +146,12 @@ container.register(
   )
 )
 container.register(
+  'articleService',
+  new ArticleServiceImpl(
+    awsContainer.resolve<ArticleDao>('articleDao')
+  )
+)
+container.register(
   'authService',
   new AuthServiceImpl(
     container.resolve<AccountService>('accountService'),
@@ -162,6 +171,12 @@ container.register('apiService',
 
 // Controllers
 container.register('sandboxController', new SandboxController())
+container.register(
+  'landingController',
+  new LandingController(
+    container.resolve<ArticleService>('articleService'),
+  )
+)
 container.register(
   'accountController',
   new AccountController(

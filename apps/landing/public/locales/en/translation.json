@@ -9,11 +9,18 @@
       "no_integration": "No integration required",
       "supported": "{{blockchains}} blockchains, {{tokens}} tokens, {{currencies}} fiat currencies and {{wallets}} crypto wallets",
       "auto_convert": "Automatic token exchange at a favorable rate through {{exchangers}} exchangers",
-      "read_more": "Read more",
-      "contact": "Contacts",
-      "questions": "Questions?",
+      "read_more": "Read More",
+      "contact_and_links": "Contacts and links",
       "to_top": "Back to top",
-      "social_media": "Social Media"
+      "all_blog": "All Articles"
+    },
+    "blog": {
+      "read_more": "Read More",
+      "no_blogs": "No blogs found",
+      "to_top": "Back to top",
+      "errors": {
+        "load_error": "Error happens loading blogs"
+      }
     }
   },
   "components": {
@@ -30,8 +37,8 @@
       "resources": "Resources",
       "advantages": "Advantages",
       "use_cases": "Use Cases",
-      "contacts": "Contacts",
-      "social_media": "Social Media"
+      "contact_and_links": "Contacts and links",
+      "blog": "Blog"
     }
   },
   "services": {

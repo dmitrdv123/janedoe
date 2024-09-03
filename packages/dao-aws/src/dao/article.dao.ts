@@ -6,7 +6,7 @@ import appConfig from '@repo/common/dist/src/app-config'
 import { Article } from '@repo/dao/dist/src/interfaces/article'
 
 import { DynamoService } from '../services/dynamo.service'
-import { generateKey } from '../utils/dynamo-utils'
+import { batchWriteItemsByChunks, generateKey, queryItems } from '../utils/dynamo-utils'
 
 export class ArticleDaoImpl implements ArticleDao {
   private static readonly PK_PREFIX = 'article'
@@ -26,11 +26,11 @@ export class ArticleDaoImpl implements ArticleDao {
     })
   }
 
-  public async loadArticles(pageSize: number, latestArticle?: Article | undefined): Promise<Article[]> {
-    const lastEvaluatedKey: Record<string, AttributeValue> | undefined = latestArticle
+  public async loadArticles(pageSize: number, timestamp?: number | undefined): Promise<Article[]> {
+    const lastEvaluatedKey: Record<string, AttributeValue> | undefined = timestamp !== undefined
       ? marshall({
         pk: generateKey(ArticleDaoImpl.PK_PREFIX),
-        sk: latestArticle.timestamp
+        sk: timestamp
       })
       : undefined
 
@@ -53,14 +53,39 @@ export class ArticleDaoImpl implements ArticleDao {
   public async loadLatestArticle(): Promise<Article | undefined> {
     const result = await this.dynamoService.queryItems({
       TableName: appConfig.TABLE_NAME_TIME_SERIES,
-      KeyConditionExpression: 'pk = :pkVal',
-      ExpressionAttributeValues: {
-        ':pkVal': { S: generateKey(ArticleDaoImpl.PK_PREFIX) },
-      },
+      KeyConditionExpression: 'pk = :pk',
+      ExpressionAttributeValues: marshall({
+        ':pk': generateKey(ArticleDaoImpl.PK_PREFIX),
+      }),
       ScanIndexForward: false,  // This will sort by `sk` in descending order
       Limit: 1  // This ensures you get only the latest item
     })
 
-    return result.Items ? unmarshall(result.Items[0]).article as Article : undefined
+    return result.Items && result.Items.length > 0  ? unmarshall(result.Items[0]).article as Article : undefined
+  }
+
+  public async deleteArticles(): Promise<void> {
+    const request = {
+      TableName: appConfig.TABLE_NAME_TIME_SERIES,
+      KeyConditionExpression: 'pk = :pk',
+      ExpressionAttributeValues: marshall({
+        ':pk': generateKey(ArticleDaoImpl.PK_PREFIX)
+      })
+    }
+    const articles = await queryItems<Article>(this.dynamoService, 'article', request)
+
+    const deleteRequests = articles.map(article => ({
+      DeleteRequest: {
+        Key: marshall({
+          pk: generateKey(ArticleDaoImpl.PK_PREFIX),
+          sk: article.timestamp
+        })
+      }
+    }))
+    await batchWriteItemsByChunks(
+      this.dynamoService,
+      appConfig.TABLE_NAME_TIME_SERIES,
+      deleteRequests
+    )
   }
 }

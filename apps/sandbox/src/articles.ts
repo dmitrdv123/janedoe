@@ -20,8 +20,10 @@ const articleDao = new ArticleDaoImpl(dynamoService)
 async function main() {
   const articlesFolder = 'data/articles'
 
-  console.log(`Start to save articles`)
+  console.log(`Start to delete articles`)
+  await articleDao.deleteArticles()
 
+  console.log(`Start to save articles`)
   await Promise.all(
     fs.readdirSync(path.join(process.cwd(), articlesFolder))
       .filter(file => file.toLocaleLowerCase().endsWith('.json'))

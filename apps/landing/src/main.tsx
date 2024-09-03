@@ -9,6 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import reportWebVitals from './reportWebVitals'
 import Landing from './pages/Landing'
 import ConfigProvider from './context/config/context'
+import Blog from './pages/Blog'
 
 const root = createRoot(document.getElementById("root") as HTMLElement)
 
@@ -19,6 +20,9 @@ root.render(
         <Routes>
           <Route path="/" element={
             <Landing />
+          } />
+          <Route path="/blog" element={
+            <Blog />
           } />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
