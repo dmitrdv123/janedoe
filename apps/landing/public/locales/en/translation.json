@@ -34,10 +34,6 @@
       "language": "Language: {{language}}",
       "support": "Support",
       "documentation": "Documentation",
-      "resources": "Resources",
-      "advantages": "Advantages",
-      "use_cases": "Use Cases",
-      "contact_and_links": "Contacts and links",
       "blog": "Blog"
     }
   },

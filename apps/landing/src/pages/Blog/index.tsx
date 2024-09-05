@@ -18,10 +18,9 @@ const Blog: React.FC = () => {
 
         <footer className="container">
           <p className="float-end"><a href="#">{t('pages.blog.to_top')}</a></p>
-          <p>© 2024 JaneDoe</p>
+          <p>© 2024 JaneDoe Finance</p>
         </footer>
       </main>
-
     </div >
   )
 }

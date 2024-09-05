@@ -1,11 +1,12 @@
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
+import { Container, Nav, Navbar } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
 import LanguageDropdown from '../components/LanguageDropdown'
 import { useConfig } from '../../../context/config/hook'
+import { DEFAULT_LANGUAGE } from '../../../constants'
 
 const LandingNavbar: React.FC = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const config = useConfig()
 
   return (
@@ -25,21 +26,9 @@ const LandingNavbar: React.FC = () => {
             <Nav.Link href={config.config?.baseUrlDocs} target="_blank">
               {t('components.navbar.documentation')}
             </Nav.Link>
-
-            <NavDropdown title={t('components.navbar.resources')} align='end'>
-              <NavDropdown.Item href="#common">
-                {t('components.navbar.advantages')}
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#use_cases">
-                {t('components.navbar.use_cases')}
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#contact_and_links">
-                {t('components.navbar.contact_and_links')}
-              </NavDropdown.Item>
-              <NavDropdown.Item href="/blog">
-                {t('components.navbar.blog')}
-              </NavDropdown.Item>
-            </NavDropdown>
+            <Nav.Link href={`/${i18n.language ?? DEFAULT_LANGUAGE}/blog`}>
+              {t('components.navbar.blog')}
+            </Nav.Link>
 
             <LanguageDropdown />
           </Nav>

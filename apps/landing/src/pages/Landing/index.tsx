@@ -587,7 +587,7 @@ const Landing: React.FC = () => {
 
         <footer className="container">
           <p className="float-end"><a href="#">{t('pages.landing.to_top')}</a></p>
-          <p>© 2024 JaneDoe</p>
+          <p>© 2024 JaneDoe Finance</p>
         </footer>
       </main>
 

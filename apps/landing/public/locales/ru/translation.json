@@ -34,10 +34,6 @@
       "language": "Язык: {{language}}",
       "support": "Поддержка",
       "documentation": "Документация",
-      "resources": "Ресурсы",
-      "advantages": "Преимущества",
-      "use_cases": "Примеры использования",
-      "contact_and_links": "Контакты и ссылки",
       "blog": "Блог"
     }
   },
