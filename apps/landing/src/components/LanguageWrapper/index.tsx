@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import i18n from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../../constants'
 
@@ -14,6 +14,7 @@ const LanguageWrapper: React.FC<LanguageWrapperProps> = (props) => {
   const { lang } = useParams<{ lang?: string }>()
   const navigate = useNavigate()
   const location = useLocation()
+  const { i18n } = useTranslation()
 
   useEffect(() => {
     const detectedLanguage = SUPPORTED_LANGUAGES.includes(i18n.language) ? i18n.language : DEFAULT_LANGUAGE
@@ -27,7 +28,7 @@ const LanguageWrapper: React.FC<LanguageWrapperProps> = (props) => {
     } else if (processedLang !== i18n.language) {
       i18n.changeLanguage(processedLang)
     }
-  }, [lang, navigate, location])
+  }, [i18n, lang, location, navigate])
 
   return <>{element}</>
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
@@ -12,6 +12,7 @@ import Landing from './pages/Landing'
 import ConfigProvider from './context/config/context'
 import Blog from './pages/Blog'
 import LanguageWrapper from './components/LanguageWrapper'
+import Loader from './components/Loader'
 
 const root = createRoot(document.getElementById("root") as HTMLElement)
 root.render(
@@ -19,8 +20,16 @@ root.render(
     <ConfigProvider>
       <BrowserRouter>
         <Routes>
-          <Route path={`/:lang?`} element={<LanguageWrapper element={<Landing />} />} />
-          <Route path="/:lang?/blog" element={<LanguageWrapper element={<Blog />} />} />
+          <Route path={`/:lang?`} element={<LanguageWrapper element={
+            <Suspense fallback={<Loader />}>
+              <Landing />
+            </Suspense>
+          } />} />
+          <Route path="/:lang?/blog" element={<LanguageWrapper element={
+            <Suspense fallback={<Loader />}>
+              <Blog />
+            </Suspense>
+          } />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
