@@ -12,7 +12,7 @@ const LandingNavbar: React.FC = () => {
   return (
     <Navbar expand="sm" sticky='top'>
       <Container fluid>
-        <Navbar.Brand href="/">
+        <Navbar.Brand href={`/${i18n.language ?? DEFAULT_LANGUAGE}`}>
           <span className='fs-4'>
             {import.meta.env.VITE_APP_APP_NAME ?? 'JaneDoe Finance'}
           </span>
@@ -23,13 +23,12 @@ const LandingNavbar: React.FC = () => {
             <Nav.Link href={config.config?.baseUrlSupport} target="_blank">
               {t('components.navbar.support')}
             </Nav.Link>
-            <Nav.Link href={config.config?.baseUrlDocs} target="_blank">
+            <Nav.Link href={`${config.config?.baseUrlDocs}/${i18n.language ?? DEFAULT_LANGUAGE}/`} target="_blank">
               {t('components.navbar.documentation')}
             </Nav.Link>
             <Nav.Link href={`/${i18n.language ?? DEFAULT_LANGUAGE}/blog`}>
               {t('components.navbar.blog')}
             </Nav.Link>
-
             <LanguageDropdown />
           </Nav>
         </Navbar.Collapse>
