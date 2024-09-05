@@ -2,28 +2,25 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
-import './i18n/config'
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
+
+import './i18n/config' // Assuming i18n is properly configured in this file
 
 import reportWebVitals from './reportWebVitals'
 import Landing from './pages/Landing'
 import ConfigProvider from './context/config/context'
 import Blog from './pages/Blog'
+import LanguageWrapper from './components/LanguageWrapper'
 
 const root = createRoot(document.getElementById("root") as HTMLElement)
-
 root.render(
   <React.StrictMode>
     <ConfigProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={
-            <Landing />
-          } />
-          <Route path="/blog" element={
-            <Blog />
-          } />
+          <Route path={`/:lang?`} element={<LanguageWrapper element={<Landing />} />} />
+          <Route path="/:lang?/blog" element={<LanguageWrapper element={<Blog />} />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
