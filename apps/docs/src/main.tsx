@@ -13,6 +13,7 @@ import Loader from './components/Loader'
 import store from './states/store'
 import Main from './pages/Sandbox/Main'
 import ConfigProvider from './context/config/context'
+import LanguageWrapper from './components/LanguageWrapper'
 
 const root = createRoot(document.getElementById("root") as HTMLElement)
 
@@ -22,15 +23,17 @@ root.render(
       <ConfigProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={
+            <Route path="/:lang?" element={<LanguageWrapper element={
               <Suspense fallback={<Loader />}>
                 <App />
               </Suspense>
-            } />
+            } />} />
             {import.meta.env.VITE_APP_IS_DEV && (
-              <Route path="/sandbox/main" element={
-                <Main />
-              } />
+              <Route path="/:lang?/sandbox/main" element={<LanguageWrapper element={
+                <Suspense fallback={<Loader />}>
+                  <Main />
+                </Suspense>
+              } />} />
             )}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
