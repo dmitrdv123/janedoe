@@ -152,7 +152,7 @@ function handler(event) {
   var response = event.response
   var headers = response.headers
   headers['strict-transport-security'] = { value: 'max-age=63072000; includeSubdomains; preload'}
-  headers['content-security-policy'] = { value: "default-src 'none'; object-src 'none'; img-src * data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/; font-src 'self' https://fonts.gstatic.com/; frame-src https://*.walletconnect.com/ https://*.walletconnect.org/ https://*.youtube.com; connect-src *" }
+  headers['content-security-policy'] = { value: "default-src 'none'; object-src 'none'; img-src * data: blob:; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/; font-src 'self' https://fonts.gstatic.com/; frame-src https://*.walletconnect.com/ https://*.walletconnect.org/ https://*.youtube.com; connect-src *" }
   headers['x-content-type-options'] = { value: 'nosniff'}
   headers['x-frame-options'] = {value: 'DENY'}
   headers['x-xss-protection'] = {value: '1; mode=block'}
