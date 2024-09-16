@@ -1,5 +1,6 @@
 export enum ApplicationModal {
   BLOCKCHAIN,
   TOKEN,
-  IPN
+  IPN,
+  REFUND
 }

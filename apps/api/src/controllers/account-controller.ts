@@ -212,6 +212,38 @@ export class AccountController {
     }
   }
 
+  public async refund(req: Request, res: Response, _next: NextFunction) {
+    try {
+      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
+      assertParam('paymentId', req.params.paymentId, PAYMENT_ID_MAX_LENGTH)
+      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
+      assertParam('transaction', req.params.transaction, TRANSACTION_MAX_LENGTH)
+      const index = tryParseInt(req.params.index)
+      assertNumberParam('index', index)
+      const timestamp = tryParseInt(req.params.timestamp)
+      assertNumberParam('timestamp', timestamp)
+
+      const { refundAddress, refundAmount } = req.body
+      assertParam('refund address', refundAddress, ADDRESS_MAX_LENGTH)
+      assertParam('refund amount', refundAmount)
+
+      const txid = await this.accountService.refund(
+        {
+          accountId: req.params.id,
+          paymentId: req.params.paymentId,
+          blockchain: req.params.blockchain,
+          transaction: req.params.transaction,
+          index: index as number,
+          timestamp: timestamp as number
+        },
+        refundAddress, refundAmount
+      )
+      res.send({ txid })
+    } catch (err) {
+      processControllerError(res, err as Error)
+    }
+  }
+
   public async payments(req: Request, res: Response, _next: NextFunction) {
     try {
       assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)

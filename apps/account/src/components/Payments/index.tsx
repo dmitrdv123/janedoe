@@ -17,6 +17,7 @@ import WalletAddress from '../WalletAddress'
 import { IpnResult } from '../../types/ipn'
 import { ApplicationModal } from '../../types/application-modal'
 import IpnModal from './components/IpnModal'
+import RefundModal from './components/RefundModal'
 import CurrencyAmount from '../CurrencyAmount'
 import TokenAmount from '../TokenAmount'
 import usePaymentHistory from '../../libs/hooks/usePaymentHistory'
@@ -37,6 +38,7 @@ const Payments: React.FC = () => {
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
   const openIpnModal = useToggleModal(ApplicationModal.IPN)
+  const openRefundModal = useToggleModal(ApplicationModal.REFUND)
 
   const { process: loadPaymentHistoryAsCsv } = useApiRequest<string[][]>()
 
@@ -105,6 +107,9 @@ const Payments: React.FC = () => {
     )
   }, [])
 
+  const updateRefundHandler = useCallback(() => {
+  }, [])
+
   const refreshPaymentHistoryHandler = useCallback(() => {
     setPaymentHistoryLoadTimestamp(Math.floor(Date.now() / 1000))
     reloadPaymentHistory()
@@ -114,6 +119,11 @@ const Payments: React.FC = () => {
     setSelectedPaymentHistory(paymentHistoryToShow)
     openIpnModal()
   }, [openIpnModal])
+
+  const openRefundModalHandler = useCallback((paymentHistoryToShow: PaymentHistoryData) => {
+    setSelectedPaymentHistory(paymentHistoryToShow)
+    openRefundModal()
+  }, [openRefundModal])
 
   const clearFiltersHandler = useCallback(() => {
     setPaymentHistoryDataFilter(EMPTY_PAYMENT_HISTORY_DATA_FILTER)
@@ -138,13 +148,6 @@ const Payments: React.FC = () => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
       from: filterFrom
-    }))
-  }, [])
-
-  const toFilterHandler = useCallback((filterTo: string) => {
-    setPaymentHistoryDataFilter(filter => ({
-      ...filter,
-      to: filterTo
     }))
   }, [])
 
@@ -180,9 +183,6 @@ const Payments: React.FC = () => {
         <td>{blockchain?.displayName ?? paymentHistoryItem.blockchainName}</td>
         <td>
           <WalletAddress blockchain={blockchain} address={paymentHistoryItem.from} />
-        </td>
-        <td>
-          <WalletAddress blockchain={blockchain} address={paymentHistoryItem.to} />
         </td>
         <td>
           {!!token && (
@@ -254,15 +254,21 @@ const Payments: React.FC = () => {
             </Button>
           )}
         </td>
+        <td>
+          <Button variant="outline-secondary" onClick={() => openRefundModalHandler(paymentHistoryItem)}>
+            {t('components.payments.refund_btn')}
+          </Button>
+        </td>
       </tr>
     )
-  }, [t, lastPaymentElementRef, openIpnModalHandler])
+  }, [t, lastPaymentElementRef, openIpnModalHandler, openRefundModalHandler])
 
   return (
     <>
       <h3 className="mb-3">{t('components.payments.title')}</h3>
 
       <IpnModal paymentHistory={selectedPaymentHistory} onUpdate={updateIpnResultHandler} />
+      <RefundModal paymentHistory={selectedPaymentHistory} onUpdate={updateRefundHandler}/>
 
       <div className='mb-3'>
         <Button variant="primary" onClick={refreshPaymentHistoryHandler} disabled={paymentHistoryStatus === 'processing'}>
@@ -341,15 +347,6 @@ const Payments: React.FC = () => {
               />
             </th>
             <th scope="col">
-              {t('components.payments.to_col')}
-              <TableFilterText
-                id="payment_history_to"
-                placeholder={t('components.payments.to_placeholder')}
-                value={paymentHistoryDataFilter.to}
-                onChange={toFilterHandler}
-              />
-            </th>
-            <th scope="col">
               {t('components.payments.token_col')}
             </th>
             <th scope="col">
@@ -376,6 +373,7 @@ const Payments: React.FC = () => {
             <th>
               {t('components.payments.notification_col')}
             </th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>

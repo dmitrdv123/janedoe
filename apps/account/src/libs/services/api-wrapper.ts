@@ -233,6 +233,17 @@ export class ApiWrapper {
     }
   }
 
+  public refundRequest(paymentId: string, blockchain: string, refundAddress: string, refundAmount: string): ApiRequest {
+    return {
+      url: this.getRefundUrl(),
+      method: 'POST',
+      body: JSON.stringify({
+        paymentId, blockchain, refundAddress, refundAmount
+      }),
+      authRequired: true
+    }
+  }
+
   public submitAccountSupportTicket(ticket: SupportAccountTicket): ApiRequest {
     return {
       url: this.getAccountSupportTicketUrl(),
@@ -331,6 +342,10 @@ export class ApiWrapper {
 
   private getSendIpnUrl(): string {
     return `{baseUrlApi}/api/account/ipn/{id}`
+  }
+
+  private getRefundUrl(): string {
+    return `{baseUrlApi}/api/account/refund/{id}`
   }
 
   private getAccountSupportTicketUrl(): string {

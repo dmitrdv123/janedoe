@@ -14,6 +14,7 @@ export interface BitcoinService {
   getWalletAddressBalance(walletName: string, label: string): Promise<number>
 
   withdraw(walletName: string, address: string): Promise<string | undefined>
+  refund(walletName: string, address: string, amount: string): Promise<string | undefined>
 }
 
 export class BitcoinServiceImpl implements BitcoinService {
@@ -72,6 +73,62 @@ export class BitcoinServiceImpl implements BitcoinService {
   }
 
   public async withdraw(walletName: string, address: string): Promise<string | undefined> {
+    const wallet = await this.bitcoinDao.loadWallet(walletName)
+    if (!wallet) {
+      throw new Error(`Wallet ${walletName} not found`)
+    }
+
+    const feeRate = await this.bitcoinDao.loadFeeRate()
+    if (!feeRate) {
+      throw new Error('Fee rate not found')
+    }
+
+    const utxos = await this.bitcoinDao.listWalletUtxos(walletName, true)
+    if (utxos.length === 0) {
+      return undefined
+    }
+
+    const utxosFiltered = utxos.filter(utxo => utxo.data.amount > BITCOIN_DUST_AMOUNT)
+    if (utxosFiltered.length === 0) {
+      throw new BitcoinCoreError(-26, `All input UTXOs is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+    }
+
+    const walletAddresses = await this.bitcoinDao.loadWalletAddresses(utxosFiltered.map(utxo => ({
+      walletName, label: utxo.label
+    })))
+    const walletAddressesData = walletAddresses.map(item => item.data)
+    if (walletAddressesData.length === 0) {
+      return undefined
+    }
+
+    const utxosDataFiltered = utxosFiltered.reduce((acc, utxo) => {
+      const exist = walletAddressesData.findIndex(
+        item => item.address.toLocaleLowerCase() === utxo.data.address.toLocaleLowerCase()
+      ) !== -1
+      if (exist) {
+        acc.push(utxo.data)
+      }
+
+      return acc
+    }, [] as BitcoinUtxoData[])
+    if (utxosDataFiltered.length === 0) {
+      return undefined
+    }
+
+    const tx = this.bitcoinUtilsService.createTransaction(walletAddressesData, utxosDataFiltered, address, feeRate)
+
+    const dustIndex = tx.outs.findIndex(out => out.value <= BITCOIN_DUST_AMOUNT_SATOSHI)
+    if (dustIndex !== -1) {
+      throw new BitcoinCoreError(-26, `Output amount after extracting network fee is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+    }
+
+    await this.bitcoinCoreService.sendTransaction(tx)
+    await this.bitcoinDao.saveUtxos(utxos, false)
+
+    return tx.getId()
+  }
+
+  public async refund(walletName: string, address: string, amount: string): Promise<string | undefined> {
     const wallet = await this.bitcoinDao.loadWallet(walletName)
     if (!wallet) {
       throw new Error(`Wallet ${walletName} not found`)

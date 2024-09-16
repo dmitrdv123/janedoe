@@ -161,9 +161,16 @@
       "blockchain_filter_search_placeholder": "Поиск по имени блокчейна",
       "date_from": "С даты",
       "date_to": "По дату",
+      "refund_btn": "Возврат",
+      "refund_modal_title": "Возврат платежа",
+      "refund_address": "Адрес",
+      "refund_address_placeholder": "Адрес для возврата",
+      "refund_amount": "Сумма",
+      "refund_amount_placeholder": "Сумма возврата",
       "errors": {
         "fail_send_notification": "Не удалось отправить уведомление",
-        "fail_load_notification": "Не удалось загрузить уведомление"
+        "fail_load_notification": "Не удалось загрузить уведомление",
+        "refund_fail": "Не удалось осуществить возврат"
       }
     },
     "payment_settings": {
