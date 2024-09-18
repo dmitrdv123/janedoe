@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Form, Modal } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
@@ -10,6 +10,7 @@ import RbacGuard from '../../../Guards/RbacGuard'
 import RefundModalButton from '../RefundModalButton'
 import CurrencyAmount from '../../../CurrencyAmount'
 import { CURRENCY_USD_SYMBOL } from '../../../../constants'
+import { formatToFixed, parseToBigNumber } from '../../../../libs/utils'
 
 interface RefundModalProps {
   paymentHistory: PaymentHistoryData | undefined
@@ -19,8 +20,8 @@ interface RefundModalProps {
 const RefundModal: React.FC<RefundModalProps> = (props) => {
   const { paymentHistory, onUpdate } = props
 
-  const [refundAddress, setRefundAddress] = useState<string | undefined>(paymentHistory?.to)
-  const [refundAmount, setRefundAmount] = useState<string | undefined>(paymentHistory?.amount)
+  const [refundAddress, setRefundAddress] = useState<string | undefined>(undefined)
+  const [refundAmount, setRefundAmount] = useState<string | undefined>(undefined)
 
   const { t } = useTranslation()
 
@@ -32,6 +33,21 @@ const RefundModal: React.FC<RefundModalProps> = (props) => {
       onUpdate(paymentHistory, refundResultToUse)
     }
   }, [onUpdate, paymentHistory])
+
+  const changeRefundAmountHandler = useCallback((amountToUse: string, decimalsToUse: number | null) => {
+    if (!decimalsToUse) {
+      setRefundAmount(amountToUse)
+    } else {
+      const amountNum = parseFloat(amountToUse)
+      const amountBigInt = parseToBigNumber(amountNum, decimalsToUse)
+      setRefundAmount(amountBigInt.toString())
+    }
+  }, [])
+
+  useEffect(() => {
+    setRefundAddress(paymentHistory?.from ?? '')
+    setRefundAmount(paymentHistory?.amount ?? '')
+  }, [paymentHistory?.amount, paymentHistory?.from])
 
   return (
     <Modal show={modalOpen} onHide={toggleModal}>
@@ -58,8 +74,8 @@ const RefundModal: React.FC<RefundModalProps> = (props) => {
               <Form.Control
                 type="text"
                 placeholder={t('components.payments.refund_amount_placeholder')}
-                onChange={event => setRefundAmount(event.target.value)}
-                value={refundAmount ?? ''}
+                onChange={event => changeRefundAmountHandler(event.target.value, paymentHistory.tokenDecimals)}
+                value={refundAmount && paymentHistory.tokenDecimals ? formatToFixed(refundAmount, paymentHistory.tokenDecimals) : refundAmount}
               />
               {(paymentHistory.currency?.toLocaleLowerCase() !== CURRENCY_USD_SYMBOL) && (
                 <Form.Text muted className='me-1'>
@@ -79,8 +95,7 @@ const RefundModal: React.FC<RefundModalProps> = (props) => {
 
             <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
               <RefundModalButton
-                paymentId={paymentHistory.paymentId}
-                blockchain={paymentHistory.blockchain ?? undefined}
+                paymentHistory={paymentHistory}
                 refundAddress={refundAddress}
                 refundAmount={refundAmount}
                 onUpdate={updateHandler}

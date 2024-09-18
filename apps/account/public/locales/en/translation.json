@@ -170,7 +170,7 @@
       "errors": {
         "fail_send_notification": "Failed to send notification",
         "fail_load_notification": "Failed load notification",
-        "refund_fail": "Failed to refund"
+        "fail_refund": "Failed to refund"
       }
     },
     "payment_settings": {

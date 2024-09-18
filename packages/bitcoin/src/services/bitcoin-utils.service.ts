@@ -11,7 +11,7 @@ import { BITCOIN_DECIMALS, BITCOIN_DUST_AMOUNT } from '../constants'
 export interface BitcoinUtilsService {
   generateRootWallet(): BitcoinWalletData
   generateChildWallet(rootWalletData: BitcoinWalletData, index: number): BitcoinWalletAddressData
-  createTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], address: string, feeRate: number): bitcoin.Transaction
+  createTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, addressRest: string, value: bigint, disableFeeCheck?: boolean): bitcoin.Transaction
 }
 
 export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
@@ -56,25 +56,13 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     return { wif, address }
   }
 
-  public createTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], address: string, feeRate: number): bitcoin.Transaction {
-    const totalInputValue = utxosData.reduce(
-      (acc, utxoData) => acc + parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS), BigInt(0)
-    )
-
-    const estimateFeeTx = this.doCreateTransaction(walletAddressData, utxosData, feeRate, address, parseBigIntToNumber(totalInputValue), true)
-
-    const fee = BigInt(Math.ceil(estimateFeeTx.virtualSize() * feeRate))
-    const outputValue = totalInputValue - fee
-
-    return this.doCreateTransaction(walletAddressData, utxosData, feeRate, address, parseBigIntToNumber(outputValue))
-  }
-
-  private doCreateTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, value: number, disableFeeCheck?: boolean): bitcoin.Transaction {
+  public createTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, addressRest: string, value: bigint, disableFeeCheck?: boolean): bitcoin.Transaction {
     const factory = ECPairFactory(ecc)
 
     const psbt = new bitcoin.Psbt({ network: this.network })
 
     const wifs: string[] = []
+    let totalInputAmount = BigInt(0)
     utxosData.forEach(utxoData => {
       const data = walletAddressData.find(item => item.address.toLocaleLowerCase() === utxoData.address.toLocaleLowerCase())
       if (!data) {
@@ -88,6 +76,7 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
       wifs.push(data.wif)
 
       const amount = parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS)
+      totalInputAmount += amount
       psbt.addInput({
         hash: utxoData.txid,
         index: utxoData.vout,
@@ -98,7 +87,11 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
       })
     })
 
-    psbt.addOutput({ address, value })
+    psbt.addOutput({ address, value: parseBigIntToNumber(value) })
+    const valueRest = totalInputAmount - value
+    if (valueRest > BITCOIN_DUST_AMOUNT) {
+      psbt.addOutput({ address: addressRest, value: parseBigIntToNumber(valueRest) })
+    }
 
     for (let i = 0; i < psbt.inputCount; ++i) {
       const keyPair = factory.fromWIF(wifs[i], this.network)

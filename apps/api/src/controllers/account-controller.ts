@@ -220,23 +220,18 @@ export class AccountController {
       assertParam('transaction', req.params.transaction, TRANSACTION_MAX_LENGTH)
       const index = tryParseInt(req.params.index)
       assertNumberParam('index', index)
-      const timestamp = tryParseInt(req.params.timestamp)
-      assertNumberParam('timestamp', timestamp)
 
       const { refundAddress, refundAmount } = req.body
       assertParam('refund address', refundAddress, ADDRESS_MAX_LENGTH)
       assertParam('refund amount', refundAmount)
 
       const txid = await this.accountService.refund(
-        {
-          accountId: req.params.id,
-          paymentId: req.params.paymentId,
-          blockchain: req.params.blockchain,
-          transaction: req.params.transaction,
-          index: index as number,
-          timestamp: timestamp as number
-        },
-        refundAddress, refundAmount
+        req.params.id,
+        req.params.blockchain,
+        req.params.transaction,
+        index as number,
+        refundAddress,
+        refundAmount
       )
       res.send({ txid })
     } catch (err) {

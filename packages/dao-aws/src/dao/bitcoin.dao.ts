@@ -220,6 +220,25 @@ export class BitcoinDaoImpl implements BitcoinDao {
     utxos.forEach(utxo => this.cacheService.set(`utxo#${utxo.data.txid}#${utxo.data.vout}`, utxo))
   }
 
+  public async loadUtxo(key: BitcoinUtxoDataKey, active: boolean): Promise<BitcoinUtxo | undefined> {
+    const result = await this.dynamoService.readItem({
+      TableName: appConfig.TABLE_NAME,
+      Key: marshall({
+        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX),
+        sk: generateKey(key.txid, key.vout)
+      })
+    })
+
+    if (result.Item) {
+      const item = unmarshall(result.Item)
+      if (item.active === active) {
+        return item.utxo
+      }
+    }
+
+    return undefined
+  }
+
   public async deleteUtxos(keys: BitcoinUtxoDataKey[]): Promise<void> {
     const deleteRequests = keys.map(key => ({
       DeleteRequest: {

@@ -16,7 +16,7 @@ import { CryptoService } from './crypto-service'
 import { IpnService } from './ipn-service'
 import { PaymentHistory, PaymentHistoryResponse } from '../interfaces/payment-history'
 import { PaymentLogService } from './payment-log-service'
-import { convertPaymentLogToPaymentHistoryData, getAddressOrDefault, isNullOrEmptyOrWhitespaces, isValidUrl, loadFile } from '../utils/utils'
+import { convertPaymentLogToPaymentHistoryData, getAddressOrDefault, isNullOrEmptyOrWhitespaces, isValidUrl } from '../utils/utils'
 import { ExchangeRateApiService } from './exchange-rate-api-service'
 import { MetaService } from './meta-service'
 import { PaymentLogKey } from '../interfaces/payment-log'
@@ -47,7 +47,7 @@ export interface AccountService {
 
   balance(id: string, blockchain: string): Promise<number>
   withdraw(id: string, blockchain: string, address: string): Promise<string | undefined>
-  refund(paymentLogKey: PaymentLogKey, address: string, amount: string): Promise<string | undefined>
+  refund(id: string, blockchain: string, transaction: string, index: number, address: string, amount: string): Promise<string | undefined>
   loadIpn(ipnKey: IpnKey): Promise<IpnData | undefined>
   sendIpn(ipnKey: IpnKey): Promise<IpnResult>
 
@@ -421,13 +421,19 @@ export class AccountServiceImpl implements AccountService {
     }
   }
 
-  public async refund(paymentLogKey: PaymentLogKey, address: string, amount: string): Promise<string | undefined> {
-    const { accountId, blockchain } = paymentLogKey
-
+  public async refund(id: string, blockchain: string, transaction: string, index: number, address: string, amount: string): Promise<string | undefined> {
     switch (blockchain.toLocaleLowerCase()) {
       case BLOCKCHAIN_BTC:
         try {
-          return await this.bitcoinService.refund(accountId, address, amount)
+          return await this.bitcoinService.refund(
+            id,
+            {
+              txid: transaction,
+              vout: index
+            },
+            address,
+            amount
+          )
         } catch (err) {
           if (err instanceof BitcoinCoreError) {
             const bitcoinCoreError = err as BitcoinCoreError

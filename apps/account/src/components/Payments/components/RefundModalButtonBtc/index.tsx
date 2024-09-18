@@ -1,70 +1,70 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, Button, Spinner } from 'react-bootstrap'
-import { BlockchainMeta } from 'rango-sdk-basic'
+import { Button, Spinner } from 'react-bootstrap'
 
-import { useInfoMessages } from '../../../../states/application/hook'
 import useApiRequest from '../../../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../../../libs/services/api-wrapper'
 import { INFO_MESSAGE_PAYMENT_HISTORY_REFUND_ERROR } from '../../../../constants'
 import { RefundResult } from '../../../../types/refund-result'
+import { PaymentHistoryData } from '../../../../types/payment-history'
+import InfoMessageAlert from '../../../InfoMessageAlert'
+import { InfoMessage } from '../../../../types/info-message'
 
 interface RefundModalButtonBtcProps {
-  paymentId: string | undefined
-  blockchain: BlockchainMeta | undefined
+  paymentHistory: PaymentHistoryData | undefined
   refundAddress: string | undefined
   refundAmount: string | undefined
   onUpdate: (refundResult: RefundResult) => void
 }
 
 const RefundModalButtonBtc: React.FC<RefundModalButtonBtcProps> = (props) => {
-  const { paymentId, blockchain, refundAddress, refundAmount, onUpdate } = props
+  const { paymentHistory, refundAddress, refundAmount, onUpdate } = props
+
+  const [infoMessage, setInfoMessage] = useState<InfoMessage | undefined>(undefined)
 
   const { t } = useTranslation()
-  const { addInfoMessage, removeInfoMessage } = useInfoMessages()
   const { status: refundStatus, process: refund } = useApiRequest<RefundResult>()
 
   const refundHandler = useCallback(async () => {
-    removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_REFUND_ERROR)
-
-    if (!paymentId || !blockchain || !refundAddress || !refundAmount) {
+    if (!paymentHistory || !refundAddress || !refundAmount) {
       return
     }
 
     try {
       const updatedIpnResult = await refund(ApiWrapper.instance.refundRequest(
-        paymentId, blockchain.name, refundAddress, refundAmount
+        paymentHistory.paymentId, paymentHistory.blockchainName, paymentHistory.transaction, paymentHistory.index, refundAddress, refundAmount
       ))
       if (updatedIpnResult) {
         onUpdate(updatedIpnResult)
       }
     } catch (error) {
-      addInfoMessage(
-        t('components.payments.errors.fail_refund'),
-        INFO_MESSAGE_PAYMENT_HISTORY_REFUND_ERROR,
-        'danger',
-        error
-      )
+      setInfoMessage({
+        error,
+        key: INFO_MESSAGE_PAYMENT_HISTORY_REFUND_ERROR,
+        content: t('components.payments.errors.fail_refund'),
+        variant: 'danger'
+      })
     }
-  }, [paymentId, blockchain, refundAddress, refundAmount, t, onUpdate, refund, addInfoMessage, removeInfoMessage])
+  }, [paymentHistory, refundAddress, refundAmount, t, refund, onUpdate])
 
   return (
-    <div className='mt-3'>
-      <Button variant="primary" disabled={refundStatus === 'processing'} onClick={() => refundHandler()}>
-        {t('components.payments.refund_btn')}
-        {(refundStatus === 'processing') && (
-          <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
-            <span className="visually-hidden">{t('common.saving')}</span>
-          </Spinner>
-        )}
-      </Button>
-
-      {(refundStatus === 'error') && (
-        <Alert variant='danger' className='mt-3 w-100'>
-          {t('components.payments.errors.refund_fail')}
-        </Alert>
+    <>
+      <div className='mt-3'>
+        <Button variant="primary" disabled={refundStatus === 'processing' || !paymentHistory || !refundAddress || !refundAmount} onClick={() => refundHandler()}>
+          {t('components.payments.refund_btn')}
+          {(refundStatus === 'processing') && (
+            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
+              <span className="visually-hidden">{t('common.saving')}</span>
+            </Spinner>
+          )}
+        </Button>
+      </div>
+      {(infoMessage) && (
+        <div className='mt-3'>
+          <InfoMessageAlert infoMessage={infoMessage} />
+        </div>
       )}
-    </div>
+    </>
   )
 }
 

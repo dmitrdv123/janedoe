@@ -170,7 +170,7 @@
       "errors": {
         "fail_send_notification": "Не удалось отправить уведомление",
         "fail_load_notification": "Не удалось загрузить уведомление",
-        "refund_fail": "Не удалось осуществить возврат"
+        "fail_refund": "Не удалось осуществить возврат"
       }
     },
     "payment_settings": {

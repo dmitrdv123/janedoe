@@ -83,7 +83,7 @@ export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
           block: tx.data.blockhash,
           timestamp: tx.data.time,
           transaction: tx.data.txid,
-          index: tx.data.blockheight,
+          index: tx.data.vout,
         }
 
         return paymentLog

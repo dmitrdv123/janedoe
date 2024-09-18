@@ -233,9 +233,9 @@ export class ApiWrapper {
     }
   }
 
-  public refundRequest(paymentId: string, blockchain: string, refundAddress: string, refundAmount: string): ApiRequest {
+  public refundRequest(paymentId: string, blockchain: string, transaction: string, index: number, refundAddress: string, refundAmount: string): ApiRequest {
     return {
-      url: this.getRefundUrl(),
+      url: this.getRefundUrl(paymentId, blockchain, transaction, index),
       method: 'POST',
       body: JSON.stringify({
         paymentId, blockchain, refundAddress, refundAmount
@@ -344,8 +344,8 @@ export class ApiWrapper {
     return `{baseUrlApi}/api/account/ipn/{id}`
   }
 
-  private getRefundUrl(): string {
-    return `{baseUrlApi}/api/account/refund/{id}`
+  private getRefundUrl(paymentId: string, blockchain: string, transaction: string, index: number): string {
+    return `{baseUrlApi}/api/account/refund/{id}/${paymentId}/${blockchain}/${transaction}/${index}`
   }
 
   private getAccountSupportTicketUrl(): string {
