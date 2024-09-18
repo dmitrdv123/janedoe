@@ -19,19 +19,19 @@ const MonitorPayments: React.FC = () => {
             Let's make the payment. Open the main page <a href={`${config.config?.baseUrlAccount}/#home`} target="_blank">JaneDoe</a> and follow the example link provided there
           </p>
           <p>
-            <Image src='locales/en/img/monitor_payment_1.png' fluid />
+            <Image src='../locales/en/img/monitor_payment_1.png' fluid />
           </p>
           <p>
             A payment form will be opened. Make a payment.
           </p>
           <p>
-            <Image src='locales/en/img/monitor_payment_2.png' fluid />
+            <Image src='../locales/en/img/monitor_payment_2.png' fluid />
           </p>
           <p>
             Return to the admin UI to the <a href={`${config.config?.baseUrlAccount}/#payments`} target="_blank">Payments</a> page. You will be able to see this payment with amount in cryptocurrency, in fiat currency at the payment time and at the current moment. Please note that you need to check that this payment has received the amount you expect. Because the payment amount is passed in the URL parameters and is not recorded anywhere else.
           </p>
           <p>
-            <Image src='locales/en/img/monitor_payment_3.png' fluid />
+            <Image src='../locales/en/img/monitor_payment_3.png' fluid />
           </p>
         </>
       )}
@@ -42,19 +42,19 @@ const MonitorPayments: React.FC = () => {
             Давайте совершим платеж. Откройте главную страницу <a href={`${config.config?.baseUrlAccount}/#home`} target="_blank">JaneDoe</a> и перейдите по указанной там ссылке примеру
           </p>
           <p>
-            <Image src='locales/ru/img/monitor_payment_1.png' fluid />
+            <Image src='../locales/ru/img/monitor_payment_1.png' fluid />
           </p>
           <p>
             Откроется форма для платежа. Совершите платеж.
           </p>
           <p>
-            <Image src='locales/ru/img/monitor_payment_2.png' fluid />
+            <Image src='../locales/ru/img/monitor_payment_2.png' fluid />
           </p>
           <p>
             Вернитесь в интерфейс администратора на страницу <a href={`${config.config?.baseUrlAccount}/#payments`} target="_blank">Платежи</a>. Вы сможете увидеть этот платеж с суммой в криптовалюте, в фиатной валюте на момент платежа и на текущий момент. Обратите внимание, что вам необходимо проверять, что по данному платежу пришла сумма, которую вы ожидаете. Потому что сумма платежа передается в параметрах URL и нигде больше не фиксируется.
           </p>
           <p>
-            <Image src='locales/ru/img/monitor_payment_3.png' fluid />
+            <Image src='../locales/ru/img/monitor_payment_3.png' fluid />
           </p>
         </>
       )}

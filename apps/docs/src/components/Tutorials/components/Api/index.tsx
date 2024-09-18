@@ -34,7 +34,7 @@ const Api: React.FC = () => {
             In order to use the API, you need to generate an <code>API Key</code> on the page <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Account Settings</ a> in the <code>API Settings</code> section.
           </p>
           <p>
-            <Image src='locales/en/img/api_settings_1.png' fluid />
+            <Image src='../locales/en/img/api_settings_1.png' fluid />
           </p>
 
           <h4>
@@ -281,7 +281,7 @@ export interface TransferBlockchainMeta {
           Для того чтобы воспользоваться API вам необходимо сгенерировать <code>Ключ API</code> на странице <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Настройки аккаунта</a> в разделе <code>Настройки API</code>.
         </p>
         <p>
-          <Image src='locales/ru/img/api_settings_1.png' fluid />
+          <Image src='../locales/ru/img/api_settings_1.png' fluid />
         </p>
 
         <h4>

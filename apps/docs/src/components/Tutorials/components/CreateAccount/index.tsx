@@ -22,31 +22,31 @@ const CreateAccount: React.FC = () => {
             Open <a href={config.config?.baseUrlAccount} target="_blank">JaneDoe</a> and click on the button <code>Connect Wallet</code>.
           </p>
           <p>
-            <Image src='locales/en/img/create_account_1.png' fluid/>
+            <Image src='../locales/en/img/create_account_1.png' fluid/>
           </p>
           <p>
             Select on the installed crypto wallet, for example, Metamask.
           </p>
           <p>
-            <Image src='locales/en/img/create_account_2.png' fluid/>
+            <Image src='../locales/en/img/create_account_2.png' fluid/>
           </p>
           <p>
             Click on the button <code>Sign In or Sign Up</code>
           </p>
           <p>
-            <Image src='locales/en/img/create_account_3.png' fluid/>
+            <Image src='../locales/en/img/create_account_3.png' fluid/>
           </p>
           <p>
             Your wallet will ask you to sign a "one time nonce". Click on the button <code>Sign</code>. There is no gas fee for this action since there is no interaction with the real blockchain. This is necessary for cryptographically verification that you are the owner of wallet.
           </p>
           <p>
-            <Image src='locales/en/img/create_account_4.png' fluid/>
+            <Image src='../locales/en/img/create_account_4.png' fluid/>
           </p>
           <p>
             Your account will be successfully created and you will be able to accept payments.
           </p>
           <p>
-            <Image src='locales/en/img/create_account_5.png' fluid/>
+            <Image src='../locales/en/img/create_account_5.png' fluid/>
           </p>
         </>
       )}
@@ -59,23 +59,23 @@ const CreateAccount: React.FC = () => {
         <p>
           Откройте <a href={config.config?.baseUrlAccount} target="_blank">JaneDoe</a> и нажмите на кнопку <code>Подключить кошелек</code>.
         </p>
-        <Image src='locales/ru/img/create_account_1.png' fluid/>
+        <Image src='../locales/ru/img/create_account_1.png' fluid/>
         <p>
           Выберите установленный криптокошелек, например, Metamask.
         </p>
-        <Image src='locales/ru/img/create_account_2.png' fluid/>
+        <Image src='../locales/ru/img/create_account_2.png' fluid/>
         <p>
           Нажмите на кпопку <code>Войти или зарегистрироваться</code>
         </p>
-        <Image src='locales/ru/img/create_account_3.png' fluid/>
+        <Image src='../locales/ru/img/create_account_3.png' fluid/>
         <p>
           Ваш кошелек попросит вас подписать "one time nonce". Нажмите на кнопку <code>Sign</code>. Плата за газ за это действие не взимается, так как нет взаимодействия с реальным блокчейном. Это необходимо, чтобы криптографическим способом убедиться, что вы владелец кошелька.
         </p>
-        <Image src='locales/ru/img/create_account_4.png' fluid/>
+        <Image src='../locales/ru/img/create_account_4.png' fluid/>
         <p>
           Ваш аккаунт будет успешно создан и вы сможете принимать платежи.
         </p>
-        <Image src='locales/ru/img/create_account_5.png' fluid/>
+        <Image src='../locales/ru/img/create_account_5.png' fluid/>
       </>
       )}
     </>

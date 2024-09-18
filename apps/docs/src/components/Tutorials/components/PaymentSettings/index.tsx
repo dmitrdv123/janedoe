@@ -23,13 +23,13 @@ const PaymentSettings: React.FC = () => {
             You are ready to accept Bitcoins and USDT stablecoins on Ethereum blockchain and your settings are following:
           </p>
           <p>
-            <Image src='locales/en/img/payment_settings_1.png' fluid />
+            <Image src='../locales/en/img/payment_settings_1.png' fluid />
           </p>
           <p>
             The user opens the payment form and selects blockchain Ethereum and token ETH. The token are not included in Payment settings.
           </p>
           <p>
-            <Image src='locales/en/img/payment_settings_2.png' fluid />
+            <Image src='../locales/en/img/payment_settings_2.png' fluid />
           </p>
           <p>
             As you can see, the payment form will tell him that his token will be converted into USDT on Ethereum and sent to the shop. It means, that you will receive not volatile ETH, but stablecoins USDT.
@@ -51,7 +51,7 @@ const PaymentSettings: React.FC = () => {
             You are ready to accept payments only USDT and USDC on Ethereum and USDT on Hardhat blockchain:
           </p>
           <p>
-            <Image src='locales/en/img/payment_settings_3.png' fluid />
+            <Image src='../locales/en/img/payment_settings_3.png' fluid />
           </p>
           <p>
             And user decided to pay ETH on Ethereum blockchain. Then:
@@ -98,13 +98,13 @@ const PaymentSettings: React.FC = () => {
             Вы готовы принимать платежи только в Bitcoin и стейблкоинах USDT на блокчейне Ethereum и ваши настройки следующие:
           </p>
           <p>
-            <Image src='locales/ru/img/payment_settings_1.png' fluid />
+            <Image src='../locales/ru/img/payment_settings_1.png' fluid />
           </p>
           <p>
             Пользователь открывает форму оплаты и выбирает блокчейн Hardhat и токен ETH. Токен не включен в Настройки платежей.
           </p>
           <p>
-            <Image src='locales/ru/img/payment_settings_2.png' fluid />
+            <Image src='../locales/ru/img/payment_settings_2.png' fluid />
           </p>
           <p>
             Как вы видите, форма оплаты подскажет ему, что его токен будет сконвертирован в USDT и отправлен продавцу. Это означает, что вы получите не волатильный ETH, а стейблкоин USDT.
@@ -126,7 +126,7 @@ const PaymentSettings: React.FC = () => {
             Вы готовы принимать платежи только в USDT и USDC на Ethereum и USDT на блокчейне Hardhat:
           </p>
           <p>
-            <Image src='locales/ru/img/payment_settings_3.png' fluid />
+            <Image src='../locales/ru/img/payment_settings_3.png' fluid />
           </p>
           <p>
             И пользователь решил расплатиться ETH в блокчейне Ethereum. Тогда:
