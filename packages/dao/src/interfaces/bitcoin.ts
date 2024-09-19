@@ -41,7 +41,7 @@ export interface BitcoinWalletAddressData {
 
 export interface BitcoinWalletAmount {
   address: string
-  amount: number
+  amount: bigint
 }
 
 export interface BitcoinWalletAddress {

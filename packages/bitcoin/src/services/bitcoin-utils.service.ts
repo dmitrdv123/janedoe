@@ -58,8 +58,6 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
   }
 
   public createTransaction(walletAddressesData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, addressRest: string, amount: bigint): bitcoin.Transaction {
-    console.log(`debug >> BitcoinUtilsService, createTransaction: start to createTransaction with amount ${amount}`)
-
     const utxosDataFiltered = utxosData.filter(utxoData => utxoData.amount > BITCOIN_DUST_AMOUNT)
     if (utxosDataFiltered.length === 0) {
       throw new BitcoinCoreError(-26, `All input UTXOs is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
@@ -68,62 +66,47 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     const amountTotal = utxosDataFiltered.reduce(
       (acc, utxoData) => acc + parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS), BigInt(0)
     )
-    console.log(`debug >> BitcoinUtilsService, createTransaction: amountTotal ${amountTotal}`)
 
     if (amountTotal - amount > BITCOIN_DUST_AMOUNT_SATOSHI) {
-      console.log(`debug >> BitcoinUtilsService, createTransaction: start to estimate transaction with rest output`)
-
       const outputsToEstimate: BitcoinWalletAmount[] = [
         {
-          address, amount: parseBigIntToNumber(amount)
+          address, amount
         },
         {
-          address: addressRest, amount: parseBigIntToNumber(amountTotal - amount)
+          address: addressRest, amount: amountTotal - amount
         }
       ]
-      console.log(`debug >> BitcoinUtilsService, createTransaction: outputsToEstimate ${JSON.stringify(outputsToEstimate)}`)
 
       const estimateFeeTx2Outputs = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
       const fee = BigInt(Math.ceil(estimateFeeTx2Outputs.virtualSize() * feeRate))
       if (amountTotal - amount - fee > BITCOIN_DUST_AMOUNT_SATOSHI) {
-        console.log(`debug >> BitcoinUtilsService, createTransaction: start to create transaction with rest output`)
-
         const outputs: BitcoinWalletAmount[] = [
           {
-            address, amount: parseBigIntToNumber(amount - fee)
+            address, amount: amount - fee
           },
           {
-            address: addressRest, amount: parseBigIntToNumber(amountTotal - amount - fee)
+            address: addressRest, amount: amountTotal - amount
           }
         ]
-        console.log(`debug >> BitcoinUtilsService, createTransaction: outputs ${JSON.stringify(outputs)}`)
-
         return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
       }
     }
 
     if (amount > BITCOIN_DUST_AMOUNT_SATOSHI) {
-      console.log(`debug >> BitcoinUtilsService, createTransaction: start to estimate transaction without rest output`)
-
       const outputsToEstimate: BitcoinWalletAmount[] = [
         {
-          address, amount: parseBigIntToNumber(amount)
+          address, amount
         }
       ]
-      console.log(`debug >> BitcoinUtilsService, createTransaction: outputsToEstimate ${JSON.stringify(outputsToEstimate)}`)
 
       const estimateFeeTx1Outputs = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
       const fee = BigInt(Math.ceil(estimateFeeTx1Outputs.virtualSize() * feeRate))
       if (amount - fee > BITCOIN_DUST_AMOUNT_SATOSHI) {
-        console.log(`debug >> BitcoinUtilsService, createTransaction: start to create transaction with rest output`)
-
         const outputs: BitcoinWalletAmount[] = [
           {
-            address, amount: parseBigIntToNumber(amount - fee)
+            address, amount: amount - fee
           }
         ]
-        console.log(`debug >> BitcoinUtilsService, createTransaction: outputs ${JSON.stringify(outputs)}`)
-
         return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
       }
     }
@@ -143,20 +126,21 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
         throw new Error('Wallet address data not found')
       }
 
-      wifs.push(data.wif)
+      const amount = parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS)
       psbt.addInput({
         hash: utxoData.txid,
         index: utxoData.vout,
         witnessUtxo: {
           script: bitcoin.address.toOutputScript(utxoData.address, this.network),
-          value: utxoData.amount
+          value: parseBigIntToNumber(amount)
         }
       })
+      wifs.push(data.wif)
     })
 
     outputs.forEach(output => psbt.addOutput({
       address: output.address,
-      value: output.amount
+      value: parseBigIntToNumber(output.amount)
     }))
 
     for (let i = 0; i < psbt.inputCount; ++i) {
