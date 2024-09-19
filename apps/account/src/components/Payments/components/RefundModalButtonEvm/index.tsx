@@ -6,22 +6,22 @@ import { useInfoMessages } from '../../../../states/application/hook'
 import useApiRequest from '../../../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../../../libs/services/api-wrapper'
 import { INFO_MESSAGE_PAYMENT_HISTORY_REFUND_ERROR } from '../../../../constants'
-import { RefundResult } from '../../../../types/refund-result'
 import { PaymentHistoryData } from '../../../../types/payment-history'
+import { AccountBlockchainRefund } from '../../../../types/account-blockchain-refund-result'
 
 interface RefundModalButtonEvmProps {
   paymentHistory: PaymentHistoryData | undefined
   refundAddress: string | undefined
   refundAmount: string | undefined
-  onUpdate: (refundResult: RefundResult) => void
+  onSuccess: (paymentHistory: PaymentHistoryData, hash: string | undefined) => void
 }
 
 const RefundModalButtonEvm: React.FC<RefundModalButtonEvmProps> = (props) => {
-  const { paymentHistory, refundAddress, refundAmount, onUpdate } = props
+  const { paymentHistory, refundAddress, refundAmount, onSuccess } = props
 
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
-  const { status: refundStatus, process: refund } = useApiRequest<RefundResult>()
+  const { status: refundStatus, process: refund } = useApiRequest<AccountBlockchainRefund>()
 
   const refundHandler = useCallback(async () => {
     removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_REFUND_ERROR)
@@ -31,12 +31,10 @@ const RefundModalButtonEvm: React.FC<RefundModalButtonEvmProps> = (props) => {
     }
 
     try {
-      const updatedIpnResult = await refund(ApiWrapper.instance.refundRequest(
+      const result = await refund(ApiWrapper.instance.refundRequest(
         paymentHistory.paymentId, paymentHistory.blockchainName, paymentHistory.transaction, paymentHistory.index, refundAddress, refundAmount
       ))
-      if (updatedIpnResult) {
-        onUpdate(updatedIpnResult)
-      }
+      onSuccess(paymentHistory, result?.txid)
     } catch (error) {
       addInfoMessage(
         t('components.payments.errors.fail_refund'),
@@ -45,7 +43,7 @@ const RefundModalButtonEvm: React.FC<RefundModalButtonEvmProps> = (props) => {
         error
       )
     }
-  }, [paymentHistory, refundAddress, refundAmount, t, onUpdate, refund, addInfoMessage, removeInfoMessage])
+  }, [paymentHistory, refundAddress, refundAmount, t, onSuccess, refund, addInfoMessage, removeInfoMessage])
 
   return (
     <div className='mt-3'>

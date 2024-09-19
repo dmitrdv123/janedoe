@@ -5,25 +5,25 @@ import { Button, Spinner } from 'react-bootstrap'
 import useApiRequest from '../../../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../../../libs/services/api-wrapper'
 import { INFO_MESSAGE_PAYMENT_HISTORY_REFUND_ERROR } from '../../../../constants'
-import { RefundResult } from '../../../../types/refund-result'
 import { PaymentHistoryData } from '../../../../types/payment-history'
 import InfoMessageAlert from '../../../InfoMessageAlert'
 import { InfoMessage } from '../../../../types/info-message'
+import { AccountBlockchainRefund } from '../../../../types/account-blockchain-refund-result'
 
 interface RefundModalButtonBtcProps {
   paymentHistory: PaymentHistoryData | undefined
   refundAddress: string | undefined
   refundAmount: string | undefined
-  onUpdate: (refundResult: RefundResult) => void
+  onSuccess: (paymentHistory: PaymentHistoryData, hash: string | undefined) => void
 }
 
 const RefundModalButtonBtc: React.FC<RefundModalButtonBtcProps> = (props) => {
-  const { paymentHistory, refundAddress, refundAmount, onUpdate } = props
+  const { paymentHistory, refundAddress, refundAmount, onSuccess } = props
 
   const [infoMessage, setInfoMessage] = useState<InfoMessage | undefined>(undefined)
 
   const { t } = useTranslation()
-  const { status: refundStatus, process: refund } = useApiRequest<RefundResult>()
+  const { status: refundStatus, process: refund } = useApiRequest<AccountBlockchainRefund>()
 
   const refundHandler = useCallback(async () => {
     if (!paymentHistory || !refundAddress || !refundAmount) {
@@ -31,12 +31,10 @@ const RefundModalButtonBtc: React.FC<RefundModalButtonBtcProps> = (props) => {
     }
 
     try {
-      const updatedIpnResult = await refund(ApiWrapper.instance.refundRequest(
+      const result = await refund(ApiWrapper.instance.refundRequest(
         paymentHistory.paymentId, paymentHistory.blockchainName, paymentHistory.transaction, paymentHistory.index, refundAddress, refundAmount
       ))
-      if (updatedIpnResult) {
-        onUpdate(updatedIpnResult)
-      }
+      onSuccess(paymentHistory, result?.txid)
     } catch (error) {
       setInfoMessage({
         error,
@@ -45,7 +43,7 @@ const RefundModalButtonBtc: React.FC<RefundModalButtonBtcProps> = (props) => {
         variant: 'danger'
       })
     }
-  }, [paymentHistory, refundAddress, refundAmount, t, refund, onUpdate])
+  }, [paymentHistory, refundAddress, refundAmount, t, refund, onSuccess])
 
   return (
     <>

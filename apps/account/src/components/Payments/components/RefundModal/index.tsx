@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { useModalIsOpen, useToggleModal } from '../../../../states/application/hook'
 import { ApplicationModal } from '../../../../types/application-modal'
 import { PaymentHistoryData } from '../../../../types/payment-history'
-import { RefundResult } from '../../../../types/refund-result'
 import RbacGuard from '../../../Guards/RbacGuard'
 import RefundModalButton from '../RefundModalButton'
 import CurrencyAmount from '../../../CurrencyAmount'
@@ -14,11 +13,11 @@ import { formatToFixed, parseToBigNumber } from '../../../../libs/utils'
 
 interface RefundModalProps {
   paymentHistory: PaymentHistoryData | undefined
-  onUpdate: (paymentHistoryToUse: PaymentHistoryData, refundResult: RefundResult) => void
+  onSuccess: (paymentHistory: PaymentHistoryData, hash: string | undefined) => void
 }
 
 const RefundModal: React.FC<RefundModalProps> = (props) => {
-  const { paymentHistory, onUpdate } = props
+  const { paymentHistory, onSuccess } = props
 
   const [refundAddress, setRefundAddress] = useState<string | undefined>(undefined)
   const [refundAmount, setRefundAmount] = useState<string | undefined>(undefined)
@@ -28,11 +27,10 @@ const RefundModal: React.FC<RefundModalProps> = (props) => {
   const modalOpen = useModalIsOpen(ApplicationModal.REFUND)
   const toggleModal = useToggleModal(ApplicationModal.REFUND)
 
-  const updateHandler = useCallback((refundResultToUse: RefundResult) => {
-    if (paymentHistory) {
-      onUpdate(paymentHistory, refundResultToUse)
-    }
-  }, [onUpdate, paymentHistory])
+  const successHandler = useCallback((paymentHistoryToUse: PaymentHistoryData, hashToUse: string | undefined) => {
+    toggleModal()
+    onSuccess(paymentHistoryToUse, hashToUse)
+  }, [toggleModal, onSuccess])
 
   const changeRefundAmountHandler = useCallback((amountToUse: string, decimalsToUse: number | null) => {
     if (!decimalsToUse) {
@@ -98,7 +96,7 @@ const RefundModal: React.FC<RefundModalProps> = (props) => {
                 paymentHistory={paymentHistory}
                 refundAddress={refundAddress}
                 refundAmount={refundAmount}
-                onUpdate={updateHandler}
+                onSuccess={successHandler}
               />
             } />
           </Form>

@@ -25,12 +25,14 @@ import useApiRequest from '../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
 import TokenDetails from '../TokenDetails'
 import usePaymentHistoryUpdates from '../../libs/hooks/usePaymentHistoryUpdates'
+import { RefundResult } from '../../types/refund-result'
 
 const Payments: React.FC = () => {
   const [paymentHistoryLoadTimestamp, setPaymentHistoryLoadTimestamp] = useState<number>(Math.floor(Date.now() / 1000))
   const [paymentHistoryData, setPaymentHistoryData] = useState<PaymentHistoryData[] | undefined>(undefined)
   const [selectedPaymentHistory, setSelectedPaymentHistory] = useState<PaymentHistoryData | undefined>(undefined)
   const [paymentHistoryDataFilter, setPaymentHistoryDataFilter] = useState<PaymentHistoryDataFilter>(EMPTY_PAYMENT_HISTORY_DATA_FILTER)
+  const [refundResults, setRefundResults] = useState<{ [key: string]: RefundResult }>({})
 
   const paymentHistoryDataFilterRef = useRef<PaymentHistoryDataFilter>(paymentHistoryDataFilter)
   const observer = useRef<IntersectionObserver>()
@@ -107,8 +109,25 @@ const Payments: React.FC = () => {
     )
   }, [])
 
-  const updateRefundHandler = useCallback(() => {
+  const successRefundHandler = useCallback((paymentHistoryToUse: PaymentHistoryData, hashToUse: string | undefined) => {
+    setRefundResults(val => {
+      if (val[paymentHistoryToUse.blockchainName] && val[paymentHistoryToUse.blockchainName].hash === hashToUse) {
+        return val
+      }
+
+      const res = { ...val }
+      res[paymentHistoryToUse.blockchainName] = { paymentHistory: paymentHistoryToUse, hash: hashToUse }
+      return res
+    })
   }, [])
+
+  const removeRefundResultHandler = (blockchain: string) => {
+    setRefundResults(val => {
+      const res = { ...val }
+      delete res[blockchain]
+      return res
+    })
+  }
 
   const refreshPaymentHistoryHandler = useCallback(() => {
     setPaymentHistoryLoadTimestamp(Math.floor(Date.now() / 1000))
@@ -268,7 +287,19 @@ const Payments: React.FC = () => {
       <h3 className="mb-3">{t('components.payments.title')}</h3>
 
       <IpnModal paymentHistory={selectedPaymentHistory} onUpdate={updateIpnResultHandler} />
-      <RefundModal paymentHistory={selectedPaymentHistory} onUpdate={updateRefundHandler}/>
+      <RefundModal paymentHistory={selectedPaymentHistory} onSuccess={successRefundHandler}/>
+
+      {Object.values(refundResults).map(result => (
+        <Alert
+          key={result.paymentHistory.blockchainName}
+          variant='success'
+          dismissible
+          onClose={() => removeRefundResultHandler(result.paymentHistory.blockchainName)}
+        >
+          {t('components.balances.success', { blockchain: result.paymentHistory.blockchain?.displayName || result.paymentHistory.blockchainName })} {result.hash && (<TransactionHash blockchain={result.paymentHistory.blockchain ?? undefined} transactionHash={result.hash} />)}
+        </Alert>
+      ))}
+
 
       <div className='mb-3'>
         <Button variant="primary" onClick={refreshPaymentHistoryHandler} disabled={paymentHistoryStatus === 'processing'}>
