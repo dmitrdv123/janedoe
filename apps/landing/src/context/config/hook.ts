@@ -6,6 +6,7 @@ export interface Config {
   baseUrlDocs: string
   baseUrlPayment: string
   baseUrlSupport: string
+  baseUrlLanding: string
 }
 
 interface ConfigContextType {

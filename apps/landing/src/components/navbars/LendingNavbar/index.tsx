@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar } from 'react-bootstrap'
+import { Button, Container, Nav, Navbar } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
 import LanguageDropdown from '../components/LanguageDropdown'
@@ -29,7 +29,19 @@ const LandingNavbar: React.FC = () => {
             <Nav.Link href={`/${i18n.language ?? DEFAULT_LANGUAGE}/blog`}>
               {t('components.navbar.blog')}
             </Nav.Link>
+
             <LanguageDropdown />
+
+            <Nav.Link href={`${config.config?.baseUrlAccount}`} target='_blank' className='pt-1'>
+              <Button variant="outline-secondary">
+                {t('components.navbar.signin')}
+              </Button>
+            </Nav.Link>
+            <Nav.Link href={`${config.config?.baseUrlAccount}`} target='_blank' className='pt-1'>
+              <Button variant="outline-primary">
+                {t('components.navbar.signup')}
+              </Button>
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

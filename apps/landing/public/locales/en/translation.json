@@ -2,7 +2,7 @@
   "pages": {
     "landing": {
       "title_desc": "Accept payments in cryptocurrency",
-      "button": "Sign In or Sign Up",
+      "button": "Get Started for Free",
       "no_kyc": "No KYC",
       "no_fees": "No fees",
       "no_custodial": "No custodial wallets",
@@ -34,7 +34,9 @@
       "language": "Language: {{language}}",
       "support": "Support",
       "documentation": "Documentation",
-      "blog": "Blog"
+      "blog": "Blog",
+      "signin": "Sign In",
+      "signup": "Create Account"
     }
   },
   "services": {

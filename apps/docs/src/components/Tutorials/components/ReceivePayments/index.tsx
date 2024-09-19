@@ -19,7 +19,7 @@ const ReceivePayments: React.FC = () => {
             To accept payments, you simply need to place payment links in a specific format on your website. Your user will be taken to the payment form by clicking on it. Instructions for creating such links and an example can be found on the main page <a href={`${config.config?.baseUrlAccount}/#home`} target="_blank">JaneDoe</a>.
           </p>
           <p>
-            <Image src='locales/en/img/receive_payment_1.png' fluid />
+            <Image src='../locales/en/img/receive_payment_1.png' fluid />
           </p>
 
           <p>
@@ -66,13 +66,13 @@ const ReceivePayments: React.FC = () => {
             Optionally, you can set custom text that the user will see when paying. To do this, go to the page <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Account Settings</a>, in the <code>Company Description</code> field enter the text and click on the button <code>Save</code>.
           </p>
           <p>
-            <Image src='locales/en/img/receive_payment_2.png' fluid />
+            <Image src='../locales/en/img/receive_payment_2.png' fluid />
           </p>
           <p>
             The payment form will start contain this text.
           </p>
           <p>
-            <Image src='locales/en/img/receive_payment_3.png' fluid />
+            <Image src='../locales/en/img/receive_payment_3.png' fluid />
           </p>
         </>
       )}
@@ -82,7 +82,7 @@ const ReceivePayments: React.FC = () => {
           <p>
             Чтобы принимать платежи вам просто необходимо разместить ссылки для оплаты в определенном формате на вашем сайте. Ваш пользователь будет перенаправлен на форму оплаты, нажав на нее. Инструкцию как создавать такие ссылки и пример вы найдете на главной странице <a href={`${config.config?.baseUrlAccount}/#home`} target="_blank">JaneDoe</a>.
           </p>
-          <Image src='locales/ru/img/receive_payment_1.png' fluid />
+          <Image src='../locales/ru/img/receive_payment_1.png' fluid />
 
           <p>
             Формат ссылки:<br />
@@ -128,11 +128,11 @@ const ReceivePayments: React.FC = () => {
           <p>
             Опционально, вы можете задать произвольный текст, который увидит пользователь при оплате. Для этого перейдите на страницу <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Настройки аккаунта</a>, в поле <code>Описание компании</code> введите текст и нажмите на кнопку <code>Сохранить</code>.
           </p>
-          <Image src='locales/ru/img/receive_payment_2.png' fluid />
+          <Image src='../locales/ru/img/receive_payment_2.png' fluid />
           <p>
             Форма оплаты начнет содержать этот текст.
           </p>
-          <Image src='locales/ru/img/receive_payment_3.png' fluid />
+          <Image src='../locales/ru/img/receive_payment_3.png' fluid />
         </>
       )}
     </>

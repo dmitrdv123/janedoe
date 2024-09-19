@@ -1,11 +1,10 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { Badge, Button, Col, Container, Row } from 'react-bootstrap'
 import { Asterisk, Circle, CurrencyBitcoin, CurrencyExchange, Envelope, Globe, Wallet } from 'react-bootstrap-icons'
 
 import './index.css'
 
-import { useLocation } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import LandingNavbar from '../../components/navbars/LendingNavbar'
 import { useConfig } from '../../context/config/hook'
 import { MAILTO, SUPPORTED_LANGUAGES } from '../../constants'
@@ -18,7 +17,6 @@ const Landing: React.FC = () => {
   const domain = 'mail.janedoe.fi'
 
   const { t, i18n } = useTranslation()
-  const { hash } = useLocation()
 
   const config = useConfig()
 
@@ -44,7 +42,7 @@ const Landing: React.FC = () => {
                 {t('pages.landing.title_desc')}
               </p>
               <p>
-                <Button variant="primary" className="btn-lg" href={`${config.config?.baseUrlAccount}/${hash}`} target='_blank'>
+                <Button variant="primary" className="btn-lg" href={`${config.config?.baseUrlAccount}`} target='_blank'>
                   {t('pages.landing.button')}
                 </Button>
               </p>
@@ -543,7 +541,7 @@ const Landing: React.FC = () => {
                   <p className="lead">
                     Полезные видео на
                     <a target="_blank" className='ms-2' href='https://www.youtube.com/@janedoefinance-q6x'>
-                       нашем YouTube канале.
+                      нашем YouTube канале.
                     </a>
                   </p>
                 </Col>

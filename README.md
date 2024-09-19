@@ -67,6 +67,8 @@ NODE_ENV=local pnpm start --filter=api
 #statistics
 NODE_ENV=local pnpm run script -- statistics
 NODE_ENV=local pnpm run script -- articles
+NODE_ENV=local pnpm run script -- telegram_bot
+NODE_ENV=local pnpm run script -- telegram_bot_simple
 ```
 
 ## Run development
