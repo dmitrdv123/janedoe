@@ -541,7 +541,7 @@ const Landing: React.FC = () => {
                   <p className="lead">
                     Полезные видео на
                     <a target="_blank" className='ms-2' href='https://www.youtube.com/@janedoefinance-q6x'>
-                       нашем YouTube канале.
+                      нашем YouTube канале.
                     </a>
                   </p>
                 </Col>
