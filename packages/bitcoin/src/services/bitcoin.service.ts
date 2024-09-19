@@ -3,9 +3,9 @@ import { BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } 
 
 import { BitcoinCoreService } from './bitcoin-core.service'
 import { BitcoinUtilsService } from './bitcoin-utils.service'
-import { BITCOIN_DECIMALS, BITCOIN_DUST_AMOUNT, BITCOIN_DUST_AMOUNT_SATOSHI } from '../constants'
+import { BITCOIN_DECIMALS } from '../constants'
 import { BitcoinCoreError } from '../errors/bitcoin-core-error'
-import { convertBigIntToFloat, parseToBigNumber } from '../utils/bitcoin-utils'
+import { parseToBigNumber } from '../utils/bitcoin-utils'
 
 export interface BitcoinService {
   createWallet(walletName: string): Promise<BitcoinWallet>
@@ -106,7 +106,8 @@ export class BitcoinServiceImpl implements BitcoinService {
       (acc, utxoData) => acc + parseToBigNumber(utxoData.data.amount, BITCOIN_DECIMALS), BigInt(0)
     )
 
-    return await this.createTransaction(walletAddresses, utxosFiltered, address, walletAddresses[0].data.address, amount)
+    const addressRest = await this.getWalletAddressForRest(walletName)
+    return await this.createTransaction(walletAddresses, utxosFiltered, address, addressRest, amount)
   }
 
   public async refund(walletName: string, utxoKey: BitcoinUtxoDataKey, address: string, amount: string): Promise<string | undefined> {
@@ -120,7 +121,8 @@ export class BitcoinServiceImpl implements BitcoinService {
       throw new BitcoinCoreError(-4, `Wallet for UTXO not found`)
     }
 
-    return await this.createTransaction([walletAddress], [utxo], address, walletAddress.data.address, BigInt(amount))
+    const addressRest = await this.getWalletAddressForRest(walletName)
+    return await this.createTransaction([walletAddress], [utxo], address, addressRest, BigInt(amount))
   }
 
   private async createTransaction(walletAddresses: BitcoinWalletAddress[], utxos: BitcoinUtxo[], address: string, addressRest: string, amount: bigint): Promise<string | undefined> {
@@ -137,5 +139,10 @@ export class BitcoinServiceImpl implements BitcoinService {
     await this.bitcoinDao.saveUtxos(utxos, false)
 
     return tx.getId()
+  }
+
+  private async getWalletAddressForRest(walletName: string): Promise<string> {
+    const walletAddressRest = await this.createWalletAddress(walletName, `rest_${walletName}`)
+    return walletAddressRest.data.address
   }
 }
