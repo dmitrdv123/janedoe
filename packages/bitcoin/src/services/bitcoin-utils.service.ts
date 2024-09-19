@@ -4,9 +4,10 @@ import * as ecc from 'tiny-secp256k1'
 import { BIP32Factory } from 'bip32'
 import ECPairFactory from 'ecpair'
 
-import { BitcoinUtxoData, BitcoinWalletAddressData, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinUtxoData, BitcoinWalletAddressData, BitcoinWalletAmount, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
 import { parseBigIntToNumber, parseToBigNumber } from '../utils/bitcoin-utils'
-import { BITCOIN_DECIMALS, BITCOIN_DUST_AMOUNT } from '../constants'
+import { BITCOIN_DECIMALS, BITCOIN_DUST_AMOUNT, BITCOIN_DUST_AMOUNT_SATOSHI } from '../constants'
+import { BitcoinCoreError } from '../errors/bitcoin-core-error'
 
 export interface BitcoinUtilsService {
   generateRootWallet(): BitcoinWalletData
@@ -56,42 +57,107 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     return { wif, address }
   }
 
-  public createTransaction(walletAddressData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, addressRest: string, value: bigint, disableFeeCheck?: boolean): bitcoin.Transaction {
+  public createTransaction(walletAddressesData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, addressRest: string, amount: bigint): bitcoin.Transaction {
+    console.log(`debug >> BitcoinUtilsService, createTransaction: start to createTransaction with amount ${amount}`)
+
+    const utxosDataFiltered = utxosData.filter(utxoData => utxoData.amount > BITCOIN_DUST_AMOUNT)
+    if (utxosDataFiltered.length === 0) {
+      throw new BitcoinCoreError(-26, `All input UTXOs is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+    }
+
+    const amountTotal = utxosDataFiltered.reduce(
+      (acc, utxoData) => acc + parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS), BigInt(0)
+    )
+    console.log(`debug >> BitcoinUtilsService, createTransaction: amountTotal ${amountTotal}`)
+
+    if (amountTotal - amount > BITCOIN_DUST_AMOUNT_SATOSHI) {
+      console.log(`debug >> BitcoinUtilsService, createTransaction: start to estimate transaction with rest output`)
+
+      const outputsToEstimate: BitcoinWalletAmount[] = [
+        {
+          address, amount: parseBigIntToNumber(amount)
+        },
+        {
+          address: addressRest, amount: parseBigIntToNumber(amountTotal - amount)
+        }
+      ]
+      console.log(`debug >> BitcoinUtilsService, createTransaction: outputsToEstimate ${JSON.stringify(outputsToEstimate)}`)
+
+      const estimateFeeTx2Outputs = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
+      const fee = BigInt(Math.ceil(estimateFeeTx2Outputs.virtualSize() * feeRate))
+      if (amountTotal - amount - fee > BITCOIN_DUST_AMOUNT_SATOSHI) {
+        console.log(`debug >> BitcoinUtilsService, createTransaction: start to create transaction with rest output`)
+
+        const outputs: BitcoinWalletAmount[] = [
+          {
+            address, amount: parseBigIntToNumber(amount - fee)
+          },
+          {
+            address: addressRest, amount: parseBigIntToNumber(amountTotal - amount - fee)
+          }
+        ]
+        console.log(`debug >> BitcoinUtilsService, createTransaction: outputs ${JSON.stringify(outputs)}`)
+
+        return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
+      }
+    }
+
+    if (amount > BITCOIN_DUST_AMOUNT_SATOSHI) {
+      console.log(`debug >> BitcoinUtilsService, createTransaction: start to estimate transaction without rest output`)
+
+      const outputsToEstimate: BitcoinWalletAmount[] = [
+        {
+          address, amount: parseBigIntToNumber(amount)
+        }
+      ]
+      console.log(`debug >> BitcoinUtilsService, createTransaction: outputsToEstimate ${JSON.stringify(outputsToEstimate)}`)
+
+      const estimateFeeTx1Outputs = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
+      const fee = BigInt(Math.ceil(estimateFeeTx1Outputs.virtualSize() * feeRate))
+      if (amount - fee > BITCOIN_DUST_AMOUNT_SATOSHI) {
+        console.log(`debug >> BitcoinUtilsService, createTransaction: start to create transaction with rest output`)
+
+        const outputs: BitcoinWalletAmount[] = [
+          {
+            address, amount: parseBigIntToNumber(amount - fee)
+          }
+        ]
+        console.log(`debug >> BitcoinUtilsService, createTransaction: outputs ${JSON.stringify(outputs)}`)
+
+        return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
+      }
+    }
+
+    throw new BitcoinCoreError(-26, `Output amount after extracting network fee is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+  }
+
+  private doCreateTransaction(walletAddressesData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], outputs: BitcoinWalletAmount[], feeRate: number, disableFeeCheck?: boolean): bitcoin.Transaction {
     const factory = ECPairFactory(ecc)
 
     const psbt = new bitcoin.Psbt({ network: this.network })
 
     const wifs: string[] = []
-    let totalInputAmount = BigInt(0)
     utxosData.forEach(utxoData => {
-      const data = walletAddressData.find(item => item.address.toLocaleLowerCase() === utxoData.address.toLocaleLowerCase())
+      const data = walletAddressesData.find(item => item.address.toLocaleLowerCase() === utxoData.address.toLocaleLowerCase())
       if (!data) {
         throw new Error('Wallet address data not found')
       }
 
-      if (utxoData.amount <= BITCOIN_DUST_AMOUNT) {
-        return
-      }
-
       wifs.push(data.wif)
-
-      const amount = parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS)
-      totalInputAmount += amount
       psbt.addInput({
         hash: utxoData.txid,
         index: utxoData.vout,
         witnessUtxo: {
           script: bitcoin.address.toOutputScript(utxoData.address, this.network),
-          value: parseBigIntToNumber(amount)
+          value: utxoData.amount
         }
       })
     })
 
-    psbt.addOutput({ address, value: parseBigIntToNumber(value) })
-    const valueRest = totalInputAmount - value
-    if (valueRest > BITCOIN_DUST_AMOUNT) {
-      psbt.addOutput({ address: addressRest, value: parseBigIntToNumber(valueRest) })
-    }
+    outputs.forEach(output => psbt.addOutput({
+      address: output.address,
+      value: output.amount
+    }))
 
     for (let i = 0; i < psbt.inputCount; ++i) {
       const keyPair = factory.fromWIF(wifs[i], this.network)

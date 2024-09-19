@@ -76,24 +76,19 @@ export class BitcoinServiceImpl implements BitcoinService {
   public async withdraw(walletName: string, address: string): Promise<string | undefined> {
     const utxos = await this.bitcoinDao.listWalletUtxos(walletName, true)
     if (utxos.length === 0) {
-      return undefined
-    }
-
-    const utxosFiltered = utxos.filter(utxo => utxo.data.amount > BITCOIN_DUST_AMOUNT)
-    if (utxosFiltered.length === 0) {
-      throw new BitcoinCoreError(-26, `All input UTXOs is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+      throw new BitcoinCoreError(-6, `UTXOs to withdraw not found`)
     }
 
     const walletAddresses = await this.bitcoinDao.loadWalletAddresses(
-      utxosFiltered.map(utxo => ({
+      utxos.map(utxo => ({
         walletName, label: utxo.label
       }))
     )
     if (walletAddresses.length === 0) {
-      return undefined
+      throw new BitcoinCoreError(-4, `Wallets for UTXOs not found`)
     }
 
-    const utxosFilteredByWalletAddresses = utxosFiltered.reduce((acc, utxo) => {
+    const utxosFiltered = utxos.reduce((acc, utxo) => {
       const exist = walletAddresses.findIndex(
         item => item.data.address.toLocaleLowerCase() === utxo.data.address.toLocaleLowerCase()
       ) !== -1
@@ -103,15 +98,15 @@ export class BitcoinServiceImpl implements BitcoinService {
 
       return acc
     }, [] as BitcoinUtxo[])
-    if (utxosFilteredByWalletAddresses.length === 0) {
-      return undefined
+    if (utxosFiltered.length === 0) {
+      throw new BitcoinCoreError(-6, `UTXOs to withdraw not found`)
     }
 
-    const amount = utxosFilteredByWalletAddresses.reduce(
+    const amount = utxosFiltered.reduce(
       (acc, utxoData) => acc + parseToBigNumber(utxoData.data.amount, BITCOIN_DECIMALS), BigInt(0)
     )
 
-    return await this.createTransaction(walletAddresses, utxosFilteredByWalletAddresses, address, walletAddresses[0].data.address, amount)
+    return await this.createTransaction(walletAddresses, utxosFiltered, address, walletAddresses[0].data.address, amount)
   }
 
   public async refund(walletName: string, utxoKey: BitcoinUtxoDataKey, address: string, amount: string): Promise<string | undefined> {
@@ -122,7 +117,7 @@ export class BitcoinServiceImpl implements BitcoinService {
 
     const walletAddress = await this.bitcoinDao.loadWalletAddress(walletName, utxo.label)
     if (!walletAddress) {
-      return undefined
+      throw new BitcoinCoreError(-4, `Wallet for UTXO not found`)
     }
 
     return await this.createTransaction([walletAddress], [utxo], address, walletAddress.data.address, BigInt(amount))
@@ -137,20 +132,7 @@ export class BitcoinServiceImpl implements BitcoinService {
     const walletAddressesData = walletAddresses.map(item => item.data)
     const utxosData = utxos.map(item => item.data)
 
-    const estimateFeeTx = this.bitcoinUtilsService.createTransaction(walletAddressesData, utxosData, feeRate, address, addressRest, amount, true)
-    const fee = BigInt(Math.ceil(estimateFeeTx.virtualSize() * feeRate))
-    const outputValue = amount - fee
-    if (outputValue <= BITCOIN_DUST_AMOUNT_SATOSHI) {
-      throw new BitcoinCoreError(-26, `Output amount after extracting network fee is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
-    }
-
-    console.log(`debug >> amount ${amount}`)
-    console.log(`debug >> feeRate ${feeRate}`)
-    console.log(`debug >> estimateFeeTx.virtualSize() ${estimateFeeTx.virtualSize()}`)
-    console.log(`debug >> fee ${fee}`)
-    console.log(`debug >> outputValue ${outputValue}`)
-
-    const tx = this.bitcoinUtilsService.createTransaction(walletAddressesData, utxosData, feeRate, address, addressRest, outputValue)
+    const tx = this.bitcoinUtilsService.createTransaction(walletAddressesData, utxosData, feeRate, address, addressRest, amount)
     await this.bitcoinCoreService.sendTransaction(tx)
     await this.bitcoinDao.saveUtxos(utxos, false)
 

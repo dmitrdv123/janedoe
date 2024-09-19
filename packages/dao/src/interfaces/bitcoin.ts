@@ -39,6 +39,11 @@ export interface BitcoinWalletAddressData {
   address: string
 }
 
+export interface BitcoinWalletAmount {
+  address: string
+  amount: number
+}
+
 export interface BitcoinWalletAddress {
   walletName: string
   label: string
