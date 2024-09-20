@@ -167,6 +167,7 @@
       "refund_address_placeholder": "Refund address",
       "refund_amount": "Amount",
       "refund_amount_placeholder": "Refund amount",
+      "refund_success": "Refund has been done successfully for {{blockchain}}",
       "errors": {
         "fail_send_notification": "Failed to send notification",
         "fail_load_notification": "Failed load notification",

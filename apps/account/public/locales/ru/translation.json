@@ -167,6 +167,7 @@
       "refund_address_placeholder": "Адрес для возврата",
       "refund_amount": "Сумма",
       "refund_amount_placeholder": "Сумма возврата",
+      "refund_success": "Возврат средств был успешно осуществлен для {{blockchain}}",
       "errors": {
         "fail_send_notification": "Не удалось отправить уведомление",
         "fail_load_notification": "Не удалось загрузить уведомление",
