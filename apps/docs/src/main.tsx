@@ -2,6 +2,7 @@ import React, { Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 
 import './i18n/config'
 import './index.css'
@@ -21,23 +22,25 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <ConfigProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/:lang?" element={<LanguageWrapper element={
-              <Suspense fallback={<Loader />}>
-                <App />
-              </Suspense>
-            } />} />
-            {import.meta.env.VITE_APP_IS_DEV && (
-              <Route path="/:lang?/sandbox/main" element={<LanguageWrapper element={
+        <HelmetProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/:lang?" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <Main />
+                  <App />
                 </Suspense>
               } />} />
-            )}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </BrowserRouter>
+              {import.meta.env.VITE_APP_IS_DEV && (
+                <Route path="/:lang?/sandbox/main" element={<LanguageWrapper element={
+                  <Suspense fallback={<Loader />}>
+                    <Main />
+                  </Suspense>
+                } />} />
+              )}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </BrowserRouter>
+        </HelmetProvider>
       </ConfigProvider>
     </Provider>
   </React.StrictMode>

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../../constants'
 import { useConfig } from '../../context/config/hook'
