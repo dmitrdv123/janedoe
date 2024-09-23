@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Helmet } from 'react-helmet'
 
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../../constants'
+import { useConfig } from '../../context/config/hook'
 
 interface LanguageWrapperProps {
   element: React.ReactElement
@@ -15,6 +17,7 @@ const LanguageWrapper: React.FC<LanguageWrapperProps> = (props) => {
   const navigate = useNavigate()
   const location = useLocation()
   const { i18n } = useTranslation()
+  const config = useConfig()
 
   useEffect(() => {
     const detectedLanguage = SUPPORTED_LANGUAGES.includes(i18n.language) ? i18n.language : DEFAULT_LANGUAGE
@@ -30,7 +33,20 @@ const LanguageWrapper: React.FC<LanguageWrapperProps> = (props) => {
     }
   }, [i18n, lang, location, navigate])
 
-  return <>{element}</>
+  return (
+    <>
+      <Helmet>
+        {(!!config.config && !!lang && lang.toLocaleLowerCase() === DEFAULT_LANGUAGE) && (
+          <link rel="canonical" href={`${config.config?.baseUrlDocs}${location.pathname.slice(lang.length + 1)}${location.pathname.endsWith('/') ? '' : '/'}${location.hash}`} />
+        )}
+
+        {(!!config.config && (!lang || lang.toLocaleLowerCase() !== DEFAULT_LANGUAGE)) && (
+          <link rel="canonical" href={`${config.config?.baseUrlDocs}${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}${location.hash}`} />
+        )}
+      </Helmet>
+      {element}
+    </>
+  )
 }
 
 export default LanguageWrapper
