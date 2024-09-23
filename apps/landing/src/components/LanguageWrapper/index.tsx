@@ -36,11 +36,12 @@ const LanguageWrapper: React.FC<LanguageWrapperProps> = (props) => {
   return (
     <>
       <Helmet>
-        {(!!config.config && !lang) && (
-          <link rel="canonical" href={`${config.config?.baseUrlLanding}/${DEFAULT_LANGUAGE}${location.pathname}`} />
+        {(!!config.config && !!lang && lang.toLocaleLowerCase() === DEFAULT_LANGUAGE) && (
+          <link rel="canonical" href={`${config.config?.baseUrlLanding}${location.pathname.slice(lang.length + 1)}${location.pathname.endsWith('/') ? '' : '/'}`} />
         )}
-        {(!!config.config && !!lang) && (
-          <link rel="canonical" href={`${config.config?.baseUrlLanding}${location.pathname}`} />
+
+        {(!!config.config && (!lang || lang.toLocaleLowerCase() !== DEFAULT_LANGUAGE)) && (
+          <link rel="canonical" href={`${config.config?.baseUrlLanding}${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}`} />
         )}
       </Helmet>
       {element}
