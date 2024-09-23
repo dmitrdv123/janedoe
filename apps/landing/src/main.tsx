@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -18,21 +19,23 @@ const root = createRoot(document.getElementById("root") as HTMLElement)
 root.render(
   <React.StrictMode>
     <ConfigProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path={`/:lang?`} element={<LanguageWrapper element={
-            <Suspense fallback={<Loader />}>
-              <Landing />
-            </Suspense>
-          } />} />
-          <Route path="/:lang?/blog" element={<LanguageWrapper element={
-            <Suspense fallback={<Loader />}>
-              <Blog />
-            </Suspense>
-          } />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </BrowserRouter>
+      <HelmetProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path={`/:lang?`} element={<LanguageWrapper element={
+              <Suspense fallback={<Loader />}>
+                <Landing />
+              </Suspense>
+            } />} />
+            <Route path="/:lang?/blog" element={<LanguageWrapper element={
+              <Suspense fallback={<Loader />}>
+                <Blog />
+              </Suspense>
+            } />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </BrowserRouter>
+      </HelmetProvider>
     </ConfigProvider>
   </React.StrictMode>
 )
