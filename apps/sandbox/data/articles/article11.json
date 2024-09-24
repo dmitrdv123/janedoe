@@ -1,0 +1,6 @@
+{
+  "title": "Tutorial 3 - How make the payment with token exchanging using JaneDoe Finance",
+  "content": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/h4OzrS6Lm00?si=9ECH4VsqjHF8BvK1\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe><p class='lead'>Crypto payment gateway JaneDoe Finance allow merchants to accept crypto payment with automatic token exchanging at a favorable rate through 107 exchangers.</p><p class='lead'>Let's say you decide to accept payments only in USDT. And your client has only ETH. He will still be able to make a payment. ETH will be automatically converted to USDT and sent to you in the amount you need.</p><p class='lead'>In this tutorial video you will see how it happens.</p>",
+  "link": "https://youtu.be/h4OzrS6Lm00?si=9ECH4VsqjHF8BvK1",
+  "timestamp": 1727175065
+}
