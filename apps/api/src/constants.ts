@@ -5,7 +5,8 @@ export const MAX_QUERY_PARAM_LENGTH = 200
 export const BLOCKCHAIN_BTC = 'btc'
 export const BLOCKCHAIN_BTC_NATIVE_TOKEN_SYMBOL = 'BTC'
 export const BLOCKCHAIN_BTC_NATIVE_TOKEN_DECIMALS = 8
-export const JWT_ALGORITHM: jwt.Algorithm = 'HS256'
+export const JWT_ALGORITHM: jwt.Algorithm = 'HS512'
+export const JWT_EXPIRES = '12h'
 export const META_SAVING_SAMPLING_SECONDS = 600
 export const EXCHANGE_RATE_SAVING_SAMPLING_SECONDS = 86400
 export const DEFAULT_FIAT_DECIMAL_PLACES = 4
@@ -26,6 +27,7 @@ export const MAX_NOTIFICATION_TIMESTAMP_DELTA_SEC = 3600
 export const CURRENCY_USD = 'usd'
 export const COMMON_SETTINGS_DEFAULT_CURRENCY = CURRENCY_USD
 export const BLOG_PAGE_SIZE = 10
+export const ACCOUNT_SECRET_LENGTH = 64
 
 // caching
 export const DEFAULT_RANGO_CACHING_SECONDS = 600

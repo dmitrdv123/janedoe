@@ -10,7 +10,7 @@ import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 import { BitcoinCoreError } from '@repo/bitcoin/dist/src/errors/bitcoin-core-error'
 
-import { BLOCKCHAIN_BTC, COMMON_SETTINGS_DEFAULT_CURRENCY, COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH } from '../constants'
+import { ACCOUNT_SECRET_LENGTH, BLOCKCHAIN_BTC, COMMON_SETTINGS_DEFAULT_CURRENCY, COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH } from '../constants'
 import { logger } from '../utils/logger'
 import { CryptoService } from './crypto-service'
 import { IpnService } from './ipn-service'
@@ -243,7 +243,7 @@ export class AccountServiceImpl implements AccountService {
     logger.debug(`AccountService: start to create account for ${address}`)
 
     const id = this.cryptoService.generateRandom(ACCOUNT_ID_LENGTH)
-    const secret = this.cryptoService.generateRandom()
+    const secret = this.cryptoService.generateSecret(ACCOUNT_SECRET_LENGTH)
     const encryptedSecret = this.cryptoService.encrypt(secret)
 
     const paymentSettings = await this.loadDefaultAccountPaymentSettings()

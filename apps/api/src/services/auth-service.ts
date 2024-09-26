@@ -6,7 +6,7 @@ import * as crypto from 'crypto'
 import { AuthDao } from '@repo/dao/dist/src/dao/auth.dao'
 import { Nonce } from '@repo/dao/dist/src/interfaces/nonce'
 
-import { JWT_ALGORITHM } from '../constants'
+import { JWT_ALGORITHM, JWT_EXPIRES } from '../constants'
 import { Auth } from '../interfaces/auth'
 import { AccountService } from './account-service'
 import { logger } from '../utils/logger'
@@ -83,7 +83,8 @@ export class AuthServiceImpl implements AuthService {
           },
           accountProfile.secret,
           {
-            algorithm: JWT_ALGORITHM
+            algorithm: JWT_ALGORITHM,
+            expiresIn: JWT_EXPIRES
           }
         )
       }
