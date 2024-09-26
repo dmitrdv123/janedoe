@@ -77,7 +77,8 @@ export class AuthServiceImpl implements AuthService {
 
       const payload = this.cryptoService.encrypt(JSON.stringify({
         id: accountProfile.id,
-        address: accountProfile.address
+        address: accountProfile.address,
+        salt: this.cryptoService.generateRandom()
       }))
 
       return {
