@@ -155,6 +155,7 @@ container.register(
   'authService',
   new AuthServiceImpl(
     container.resolve<AccountService>('accountService'),
+    container.resolve<CryptoService>('cryptoService'),
     awsContainer.resolve<AuthDao>('authDao')
   )
 )

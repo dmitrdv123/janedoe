@@ -5,6 +5,7 @@ import appConfig from '@repo/common/dist/src/app-config'
 
 export interface CryptoService {
   generateRandom(size?: number | undefined): string
+  generateSecret(size: number): string
   encrypt(text: string): string
   decrypt(text: string): string
 }
@@ -13,6 +14,10 @@ export class CryptoServiceImpl implements CryptoService {
   public generateRandom(size?: number | undefined): string {
     const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', size)
     return nanoid()
+  }
+
+  public generateSecret(size: number): string {
+    return crypto.randomBytes(size).toString('hex')
   }
 
   public encrypt(text: string): string {
