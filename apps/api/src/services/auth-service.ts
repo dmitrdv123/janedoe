@@ -10,6 +10,7 @@ import { JWT_ALGORITHM, JWT_EXPIRES } from '../constants'
 import { Auth } from '../interfaces/auth'
 import { AccountService } from './account-service'
 import { logger } from '../utils/logger'
+import { CryptoService } from './crypto-service'
 
 export interface AuthService {
   createNonce(wallet: string): Promise<Nonce>
@@ -19,6 +20,7 @@ export interface AuthService {
 export class AuthServiceImpl implements AuthService {
   public constructor(
     private accountService: AccountService,
+    private cryptoService: CryptoService,
     private authDao: AuthDao
   ) { }
 
@@ -73,13 +75,17 @@ export class AuthServiceImpl implements AuthService {
         accountProfile = account.profile
       }
 
+      const payload = this.cryptoService.encrypt(JSON.stringify({
+        id: accountProfile.id,
+        address: accountProfile.address
+      }))
+
       return {
         id: accountProfile.id,
         address: accountProfile.address,
         accessToken: jwt.sign(
           {
-            id: accountProfile.id,
-            address: accountProfile.address
+            data: payload
           },
           accountProfile.secret,
           {
