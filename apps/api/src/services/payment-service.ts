@@ -154,6 +154,7 @@ export class PaymentServiceImpl implements PaymentService {
 
       from: paymentLog.from,
       to: paymentLog.to,
+      direction: paymentLog.direction,
       amount: paymentLog.amount,
       amountUsd: paymentLog.amountUsd,
 

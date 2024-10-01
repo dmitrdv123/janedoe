@@ -47,6 +47,7 @@ export class SandboxController {
     try {
       logger.info(`Notify: receiving request`)
       logger.info(req)
+      logger.info(req.body)
 
       res.send({ })
     } catch (err) {

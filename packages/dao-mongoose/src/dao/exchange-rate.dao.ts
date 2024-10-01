@@ -1,7 +1,7 @@
-import { ExchangeRate } from '@repo/dao/src/interfaces/exchange-rate'
-import { ExchangeRateModel } from '../models/exchange-rate.model'
+import { ExchangeRate } from '@repo/dao/dist/src/interfaces/exchange-rate'
+import { ExchangeRateDao } from '@repo/dao/dist/src/dao/exchange-rate.dao'
 
-import { ExchangeRateDao } from '@repo/dao/src/dao/exchange-rate.dao'
+import { ExchangeRateModel } from '../models/exchange-rate.model'
 
 export class ExchangeRateDaoImpl implements ExchangeRateDao {
   public async loadExchangeRate(currency: string, timestamp: number): Promise<ExchangeRate | undefined> {

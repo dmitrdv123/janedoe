@@ -1,4 +1,5 @@
 import { IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
+import { PaymentLogDirection } from '@repo/dao/dist/src/interfaces/payment-log'
 
 export interface PaymentHistory {
   id: string
@@ -11,6 +12,8 @@ export interface PaymentHistory {
 
   from: string | null
   to: string
+  direction: PaymentLogDirection
+
   amount: string
   amountUsd: number | null
 
@@ -39,6 +42,8 @@ export interface PaymentHistoryData {
 
   from: string | null
   to: string
+  direction: PaymentLogDirection
+
   amount: string
   amountUsdAtPaymentTime: number | null
   amountUsdAtCurTime: number | null

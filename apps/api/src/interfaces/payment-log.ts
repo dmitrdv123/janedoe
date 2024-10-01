@@ -4,5 +4,4 @@ export interface PaymentLogKey {
   blockchain: string
   transaction: string
   index: number
-  timestamp: number
 }

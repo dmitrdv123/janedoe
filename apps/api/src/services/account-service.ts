@@ -9,10 +9,10 @@ import { AppSettings } from '@repo/dao/dist/src/interfaces/settings'
 import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 import { BitcoinCoreError } from '@repo/bitcoin/dist/src/errors/bitcoin-core-error'
+import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { ACCOUNT_SECRET_LENGTH, BLOCKCHAIN_BTC, COMMON_SETTINGS_DEFAULT_CURRENCY, COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH } from '../constants'
 import { logger } from '../utils/logger'
-import { CryptoService } from './crypto-service'
 import { IpnService } from './ipn-service'
 import { PaymentHistory, PaymentHistoryResponse } from '../interfaces/payment-history'
 import { PaymentLogService } from './payment-log-service'
@@ -86,7 +86,6 @@ export class AccountServiceImpl implements AccountService {
           && item.blockchain.toLocaleLowerCase() === last.blockchain.toLocaleLowerCase()
           && item.transaction === last.transaction
           && item.index === last.index
-          && item.timestamp === last.timestamp
       )
       : -1
     if (last && lastIdx === -1) {
@@ -514,6 +513,7 @@ export class AccountServiceImpl implements AccountService {
 
       from: paymentLog.from,
       to: paymentLog.to,
+      direction: paymentLog.direction,
       amount: paymentLog.amount,
       amountUsd: paymentLog.amountUsd,
 

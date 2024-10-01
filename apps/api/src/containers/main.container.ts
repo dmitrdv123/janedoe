@@ -19,6 +19,7 @@ import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 import { SupportTicketWithId } from '@repo/dao/dist/src/interfaces/support-ticket'
+import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { Container } from '@repo/common/dist/src/containers/container'
 import { daoContainer as awsContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
@@ -42,7 +43,6 @@ import { NotificationTask } from '../tasks/notification-task'
 import { PaymentStatusNotificationObserver } from '../services/notifications/payment-status-notification'
 import { NotificationObserver } from '../services/notifications/notification-observer'
 import { PaymentLogService, PaymentLogServiceImpl } from '../services/payment-log-service'
-import { CryptoService, CryptoServiceImpl } from '../services/crypto-service'
 import { IpnNotificationObserver } from '../services/notifications/ipn-notification'
 import { SandboxController } from '../controllers/sandbox-controller'
 import { IpnService, IpnServiceImpl } from '../services/ipn-service'
@@ -87,7 +87,6 @@ container.register(
   )
 )
 container.register('exchangeRateApiWrapperService', new ExchangeRateApiWrapperServiceImpl(commonContainer.resolve<CacheService>('cacheService')))
-container.register('cryptoService', new CryptoServiceImpl())
 container.register(
   'ipnService',
   new IpnServiceImpl(
@@ -128,7 +127,7 @@ container.register(
   new AccountServiceImpl(
     container.resolve<SettingsService>('settingsService'),
     bitcoinContainer.resolve<BitcoinService>('bitcoinService'),
-    container.resolve<CryptoService>('cryptoService'),
+    commonContainer.resolve<CryptoService>('cryptoService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<PaymentLogService>('paymentLogService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService'),
@@ -155,7 +154,7 @@ container.register(
   'authService',
   new AuthServiceImpl(
     container.resolve<AccountService>('accountService'),
-    container.resolve<CryptoService>('cryptoService'),
+    commonContainer.resolve<CryptoService>('cryptoService'),
     awsContainer.resolve<AuthDao>('authDao')
   )
 )
@@ -304,7 +303,7 @@ container.register(
     bitcoinContainer.resolve<BitcoinBlockService>('bitcoinBlockService'),
     container.resolve<NotificationService>('notificationService'),
     container.resolve<PaymentLogService>('paymentLogService'),
-    container.resolve<CryptoService>('cryptoService')
+    commonContainer.resolve<CryptoService>('cryptoService')
   )
 )
 

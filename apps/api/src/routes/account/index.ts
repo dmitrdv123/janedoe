@@ -2,6 +2,9 @@ import { Router } from 'express'
 import { Request, UnauthorizedError, expressjwt } from 'express-jwt'
 import { Jwt, JwtPayload } from 'jsonwebtoken'
 
+import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
+import { commonContainer } from '@repo/common/dist/src/containers/common.container'
+
 import { DEFAULT_ROUTE_ACCOUNT_PAYMENT_CACHING_SECONDS, JWT_ALGORITHM } from '../../constants'
 import { AccountController } from '../../controllers/account-controller'
 import container from '../../containers/main.container'
@@ -9,12 +12,11 @@ import { cacheMiddleware } from '../../middlewares/cache-middleware'
 import { AccountService } from '../../services/account-service'
 import { rbacMiddleware } from '../../middlewares/rbac-middleware'
 import { jwtDecryptMiddleware } from '../../middlewares/token-decrypt-middleware'
-import { CryptoService } from '../../services/crypto-service'
 
 export const accountRouter: Router = Router()
 const controller = container.resolve<AccountController>('accountController')
 const accountService = container.resolve<AccountService>('accountService')
-const cryptoService = container.resolve<CryptoService>('cryptoService')
+const cryptoService = commonContainer.resolve<CryptoService>('cryptoService')
 
 const jwtConfig = {
   algorithms: [JWT_ALGORITHM],
@@ -61,6 +63,7 @@ accountRouter.route('/withdraw/:id/:blockchain/:address').post(
 )
 accountRouter.route('/refund/:id/:paymentId/:blockchain/:transaction/:index').post(
   expressjwt(jwtConfig),
+  jwtDecryptMiddleware(),
   rbacMiddleware('balances', 'Modify'),
   controller.refund.bind(controller)
 )

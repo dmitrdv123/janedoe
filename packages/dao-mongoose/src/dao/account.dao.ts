@@ -1,11 +1,11 @@
-import { AccountDao } from '@repo/dao/src/dao/account.dao'
-import { Account, AccountProfile } from '@repo/dao/src/interfaces/account-profile'
-import { AccountApiSettings, AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountSettings, AccountTeamSettings } from '@repo/dao/src/interfaces/account-settings'
+import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
+import { Account, AccountProfile } from '@repo/dao/dist/src/interfaces/account-profile'
+import { AccountApiSettings, AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountSettings, AccountTeamSettings } from '@repo/dao/dist/src/interfaces/account-settings'
+import { SharedAccount } from '@repo/dao/dist/src/interfaces/shared-account'
 
 import { AccountWithId } from '../interfaces/account-profile'
 import { AccountModel } from '../models/account.model'
 import { SharedAccountModel } from '../models/shared-account.model'
-import { SharedAccount } from '@repo/dao/src/interfaces/shared-account'
 
 export class AccountDaoImpl implements AccountDao {
   public async loadAccount(id: string): Promise<Account | undefined> {

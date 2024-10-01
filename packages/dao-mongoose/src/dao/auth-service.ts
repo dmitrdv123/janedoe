@@ -1,5 +1,5 @@
-import { AuthDao } from '@repo/dao/src/dao/auth.dao'
-import { Nonce } from '@repo/dao/src/interfaces/nonce'
+import { AuthDao } from '@repo/dao/dist/src/dao/auth.dao'
+import { Nonce } from '@repo/dao/dist/src/interfaces/nonce'
 
 import { NonceModel } from '../models/nonce.model'
 

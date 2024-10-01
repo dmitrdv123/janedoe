@@ -75,6 +75,8 @@ export class IpnNotificationObserver implements NotificationObserver {
 
       from: paymentLog.from,
       to: paymentLog.to,
+      direction: paymentLog.direction,
+
       amount: paymentLog.amount,
       amountUsd: paymentLog.amountUsd === null ? null : roundNumber(paymentLog.amountUsd, DEFAULT_FIAT_DECIMAL_PLACES),
       amountCurrency: amountCurrency === null ? null : roundNumber(amountCurrency, DEFAULT_FIAT_DECIMAL_PLACES),

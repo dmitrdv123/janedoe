@@ -252,8 +252,7 @@ export class AccountController {
           paymentId: req.body.last.paymentId,
           blockchain: req.body.last.blockchain,
           transaction: req.body.last.transaction,
-          index: req.body.last.index,
-          timestamp: req.body.last.timestamp
+          index: req.body.last.index
         }
         : undefined
 

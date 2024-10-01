@@ -44,30 +44,30 @@ export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
     }
 
     logger.debug(`BitcoinPaymentLogsIterator: start to list transactions from block height ${this.fromHeight} to block height ${toHeight}`)
-    const transactionOutputs = await this.bitcoinBlockService.listBlockTransactionOutputs(this.fromHeight, toHeight)
-    logger.debug(`BitcoinPaymentLogsIterator: found ${transactionOutputs.length} transactions`)
+    const transactions = await this.bitcoinBlockService.listWalletTransactions(this.fromHeight, toHeight)
+    logger.debug(`BitcoinPaymentLogsIterator: found ${transactions.length} transactions`)
 
     this.fromHeight = toHeight + 1
-    if (transactionOutputs.length === 0) {
+    if (transactions.length === 0) {
       return []
     }
 
-    const tokensByTimestamp = transactionOutputs.map(tx => ({
+    const tokensByTimestamp = transactions.map(tx => ({
       timestamp: tx.data.time,
       blockchain: this.blockchain.name,
       address: null
     }))
     const tokensAtTxTime = await this.metaService.loadTokens(tokensByTimestamp)
 
-    const paymentLogs = transactionOutputs
+    const paymentLogs = transactions
       .map((tx, i) => {
         const tokenAtTxTime = tokensAtTxTime[i]
         const amount = parseToBigNumber(tx.data.amount, BLOCKCHAIN_BTC_NATIVE_TOKEN_DECIMALS).toString()
         const amountUsd = tokenAtTxTime ? tokenAmountToUsd(amount, tokenAtTxTime.usdPrice, tokenAtTxTime.decimals) : undefined
 
         const paymentLog: PaymentLog = {
-          accountId: tx.label?.substring(0, ACCOUNT_ID_LENGTH) ?? '',
-          paymentId: tx.label?.substring(ACCOUNT_ID_LENGTH) ?? '',
+          accountId: tx.label.substring(0, ACCOUNT_ID_LENGTH),
+          paymentId: tx.label.substring(ACCOUNT_ID_LENGTH),
 
           blockchain: this.blockchain.name,
           tokenAddress: null,
@@ -77,6 +77,7 @@ export class BitcoinPaymentLogsIterator implements PaymentLogsIterator {
 
           from: null,
           to: tx.data.address,
+          direction: tx.data.direction,
           amount: amount,
           amountUsd: amountUsd ?? null,
 

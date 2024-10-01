@@ -1,6 +1,6 @@
 import { Token } from 'rango-sdk-basic'
 
-import { MetaDao } from '@repo/dao/src/dao/meta.dao'
+import { MetaDao } from '@repo/dao/dist/src/dao/meta.dao'
 
 import { TokenWithTimestampModel } from '../models/token-with-timestamp.model'
 

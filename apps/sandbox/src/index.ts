@@ -18,10 +18,10 @@ import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { CacheServiceImpl } from '@repo/common/dist/src/services/cache-service'
 import { getBitcoinNetwork } from '@repo/bitcoin/dist/src/utils/bitcoin-utils'
 import { BitcoinCoreError } from '@repo/bitcoin/dist/src/errors/bitcoin-core-error'
+import { CryptoServiceImpl } from '@repo/common/dist/src/services/crypto-service'
 
 import { createAppConfig } from './app-config'
 import { loadFile } from './utils'
-import { CryptoServiceImpl } from '@repo/common/dist/src/services/crypto-service'
 
 createAppConfig()
 

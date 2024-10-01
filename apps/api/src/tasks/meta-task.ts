@@ -20,9 +20,9 @@ export class MetaTask implements Task {
       logger.debug(tokenSettings)
 
       const timestampNow = Math.floor(Date.now() / 1000)
-      const timestampSampling = Math.floor(timestampNow / META_SAVING_SAMPLING_SECONDS) * META_SAVING_SAMPLING_SECONDS
-      if (!!tokenSettings && tokenSettings.timestamp >= timestampSampling) {
-        logger.debug(`MetaTask: skip saving tokens since settings timestamp ${tokenSettings.timestamp} is greater or equal current sampling timestamp ${timestampSampling}`)
+      const timestampNowSampling = Math.floor(timestampNow / META_SAVING_SAMPLING_SECONDS) * META_SAVING_SAMPLING_SECONDS
+      if (!!tokenSettings && tokenSettings.timestamp >= timestampNowSampling) {
+        logger.debug(`MetaTask: skip saving tokens since settings timestamp ${tokenSettings.timestamp} is greater or equal current sampling timestamp ${timestampNowSampling}`)
         return
       }
 
@@ -43,12 +43,12 @@ export class MetaTask implements Task {
       logger.debug(`MetaTask: filtered tokens count ${tokens.length}`);
 
       logger.debug(`MetaTask: start to save ${tokens.length} tokens`)
-      await this.metaService.saveTokens(timestampSampling, tokens)
+      await this.metaService.saveTokens(timestampNowSampling, tokens)
       logger.debug(`MetaTask: end to save tokens`)
 
       logger.debug('MetaTask: start to save token settings')
       await this.settingsService.saveTokenSettings({
-        timestamp: timestampSampling
+        timestamp: timestampNowSampling
       })
       logger.debug('MetaTask: end to save token settings')
     } catch (error) {

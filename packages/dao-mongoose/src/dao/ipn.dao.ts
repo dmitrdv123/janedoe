@@ -1,5 +1,5 @@
-import { IpnDao } from '@repo/dao/src/dao/ipn.dao'
-import { IpnData, IpnKey, IpnResult } from '@repo/dao/src/interfaces/ipn'
+import { IpnDao } from '@repo/dao/dist/src/dao/ipn.dao'
+import { IpnData, IpnKey, IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
 
 import { IpnModel } from '../models/ipn.model'
 

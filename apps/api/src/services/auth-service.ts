@@ -5,12 +5,12 @@ import * as crypto from 'crypto'
 
 import { AuthDao } from '@repo/dao/dist/src/dao/auth.dao'
 import { Nonce } from '@repo/dao/dist/src/interfaces/nonce'
+import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { JWT_ALGORITHM, JWT_EXPIRES } from '../constants'
 import { Auth } from '../interfaces/auth'
 import { AccountService } from './account-service'
 import { logger } from '../utils/logger'
-import { CryptoService } from './crypto-service'
 
 export interface AuthService {
   createNonce(wallet: string): Promise<Nonce>

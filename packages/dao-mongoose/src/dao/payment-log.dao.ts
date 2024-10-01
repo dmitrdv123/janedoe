@@ -1,6 +1,6 @@
-import { PaymentLog } from '@repo/dao/src/interfaces/payment-log'
-import { PaymentFilter } from '@repo/dao/src/interfaces/payment-filter'
-import { PaymentLogDao } from '@repo/dao/src/dao/payment-log.dao'
+import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
+import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
+import { PaymentLogDao } from '@repo/dao/dist/src/dao/payment-log.dao'
 
 import { PaymentLogModel } from '../models/payment-log.model'
 

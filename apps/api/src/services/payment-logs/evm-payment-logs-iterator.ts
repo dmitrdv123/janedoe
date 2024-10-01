@@ -118,6 +118,7 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
 
       from: event.data.from,
       to: event.data.to,
+      direction: 'incoming',
       amount: amount,
       amountUsd: amountUsd ?? null,
 

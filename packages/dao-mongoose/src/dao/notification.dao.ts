@@ -1,5 +1,5 @@
-import { NotificationDao } from '@repo/dao/src/dao/notification.dao'
-import { Notification, NotificationType } from '@repo/dao/src/interfaces/notification'
+import { NotificationDao } from '@repo/dao/dist/src/dao/notification.dao'
+import { Notification, NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 
 import { NotificationModel } from '../models/notification.model'
 

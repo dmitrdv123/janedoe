@@ -1,4 +1,4 @@
-import { SettingsDao } from '@repo/dao/src/dao/settings.dao'
+import { SettingsDao } from '@repo/dao/dist/src/dao/settings.dao'
 import { SettingsModel } from '../models/settings.model'
 
 export class SettingsDaoImpl implements SettingsDao {

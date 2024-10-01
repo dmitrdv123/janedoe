@@ -1,5 +1,5 @@
-import { PaymentSuccessInfo } from '@repo/dao/src/interfaces/payment-success-info'
-import { PaymentDao } from '@repo/dao/src/dao/payment.dao'
+import { PaymentSuccessInfo } from '@repo/dao/dist/src/interfaces/payment-success-info'
+import { PaymentDao } from '@repo/dao/dist/src/dao/payment.dao'
 
 import { PaymentSuccessInfoModel } from '../models/payment-success-info.model'
 

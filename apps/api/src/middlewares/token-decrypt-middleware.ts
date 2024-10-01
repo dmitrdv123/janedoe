@@ -1,11 +1,12 @@
 import { NextFunction, Response } from 'express'
 import { Request } from 'express-jwt'
 
-import container from '../containers/main.container'
-import { processControllerError } from '../utils/utils'
-import { CryptoService } from '../services/crypto-service'
+import { commonContainer } from '@repo/common/dist/src/containers/common.container'
+import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
-const cryptoService = container.resolve<CryptoService>('cryptoService')
+import { processControllerError } from '../utils/utils'
+
+const cryptoService = commonContainer.resolve<CryptoService>('cryptoService')
 
 export function jwtDecryptMiddleware() {
   return async (req: Request, res: Response, next: NextFunction) => {

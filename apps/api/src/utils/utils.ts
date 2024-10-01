@@ -233,6 +233,7 @@ export function convertPaymentLogToPaymentHistoryData(
 
     from: paymentLog.from,
     to: paymentLog.to,
+    direction: paymentLog.direction,
     amount: paymentLog.amount,
     amountUsdAtPaymentTime: paymentLog.amountUsd === null ? null : roundNumber(paymentLog.amountUsd, DEFAULT_FIAT_DECIMAL_PLACES),
     amountUsdAtCurTime: amountUsdAtCurTime === null ? null : roundNumber(amountUsdAtCurTime, DEFAULT_FIAT_DECIMAL_PLACES),

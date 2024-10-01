@@ -4,6 +4,7 @@ import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
+import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { logger } from '../utils/logger'
 import { Task } from './task-manager'
@@ -12,7 +13,6 @@ import { PaymentLogsIteratorBuilder } from '../services/payment-logs/payment-log
 import { PaymentLogService } from '../services/payment-log-service'
 import { AccountService } from '../services/account-service'
 import { MetaService } from '../services/meta-service'
-import { CryptoService } from '../services/crypto-service'
 import { SettingsService } from '../services/settings-service'
 
 export class PaymentTask implements Task {
