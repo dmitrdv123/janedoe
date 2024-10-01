@@ -21,6 +21,7 @@ import { BitcoinCoreError } from '@repo/bitcoin/dist/src/errors/bitcoin-core-err
 
 import { createAppConfig } from './app-config'
 import { loadFile } from './utils'
+import { CryptoServiceImpl } from '@repo/common/dist/src/services/crypto-service'
 
 createAppConfig()
 
@@ -33,7 +34,8 @@ const notificationDao = new NotificationDaoImpl(dynamoService)
 const bitcoinUtilsService = new BitcoinUtilsServiceImpl(getBitcoinNetwork())
 const bitcoinCoreService = new BitcoinCoreServiceImpl()
 const bitcoinService = new BitcoinServiceImpl(bitcoinCoreService, bitcoinUtilsService, bitcoinDao)
-const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, cacheService, bitcoinDao)
+const cryptoService = new CryptoServiceImpl()
+const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, cacheService, cryptoService, bitcoinDao)
 
 async function bitcoinCoreServiceTests(): Promise<void> {
   const feeRate = await bitcoinCoreService.getFeeRate(3)
@@ -75,7 +77,7 @@ async function transactionTests(): Promise<void> {
 
   await bitcoinBlockService.processBlock(block)
 
-  const transactions = await bitcoinBlockService.listBlockTransactionOutputs(0, 10000)
+  const transactions = await bitcoinBlockService.listWalletTransactions(0, 10000)
   console.log(`transactions ${JSON.stringify(transactions)}`)
 
   const walletBalance = await bitcoinService.getWalletBalance(walletName)
@@ -151,7 +153,7 @@ async function bitcoinBlockServiceTests(): Promise<void> {
   const loadedLatestProcessedBlock = await bitcoinBlockService.getLatestProcessedBlockHeight()
   console.log(`loaded latest processed block: ${JSON.stringify(loadedLatestProcessedBlock)}`)
 
-  const transactionOutputs = await bitcoinBlockService.listBlockTransactionOutputs(0, 1599)
+  const transactionOutputs = await bitcoinBlockService.listWalletTransactions(0, 1599)
   console.log(`loaded transaction outputs from ${fromBlockheight} to ${toBlockheight}: ${JSON.stringify(transactionOutputs)}`)
 
   let latestProcessedBlockHeight = await bitcoinBlockService.getLatestProcessedBlockHeight()
@@ -385,6 +387,7 @@ async function paymentLogDaoTests(): Promise<void> {
 
     from: null,
     to: 'to1',
+    direction: 'incoming',
     amount: '1',
     amountUsd: null,
 
@@ -407,6 +410,7 @@ async function paymentLogDaoTests(): Promise<void> {
 
     from: null,
     to: 'to2',
+    direction: 'incoming',
     amount: '2',
     amountUsd: null,
 
@@ -429,6 +433,7 @@ async function paymentLogDaoTests(): Promise<void> {
 
     from: null,
     to: 'to3',
+    direction: 'incoming',
     amount: '3',
     amountUsd: null,
 
