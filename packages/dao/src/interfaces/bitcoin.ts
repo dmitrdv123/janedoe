@@ -1,4 +1,6 @@
-export interface BitcoinTransactionOutputData {
+type BitcoinWalletTransactionDirection = 'incoming' | 'outgoing'
+
+export interface BitcoinWalletTransactionData {
   txid: string
   vout: number
   blockhash: string
@@ -7,12 +9,13 @@ export interface BitcoinTransactionOutputData {
   hex: string
   address: string
   amount: number
+  direction: BitcoinWalletTransactionDirection
 }
 
-export interface BitcoinTransactionOutput {
+export interface BitcoinWalletTransaction {
   walletName: string
   label: string
-  data: BitcoinTransactionOutputData
+  data: BitcoinWalletTransactionData
 }
 
 export interface BitcoinUtxoDataKey {

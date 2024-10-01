@@ -1,4 +1,4 @@
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
+import { marshall } from '@aws-sdk/util-dynamodb'
 
 import { PaymentLogDao } from '@repo/dao/dist/src/dao/payment-log.dao'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
@@ -21,7 +21,7 @@ export class PaymentLogDaoImpl implements PaymentLogDao {
       TableName: appConfig.TABLE_NAME,
       Item: marshall({
         pk: generateKey(PaymentLogDaoImpl.PK_PREFIX, paymentLog.accountId),
-        sk: generateKey(paymentLog.paymentId, paymentLog.blockchain.toLocaleLowerCase(), paymentLog.transaction, paymentLog.index, paymentLog.timestamp),
+        sk: generateKey(paymentLog.paymentId, paymentLog.blockchain.toLocaleLowerCase(), paymentLog.transaction, paymentLog.index),
         paymentFilter: {
           paymentId: paymentLog.paymentId.toLocaleLowerCase(),
 
@@ -31,6 +31,7 @@ export class PaymentLogDaoImpl implements PaymentLogDao {
 
           from: paymentLog.from?.toLocaleLowerCase() ?? null,
           to: paymentLog.to.toLocaleLowerCase(),
+          direction: paymentLog.direction.toLocaleLowerCase(),
 
           blockchain: paymentLog.blockchain.toLocaleLowerCase(),
           tokenAddress: paymentLog.tokenAddress?.toLocaleLowerCase() ?? null,
@@ -94,6 +95,12 @@ export class PaymentLogDaoImpl implements PaymentLogDao {
       filterExpressions.push('contains(paymentFilter.#addressTo, :addressTo)')
       expressionAttributeNames['#addressTo'] = 'to'
       expressionAttributeValues[':addressTo'] = filter.to.toLocaleLowerCase()
+    }
+
+    if (filter?.direction) {
+      filterExpressions.push('contains(paymentFilter.#direction, :direction)')
+      expressionAttributeNames['#direction'] = 'direction'
+      expressionAttributeValues[':direction'] = filter.direction.toLocaleLowerCase()
     }
 
     const request: QueryInput = {

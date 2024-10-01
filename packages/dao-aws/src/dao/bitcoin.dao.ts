@@ -1,7 +1,7 @@
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinTransactionOutput, BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressKey } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressKey, BitcoinWalletTransaction } from '@repo/dao/dist/src/interfaces/bitcoin'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
 import appConfig from '@repo/common/dist/src/app-config'
 
@@ -313,15 +313,15 @@ export class BitcoinDaoImpl implements BitcoinDao {
     }, 0)
   }
 
-  public async saveTransactionOutputs(transactionOutputs: BitcoinTransactionOutput[]): Promise<void> {
-    const putRequests = transactionOutputs.map(transactionOutput => ({
+  public async saveWalletTransactions(walletTransactions: BitcoinWalletTransaction[]): Promise<void> {
+    const putRequests = walletTransactions.map(tx => ({
       PutRequest: {
         Item: marshall({
-          pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_TRANSACTION_PREFIX, transactionOutput.data.txid, transactionOutput.data.vout),
-          sk: generateKey(transactionOutput.data.txid, transactionOutput.data.vout),
+          pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_TRANSACTION_PREFIX),
+          sk: generateKey(tx.walletName, tx.label, tx.data.txid, tx.data.vout),
           gsi_pk2: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_TRANSACTION_PREFIX),
-          gsi_sk2: transactionOutput.data.blockheight,
-          transactionOutput
+          gsi_sk2: tx.data.blockheight,
+          transactionOutput: tx
         })
       }
     }))
@@ -333,18 +333,7 @@ export class BitcoinDaoImpl implements BitcoinDao {
     )
   }
 
-  public async loadTransactionOutput(txid: string, vout: number): Promise<BitcoinTransactionOutput | undefined> {
-    const result = await this.dynamoService.readItem({
-      TableName: appConfig.TABLE_NAME,
-      Key: marshall({
-        pk: generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_TRANSACTION_PREFIX, txid, vout),
-        sk: generateKey(txid, vout),
-      })
-    })
-    return result.Item ? unmarshall(result.Item).transactionOutput as BitcoinTransactionOutput : undefined
-  }
-
-  public async listTransactionOutputs(fromBlockheight: number, toBlockheight: number): Promise<BitcoinTransactionOutput[]> {
+  public async listWalletTransactions(fromBlockheight: number, toBlockheight: number): Promise<BitcoinWalletTransaction[]> {
     return await queryItems(this.dynamoService, 'transactionOutput', {
       TableName: appConfig.TABLE_NAME,
       IndexName: 'gsi_pk2-gsi_sk2-index',

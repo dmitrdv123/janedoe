@@ -1,3 +1,5 @@
+export type PaymentLogDirection = 'incoming' | 'outgoing'
+
 export interface PaymentLog {
   accountId: string
   paymentId: string
@@ -9,6 +11,8 @@ export interface PaymentLog {
 
   from: string | null
   to: string
+  direction: PaymentLogDirection
+
   amount: string
   amountUsd: number | null
 

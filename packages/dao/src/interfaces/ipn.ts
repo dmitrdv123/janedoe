@@ -1,3 +1,5 @@
+import { PaymentLogDirection } from './payment-log'
+
 export interface IpnKey {
   accountId: string
   paymentId: string
@@ -17,6 +19,8 @@ export interface IpnData {
 
   from: string | null
   to: string
+  direction: PaymentLogDirection
+
   amount: string
   amountUsd: number | null
   amountCurrency: number | null
