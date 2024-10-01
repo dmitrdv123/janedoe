@@ -34,3 +34,19 @@ export function getBitcoinNetwork(): bitcoin.networks.Network {
       return bitcoin.networks.regtest
   }
 }
+
+export function isNullOrEmptyOrWhitespaces(str: string | null | undefined): boolean {
+  return str === undefined || str === null || str.trim() === ''
+}
+
+export function tryParseFloat(val: string | null | undefined): number | undefined {
+  if (isNullOrEmptyOrWhitespaces(val)) {
+    return undefined
+  }
+
+  try {
+    return parseFloat(val as string)
+  } catch {
+    return undefined
+  }
+}
