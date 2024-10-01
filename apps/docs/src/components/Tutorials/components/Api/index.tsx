@@ -88,6 +88,7 @@ export interface PaymentHistoryData {
 
   from: string | null
   to: string
+  direction: incoming | outgoing
   amount: string
   amountUsdAtPaymentTime: number | null
   amountUsdAtCurTime: number | null
@@ -335,6 +336,7 @@ index: number
 
 from: string | null
 to: string
+direction: incoming | outgoing
 amount: string
 amountUsdAtPaymentTime: number | null
 amountUsdAtCurTime: number | null

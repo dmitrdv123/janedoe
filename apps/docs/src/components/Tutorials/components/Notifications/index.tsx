@@ -50,6 +50,7 @@ const Notifications: React.FC = () => {
 
     "from": "string | null",
     "to": "string",
+    "direction": "incoming | outgoing",
     "amount": "string",
     "amountUsd": "number | null",
     "amountCurrency": "number | null",
@@ -121,6 +122,7 @@ const Notifications: React.FC = () => {
 
   "from": "string | null",
   "to": "string",
+  "direction": "incoming | outgoing",
   "amount": "string",
   "amountUsd": "number | null",
   "amountCurrency": "number | null",
