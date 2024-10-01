@@ -1,11 +1,13 @@
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressKey } from '@repo/dao/dist/src/interfaces/bitcoin'
+
+import appConfig from '@repo/common/dist/src/app-config'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
 import { BitcoinUtilsService } from './bitcoin-utils.service'
 import { BITCOIN_DECIMALS } from '../constants'
 import { BitcoinCoreError } from '../errors/bitcoin-core-error'
-import { parseToBigNumber } from '../utils/bitcoin-utils'
+import { parseToBigNumber, tryParseFloat } from '../utils/bitcoin-utils'
 
 export interface BitcoinService {
   createWallet(walletName: string): Promise<BitcoinWallet>
@@ -74,16 +76,22 @@ export class BitcoinServiceImpl implements BitcoinService {
   }
 
   public async withdraw(walletName: string, address: string): Promise<string | undefined> {
+    console.log(`debug >> BitcoinService: start to withdraw`)
+
+    console.log(`debug >> BitcoinService: list utxos`)
     const utxos = await this.bitcoinDao.listWalletUtxos(walletName, true)
     if (utxos.length === 0) {
       throw new BitcoinCoreError(-6, `UTXOs to withdraw not found`)
     }
+    console.log(JSON.stringify(utxos))
 
-    const walletAddresses = await this.bitcoinDao.loadWalletAddresses(
-      utxos.map(utxo => ({
-        walletName, label: utxo.label
-      }))
-    )
+    console.log(`debug >> BitcoinService: load wallet addresses`)
+
+    const walletAddressKeys: BitcoinWalletAddressKey[] = Array
+      .from(new Set(utxos.map(utxo => utxo.label)))
+      .map(label => ({ walletName, label }))
+
+    const walletAddresses = await this.bitcoinDao.loadWalletAddresses(walletAddressKeys)
     if (walletAddresses.length === 0) {
       throw new BitcoinCoreError(-4, `Wallets for UTXOs not found`)
     }
@@ -106,7 +114,20 @@ export class BitcoinServiceImpl implements BitcoinService {
       (acc, utxoData) => acc + parseToBigNumber(utxoData.data.amount, BITCOIN_DECIMALS), BigInt(0)
     )
 
+    console.log(`debug >> BitcoinService: get wallet address for rest`)
     const addressRest = await this.getWalletAddressForRest(walletName)
+
+    console.log(`debug >> BitcoinService: create tx`)
+    console.log(`debug >> BitcoinService: walletAddresses`)
+    console.log(JSON.stringify(walletAddresses))
+    console.log(`debug >> BitcoinService: utxosFiltered`)
+    console.log(JSON.stringify(utxosFiltered))
+    console.log(`debug >> BitcoinService: address`)
+    console.log(address)
+    console.log(`debug >> BitcoinService: addressRest`)
+    console.log(addressRest)
+    console.log(`debug >> BitcoinService: amount`)
+    console.log(amount)
     return await this.createTransaction(walletAddresses, utxosFiltered, address, addressRest, amount)
   }
 
@@ -126,7 +147,10 @@ export class BitcoinServiceImpl implements BitcoinService {
   }
 
   private async createTransaction(walletAddresses: BitcoinWalletAddress[], utxos: BitcoinUtxo[], address: string, addressRest: string, amount: bigint): Promise<string | undefined> {
-    const feeRate = await this.bitcoinDao.loadFeeRate()
+    let feeRate = await this.bitcoinDao.loadFeeRate()
+    if (!feeRate) {
+      feeRate = tryParseFloat(appConfig.BITCOIN_DEFAULT_FEE_RATE)
+    }
     if (!feeRate) {
       throw new Error('Fee rate not found')
     }
