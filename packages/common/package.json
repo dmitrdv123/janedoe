@@ -10,7 +10,8 @@
     "axios": "^1.7.2",
     "better-lock": "^2.0.3",
     "node-cache": "^5.1.2",
-    "rango-sdk-basic": "^0.1.47"
+    "rango-sdk-basic": "^0.1.47",
+    "nanoid": "^3.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
