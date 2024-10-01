@@ -77,8 +77,17 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
         }
       ]
 
-      const estimateFeeTx2Outputs = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
-      const fee = BigInt(Math.ceil(estimateFeeTx2Outputs.virtualSize() * feeRate))
+      console.log(`debug >> BitcoinUtilsService createTransaction: create for estimation`)
+      console.log(JSON.stringify(walletAddressesData))
+      console.log(JSON.stringify(utxosDataFiltered))
+      console.log(JSON.stringify(outputsToEstimate))
+      console.log(feeRate)
+      const estimateFeeTx = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
+      const fee = this.calcFee(estimateFeeTx, feeRate)
+
+      console.log(`debug >> BitcoinUtilsService createTransaction: size ${estimateFeeTx.virtualSize()}`)
+      console.log(`debug >> BitcoinUtilsService createTransaction: fee ${fee}`)
+
       if (amountTotal - amount - fee > BITCOIN_DUST_AMOUNT_SATOSHI) {
         const outputs: BitcoinWalletAmount[] = [
           {
@@ -88,6 +97,10 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
             address: addressRest, amount: amountTotal - amount
           }
         ]
+
+        console.log(`debug >> BitcoinUtilsService createTransaction:`)
+        console.log(JSON.stringify(outputs))
+
         return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
       }
     }
@@ -99,14 +112,28 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
         }
       ]
 
-      const estimateFeeTx1Outputs = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
-      const fee = BigInt(Math.ceil(estimateFeeTx1Outputs.virtualSize() * feeRate))
+      console.log(`debug >> BitcoinUtilsService createTransaction: create for estimation`)
+      console.log(JSON.stringify(walletAddressesData))
+      console.log(JSON.stringify(utxosDataFiltered))
+      // console.log(JSON.stringify(outputsToEstimate))
+      console.log(feeRate)
+
+      const estimateFeeTx = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
+      const fee = this.calcFee(estimateFeeTx, feeRate)
+      console.log(`debug >> BitcoinUtilsService createTransaction: size ${estimateFeeTx.virtualSize()}`)
+      console.log(`debug >> BitcoinUtilsService createTransaction: fee ${fee}`)
+
       if (amount - fee > BITCOIN_DUST_AMOUNT_SATOSHI) {
         const outputs: BitcoinWalletAmount[] = [
           {
             address, amount: amount - fee
           }
         ]
+
+        console.log(`debug >> BitcoinUtilsService createTransaction:`)
+        console.log(`debug >> BitcoinUtilsService createTransaction: amountTotal ${amountTotal}, amount ${amount}, fee ${fee}`)
+        // console.log(JSON.stringify(outputs))
+
         return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
       }
     }
@@ -152,5 +179,9 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     psbt.setMaximumFeeRate(Math.ceil(feeRate))
 
     return psbt.extractTransaction(disableFeeCheck)
+  }
+
+  private calcFee(tx: bitcoin.Transaction, feeRate: number): bigint {
+    return BigInt(tx.virtualSize() * Math.ceil(feeRate) - 1)
   }
 }
