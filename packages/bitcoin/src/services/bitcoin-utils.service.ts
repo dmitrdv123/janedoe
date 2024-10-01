@@ -80,7 +80,7 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
       console.log(`debug >> BitcoinUtilsService createTransaction: create for estimation`)
       console.log(JSON.stringify(walletAddressesData))
       console.log(JSON.stringify(utxosDataFiltered))
-      console.log(JSON.stringify(outputsToEstimate))
+      // console.log(JSON.stringify(outputsToEstimate))
       console.log(feeRate)
       const estimateFeeTx = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
       const fee = this.calcFee(estimateFeeTx, feeRate)
@@ -99,7 +99,7 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
         ]
 
         console.log(`debug >> BitcoinUtilsService createTransaction:`)
-        console.log(JSON.stringify(outputs))
+        // console.log(JSON.stringify(outputs))
 
         return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
       }

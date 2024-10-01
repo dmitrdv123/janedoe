@@ -296,7 +296,7 @@ const Payments: React.FC = () => {
           dismissible
           onClose={() => removeRefundResultHandler(result.paymentHistory.blockchainName)}
         >
-          {t('components.payments.refund.success', { blockchain: result.paymentHistory.blockchain?.displayName || result.paymentHistory.blockchainName })} {result.hash && (<TransactionHash blockchain={result.paymentHistory.blockchain ?? undefined} transactionHash={result.hash} />)}
+          {t('components.payments.refund_success', { blockchain: result.paymentHistory.blockchain?.displayName || result.paymentHistory.blockchainName })} {result.hash && (<TransactionHash blockchain={result.paymentHistory.blockchain ?? undefined} transactionHash={result.hash} />)}
         </Alert>
       ))}
 
