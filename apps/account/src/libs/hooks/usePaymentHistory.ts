@@ -119,7 +119,6 @@ export default function usePaymentHistory(filter: PaymentHistoryDataFilter) {
         blockchain: data[data.length - 1].blockchainName,
         transaction: data[data.length - 1].transaction,
         index: data[data.length - 1].index,
-        timestamp: data[data.length - 1].timestamp
       }
       : undefined
 
