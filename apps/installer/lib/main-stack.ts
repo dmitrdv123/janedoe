@@ -614,6 +614,7 @@ function handler(event) {
               : `https://${output.cloudfrontSupport?.distributionDomainName}`,
             PINO_CONFIG: env('PINO_CONFIG'),
             BITCOIN_NETWORK: env('BITCOIN_NETWORK'),
+            BITCOIN_DEFAULT_FEE_RATE: env('BITCOIN_DEFAULT_FEE_RATE'),
             TABLE_NAME: output.tableData?.tableName ?? '',
             TABLE_NAME_TIME_SERIES: output.tableTimeSeries?.tableName ?? '',
             BUCKET_NAME_DATA: output.bucketData?.bucketName ?? '',
