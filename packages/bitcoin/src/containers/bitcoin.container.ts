@@ -1,6 +1,7 @@
 import { Container } from '@repo/common/dist/src/containers/container'
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
+import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { daoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
@@ -26,6 +27,7 @@ bitcoinContainer.register(
   new BitcoinBlockServiceImpl(
     bitcoinContainer.resolve<BitcoinCoreService>('bitcoinCoreService'),
     commonContainer.resolve<CacheService>('cacheService'),
+    commonContainer.resolve<CryptoService>('cryptoService'),
     daoContainer.resolve<BitcoinDao>('bitcoinDao'),
   )
 )
