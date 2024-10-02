@@ -8,16 +8,14 @@ import { PaymentHistoryDirection } from '../../../../types/payment-history'
 
 interface TableFilterDetailsProps {
   id: string
-  paymentId: string
   transactionHash: string
   from: string
   to: string
   direction: PaymentHistoryDirection | null
-  onChange: (paymentId: string, transactionHash: string, from: string, to: string, direction: PaymentHistoryDirection | null) => void
+  onChange: (transactionHash: string, from: string, to: string, direction: PaymentHistoryDirection | null) => void
 }
 
 const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {
-  const [paymentId, setPaymentId] = useState<string>('')
   const [transactionHash, setTransactionHash] = useState<string>('')
   const [from, setFrom] = useState<string>('')
   const [to, setTo] = useState<string>('')
@@ -25,10 +23,6 @@ const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {
   const [show, setShow] = React.useState(false)
 
   const { t } = useTranslation()
-
-  useEffect(() => {
-    setPaymentId(props.paymentId)
-  }, [props.paymentId])
 
   useEffect(() => {
     setTransactionHash(props.transactionHash)
@@ -52,11 +46,10 @@ const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {
 
   const applyHandler = () => {
     handleToggle()
-    props.onChange(paymentId, transactionHash, from, to, direction)
+    props.onChange(transactionHash, from, to, direction)
   }
 
   const clearHandler = () => {
-    setPaymentId('')
     setTransactionHash('')
     setFrom('')
     setTo('')
@@ -74,12 +67,6 @@ const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {
       overlay={
         <Popover id={`popover_${props.id}`}>
           <Popover.Body>
-            <Form.Group className="mb-3">
-              <Form.Label>
-                {t('components.payments.payment_id')}
-              </Form.Label>
-              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.payment_id_placeholder')} onChange={e => setPaymentId(e.target.value)} value={paymentId} />
-            </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
                 {t('components.payments.tran_hash')}
@@ -120,10 +107,10 @@ const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {
       }
     >
       <Button variant='link' size='sm' className="text-dark pt-0 pb-0">
-        {(isNullOrEmptyOrWhitespaces(props.paymentId) && isNullOrEmptyOrWhitespaces(props.transactionHash) && isNullOrEmptyOrWhitespaces(props.from) && isNullOrEmptyOrWhitespaces(props.to) && props.direction === null) && (
+        {(isNullOrEmptyOrWhitespaces(props.transactionHash) && isNullOrEmptyOrWhitespaces(props.from) && isNullOrEmptyOrWhitespaces(props.to) && props.direction === null) && (
           <Filter />
         )}
-        {(!isNullOrEmptyOrWhitespaces(props.paymentId) || !isNullOrEmptyOrWhitespaces(props.transactionHash) || !isNullOrEmptyOrWhitespaces(props.from) || !isNullOrEmptyOrWhitespaces(props.to) || props.direction !== null) && (
+        {(!isNullOrEmptyOrWhitespaces(props.transactionHash) || !isNullOrEmptyOrWhitespaces(props.from) || !isNullOrEmptyOrWhitespaces(props.to) || props.direction !== null) && (
           <FilterCircleFill />
         )}
       </Button>
