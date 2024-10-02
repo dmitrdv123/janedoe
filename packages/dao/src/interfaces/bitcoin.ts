@@ -104,6 +104,7 @@ export interface BitcoinTransaction {
   locktime: number
   vin: BitcoinVin[]
   vout: BitcoinVout[]
+  fee: number
 }
 
 export interface BitcoinBlock {

@@ -89,6 +89,8 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
     )
   }
 
+  // the way of outgoing transaction creation is working since we can have only one specific walletName in source of payment
+  // if we start to have multiple walletNames in source then we need to change algorithm
   private async processTransaction(tx: BitcoinTransaction, blockHash: string, blockHeight: number, blockTime: number): Promise<void> {
     console.log(`debug >> processTransaction: start to process transaction ${JSON.stringify(tx)}`)
 
@@ -106,17 +108,9 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
       return acc
     }, [] as BitcoinUtxo[])
 
-    const utxosToDeleteSummary = utxosToDelete.reduce((acc, utxo) => {
-      if (!acc[utxo.walletName]) {
-        acc[utxo.walletName] = utxo.data.amount
-      } else {
-        acc[utxo.walletName] += utxo.data.amount
-      }
+    const walletNames = [...new Set(utxosToDelete.map(utxo => utxo.walletName))]
 
-      return acc
-    }, {} as { [key: string]: number })
-
-    console.log(`debug >> processTransaction: utxoSummary ${JSON.stringify(utxosToDeleteSummary)}`)
+    console.log(`debug >> processTransaction: walletNames ${JSON.stringify(walletNames)}`)
     console.log(`debug >> processTransaction: utxoToDelete ${JSON.stringify(utxosToDelete)}`)
 
     tx.vout.forEach(txOutput => {
@@ -128,6 +122,7 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
         console.log(`debug >> processTransaction: walletAddress ${JSON.stringify(walletAddress)}`)
 
         if (walletAddress) {
+          // create incoming wallet transaction
           walletTransactions.push({
             walletName: walletAddress.walletName,
             label: walletAddress.label,
@@ -157,7 +152,8 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
           })
         }
 
-        Object.keys(utxosToDeleteSummary).forEach(
+        // create outgoing wallet transactions
+        walletNames.forEach(
           key => walletTransactions.push({
             walletName: key,
             label: `${key}${this.cryptoService.generateRandom()}`,
@@ -169,13 +165,32 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
               time: blockTime,
               hex: txOutput.scriptPubKey.hex,
               address: outputAddress,
-              amount: utxosToDeleteSummary[key],
+              amount: txOutput.value,
               direction: 'outgoing'
             }
           })
         )
       }
     })
+
+    // create outgoing wallet transactions for fee
+    walletNames.forEach(
+      key => walletTransactions.push({
+        walletName: key,
+        label: `${key}${this.cryptoService.generateRandom()}`,
+        data: {
+          txid: tx.txid,
+          vout: -1,
+          blockhash: blockHash,
+          blockheight: blockHeight,
+          time: blockTime,
+          hex: '',
+          address: '0x0',
+          amount: tx.fee,
+          direction: 'outgoing'
+        }
+      })
+    )
 
     if (walletTransactions.length > 0) {
       console.log(`debug >> processTransaction: start to save wallet transactions ${JSON.stringify(walletTransactions)}`)
