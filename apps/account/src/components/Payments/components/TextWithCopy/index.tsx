@@ -9,9 +9,9 @@ const TextWithCopy: React.FC<TextWithCopyProps> = (props) => {
   return (
     <>
       {(!!props.value && !isNullOrEmptyOrWhitespaces(props.value)) && (
-        <div data-bs-toggle="tooltip" data-bs-placement="bottom" title={!!props.value && !isNullOrEmptyOrWhitespaces(props.value) ? props.value : ''}>
+        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title={!!props.value && !isNullOrEmptyOrWhitespaces(props.value) ? props.value : ''}>
           {cutString(props.value)} <button type="button" className="btn btn-link btn-sm text-dark" onClick={() => navigator.clipboard.writeText(props.value ?? '')}><Clipboard/></button>
-        </div>
+        </span>
       )}
     </>
   )

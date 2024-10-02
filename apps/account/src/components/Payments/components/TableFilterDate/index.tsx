@@ -21,11 +21,11 @@ const TableFilterDate: React.FC<TableFilterDateProps> = (props) => {
 
   useEffect(() => {
     setFrom(props.from)
-  }, [props.from, setFrom])
+  }, [props.from])
 
   useEffect(() => {
     setTo(props.to)
-  }, [props.to, setTo])
+  }, [props.to])
 
   const handleToggle = () => {
     setShow((prev) => !prev);
@@ -56,13 +56,13 @@ const TableFilterDate: React.FC<TableFilterDateProps> = (props) => {
               <Form.Label>
                 {t('components.payments.date_from')}
               </Form.Label>
-              <Form.Control type="date" className='mb-3' placeholder='From Date' onChange={e => setFrom(e.target.value)} value={from} />
+              <Form.Control type="date" className='mb-3' placeholder={t('components.payments.date_from_placeholder')} onChange={e => setFrom(e.target.value)} value={from} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
                 {t('components.payments.date_to')}
               </Form.Label>
-              <Form.Control type="date" className='mb-3' placeholder='To Date' onChange={e => setTo(e.target.value)} value={to} />
+              <Form.Control type="date" className='mb-3' placeholder={t('components.payments.date_to_placeholder')} onChange={e => setTo(e.target.value)} value={to} />
             </Form.Group>
 
             <Button variant="primary" onClick={applyHandler}>

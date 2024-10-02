@@ -5,11 +5,10 @@ import { CheckCircle, ExclamationCircle } from 'react-bootstrap-icons'
 import isEqual from 'lodash.isequal'
 
 import { convertErrorToMessage, convertTimestampToDate } from '../../libs/utils'
-import { PaymentHistoryData, PaymentHistoryDataFilter } from '../../types/payment-history'
+import { PaymentHistoryData, PaymentHistoryDataFilter, PaymentHistoryDirection } from '../../types/payment-history'
 import { useInfoMessages, useToggleModal } from '../../states/application/hook'
 import { CURRENCY_USD_SYMBOL, EMPTY_PAYMENT_HISTORY_DATA_FILTER, INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
 import TextWithCopy from './components/TextWithCopy'
-import TableFilterText from './components/TableFilterText'
 import TableFilterDate from './components/TableFilterDate'
 import TableFilterBlockchain from './components/TableFilterBlockchain'
 import TransactionHash from '../TransactionHash'
@@ -23,9 +22,10 @@ import TokenAmount from '../TokenAmount'
 import usePaymentHistory from '../../libs/hooks/usePaymentHistory'
 import useApiRequest from '../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
-import TokenDetails from '../TokenDetails'
 import usePaymentHistoryUpdates from '../../libs/hooks/usePaymentHistoryUpdates'
 import { RefundResult } from '../../types/refund-result'
+import TokenShortDetails from '../TokenShortDetails'
+import TableFilterDetails from './components/TableFilterDetails'
 
 const Payments: React.FC = () => {
   const [paymentHistoryLoadTimestamp, setPaymentHistoryLoadTimestamp] = useState<number>(Math.floor(Date.now() / 1000))
@@ -163,24 +163,14 @@ const Payments: React.FC = () => {
     }))
   }, [])
 
-  const fromFilterHandler = useCallback((filterFrom: string) => {
+  const paymentDetailsFilterHandler = useCallback((filterPaymentId: string, filterTransactionHash: string, filterFrom: string, filterTo: string, filterDirection: PaymentHistoryDirection | null) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
-      from: filterFrom
-    }))
-  }, [])
-
-  const paymentIdFilterHandler = useCallback((filterPaymentId: string) => {
-    setPaymentHistoryDataFilter(filter => ({
-      ...filter,
-      paymentId: filterPaymentId
-    }))
-  }, [])
-
-  const transactionHashFilterHandler = useCallback((filterTransactionHash: string) => {
-    setPaymentHistoryDataFilter(filter => ({
-      ...filter,
-      transactionHash: filterTransactionHash
+      paymentId: filterPaymentId,
+      transactionHash: filterTransactionHash,
+      from: filterFrom,
+      to: filterTo,
+      direction: filterDirection
     }))
   }, [])
 
@@ -199,24 +189,44 @@ const Payments: React.FC = () => {
         <td>
           {dt.toLocaleDateString()} {dt.toLocaleTimeString()}
         </td>
-        <td>{blockchain?.displayName ?? paymentHistoryItem.blockchainName}</td>
         <td>
-          <WalletAddress blockchain={blockchain} address={paymentHistoryItem.from} />
+          <div>
+            {t('components.payments.payment_id')} <TextWithCopy value={paymentHistoryItem.paymentId} />
+          </div>
+
+          <div>
+            {t('components.payments.tran_hash')} <TransactionHash blockchain={blockchain} transactionHash={paymentHistoryItem.transaction} />
+          </div>
+
+          {!!paymentHistoryItem.from && (
+            <div>
+              {t('components.payments.from')} <WalletAddress blockchain={blockchain} address={paymentHistoryItem.from} />
+            </div>
+          )}
+
+          <div>
+            {t('components.payments.to')} <WalletAddress blockchain={blockchain} address={paymentHistoryItem.to} />
+          </div>
+
+          <div>
+            {t('components.payments.direction')} {t(`components.payments.${paymentHistoryItem.direction}`)}
+          </div>
         </td>
         <td>
           {!!token && (
-            <TokenDetails
+            <TokenShortDetails
               tokenSymbol={token.symbol}
-              tokenName={token.name}
               tokenAddress={token.address}
+              tokenBlockchain={token.blockchain}
               blockchain={blockchain}
             />
           )}
 
           {!token && (
-            <TokenDetails
+            <TokenShortDetails
               tokenSymbol={paymentHistoryItem.tokenSymbol ?? paymentHistoryItem.tokenAddress ?? ''}
               tokenAddress={paymentHistoryItem.tokenAddress}
+              tokenBlockchain={paymentHistoryItem.blockchainName}
               blockchain={blockchain}
             />
           )}
@@ -245,12 +255,6 @@ const Payments: React.FC = () => {
               {t('components.payments.at_cur_time')} <CurrencyAmount amount={paymentHistoryItem.amountUsdAtCurTime} currency={CURRENCY_USD_SYMBOL} />
             </div>
           )}
-        </td>
-        <td>
-          <TextWithCopy value={paymentHistoryItem.paymentId} />
-        </td>
-        <td>
-          <TransactionHash blockchain={blockchain} transactionHash={paymentHistoryItem.transaction} />
         </td>
         <td>
           {(!paymentHistoryItem.ipnResult) && (
@@ -287,7 +291,7 @@ const Payments: React.FC = () => {
       <h3 className="mb-3">{t('components.payments.title')}</h3>
 
       <IpnModal paymentHistory={selectedPaymentHistory} onUpdate={updateIpnResultHandler} />
-      <RefundModal paymentHistory={selectedPaymentHistory} onSuccess={successRefundHandler}/>
+      <RefundModal paymentHistory={selectedPaymentHistory} onSuccess={successRefundHandler} />
 
       {Object.values(refundResults).map(result => (
         <Alert
@@ -324,6 +328,7 @@ const Payments: React.FC = () => {
                 timestampTo: paymentHistoryDataFilter.timestampTo.trim() ? Number(paymentHistoryDataFilter.timestampTo) : undefined,
                 from: paymentHistoryDataFilter.from.trim() ? paymentHistoryDataFilter.from.trim() : undefined,
                 to: paymentHistoryDataFilter.to.trim() ? paymentHistoryDataFilter.to.trim() : undefined,
+                direction: paymentHistoryDataFilter.direction ? paymentHistoryDataFilter.direction : undefined,
                 blockchains: paymentHistoryDataFilter.blockchains.length > 0 ? paymentHistoryDataFilter.blockchains : undefined,
                 transaction: paymentHistoryDataFilter.transactionHash.trim() ? paymentHistoryDataFilter.transactionHash.trim() : undefined
               })
@@ -361,7 +366,19 @@ const Payments: React.FC = () => {
               />
             </th>
             <th scope="col">
-              {t('components.payments.blockchain_col')}
+              {t('components.payments.details_col')}
+              <TableFilterDetails
+                id="payment_history_details"
+                paymentId={paymentHistoryDataFilter.paymentId}
+                transactionHash={paymentHistoryDataFilter.transactionHash}
+                from={paymentHistoryDataFilter.from}
+                to={paymentHistoryDataFilter.to}
+                direction={paymentHistoryDataFilter.direction}
+                onChange={paymentDetailsFilterHandler}
+              />
+            </th>
+            <th scope="col">
+              {t('components.payments.token_col')}
               <TableFilterBlockchain
                 id="payment_history_blockchains"
                 blockchains={paymentHistoryDataFilter.blockchains}
@@ -369,37 +386,7 @@ const Payments: React.FC = () => {
               />
             </th>
             <th scope="col">
-              {t('components.payments.from_col')}
-              <TableFilterText
-                id="payment_history_from"
-                placeholder={t('components.payments.from_placeholder')}
-                value={paymentHistoryDataFilter.from}
-                onChange={fromFilterHandler}
-              />
-            </th>
-            <th scope="col">
-              {t('components.payments.token_col')}
-            </th>
-            <th scope="col">
               {t('components.payments.amount_col')}
-            </th>
-            <th scope="col">
-              {t('components.payments.payment_id_col')}
-              <TableFilterText
-                id="payment_history_payment_id"
-                placeholder={t('components.payments.payment_id_placeholder')}
-                value={paymentHistoryDataFilter.paymentId}
-                onChange={paymentIdFilterHandler}
-              />
-            </th>
-            <th scope="col">
-              {t('components.payments.tran_hash_col')}
-              <TableFilterText
-                id="payment_history_transaction_hash"
-                placeholder={t('components.payments.tran_hash_placeholder')}
-                value={paymentHistoryDataFilter.transactionHash}
-                onChange={transactionHashFilterHandler}
-              />
             </th>
             <th>
               {t('components.payments.notification_col')}

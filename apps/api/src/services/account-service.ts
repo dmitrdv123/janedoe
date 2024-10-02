@@ -125,6 +125,8 @@ export class AccountServiceImpl implements AccountService {
 
       'From',
       'To',
+      'Direction',
+
       'Amount',
       'Amount USD (Payment Time)',
       'Amount USD (Current Time)',
@@ -188,6 +190,8 @@ export class AccountServiceImpl implements AccountService {
 
         item.from ?? '', // 'From'
         item.to, // 'To'
+        item.direction, // 'Direction'
+
         item.amount, // 'Amount'
         item.amountUsdAtPaymentTime?.toString() ?? '', // 'Amount USD (Payment Time)'
         item.amountUsdAtCurTime?.toString() ?? '', // 'Amount USD (Current Time)'

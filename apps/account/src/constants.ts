@@ -70,6 +70,7 @@ export const EMPTY_PAYMENT_HISTORY_DATA_FILTER: PaymentHistoryDataFilter = {
   timestampTo: '',
   from: '',
   to: '',
+  direction: null,
   blockchains: [],
   transactionHash: ''
 }

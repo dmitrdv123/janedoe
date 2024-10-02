@@ -51,6 +51,7 @@ export default function usePaymentHistory(filter: PaymentHistoryDataFilter) {
             timestampTo: filterToUse.timestampTo ? new Date(filterToUse.timestampTo).getTime() / 1000 : undefined,
             from: filterToUse.from.trim() ? filterToUse.from.trim() : undefined,
             to: filterToUse.to.trim() ? filterToUse.to.trim() : undefined,
+            direction: filterToUse.direction ? filterToUse.direction : undefined,
             blockchains: filterToUse.blockchains.length > 0 ? filterToUse.blockchains : undefined,
             transaction: filterToUse.transactionHash.trim() ? filterToUse.transactionHash.trim() : undefined
           },

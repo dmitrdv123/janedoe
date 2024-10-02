@@ -340,6 +340,8 @@ export function convertPaymentHistoryToPaymentHistoryData(
 
     from: item.from,
     to: item.to,
+    direction: item.direction,
+
     amount: item.amount,
     amountUsdAtPaymentTime: item.amountUsd,
     amountUsdAtCurTime: amountUsdAtCurTime,
