@@ -16,7 +16,6 @@ import WalletAddress from '../WalletAddress'
 import { IpnResult } from '../../types/ipn'
 import { ApplicationModal } from '../../types/application-modal'
 import IpnModal from './components/IpnModal'
-import RefundModal from './components/RefundModal'
 import CurrencyAmount from '../CurrencyAmount'
 import TokenAmount from '../TokenAmount'
 import usePaymentHistory from '../../libs/hooks/usePaymentHistory'
@@ -41,7 +40,6 @@ const Payments: React.FC = () => {
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
   const openIpnModal = useToggleModal(ApplicationModal.IPN)
-  const openRefundModal = useToggleModal(ApplicationModal.REFUND)
 
   const { process: loadPaymentHistoryAsCsv } = useApiRequest<string[][]>()
 
@@ -110,18 +108,6 @@ const Payments: React.FC = () => {
     )
   }, [])
 
-  const successRefundHandler = useCallback((paymentHistoryToUse: PaymentHistoryData, hashToUse: string | undefined) => {
-    setRefundResults(val => {
-      if (val[paymentHistoryToUse.blockchainName] && val[paymentHistoryToUse.blockchainName].hash === hashToUse) {
-        return val
-      }
-
-      const res = { ...val }
-      res[paymentHistoryToUse.blockchainName] = { paymentHistory: paymentHistoryToUse, hash: hashToUse }
-      return res
-    })
-  }, [])
-
   const removeRefundResultHandler = (blockchain: string) => {
     setRefundResults(val => {
       const res = { ...val }
@@ -139,11 +125,6 @@ const Payments: React.FC = () => {
     setSelectedPaymentHistory(paymentHistoryToShow)
     openIpnModal()
   }, [openIpnModal])
-
-  const openRefundModalHandler = useCallback((paymentHistoryToShow: PaymentHistoryData) => {
-    setSelectedPaymentHistory(paymentHistoryToShow)
-    openRefundModal()
-  }, [openRefundModal])
 
   const clearFiltersHandler = useCallback(() => {
     setPaymentHistoryDataFilter(EMPTY_PAYMENT_HISTORY_DATA_FILTER)
@@ -283,21 +264,15 @@ const Payments: React.FC = () => {
             </Button>
           )}
         </td>
-        <td>
-          <Button variant="outline-secondary" onClick={() => openRefundModalHandler(paymentHistoryItem)}>
-            {t('components.payments.refund_btn')}
-          </Button>
-        </td>
       </tr>
     )
-  }, [t, lastPaymentElementRef, openIpnModalHandler, openRefundModalHandler])
+  }, [t, lastPaymentElementRef, openIpnModalHandler])
 
   return (
     <>
       <h3 className="mb-3">{t('components.payments.title')}</h3>
 
       <IpnModal paymentHistory={selectedPaymentHistory} onUpdate={updateIpnResultHandler} />
-      <RefundModal paymentHistory={selectedPaymentHistory} onSuccess={successRefundHandler} />
 
       {Object.values(refundResults).map(result => (
         <Alert
@@ -405,7 +380,6 @@ const Payments: React.FC = () => {
             <th>
               {t('components.payments.notification_col')}
             </th>
-            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
