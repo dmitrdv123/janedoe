@@ -304,7 +304,8 @@
         "no_wallet_specified_error": "Не указан кошелек (ошибка при загрузке нескольких кошельков)",
         "wallet_already_loaded_error": "Такой же кошелек уже загружен",
         "wallet_already_exist_error": "Кошелек с таким именем уже существует",
-        "transaction_rejected_dust_error": "Транзакция была отклонена из-за очень маленькой суммы, которая считается 'dust'"
+        "transaction_rejected_dust_error": "Транзакция была отклонена из-за очень маленькой суммы, которая считается 'dust'",
+        "transaction_inputs_limit_exceed": "Количество UTXO {{count}} превышает лимит {{limit}}. Создайте другие транзакции, чтобы их использовать."
       }
     }
   },

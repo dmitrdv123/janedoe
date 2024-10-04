@@ -61,6 +61,10 @@ export function createAppConfig() {
     throw new Error('BITCOIN_DEFAULT_FEE_RATE is not set')
   }
 
+  if (!process.env.BITCOIN_TRANSACTION_INPUTS_MAX) {
+    throw new Error('BITCOIN_TRANSACTION_INPUTS_MAX is not set')
+  }
+
   if (!process.env.PORT) {
     throw new Error('PORT is not set')
   }
@@ -146,6 +150,7 @@ export function createAppConfig() {
     PORT: process.env.PORT,
     BITCOIN_NETWORK: process.env.BITCOIN_NETWORK,
     BITCOIN_DEFAULT_FEE_RATE: process.env.BITCOIN_DEFAULT_FEE_RATE,
+    BITCOIN_TRANSACTION_INPUTS_MAX: process.env.BITCOIN_TRANSACTION_INPUTS_MAX,
     APP_NAME: process.env.APP_NAME,
     APP_URL: process.env.APP_URL,
     PAYMENT_URL: process.env.PAYMENT_URL,

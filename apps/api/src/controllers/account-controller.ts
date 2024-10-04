@@ -205,8 +205,8 @@ export class AccountController {
       assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
       assertParam('address', req.params.address, ADDRESS_MAX_LENGTH)
 
-      const txid = await this.accountService.withdraw(req.params.id, req.params.blockchain, req.params.address)
-      res.send({ txid })
+      const result = await this.accountService.withdraw(req.params.id, req.params.blockchain, req.params.address)
+      res.send(result)
     } catch (err) {
       processControllerError(res, err as Error)
     }
@@ -225,7 +225,7 @@ export class AccountController {
       assertParam('refund address', refundAddress, ADDRESS_MAX_LENGTH)
       assertParam('refund amount', refundAmount)
 
-      const txid = await this.accountService.refund(
+      const result = await this.accountService.refund(
         req.params.id,
         req.params.blockchain,
         req.params.transaction,
@@ -233,7 +233,7 @@ export class AccountController {
         refundAddress,
         refundAmount
       )
-      res.send({ txid })
+      res.send(result)
     } catch (err) {
       processControllerError(res, err as Error)
     }

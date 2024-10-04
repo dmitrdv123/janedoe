@@ -22,7 +22,7 @@ interface BalancesBlockchainTransferProps {
   isForceRefresh: boolean
   onForceRefreshEnd: () => void
   onProcessing: (isProcessing: boolean) => void
-  onSuccess: (hash: string | undefined) => void
+  onSuccess: (hash: string | undefined, message?: string | undefined) => void
 }
 
 const BalancesBlockchainTransfer: React.FC<BalancesBlockchainTransferProps> = (props) => {
@@ -67,9 +67,9 @@ const BalancesBlockchainTransfer: React.FC<BalancesBlockchainTransferProps> = (p
     }
   }, [blockchain.name, accountBlockchainBalanceError, t, addInfoMessage, removeInfoMessage])
 
-  const successWithdrawHandler = useCallback((hash: string | undefined) => {
+  const successWithdrawHandler = useCallback((hash: string | undefined, message?: string | undefined) => {
     accountBlockchainBalanceRefetch()
-    onSuccess(hash)
+    onSuccess(hash, message)
   }, [accountBlockchainBalanceRefetch, onSuccess])
 
   const getTotalAmount = (amount: number, usdPrice: number, exchangeRate: number) => {

@@ -8,7 +8,7 @@ const InfoMessages: React.FC = () => {
     <div className='sticky-top'>
       {[...infoMessages]
         .reverse()
-        .map(item => <InfoMessageAlert infoMessage={item} />)
+        .map(item => <InfoMessageAlert key={item.key} infoMessage={item} />)
       }
     </div>
   )

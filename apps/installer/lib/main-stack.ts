@@ -615,6 +615,7 @@ function handler(event) {
             PINO_CONFIG: env('PINO_CONFIG'),
             BITCOIN_NETWORK: env('BITCOIN_NETWORK'),
             BITCOIN_DEFAULT_FEE_RATE: env('BITCOIN_DEFAULT_FEE_RATE'),
+            BITCOIN_TRANSACTION_INPUTS_MAX: env('BITCOIN_TRANSACTION_INPUTS_MAX'),
             TABLE_NAME: output.tableData?.tableName ?? '',
             TABLE_NAME_TIME_SERIES: output.tableTimeSeries?.tableName ?? '',
             BUCKET_NAME_DATA: output.bucketData?.bucketName ?? '',

@@ -2,10 +2,11 @@ import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
 import { BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressKey } from '@repo/dao/dist/src/interfaces/bitcoin'
 
 import appConfig from '@repo/common/dist/src/app-config'
+import { TransactionCreationResult } from '@repo/common/dist/src/interfaces/transaction-creation-result'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
 import { BitcoinUtilsService } from './bitcoin-utils.service'
-import { BITCOIN_DECIMALS } from '../constants'
+import { BITCOIN_DECIMALS, BITCOIN_DUST_AMOUNT } from '../constants'
 import { BitcoinCoreError } from '../errors/bitcoin-core-error'
 import { parseToBigNumber, tryParseFloat } from '../utils/bitcoin-utils'
 
@@ -16,8 +17,8 @@ export interface BitcoinService {
   getWalletBalance(walletName: string): Promise<number>
   getWalletAddressBalance(walletName: string, label: string): Promise<number>
 
-  withdraw(walletName: string, address: string): Promise<string | undefined>
-  refund(walletName: string, utxoKey: BitcoinUtxoDataKey, address: string, amount: string): Promise<string | undefined>
+  withdraw(walletName: string, address: string): Promise<TransactionCreationResult>
+  refund(walletName: string, utxoKey: BitcoinUtxoDataKey, address: string, amount: string): Promise<TransactionCreationResult>
 }
 
 export class BitcoinServiceImpl implements BitcoinService {
@@ -75,7 +76,7 @@ export class BitcoinServiceImpl implements BitcoinService {
     return await this.bitcoinDao.loadWalletAddressBalance(walletName, label)
   }
 
-  public async withdraw(walletName: string, address: string): Promise<string | undefined> {
+  public async withdraw(walletName: string, address: string): Promise<TransactionCreationResult> {
     console.log(`debug >> BitcoinService: start to withdraw`)
 
     console.log(`debug >> BitcoinService: list utxos`)
@@ -96,21 +97,24 @@ export class BitcoinServiceImpl implements BitcoinService {
       throw new BitcoinCoreError(-4, `Wallets for UTXOs not found`)
     }
 
+    const chunk = parseInt(appConfig.BITCOIN_TRANSACTION_INPUTS_MAX)
+
     const utxosFiltered = utxos.reduce((acc, utxo) => {
       const exist = walletAddresses.findIndex(
         item => item.data.address.toLocaleLowerCase() === utxo.data.address.toLocaleLowerCase()
       ) !== -1
-      if (exist) {
+      if (exist && utxo.data.amount > BITCOIN_DUST_AMOUNT) {
         acc.push(utxo)
       }
 
       return acc
     }, [] as BitcoinUtxo[])
     if (utxosFiltered.length === 0) {
-      throw new BitcoinCoreError(-6, `UTXOs to withdraw not found`)
+      throw new BitcoinCoreError(-6, `UTXOs to withdraw not found or all input UTXO amounts is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
     }
 
-    const amount = utxosFiltered.reduce(
+    const utxosFilteredChunk = utxosFiltered.slice(0, chunk)
+    const amount = utxosFilteredChunk.reduce(
       (acc, utxoData) => acc + parseToBigNumber(utxoData.data.amount, BITCOIN_DECIMALS), BigInt(0)
     )
 
@@ -120,21 +124,36 @@ export class BitcoinServiceImpl implements BitcoinService {
     console.log(`debug >> BitcoinService: create tx`)
     console.log(`debug >> BitcoinService: walletAddresses`)
     console.log(JSON.stringify(walletAddresses))
-    console.log(`debug >> BitcoinService: utxosFiltered`)
-    console.log(JSON.stringify(utxosFiltered))
+    console.log(`debug >> BitcoinService: utxosFilteredChunk`)
+    console.log(JSON.stringify(utxosFilteredChunk))
     console.log(`debug >> BitcoinService: address`)
     console.log(address)
     console.log(`debug >> BitcoinService: addressRest`)
     console.log(addressRest)
     console.log(`debug >> BitcoinService: amount`)
     console.log(amount)
-    return await this.createTransaction(walletAddresses, utxosFiltered, address, addressRest, amount)
+
+    const txId = await this.createTransaction(walletAddresses, utxosFilteredChunk, address, addressRest, amount)
+
+    return utxosFiltered.length > chunk
+      ? {
+        txId,
+        message: `UTXOs count ${utxos.length} exceed limit ${chunk} and will be splitted. Submit another transactions to use another ones.`,
+        code: 'services.errors.bitcoin_errors.transaction_inputs_limit_exceed',
+        args: { count: `${utxos.length}`, limit: `${chunk}` }
+      }
+      : {
+        txId,
+        message: '',
+        code: '',
+        args: {}
+      }
   }
 
-  public async refund(walletName: string, utxoKey: BitcoinUtxoDataKey, address: string, amount: string): Promise<string | undefined> {
+  public async refund(walletName: string, utxoKey: BitcoinUtxoDataKey, address: string, amount: string): Promise<TransactionCreationResult> {
     const utxo = await this.bitcoinDao.loadUtxo(utxoKey, true)
-    if (!utxo) {
-      throw new BitcoinCoreError(-6, `UTXO to refund not found`)
+    if (!utxo || utxo.data.amount <= BITCOIN_DUST_AMOUNT) {
+      throw new BitcoinCoreError(-6, `UTXO to refund not found or UTXO amount is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
     }
 
     const walletAddress = await this.bitcoinDao.loadWalletAddress(walletName, utxo.label)
@@ -143,10 +162,17 @@ export class BitcoinServiceImpl implements BitcoinService {
     }
 
     const addressRest = await this.getWalletAddressForRest(walletName)
-    return await this.createTransaction([walletAddress], [utxo], address, addressRest, BigInt(amount))
+    const txId = await this.createTransaction([walletAddress], [utxo], address, addressRest, BigInt(amount))
+
+    return {
+      txId,
+      message: '',
+      code: '',
+      args: {}
+    }
   }
 
-  private async createTransaction(walletAddresses: BitcoinWalletAddress[], utxos: BitcoinUtxo[], address: string, addressRest: string, amount: bigint): Promise<string | undefined> {
+  private async createTransaction(walletAddresses: BitcoinWalletAddress[], utxos: BitcoinUtxo[], address: string, addressRest: string, amount: bigint): Promise<string> {
     let feeRate = await this.bitcoinDao.loadFeeRate()
     if (!feeRate) {
       feeRate = tryParseFloat(appConfig.BITCOIN_DEFAULT_FEE_RATE)
@@ -154,6 +180,8 @@ export class BitcoinServiceImpl implements BitcoinService {
     if (!feeRate) {
       throw new Error('Fee rate not found')
     }
+
+    console.log(`debug >> BitcoinService: BITCOIN_TRANSACTION_INPUTS_MAX ${appConfig.BITCOIN_TRANSACTION_INPUTS_MAX}`)
 
     const walletAddressesData = walletAddresses.map(item => item.data)
     const utxosData = utxos.map(item => item.data)

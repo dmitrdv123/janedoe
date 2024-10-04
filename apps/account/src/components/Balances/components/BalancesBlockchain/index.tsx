@@ -9,7 +9,7 @@ interface BalancesBlockchainProps {
   isForceRefresh: boolean
   onForceRefreshEnd: () => void
   onProcessing: (isProcessing: boolean) => void
-  onSuccess: (hash: string | undefined) => void
+  onSuccess: (hash: string | undefined, message?: string | undefined) => void
 }
 
 const BalancesBlockchain: React.FC<BalancesBlockchainProps> = (props) => {

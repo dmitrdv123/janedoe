@@ -182,6 +182,10 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
   }
 
   private calcFee(tx: bitcoin.Transaction, feeRate: number): bigint {
-    return BigInt(tx.virtualSize() * Math.ceil(feeRate) - 1)
+    console.log(`debug >> BitcoinUtilsService createTransaction: tx virtualSize ${tx.virtualSize()}`)
+    console.log(`debug >> BitcoinUtilsService createTransaction: fee rate ${feeRate}`)
+    console.log(`debug >> BitcoinUtilsService createTransaction: fee rate ceil ${Math.ceil(feeRate)}`)
+
+    return BigInt((tx.virtualSize() - 1) * Math.ceil(feeRate))
   }
 }

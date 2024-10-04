@@ -45,14 +45,14 @@ const Balances: React.FC = () => {
     setIsWithdrawProcessing(isProcessing)
   }, [])
 
-  const successWithdrawHandler = useCallback((blockchain: BlockchainMeta, hash: string | undefined) => {
+  const successWithdrawHandler = useCallback((blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => {
     setWithdrawResults(val => {
       if (val[blockchain.name] && val[blockchain.name].hash === hash) {
         return val
       }
 
       const res = { ...val }
-      res[blockchain.name] = { blockchain, hash }
+      res[blockchain.name] = { blockchain, hash, message }
       return res
     })
   }, [])
@@ -81,6 +81,9 @@ const Balances: React.FC = () => {
           onClose={() => removeWithdrawResults(result.blockchain.name)}
         >
           {t('components.balances.success', { blockchain: result.blockchain.displayName })} {result.hash && (<TransactionHash blockchain={result.blockchain} transactionHash={result.hash} />)}
+          {!!result.message && (
+            <div>{result.message}</div>
+          )}
         </Alert>
       ))}
 
@@ -133,7 +136,7 @@ const Balances: React.FC = () => {
                   isForceRefresh={isForceRefresh}
                   onForceRefreshEnd={forceRefreshEndHandler}
                   onProcessing={processingWithdrawHandler}
-                  onSuccess={(hash) => successWithdrawHandler(blockchain, hash)}
+                  onSuccess={(hash, message) => successWithdrawHandler(blockchain, hash, message)}
                 />
               })}
             </tbody>

@@ -50,3 +50,15 @@ export function tryParseFloat(val: string | null | undefined): number | undefine
     return undefined
   }
 }
+
+export function tryParseInt(val: string | null | undefined): number | undefined {
+  if (isNullOrEmptyOrWhitespaces(val)) {
+    return undefined
+  }
+
+  try {
+    return parseInt(val as string)
+  } catch {
+    return undefined
+  }
+}

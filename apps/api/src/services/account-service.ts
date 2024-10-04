@@ -10,6 +10,7 @@ import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 import { BitcoinCoreError } from '@repo/bitcoin/dist/src/errors/bitcoin-core-error'
 import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
+import { TransactionCreationResult } from '@repo/common/dist/src/interfaces/transaction-creation-result'
 
 import { ACCOUNT_SECRET_LENGTH, BLOCKCHAIN_BTC, COMMON_SETTINGS_DEFAULT_CURRENCY, COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH } from '../constants'
 import { logger } from '../utils/logger'
@@ -46,8 +47,8 @@ export interface AccountService {
   removeAccountApiKeySettings(id: string): Promise<void>
 
   balance(id: string, blockchain: string): Promise<number>
-  withdraw(id: string, blockchain: string, address: string): Promise<string | undefined>
-  refund(id: string, blockchain: string, transaction: string, index: number, address: string, amount: string): Promise<string | undefined>
+  withdraw(id: string, blockchain: string, address: string): Promise<TransactionCreationResult>
+  refund(id: string, blockchain: string, transaction: string, index: number, address: string, amount: string): Promise<TransactionCreationResult>
   loadIpn(ipnKey: IpnKey): Promise<IpnData | undefined>
   sendIpn(ipnKey: IpnKey): Promise<IpnResult>
 
@@ -392,7 +393,7 @@ export class AccountServiceImpl implements AccountService {
     }
   }
 
-  public async withdraw(id: string, blockchain: string, address: string): Promise<string | undefined> {
+  public async withdraw(id: string, blockchain: string, address: string): Promise<TransactionCreationResult> {
     switch (blockchain.toLocaleLowerCase()) {
       case BLOCKCHAIN_BTC:
         const settings = await this.loadAccountSettings(id)
@@ -424,7 +425,7 @@ export class AccountServiceImpl implements AccountService {
     }
   }
 
-  public async refund(id: string, blockchain: string, transaction: string, index: number, address: string, amount: string): Promise<string | undefined> {
+  public async refund(id: string, blockchain: string, transaction: string, index: number, address: string, amount: string): Promise<TransactionCreationResult> {
     switch (blockchain.toLocaleLowerCase()) {
       case BLOCKCHAIN_BTC:
         try {

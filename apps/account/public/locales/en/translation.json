@@ -304,7 +304,8 @@
         "no_wallet_specified_error": "No wallet specified (error when there are multiple wallets loaded)",
         "wallet_already_loaded_error": "Same wallet is already loaded",
         "wallet_already_exist_error": "There is already a wallet with the same name",
-        "transaction_rejected_dust_error": "Transaction was rejected due to a very small amount that is considered as 'dust'"
+        "transaction_rejected_dust_error": "Transaction was rejected due to a very small amount that is considered as 'dust'",
+        "transaction_inputs_limit_exceed": "UTXOs count {{count}} exceed limit {{limit}}. Submit another transactions to use another ones."
       }
     }
   },

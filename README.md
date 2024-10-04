@@ -189,10 +189,7 @@ NODE_ENV=production pnpm run init --filter=installer
 
 others:
 - payment form: switch to another tab, return back. Timer start from the beginning
-- payment form: success check is not triggered at least in case of btc
 - api: check batchReadItemsByChunks usage and other bulk operations to not have duplicates, in other way we have errors
-- api: need to constraint max limit of bitcoin transaction inputs
-- api: need to introduce rollback fee rate for bitcoin
 - api: output bitcoin tx are created based on utxo. But utxo can be deleted. This means that we cannot recreate output transaction if we will reprocess the block
 
 improvement backlog:

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { BlockchainMeta } from 'rango-sdk-basic'
 
 import { useInfoMessages } from '../../../../states/application/hook'
-import { AccountBlockchainWithdraw } from '../../../../types/account-blockchain-withdraw-result'
+import { TransactionCreationResult } from '../../../../types/transaction-creation-result'
 import useApiRequest from '../../../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../../../libs/services/api-wrapper'
 import { INFO_MESSAGE_BALANCE_WITHDRAW_ERROR } from '../../../../constants'
@@ -14,7 +14,7 @@ interface WithdrawBlockchainTransferButtonProps {
   blockchain: BlockchainMeta
   isDisable: boolean
   onProcessing: (isProcessing: boolean) => void
-  onSuccess: (hash: string | undefined) => void
+  onSuccess: (hash: string | undefined, message?: string | undefined) => void
 }
 
 const WithdrawBlockchainTransferButton: React.FC<WithdrawBlockchainTransferButtonProps> = (props) => {
@@ -30,7 +30,7 @@ const WithdrawBlockchainTransferButton: React.FC<WithdrawBlockchainTransferButto
   const {
     status: withdrawStatus,
     process: withdraw
-  } = useApiRequest<AccountBlockchainWithdraw>()
+  } = useApiRequest<TransactionCreationResult>()
 
   useEffect(() => {
     setIsWithdrawDisabled(isDisable || isNullOrEmptyOrWhitespaces(walletAddress))
@@ -48,7 +48,9 @@ const WithdrawBlockchainTransferButton: React.FC<WithdrawBlockchainTransferButto
       try {
         onProcessing(true)
         const res = await withdraw(ApiWrapper.instance.withdrawAccountBlockchainRequest(blockchain.name, walletAddress))
-        onSuccess(res?.txid)
+        const message = res?.code ? t(res.code, res.args) : undefined
+
+        onSuccess(res?.txId, message)
       } catch (error) {
         addInfoMessage(
           t('components.balances.errors.withdraw_blockchain_error', { blockchain: blockchain.name }),
