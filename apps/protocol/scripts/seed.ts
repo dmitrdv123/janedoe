@@ -216,7 +216,7 @@ async function main() {
   console.log('Pay ETH manually')
   await payEthManually(accounts[1], accounts[0], 1)
 
-  const count = 2
+  let count = 30
 
   console.log(`Pay random ETH amount ${count} times`)
   for (var i = 0; i < count; i++) {
@@ -235,6 +235,8 @@ async function main() {
 
   console.log('Withdraw USDT')
   await withdrawToken(accounts[0], 10, USDT_ADDRESS)
+
+  count = 2
 
   console.log(`Pay random BTC amount ${count} times`)
   for (var i = 0; i < count; i++) {
