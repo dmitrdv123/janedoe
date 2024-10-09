@@ -55,11 +55,13 @@ const Blogs: React.FC = () => {
 
             <div dangerouslySetInnerHTML={{ __html: article.content }} />
 
-            <p className="lead">
-              <a target="_blank" href={article.link}>
-                {t('pages.blog.read_more')}
-              </a>
-            </p>
+            {!!article.link && (
+              <p className="lead">
+                <a target="_blank" href={article.link}>
+                  {t('pages.blog.read_more')}
+                </a>
+              </p>
+            )}
           </Col>
         </Row>
 

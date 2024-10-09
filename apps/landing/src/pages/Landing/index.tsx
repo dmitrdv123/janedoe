@@ -568,9 +568,11 @@ const Landing: React.FC = () => {
                   </h2>
                   <div dangerouslySetInnerHTML={{ __html: article.content }} />
                   <p className="lead">
-                    <a target="_blank" href={article.link}>
-                      {t('pages.landing.read_more')}
-                    </a>
+                    {!!article.link && (
+                      <a target="_blank" href={article.link}>
+                        {t('pages.landing.read_more')}
+                      </a>
+                    )}
                     <a className='ms-3' href='/blog'>
                       {t('pages.landing.all_blog')}
                     </a>
