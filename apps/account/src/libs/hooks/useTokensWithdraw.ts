@@ -3,7 +3,7 @@ import { BlockchainMeta } from 'rango-sdk-basic'
 import { useAccount } from 'wagmi'
 
 import { ContractCallResult } from '../../types/contract-call-result'
-import { getAddressOrDefault, isBlockchainNativeToken } from '../utils'
+import { encodeStringToBytes, getAddressOrDefault, isBlockchainNativeToken } from '../utils'
 import { useSettings } from '../../states/settings/hook'
 import { TokenWithBalance } from '../../types/token-with-balance'
 import useJanedoeContractWrite from './useJanedoeContractWrite'
@@ -30,7 +30,7 @@ export default function useTokensWithdraw(
       return undefined
     }
 
-    return tokens
+    const res = tokens
       ?.map(token => {
         const tokenAddress = isBlockchainNativeToken(blockchain, token)
           ? getAddressOrDefault(wrappedNativeAddress)
@@ -43,7 +43,7 @@ export default function useTokensWithdraw(
         return {
           accountAddress: address,
           tokenAddress: tokenAddress,
-          amount: token.balance,
+          amount: token.balance
         }
       })
       .reduce((acc, cur) => {
@@ -55,6 +55,8 @@ export default function useTokensWithdraw(
 
         return acc
       }, [[], [], []] as [`0x${string}`[], `0x${string}`[], bigint[]])
+
+      return res ? [res[0], res[1], res[2], encodeStringToBytes('')] : undefined
   }, [address, appSettings, blockchain, tokens])
 
   const {

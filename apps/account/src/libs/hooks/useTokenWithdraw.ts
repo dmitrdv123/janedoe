@@ -3,7 +3,7 @@ import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { useAccount } from 'wagmi'
 
 import { ContractCallResult } from '../../types/contract-call-result'
-import { getAddressOrDefault } from '../utils'
+import { encodeStringToBytes, getAddressOrDefault } from '../utils'
 import useJanedoeContractWrite from './useJanedoeContractWrite'
 
 export default function useTokenWithdraw(
@@ -28,7 +28,8 @@ export default function useTokenWithdraw(
     [
       address, // to
       getAddressOrDefault(token.address), // token
-      amount // amount
+      amount, // amount,
+      encodeStringToBytes('') // paymentId
     ],
     undefined,
     onError,

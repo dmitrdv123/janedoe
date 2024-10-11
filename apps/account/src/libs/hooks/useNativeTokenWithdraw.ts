@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi'
 
 import { ContractCallResult } from '../../types/contract-call-result'
 import useJanedoeContractWrite from './useJanedoeContractWrite'
+import { encodeStringToBytes } from '../utils'
 
 export default function useNativeTokenWithdraw(
   blockchain: BlockchainMeta,
@@ -25,7 +26,8 @@ export default function useNativeTokenWithdraw(
     'withdrawEthTo',
     [
       address, // to
-      amount // amount
+      amount, // amount
+      encodeStringToBytes('') // paymentId
     ],
     undefined,
     onError,

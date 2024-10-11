@@ -1,7 +1,7 @@
 import { CoreHelperUtil } from '@web3modal/scaffold'
 import { ConstantsUtil, PresetsUtil } from '@web3modal/scaffold-utils'
 import { Asset, BlockchainMeta, Token } from 'rango-sdk-basic'
-import { Address, Transport, fallback, formatUnits, getAddress, http, isAddress, parseUnits } from 'viem'
+import { Address, Transport, fallback, formatUnits, getAddress, http, isAddress, parseUnits, stringToHex } from 'viem'
 
 import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountRbacSettings, AccountTeamSettings, Permission, PermissionKey } from '../types/account-settings'
 import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
@@ -426,4 +426,8 @@ export function hasPermission(rbacSettings: AccountRbacSettings | undefined, req
 
 export function parseToBigNumber(value: number, decimals: number): bigint {
   return parseUnits(value.toFixed(decimals), decimals)
+}
+
+export function encodeStringToBytes(value: string): string {
+  return stringToHex(value)
 }

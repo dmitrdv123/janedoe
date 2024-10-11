@@ -4,8 +4,9 @@ import { Address, hexToString, parseAbiItem } from 'viem'
 
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
-import { EvmEvent, EvmPaymentEvent } from '@repo/evm/dist/src/interfaces/evm-event'
+import { EvmEvent, EvmPayment, EvmPaymentDirection, EvmPaymentEvent, EvmWithdrawBatchEvent, EvmWithdrawEvent } from '@repo/evm/dist/src/interfaces/evm-event'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
+import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { logger } from '../../utils/logger'
 import { AbiEvent } from 'abitype'
@@ -19,6 +20,8 @@ import { SettingsService } from '../settings-service'
 export class EvmPaymentLogsIterator implements PaymentLogsIterator {
   private fromBlock: bigint = BigInt(0)
   private paymentEvent: AbiEvent = parseAbiItem('event PayFrom(uint256 dt, address from, address indexed to, address token, uint256 amount, bytes paymentId)')
+  private withdrawEvent: AbiEvent = parseAbiItem('event WithdrawTo(uint256 dt, address from, address to, address token, uint256 amount, bytes paymentId)')
+  private withdrawBatchEvent: AbiEvent = parseAbiItem('event WithdrawToBatch(uint256 dt, address from, address[] accounts, address[] tokens, uint256[] amounts, bytes paymentId)')
 
   public constructor(
     private blockchain: EvmBlockchainMeta,
@@ -28,6 +31,7 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
     private evmService: EvmService,
     private metaService: MetaService,
     private settingsService: SettingsService,
+    private cryptoService: CryptoService
   ) { }
 
   public lastProcessed(): string {
@@ -52,9 +56,58 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
       return []
     }
 
-    logger.debug(`EvmPaymentLogsIteratorService: start to get events from ${this.fromBlock} to ${toBlock} for blockchain ${this.blockchain.name} and janedoe address ${this.janeDoeAddress}`)
-    const events: EvmEvent<EvmPaymentEvent>[] = await this.evmService.events(config, this.blockchain.chainId, this.fromBlock, toBlock, this.janeDoeAddress, this.paymentEvent)
-    logger.debug(`EvmPaymentLogsIteratorService: found ${events.length} events`)
+    logger.debug(`EvmPaymentLogsIteratorService: start to get payment events from ${this.fromBlock} to ${toBlock} for blockchain ${this.blockchain.name} and janedoe address ${this.janeDoeAddress}`)
+    const paymentEvents: EvmEvent<EvmPaymentEvent>[] = await this.evmService.events(config, this.blockchain.chainId, this.fromBlock, toBlock, this.janeDoeAddress, this.paymentEvent)
+    logger.debug(`EvmPaymentLogsIteratorService: found ${paymentEvents.length} payment events`)
+
+    logger.debug(`EvmPaymentLogsIteratorService: start to get withdraw events from ${this.fromBlock} to ${toBlock} for blockchain ${this.blockchain.name} and janedoe address ${this.janeDoeAddress}`)
+    const withdrawEvents: EvmEvent<EvmWithdrawEvent>[] = await this.evmService.events(config, this.blockchain.chainId, this.fromBlock, toBlock, this.janeDoeAddress, this.withdrawEvent)
+    logger.debug(`EvmPaymentLogsIteratorService: found ${withdrawEvents.length} withdraw events`)
+
+    logger.debug(`EvmPaymentLogsIteratorService: start to get withdraw batch events from ${this.fromBlock} to ${toBlock} for blockchain ${this.blockchain.name} and janedoe address ${this.janeDoeAddress}`)
+    const withdrawBatchEvents: EvmEvent<EvmWithdrawBatchEvent>[] = await this.evmService.events(config, this.blockchain.chainId, this.fromBlock, toBlock, this.janeDoeAddress, this.withdrawBatchEvent)
+    logger.debug(`EvmPaymentLogsIteratorService: found ${withdrawBatchEvents.length} withdraw batch events`)
+
+    const events: EvmPayment[] = [
+      ...paymentEvents.map(event => ({
+        blockNumber: event.blockNumber,
+        transactionHash: event.transactionHash,
+        logIndex: event.logIndex,
+        dt: event.data.dt,
+        from: event.data.from,
+        to: event.data.to,
+        token: event.data.token,
+        amount: event.data.amount,
+        paymentId: hexToString(event.data.paymentId),
+        direction: 'incoming' as EvmPaymentDirection
+      })),
+      ...withdrawEvents.map(event => ({
+        blockNumber: event.blockNumber,
+        transactionHash: event.transactionHash,
+        logIndex: event.logIndex,
+        dt: event.data.dt,
+        from: event.data.from,
+        to: event.data.to,
+        token: event.data.token,
+        amount: event.data.amount,
+        paymentId: '',
+        direction: 'outgoing' as EvmPaymentDirection
+      })),
+      ...withdrawBatchEvents.flatMap(event =>
+        event.data.tokens.map((account, index) => ({
+          blockNumber: event.blockNumber,
+          transactionHash: event.transactionHash,
+          logIndex: event.logIndex,
+          dt: event.data.dt,
+          from: event.data.from,
+          to: account,
+          token: event.data.tokens[index],
+          amount: event.data.amounts[index],
+          paymentId: '',
+          direction: 'outgoing' as EvmPaymentDirection
+        }))
+      )
+    ]
 
     this.fromBlock = toBlock + BigInt(1)
     if (events.length === 0) {
@@ -64,8 +117,8 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
     const tokensByTimestamp: TokenByTimestamp[] = events.map(
       event => ({
         blockchain: this.blockchain.name,
-        address: event.data.token.toLocaleLowerCase() === this.wrappedNativeAddress.toLocaleLowerCase() ? null : event.data.token,
-        timestamp: Number(event.data.dt.toString())
+        address: event.token.toLocaleLowerCase() === this.wrappedNativeAddress.toLocaleLowerCase() ? null : event.token,
+        timestamp: Number(event.dt.toString())
       })
     )
 
@@ -84,27 +137,35 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
     return filteredPaymentLogs
   }
 
-  private async processEvent(event: EvmEvent<EvmPaymentEvent>, token: Token | undefined): Promise<PaymentLog | undefined> {
-    logger.debug('EvmPaymentLogsIteratorService: start to process evm event')
-    logger.debug(event)
+  private async processEvent(payment: EvmPayment, token: Token | undefined): Promise<PaymentLog | undefined> {
+    logger.debug('EvmPaymentLogsIteratorService: start to process evm payment')
+    logger.debug(payment)
 
-    const accountProfile = await this.accountService.loadAccountProfileByAddress(event.data.to)
+    const accountProfile = payment.direction === 'outgoing'
+      ? await this.accountService.loadAccountProfileByAddress(payment.from)
+      : await this.accountService.loadAccountProfileByAddress(payment.to)
     if (!accountProfile) {
-      logger.debug(`EvmPaymentLogsIteratorService: account profile for ${event.data.to} not found`)
+      logger.debug(`EvmPaymentLogsIteratorService: account profile for ${payment.to} not found`)
       return undefined
     }
 
-    const protocolPaymentId = hexToString(event.data.paymentId)
-    if (protocolPaymentId.length < ACCOUNT_ID_LENGTH + 1) {
-      logger.debug(`EvmPaymentLogsIteratorService: skip to process event since protocol payment id ${protocolPaymentId} is less than ${ACCOUNT_ID_LENGTH}`)
-      return undefined
+    let paymentId: string
+    if (payment.direction === 'outgoing') {
+      paymentId = this.cryptoService.generateRandom()
+    } else {
+      const protocolPaymentId = payment.paymentId
+      if (protocolPaymentId.length < ACCOUNT_ID_LENGTH + 1) {
+        logger.debug(`EvmPaymentLogsIteratorService: skip to process event since protocol payment id ${protocolPaymentId} is less than ${ACCOUNT_ID_LENGTH}`)
+        return undefined
+      }
+
+      paymentId = protocolPaymentId.substring(ACCOUNT_ID_LENGTH)
     }
 
-    const timestamp = Number(event.data.dt.toString())
-    const address = event.data.token.toLocaleLowerCase() === this.wrappedNativeAddress.toLocaleLowerCase() ? null : event.data.token
-    const amount = event.data.amount.toString()
+    const timestamp = Number(payment.dt.toString())
+    const address = payment.token.toLocaleLowerCase() === this.wrappedNativeAddress.toLocaleLowerCase() ? null : payment.token
+    const amount = payment.amount.toString()
     const amountUsd = token ? tokenAmountToUsd(amount, token.usdPrice, token.decimals) : undefined
-    const paymentId = protocolPaymentId.substring(ACCOUNT_ID_LENGTH)
 
     const paymentLog: PaymentLog = {
       accountId: accountProfile.id,
@@ -116,16 +177,16 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
       tokenDecimals: token?.decimals ?? null,
       tokenUsdPrice: token?.usdPrice ?? null,
 
-      from: event.data.from,
-      to: event.data.to,
-      direction: 'incoming',
+      from: payment.from,
+      to: payment.to,
+      direction: payment.direction,
       amount: amount,
       amountUsd: amountUsd ?? null,
 
-      block: event.blockNumber.toString(),
+      block: payment.blockNumber.toString(),
       timestamp: timestamp,
-      transaction: event.transactionHash,
-      index: event.logIndex,
+      transaction: payment.transactionHash,
+      index: payment.logIndex,
     }
 
     logger.debug('EvmPaymentLogsIteratorService: payment log')

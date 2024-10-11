@@ -1,12 +1,45 @@
 import { Address, Hex } from 'viem'
 
-export interface EvmPaymentEvent {
-  paymentId: Hex
+export type EvmPaymentDirection = 'incoming' | 'outgoing'
+
+export interface EvmPayment {
+  blockNumber: bigint
+  transactionHash: `0x${string}`
+  logIndex: number
   dt: bigint
   from: Address
   to: Address
   token: Address
   amount: bigint
+  paymentId: string
+  direction: EvmPaymentDirection
+}
+
+export interface EvmPaymentEvent {
+  dt: bigint
+  from: Address
+  to: Address
+  token: Address
+  amount: bigint
+  paymentId: Hex
+}
+
+export interface EvmWithdrawEvent {
+  dt: bigint
+  from: Address
+  to: Address
+  token: Address
+  amount: bigint
+  paymentId: Hex
+}
+
+export interface EvmWithdrawBatchEvent {
+  dt: bigint
+  from: Address
+  accounts: Address[]
+  tokens: Address[]
+  amounts: bigint[]
+  paymentId: Hex
 }
 
 export interface EvmEvent<T> {

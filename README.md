@@ -54,6 +54,7 @@ NODE_ENV=local pnpm run deploy --filter=installer
 NODE_ENV=local pnpm run deploy --filter=protocol -- --network localhost
 NODE_ENV=local CONTRACT=RangoReceiver VERSION=RangoReceiverV4 INIT=initialize4 pnpm run upgrade --filter=protocol -- --network localhost
 NODE_ENV=local CONTRACT=WrappedNative VERSION=WrappedNativeV3 INIT=initialize3 pnpm run upgrade --filter=protocol -- --network localhost
+NODE_ENV=local CONTRACT=JaneDoe VERSION=JaneDoeV2 INIT=initialize2 pnpm run upgrade --filter=protocol -- --network localhost
 # deploy contracts to zksync (optionally)
 NODE_ENV=local pnpm run deploy --filter=protocol-zksync -- --network zksyncInMemoryNode
 # deploy contracts to tron (optionally)
@@ -192,6 +193,7 @@ others:
 - api: check batchReadItemsByChunks usage and other bulk operations to not have duplicates, in other way we have errors
 - api: output bitcoin tx are created based on utxo. But utxo can be deleted. This means that we cannot recreate output transaction if we will reprocess the block
 - api: need to implement paging for payment history api
+- api: do the payment with empty or not correct payment id. Check how api is working
 
 improvement backlog:
 - payment: не подписаны блокчейн и токен на форме платежа. Так что Паша подумал что выбирать нужно два токена один source и второй dest

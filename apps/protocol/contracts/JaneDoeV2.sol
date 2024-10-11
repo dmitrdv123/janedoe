@@ -4,13 +4,13 @@ pragma solidity ^0.8.0;
 import { ERC1155Upgradeable } from '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
-import './interfaces/IJaneDoe.sol';
+import './interfaces/IJaneDoeV2.sol';
 import './interfaces/IWrappedNative.sol';
 
-contract JaneDoeV2 is ERC1155Upgradeable, IJaneDoe {
+contract JaneDoeV2 is ERC1155Upgradeable, IJaneDoeV2 {
   address private _wrappedNativeAddress;
 
-  function initialize1(string memory uri_, address wrappedNativeAddress_) reinitializer(2) public {
+  function initialize2(string memory uri_, address wrappedNativeAddress_) reinitializer(2) public {
     __ERC1155_init(uri_);
     _wrappedNativeAddress = wrappedNativeAddress_;
   }
@@ -37,26 +37,27 @@ contract JaneDoeV2 is ERC1155Upgradeable, IJaneDoe {
     emit PayFrom(block.timestamp, from, to, _wrappedNativeAddress, msg.value, paymentId);
   }
 
-  function withdrawTo(address to, address token, uint256 amount) external virtual override {
+  function withdrawTo(address to, address token, uint256 amount, bytes memory paymentId) external virtual override {
     uint256 tokenId = _addressToId(token);
     super._burn(_msgSender(), tokenId, amount);
 
     SafeERC20.safeTransfer(IERC20(token), to, amount);
 
-    emit WithdrawTo(block.timestamp, to, token, amount);
+    emit WithdrawTo(block.timestamp, _msgSender(), to, token, amount, paymentId);
   }
 
-  function withdrawEthTo(address to, uint256 amount) external virtual override {
+  function withdrawEthTo(address to, uint256 amount, bytes memory paymentId) external virtual override {
     uint256 tokenId = _addressToId(_wrappedNativeAddress);
     super._burn(_msgSender(), tokenId, amount);
 
     IWrappedNative(_wrappedNativeAddress).unwrapTo(to, amount);
 
-    emit WithdrawTo(block.timestamp, to, _wrappedNativeAddress, amount);
+    emit WithdrawTo(block.timestamp, _msgSender(), to, _wrappedNativeAddress, amount, paymentId);
   }
 
-  function withdrawToBatch(address[] memory accounts, address[] memory tokens, uint256[] memory amounts) external virtual override {
+  function withdrawToBatch(address[] memory accounts, address[] memory tokens, uint256[] memory amounts, bytes memory paymentId) external virtual override {
     require(accounts.length == tokens.length, "JaneDoe: accounts and tokens length mismatch");
+    require(accounts.length == amounts.length, "JaneDoe: accounts and amounts length mismatch");
 
     uint256[] memory tokenIds = new uint256[](tokens.length);
     for (uint256 i = 0; i < tokens.length; ++i) {
@@ -73,7 +74,7 @@ contract JaneDoeV2 is ERC1155Upgradeable, IJaneDoe {
       }
     }
 
-    emit WithdrawToBatch(block.timestamp, accounts, tokens, amounts);
+    emit WithdrawToBatch(block.timestamp, _msgSender(), accounts, tokens, amounts, paymentId);
   }
 
   receive() external payable { }
