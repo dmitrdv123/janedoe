@@ -4,9 +4,9 @@ import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers'
 import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 
 import { ETH_DECIMALS } from '../../constants'
-import { JaneDoe__factory, WrappedNative__factory } from '../../../typechain-types'
+import { JaneDoeV2__factory, WrappedNative__factory } from '../../../typechain-types'
 import { ContractSettings } from '../../interfaces'
-import { generatePaymentIdForEvm } from '../../utils'
+import { encodeStringToBytes, generatePaymentIdForEvm } from '../../utils'
 
 export class EthPayerBuilder {
   private static instance: EthPayerBuilder | undefined = undefined
@@ -52,7 +52,7 @@ export class EthPayer {
     const value = parseFixed(amount.toString(), ETH_DECIMALS).toString()
 
     const contractWrappedNative = WrappedNative__factory.connect(this.contractSettings.contractAddresses.WrappedNative, from)
-    const contractJanedoe = JaneDoe__factory.connect(this.contractSettings.contractAddresses.JaneDoe, from)
+    const contractJanedoe = JaneDoeV2__factory.connect(this.contractSettings.contractAddresses.JaneDoe, from)
 
     console.log('1. Approve')
     await contractWrappedNative.approve(this.contractSettings.contractAddresses.JaneDoe, value)
@@ -66,7 +66,7 @@ export class EthPayer {
     const value = parseFixed(amount.toString(), ETH_DECIMALS).toString()
 
     const contractWrappedNative = WrappedNative__factory.connect(this.contractSettings.contractAddresses.WrappedNative, from)
-    const contractJanedoe = JaneDoe__factory.connect(this.contractSettings.contractAddresses.JaneDoe, from)
+    const contractJanedoe = JaneDoeV2__factory.connect(this.contractSettings.contractAddresses.JaneDoe, from)
 
     console.log('1. Wrap')
     await contractWrappedNative.connect(from).wrapTo(from.address, { value })
@@ -79,7 +79,7 @@ export class EthPayer {
     await contractJanedoe.connect(from).payFrom(from.address, to.address, contractWrappedNative.target, value, paymentId)
 
     console.log('4. Withdraw')
-    await contractJanedoe.connect(to).withdrawTo(to.address, contractWrappedNative.target, value)
+    await contractJanedoe.connect(to).withdrawTo(to.address, contractWrappedNative.target, value, encodeStringToBytes(''))
 
     console.log('5. Unwrap')
     await contractWrappedNative.connect(to).unwrapTo(to.address, value)
@@ -87,9 +87,9 @@ export class EthPayer {
 
   public async withdraw(account: HardhatEthersSigner, amount: number) {
     const value = parseFixed(amount.toString(), ETH_DECIMALS).toString()
-    const contractJanedoe = JaneDoe__factory.connect(this.contractSettings.contractAddresses.JaneDoe, account)
+    const contractJanedoe = JaneDoeV2__factory.connect(this.contractSettings.contractAddresses.JaneDoe, account)
 
     console.log(`Withdraw ${amount} ETH`)
-    await contractJanedoe.withdrawEthTo(account.address, value)
+    await contractJanedoe.withdrawEthTo(account.address, value, encodeStringToBytes(''))
   }
 }

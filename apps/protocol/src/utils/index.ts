@@ -6,13 +6,14 @@ import { getContractAddress } from '@openzeppelin/hardhat-upgrades/dist/utils'
 import { Addressable, formatUnits, hexlify, toUtf8Bytes } from 'ethers'
 import { ethers, upgrades } from 'hardhat'
 import { customAlphabet } from 'nanoid'
+import { stringToHex } from 'viem'
 
 import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import appConfig from '@repo/common/dist/src/app-config'
 import { commonContainer } from '@repo/common/dist/src/containers/common.container'
 import { RangoWrapperService } from '@repo/common/dist/src/services/rango-wrapper-service'
 
-import { IERC20Metadata__factory, IERC20__factory, JaneDoe, WrappedNative } from '../../typechain-types'
+import { IERC20Metadata__factory, IERC20__factory, JaneDoeV2, WrappedNative } from '../../typechain-types'
 import { ETH_DECIMALS } from '../constants'
 import { NetworkInfo } from '../interfaces'
 
@@ -66,7 +67,7 @@ export async function printBalances(account: HardhatEthersSigner, erc20Address: 
   console.log(`${account.address} balances: ${formatUnits(balance, ETH_DECIMALS)} ETH, ${formatUnits(balanceUsdt, decimals)} ${symbol}`)
 }
 
-export async function printBalancesEth(account: HardhatEthersSigner, contractJanedoe: JaneDoe, contractWrappedNative: WrappedNative): Promise<void> {
+export async function printBalancesEth(account: HardhatEthersSigner, contractJanedoe: JaneDoeV2, contractWrappedNative: WrappedNative): Promise<void> {
   const balanceEth = await ethers.provider.getBalance(account.address)
 
   const tokenId = contractWrappedNative.target.toString()
@@ -75,7 +76,7 @@ export async function printBalancesEth(account: HardhatEthersSigner, contractJan
   console.log(`${account.address} balance: ${formatUnits(balanceEth, ETH_DECIMALS)} ETH, janedoe balance: ${formatUnits(balanceJanedoe, ETH_DECIMALS)} ETH`)
 }
 
-export async function printBalancesToken(account: HardhatEthersSigner, contractJanedoe: JaneDoe, erc20Address: string): Promise<void> {
+export async function printBalancesToken(account: HardhatEthersSigner, contractJanedoe: JaneDoeV2, erc20Address: string): Promise<void> {
   const erc20 = IERC20__factory.connect(erc20Address, account)
   const erc20Metadata = IERC20Metadata__factory.connect(erc20Address, account)
 
@@ -173,4 +174,8 @@ export async function getNetworkInfo(): Promise<NetworkInfo> {
   }
 
   return { name, chainId, hexChainId }
+}
+
+export function encodeStringToBytes(value: string): string {
+  return stringToHex(value)
 }

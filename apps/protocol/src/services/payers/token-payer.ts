@@ -7,9 +7,9 @@ import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 
 import abiUniswapRouter from '../../abis/uniswap-router.json'
 
-import { IERC20Metadata__factory, IERC20__factory, IJaneDoe__factory } from '../../../typechain-types'
+import { IERC20Metadata__factory, IERC20__factory, IJaneDoeV2__factory } from '../../../typechain-types'
 import { ContractSettings } from '../../interfaces'
-import { generatePaymentIdForEvm } from '../../utils'
+import { encodeStringToBytes, generatePaymentIdForEvm } from '../../utils'
 import { UNISWAP_V2_ROUTER_ADDRESS, WETH_ADDRESS } from '../../constants'
 
 export class TokenPayerBuilder {
@@ -53,7 +53,7 @@ export class TokenPayer {
   ) { }
 
   public async pay(from: HardhatEthersSigner, to: HardhatEthersSigner, amount: number, erc20Address: string) {
-    const contractJanedoe = IJaneDoe__factory.connect(this.contractSettings.contractAddresses.JaneDoe, from)
+    const contractJanedoe = IJaneDoeV2__factory.connect(this.contractSettings.contractAddresses.JaneDoe, from)
     const erc20 = IERC20__factory.connect(erc20Address, from)
     const erc20Metadata = IERC20Metadata__factory.connect(erc20Address, from)
 
@@ -74,7 +74,7 @@ export class TokenPayer {
   }
 
   public async withdraw(account: HardhatEthersSigner, amount: number, erc20Address: string) {
-    const contractJanedoe = IJaneDoe__factory.connect(this.contractSettings.contractAddresses.JaneDoe, account)
+    const contractJanedoe = IJaneDoeV2__factory.connect(this.contractSettings.contractAddresses.JaneDoe, account)
     const erc20Metadata = IERC20Metadata__factory.connect(erc20Address, account)
 
     const decimals = await erc20Metadata.decimals()
@@ -83,7 +83,7 @@ export class TokenPayer {
     const value = parseFixed(amount.toString(), decimals).toString()
 
     console.log(`Withdraw ${amount} ${symbol}`)
-    await contractJanedoe.withdrawTo(account.address, erc20Address, value)
+    await contractJanedoe.withdrawTo(account.address, erc20Address, value, encodeStringToBytes(''))
   }
 
   public async mint(account: HardhatEthersSigner, amountEth: number, erc20Address: string): Promise<void> {

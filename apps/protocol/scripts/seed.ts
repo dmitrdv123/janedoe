@@ -13,7 +13,7 @@ import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { daoContainer as dynamoContainer } from '@repo/dao-aws/dist/src/containers/dao.container'
 import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.container'
 
-import { JaneDoe, JaneDoe__factory, WrappedNative, WrappedNative__factory } from '../typechain-types'
+import { JaneDoeV2, JaneDoeV2__factory, WrappedNative, WrappedNative__factory } from '../typechain-types'
 import { DEPLOYMENTS_FOLDER, USDC_ADDRESS, USDT_ADDRESS } from '../src/constants'
 import { loadFile, loadFileAsJson, encrypt, printBalances, randomIntFromInterval, printBalancesEth, printBalancesToken, getNetworkInfo } from '../src/utils'
 import { EthPayer, EthPayerBuilder } from '../src/services/payers/eth-payer'
@@ -22,7 +22,7 @@ import { BtcPayer, BtcPayerBuilder } from '../src/services/payers/btc-payer'
 
 let accounts: HardhatEthersSigner[]
 
-let contractJanedoe: JaneDoe
+let contractJanedoe: JaneDoeV2
 let contractWrappedNative: WrappedNative
 
 let ethPayer: EthPayer
@@ -57,7 +57,7 @@ async function init() {
     .withAccountDao(accountDao)
     .build()
 
-  contractJanedoe = JaneDoe__factory.connect(contractSettings.contractAddresses.JaneDoe)
+  contractJanedoe = JaneDoeV2__factory.connect(contractSettings.contractAddresses.JaneDoe)
   contractWrappedNative = WrappedNative__factory.connect(contractSettings.contractAddresses.WrappedNative)
 }
 
