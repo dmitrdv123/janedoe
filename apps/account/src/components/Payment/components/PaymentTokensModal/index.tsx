@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useDeferredValue } from 'react'
-import { Form, InputGroup, ListGroup, Modal, Spinner, Image } from 'react-bootstrap'
+import { Form, InputGroup, ListGroup, Modal, Spinner, Image, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Search } from 'react-bootstrap-icons'
 import { BlockchainMeta, EVMChainInfo, TransactionType } from 'rango-sdk-basic'
@@ -12,6 +12,7 @@ import { tokenExtSchema } from '../../../../types/orama'
 import { PAGE_SIZE } from '../../../../constants'
 import { TokenExt } from '../../../../types/token-ext'
 import useTokensExtDb from '../../../../libs/hooks/useTokensExtDb'
+import TokenAmountWithCurrency from '../../../TokenAmountWithCurrency'
 
 interface PaymentTokensModalProps {
   selectedBlockchain: BlockchainMeta | undefined
@@ -180,6 +181,24 @@ const PaymentTokensModal: React.FC<PaymentTokensModalProps> = (props) => {
                         </a>
                       )}
                     </div>
+                  </div>
+
+                  <div className='d-flex align-items-center'>
+                    <small>
+                      <TokenAmountWithCurrency
+                        tokenSymbol={token.symbol}
+                        tokenDecimals={token.decimals}
+                        tokenAmount={token.balance}
+                        currency={token.currency}
+                        currencyAmount={token.balanceCurrency}
+                        hideZeroBalance
+                      />
+                    </small>
+                    {token.usdPrice === null && (
+                      <Alert variant='warning' className='p-2'>
+                        {t('components.tokens_modal.price_not_defined')}
+                      </Alert>
+                    )}
                   </div>
                 </ListGroup.Item>
               ))

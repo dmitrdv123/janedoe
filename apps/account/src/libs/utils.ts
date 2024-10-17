@@ -93,6 +93,46 @@ export function isBlockchainAsset(blockchain: BlockchainMeta, asset: Asset): boo
 }
 
 export function tokenExtResultComparator(a: TokenExt, b: TokenExt): number {
+  let res = tokenSettingIndexResultComparator(a, b)
+  if (res !== 0) {
+    return res
+  }
+
+  res = tokenBalanceResultComparator(a, b)
+  if (res !== 0) {
+    return res
+  }
+
+  return tokenDefaultResultComparator(a, b)
+}
+
+export function tokenBalanceResultComparator(a: TokenExt, b: TokenExt): number {
+  const balanceUsdA = a.balanceUsd ?? 0
+  const balanceUsdB = b.balanceUsd ?? 0
+
+  if (balanceUsdA < balanceUsdB) {
+    return 1
+  }
+
+  if (balanceUsdA > balanceUsdB) {
+    return -1
+  }
+
+  const balanceA = a.balance ? convertBigIntToFloat(BigInt(a.balance), a.decimals) : 0
+  const balanceB = b.balance ? convertBigIntToFloat(BigInt(b.balance), b.decimals) : 0
+
+  if (balanceA > 0 && balanceB === 0) {
+    return 1
+  }
+
+  if (balanceA === 0 && balanceB > 0) {
+    return -1
+  }
+
+  return 0
+}
+
+export function tokenSettingIndexResultComparator(a: TokenExt, b: TokenExt): number {
   if (a.settingIndex === -1 && b.settingIndex !== -1) {
     return 1
   }
@@ -109,7 +149,7 @@ export function tokenExtResultComparator(a: TokenExt, b: TokenExt): number {
     return 1
   }
 
-  return tokenDefaultResultComparator(a, b)
+  return 0
 }
 
 export function tokenDefaultResultComparator(a: Token, b: Token): number {

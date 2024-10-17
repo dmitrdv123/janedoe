@@ -36,6 +36,7 @@ export const tokenExtSchema = {
   usdPrice: 'number',
   isPopular: 'boolean',
   settingIndex: 'number',
+  currency: 'string',
   balance: 'string',
   balanceUsd: 'number',
   balanceCurrency: 'number'

@@ -55,7 +55,7 @@ const Payment: React.FC = () => {
   }, [blockchains, appSettings])
 
   const preparedTokens = useMemo(() => {
-    if (!selectedBlockchain || !accountPaymentSettings) {
+    if (!selectedBlockchain || !accountPaymentSettings || !tokensWithBalance) {
       return undefined
     }
 
@@ -64,7 +64,7 @@ const Payment: React.FC = () => {
         token => selectedBlockchain.name.toLocaleLowerCase() === token.blockchain.toLocaleLowerCase()
       )
       .map(token => {
-        const tokenWithBalance = tokensWithBalance?.find(item => sameToken(item, token))
+        const tokenWithBalance = tokensWithBalance.find(item => sameToken(item, token))
 
         const tokenBalanceUsd = tokenWithBalance && token.usdPrice ? tokenAmountToUsd(tokenWithBalance.balance.toString(), token.usdPrice, token.decimals) : null
         const tokenBalanceCurrency = tokenWithBalance && token.usdPrice && exchangeRate.data
@@ -74,6 +74,7 @@ const Payment: React.FC = () => {
         const result: TokenExt = {
           ...token,
           settingIndex: accountPaymentSettings.assets.findIndex(asset => sameTokenAndAsset(asset, token)),
+          currency: selectedCurrency?.symbol ?? null,
           balance: tokenWithBalance?.balance.toString() ?? null,
           balanceUsd: tokenBalanceUsd,
           balanceCurrency: tokenBalanceCurrency
@@ -82,7 +83,7 @@ const Payment: React.FC = () => {
         return result
       })
       .sort(tokenExtResultComparator)
-  }, [selectedBlockchain, accountPaymentSettings, tokens, tokensWithBalance, exchangeRate.data])
+  }, [selectedBlockchain, accountPaymentSettings, tokens, tokensWithBalance, exchangeRate.data, selectedCurrency?.symbol])
 
   const preparedCurrencies = useMemo(() => {
     return appSettings.current
@@ -189,12 +190,9 @@ const Payment: React.FC = () => {
       if (!current && selectedBlockchain) {
         const asset = accountPaymentSettings?.assets.find(asset => isBlockchainAsset(selectedBlockchain, asset))
         if (asset) {
-          const tmp =  preparedTokens?.find(token => sameTokenAndAsset(asset, token))
-          console.log(`debug >> setSelectedToken: ${JSON.stringify(tmp)} `)
-          return tmp
+          return preparedTokens?.find(token => sameTokenAndAsset(asset, token))
         }
       }
-      console.log(`debug >> setSelectedToken: ${JSON.stringify(current)} `)
 
       return current
     })
