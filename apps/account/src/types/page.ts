@@ -1,5 +1,6 @@
 export enum ApplicationPage {
   HOME,
+  PAYMENT,
   PAYMENTS,
   BALANCES,
   ACCOUNT_SETTINGS,

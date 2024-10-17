@@ -11,13 +11,13 @@
     "app": {
       "home": "Главная",
       "balances": "Балансы",
+      "payment": "Платеж",
       "payments": "Платежи",
       "account_settings": "Настройки аккаунта",
       "payment_settings": "Настройки платежей",
       "documentations": "Документация",
       "support": "Поддержка",
-      "errors": {
-      }
+      "errors": {}
     },
     "auth": {
       "button": "Войти или зарегистрироваться",
@@ -113,8 +113,7 @@
       "currency_amount_desc": "Замените <1>currency amount</1> на необходимую сумму платежа в выбранной валюте, например, в USD.",
       "example": "Пример:",
       "more_details": "Прочитать подробнее в <1>документации</1>.",
-      "errors": {
-      }
+      "errors": {}
     },
     "navbar": {
       "connected_in": "Адрес: {{address}} {{blockchain}}",
@@ -126,6 +125,30 @@
       "language": "Язык: {{language}}",
       "support": "Поддержка",
       "logout_btn": "Выйти"
+    },
+    "payment": {
+      "title": "Платеж",
+      "select_blockchain": "Выберите блокчейн",
+      "token_modal_title": "Выберите токен",
+      "token_modal_search_placeholder": "Поиск по имени токена или адресу",
+      "select_token": "Выберете токен",
+      "currency": "Валюта",
+      "select_currency": "Пожалуйста, выберите валюту",
+      "search_currency_placeholder": "Поиск по имени",
+      "currency_amount": "Сумма в валюте",
+      "token_amount": "Сумма в токене",
+      "address": "Адрес",
+      "pay_btn": "Оплатить",
+      "pay_success": "Платеж был совершен успешно",
+      "errors": {
+        "blockchain_required": "Выберете блокчейн",
+        "token_required": "Выберете токен",
+        "currency_required": "Выберете валюту",
+        "currency_amount_required": "Задайте сумму в валюте",
+        "token_amount_required": "Задайте сумму в токене",
+        "address_required": "Задайте адрес",
+        "pay_error": "Не удалось совершить платеж"
+      }
     },
     "payments": {
       "title": "Платежи",
@@ -169,17 +192,9 @@
       "date_from_placeholder": "С даты",
       "date_to": "По дату:",
       "date_to_placeholder": "По дату",
-      "refund_btn": "Возврат",
-      "refund_modal_title": "Возврат платежа",
-      "refund_address": "Адрес",
-      "refund_address_placeholder": "Адрес для возврата",
-      "refund_amount": "Сумма",
-      "refund_amount_placeholder": "Сумма возврата",
-      "refund_success": "Возврат средств был успешно осуществлен для {{blockchain}}",
       "errors": {
         "fail_send_notification": "Не удалось отправить уведомление",
-        "fail_load_notification": "Не удалось загрузить уведомление",
-        "fail_refund": "Не удалось осуществить возврат"
+        "fail_load_notification": "Не удалось загрузить уведомление"
       }
     },
     "payment_settings": {
@@ -324,6 +339,7 @@
     "show_btn": "Показать",
     "nothing_found": "Ничего не найдено...",
     "details": "Детали",
+    "balance": "Баланс:",
     "errors": {
       "default": "Произошла неизвестная ошибка",
       "param_not_set": "Параметр {{name}} не задан или пуст",

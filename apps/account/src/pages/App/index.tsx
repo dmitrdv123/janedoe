@@ -25,6 +25,7 @@ import InfoMessages from '../../components/InfoMessages'
 import { useAccountRbacSettings } from '../../states/account-settings/hook'
 import { hasPermission } from '../../libs/utils'
 import { PermissionKey } from '../../types/account-settings'
+import Payment from '../../components/Payment'
 
 const App: React.FC = () => {
   const { t } = useTranslation()
@@ -50,6 +51,10 @@ const App: React.FC = () => {
       case '#balances':
         rbacKeys = ['balances']
         page = ApplicationPage.BALANCES
+        break
+      case '#payment':
+        rbacKeys = ['balances']
+        page = ApplicationPage.PAYMENT
         break
       case '#payments':
         rbacKeys = ['payments']
@@ -108,6 +113,13 @@ const App: React.FC = () => {
               <Nav.Link href="#balances" className="text-white text-decoration-none" active={currentPage === ApplicationPage.BALANCES}>
                 <CurrencyDollar />
                 <span className="ms-3 d-none d-sm-inline">{t('pages.app.balances')}</span>
+              </Nav.Link>
+            } />
+
+            <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
+              <Nav.Link href="#payment" className="text-white text-decoration-none" active={currentPage === ApplicationPage.PAYMENT}>
+                <GraphUpArrow />
+                <span className="ms-3 d-none d-sm-inline">{t('pages.app.payment')}</span>
               </Nav.Link>
             } />
 
@@ -176,6 +188,14 @@ const App: React.FC = () => {
               <>
                 {currentPage === ApplicationPage.BALANCES && (
                   <Balances />
+                )}
+              </>
+            } />
+
+            <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
+              <>
+                {currentPage === ApplicationPage.PAYMENT && (
+                  <Payment />
                 )}
               </>
             } />

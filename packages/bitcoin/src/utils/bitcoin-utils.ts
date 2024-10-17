@@ -45,7 +45,8 @@ export function tryParseFloat(val: string | null | undefined): number | undefine
   }
 
   try {
-    return parseFloat(val as string)
+    const parsed = parseFloat(val as string)
+    return isNaN(parsed) ? undefined : parsed
   } catch {
     return undefined
   }
@@ -57,7 +58,8 @@ export function tryParseInt(val: string | null | undefined): number | undefined 
   }
 
   try {
-    return parseInt(val as string)
+    const parsed = parseInt(val as string)
+    return isNaN(parsed) ? undefined : parsed
   } catch {
     return undefined
   }

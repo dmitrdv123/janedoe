@@ -162,7 +162,8 @@ export function tryParseInt(val: string | null | undefined): number | undefined 
   }
 
   try {
-    return parseInt(val as string)
+    const parsed = parseInt(val as string)
+    return isNaN(parsed) ? undefined : parsed
   } catch {
     return undefined
   }
@@ -174,7 +175,8 @@ export function tryParseFloat(val: string | null | undefined): number | undefine
   }
 
   try {
-    return parseFloat(val as string)
+    const parsed = parseFloat(val as string)
+    return isNaN(parsed) ? undefined : parsed
   } catch {
     return undefined
   }
@@ -226,10 +228,9 @@ export function usdToTokenAmount(amountUsd: number, usdPrice: number, decimals: 
 }
 
 export function currencyToTokenAmount(amountCurrency: number, usdPrice: number, decimals: number, exchangeRate: number): string {
-  if (amountCurrency === 0) {
-    return '0'
-  }
-  return parseToBigNumber(amountCurrency / (exchangeRate * usdPrice), decimals).toString()
+  return amountCurrency === 0 || exchangeRate === 0 || usdPrice === 0
+    ? '0'
+    : parseToBigNumber(amountCurrency / (exchangeRate * usdPrice), decimals).toString()
 }
 
 export function currencyToUsd(amountCurrency: number, exchangeRate: number): number {

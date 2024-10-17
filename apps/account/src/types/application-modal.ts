@@ -1,6 +1,7 @@
 export enum ApplicationModal {
   BLOCKCHAIN,
+  BLOCKCHAIN_PAYMENT,
   TOKEN,
-  IPN,
-  REFUND
+  TOKEN_PAYMENT,
+  IPN
 }

@@ -70,7 +70,7 @@ const CommonSettings: React.FC = () => {
   }, [emailCommonSettings, descCommonSettings, commonSettings, currencyCommonSettings])
 
   useEffect(() => {
-    const searchTokens = async (tokensDb: Orama<typeof currencySchema>, query: string) => {
+    const searchCurrencies = async (tokensDb: Orama<typeof currencySchema>, query: string) => {
       const result = await search(tokensDb, {
         term: query,
         properties: ['symbol', 'desc', 'country'],
@@ -97,7 +97,7 @@ const CommonSettings: React.FC = () => {
     }
 
     if (currenciesDb && !isNullOrEmptyOrWhitespaces(deferredQuery)) {
-      searchTokens(currenciesDb, deferredQuery)
+      searchCurrencies(currenciesDb, deferredQuery)
     } else {
       setResults(preparedCurrencies)
     }
@@ -190,7 +190,7 @@ const CommonSettings: React.FC = () => {
                 className='w-100'
                 disabled={!rbacSettings?.isOwner && rbacSettings?.permissions['common_settings'] !== 'Modify'}
               >
-                {currencyCommonSettings?.symbol ?? t('components.account_settings.common_settings_select_currency')} {!!currencyCommonSettings && (<small>{currencyCommonSettings?.desc} ({currencyCommonSettings?.country})</small>)}
+                {currencyCommonSettings?.symbol ?? t('components.account_settings.common_settings_select_currency')} {!!currencyCommonSettings && (<>({currencyCommonSettings?.country})</>)}
               </Dropdown.Toggle>
               <Dropdown.Menu className='w-100 overflow-scroll dropdown-currency'>
                 <Dropdown.ItemText>

@@ -7,6 +7,7 @@ import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSetti
 import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
 import { ServiceError } from '../types/service-error'
 import { PERMISSION_PRIORITY, PUBLIC_NODE_RPCS } from '../constants'
+import { TokenExt } from '../types/token-ext'
 
 export function convertErrorToMessage(error: any, defaultMessage: string, curDepth: number = 1, maxDepth: number = 10): string {
   if ('string' === typeof error) {
@@ -39,7 +40,21 @@ export function tryParseInt(val: string | null | undefined): number | undefined 
   }
 
   try {
-    return parseInt(val as string)
+    const parsed = parseInt(val as string)
+    return isNaN(parsed) ? undefined : parsed
+  } catch {
+    return undefined
+  }
+}
+
+export function tryParseFloat(val: string | null | undefined): number | undefined {
+  if (isNullOrEmptyOrWhitespaces(val)) {
+    return undefined
+  }
+
+  try {
+    const parsed = parseFloat(val as string)
+    return isNaN(parsed) ? undefined : parsed
   } catch {
     return undefined
   }
@@ -75,6 +90,26 @@ export function isBlockchainToken(blockchain: BlockchainMeta, token: Token): boo
 
 export function isBlockchainAsset(blockchain: BlockchainMeta, asset: Asset): boolean {
   return asset.blockchain.toLocaleLowerCase() === blockchain.name.toLocaleLowerCase()
+}
+
+export function tokenExtResultComparator(a: TokenExt, b: TokenExt): number {
+  if (a.settingIndex === -1 && b.settingIndex !== -1) {
+    return 1
+  }
+
+  if (a.settingIndex !== -1 && b.settingIndex === -1) {
+    return -1
+  }
+
+  if (a.settingIndex < b.settingIndex) {
+    return -1
+  }
+
+  if (a.settingIndex > b.settingIndex) {
+    return 1
+  }
+
+  return tokenDefaultResultComparator(a, b)
 }
 
 export function tokenDefaultResultComparator(a: Token, b: Token): number {
@@ -282,6 +317,18 @@ export function tokenAmountToUsd(amount: string, usdPrice: number, decimals: num
 
 export function tokenAmountToCurrency(amount: string, usdPrice: number, decimals: number, exchangeRate: number): number {
   return exchangeRate * tokenAmountToUsd(amount, usdPrice, decimals)
+}
+
+export function currencyToTokenAmount(amountCurrency: number, usdPrice: number, decimals: number, exchangeRate: number): string {
+  return amountCurrency === 0 || exchangeRate === 0 || usdPrice === 0
+    ? '0'
+    : parseToBigNumber(amountCurrency / (exchangeRate * usdPrice), decimals).toString()
+}
+
+export function currencyToUsd(amountCurrency: number, exchangeRate: number): number {
+  return amountCurrency === 0 || exchangeRate === 0
+    ? 0
+    : amountCurrency / exchangeRate
 }
 
 export function convertBigIntToFloat(value: bigint, decimals: number): number {

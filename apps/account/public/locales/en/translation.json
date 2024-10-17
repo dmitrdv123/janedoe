@@ -11,13 +11,13 @@
     "app": {
       "home": "Home",
       "balances": "Balances",
+      "payment": "Payment",
       "payments": "Payments",
       "account_settings": "Account Settings",
       "payment_settings": "Payment Settings",
       "documentations": "Documentations",
       "support": "Support",
-      "errors": {
-      }
+      "errors": {}
     },
     "auth": {
       "button": "Sign In or Sign Up",
@@ -45,7 +45,7 @@
       "common_settings_company": "Company Description",
       "common_settings_company_desc": "Share some brief company description or contact details which your customers will see",
       "common_settings_currency": "Currency",
-      "common_settings_select_currency": "Please select currency",
+      "common_settings_select_currency": "Please select a currency",
       "common_settings_search_currency_placeholder": "Search by name",
       "common_settings_currency_desc": "To show balances and payments amount",
       "notification_settings_title": "Notification Settings",
@@ -113,8 +113,7 @@
       "currency_amount_desc": "Replace <1>currency amount</1> with the necessary payment amount in choosed currency, for example, in USD amount.",
       "example": "Example:",
       "more_details": "Read more in <1>documentation</1>.",
-      "errors": {
-      }
+      "errors": {}
     },
     "navbar": {
       "connected_in": "Address: {{address}} {{blockchain}}",
@@ -126,6 +125,30 @@
       "language": "Language: {{language}}",
       "support": "Support",
       "logout_btn": "Logout"
+    },
+    "payment": {
+      "title": "Payment",
+      "select_blockchain": "Select a blockchain",
+      "token_modal_title": "Select a Token",
+      "token_modal_search_placeholder": "Search by token name or address",
+      "select_token": "Select a token",
+      "currency": "Currency",
+      "select_currency": "Please select a currency",
+      "search_currency_placeholder": "Search by name",
+      "currency_amount": "Currency amount",
+      "token_amount": "Token amount",
+      "address": "Address",
+      "pay_btn": "Pay",
+      "pay_success": "Payment has been done successfully",
+      "errors": {
+        "blockchain_required": "Select a blockchain",
+        "token_required": "Select a token",
+        "currency_required": "Select a currency",
+        "currency_amount_required": "Type a currency amount",
+        "token_amount_required": "Type a token amount",
+        "address_required": "Type a address",
+        "pay_error": "Failed to make the payment"
+      }
     },
     "payments": {
       "title": "Payments",
@@ -169,17 +192,9 @@
       "date_from_placeholder": "From Date",
       "date_to": "To Date:",
       "date_to_placeholder": "To Date",
-      "refund_btn": "Refund",
-      "refund_modal_title": "Refund Payment",
-      "refund_address": "Address",
-      "refund_address_placeholder": "Refund address",
-      "refund_amount": "Amount",
-      "refund_amount_placeholder": "Refund amount",
-      "refund_success": "Refund has been done successfully for {{blockchain}}",
       "errors": {
         "fail_send_notification": "Failed to send notification",
-        "fail_load_notification": "Failed load notification",
-        "fail_refund": "Failed to refund"
+        "fail_load_notification": "Failed load notification"
       }
     },
     "payment_settings": {
@@ -324,6 +339,7 @@
     "show_btn": "Show",
     "nothing_found": "Nothing found...",
     "details": "Details",
+    "balance": "Balance:",
     "errors": {
       "default": "Unknown error happens",
       "param_not_set": "Parameter {{name}} is not set or empty",

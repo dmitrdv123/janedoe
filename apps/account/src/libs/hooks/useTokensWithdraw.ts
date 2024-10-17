@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi'
 import { ContractCallResult } from '../../types/contract-call-result'
 import { encodeStringToBytes, getAddressOrDefault, isBlockchainNativeToken } from '../utils'
 import { useSettings } from '../../states/settings/hook'
-import { TokenWithBalance } from '../../types/token-with-balance'
+import { TokenWithBalance } from '../../types/token-ext'
 import useJanedoeContractWrite from './useJanedoeContractWrite'
 
 export default function useTokensWithdraw(

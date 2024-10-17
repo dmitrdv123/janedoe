@@ -24,6 +24,25 @@ export const tokenSchema = {
 
 export type TokenDocument = TypedDocument<Orama<typeof tokenSchema>>
 
+export const tokenExtSchema = {
+  blockchain: 'string',
+  chainId: 'string',
+  address: 'string',
+  symbol: 'string',
+  name: 'string',
+  decimals: 'number',
+  image: 'string',
+  blockchainImage: 'string',
+  usdPrice: 'number',
+  isPopular: 'boolean',
+  settingIndex: 'number',
+  balance: 'string',
+  balanceUsd: 'number',
+  balanceCurrency: 'number'
+} as const // <-- this is important
+
+export type TokenExtDocument = TypedDocument<Orama<typeof tokenExtSchema>>
+
 export const currencySchema = {
   symbol: 'string',
   desc: 'string',

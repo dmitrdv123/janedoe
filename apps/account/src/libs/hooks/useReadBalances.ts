@@ -6,15 +6,14 @@ import { AbiFunction } from 'viem'
 import { getAddressOrDefault, isBlockchainToken } from '../utils'
 import { useSettings } from '../../states/settings/hook'
 import { useTokens } from '../../states/meta/hook'
-import { TokenWithId } from '../../types/token-with-id'
-import { TokenWithBalance } from '../../types/token-with-balance'
+import { TokenWithBalance, TokenWithId } from '../../types/token-ext'
 import { ReadBalancesResult } from '../../types/read-balances-result'
 import { useAccountRbacSettings } from '../../states/account-settings/hook'
 import { ApiRequestStatus } from '../../types/api-request'
 
 const PAGE_SIZE = 50
 
-export default function useReadBalances(blockchain: BlockchainMeta): ReadBalancesResult {
+export default function useReadBalances(blockchain: BlockchainMeta | undefined): ReadBalancesResult {
   const [tokenWithBalance, setTokenWithBalance] = useState<TokenWithBalance[] | undefined>(undefined)
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
 
@@ -23,13 +22,17 @@ export default function useReadBalances(blockchain: BlockchainMeta): ReadBalance
   const rbacSettings = useAccountRbacSettings()
 
   const contracts = useMemo(() => {
+    if (!blockchain) {
+      return undefined
+    }
+
     return appSettings.current?.contracts.find(
       item => item.blockchain.toLocaleLowerCase() === blockchain.name.toLocaleLowerCase()
     )
-  }, [appSettings, blockchain.name])
+  }, [appSettings, blockchain])
 
   const blockchainTokensByChunks = useMemo(() => {
-    if (!tokens) {
+    if (!blockchain || !tokens) {
       return undefined
     }
 
@@ -106,7 +109,7 @@ export default function useReadBalances(blockchain: BlockchainMeta): ReadBalance
               address: getAddressOrDefault(contracts?.contractAddresses.JaneDoe),
               functionName: 'balanceOfBatch',
               abi: [abiFunction],
-              chainId: Number(blockchain.chainId),
+              chainId: blockchain ? Number(blockchain.chainId) : undefined,
               args: [
                 Array(chunk?.length).fill(getAddressOrDefault(rbacSettings?.ownerAddress)),
                 chunk?.map(token => token.id)
