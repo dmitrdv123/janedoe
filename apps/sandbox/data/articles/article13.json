@@ -1,6 +1,6 @@
 {
-  "title": "Payout functionality is in progress",
-  "content": "<p class='lead'>We are starting to implement payout functionality, which allow you to make outgoing payment and do the payment refund from your JaneDoe account. As a first stage now you can see outgoing payments for Bitcoin when you do the withdrawing. When you do the Bitcoin withdrawing you will see 2 outgoing payments. One is actual outgoing payment, another one is a fee for gas with target address 0x0. Besides that we did the payment history table redesign to make less columns.</p><p class='lead'><img src='https://static.janedoe.fi/articles/article13/1.png' class='img-fluid'/></p>",
+  "title": "Outgoing payments and refunds functionality is in progress",
+  "content": "<p class='lead'>We are starting to implement functionality, which allow you to make outgoing payments and do the refunds from your JaneDoe account. As a first stage now you can see outgoing payments for Bitcoin when you do the withdrawing. When you do the Bitcoin withdrawing you will see 2 outgoing payments. One is actual outgoing payment, another one is a fee for gas with target address 0x0. Besides that we did the payment history table redesign to make less columns.</p><p class='lead'><img src='https://static.janedoe.fi/articles/article13/1.png' class='img-fluid'/></p>",
   "link": "",
   "timestamp": 1728470831
 }
