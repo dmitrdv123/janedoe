@@ -189,7 +189,8 @@ NODE_ENV=production pnpm run init --filter=installer
 ## TODO
 
 others:
-- payment form: switch to another tab, return back. Timer start from the beginning
+- payment form: switch to another tab, return back. Timer start from the beginning.
+- payment: switch to another tab, return back. User need to wait 10 seconds before request will be sent to check btc payment status. It means that users will stuck forever on this page due to constantly switching.
 - api: check batchReadItemsByChunks usage and other bulk operations to not have duplicates, in other way we have errors
 - api: output bitcoin tx are created based on utxo. But utxo can be deleted. This means that we cannot recreate output transaction if we will reprocess the block
 - api: need to implement paging for payment history api

@@ -170,10 +170,11 @@ export class ApiWrapper {
     }
   }
 
-  public withdrawAccountBlockchainRequest(blockchain: string, address: string): ApiRequest {
+  public withdrawAccountBlockchainRequest(blockchain: string, address: string, amount: string): ApiRequest {
     return {
-      url: this.getAccountBlockchainWithdrawUrl(blockchain, address),
+      url: this.getAccountBlockchainWithdrawUrl(blockchain),
       method: 'POST',
+      body: JSON.stringify({ address, amount }),
       authRequired: true
     }
   }
@@ -228,17 +229,6 @@ export class ApiWrapper {
       method: 'POST',
       body: JSON.stringify({
         paymentId, blockchain, transaction, index
-      }),
-      authRequired: true
-    }
-  }
-
-  public outgoingPaymentRequest(blockchain: string, address: string, amount: string): ApiRequest {
-    return {
-      url: this.getOutgoingPaymentUrl(blockchain),
-      method: 'POST',
-      body: JSON.stringify({
-        address, amount
       }),
       authRequired: true
     }
@@ -320,8 +310,8 @@ export class ApiWrapper {
     return `{baseUrlApi}/api/account/balance/{id}/${blockchain}`
   }
 
-  private getAccountBlockchainWithdrawUrl(blockchain: string, address: string): string {
-    return `{baseUrlApi}/api/account/withdraw/{id}/${blockchain}/${address}`
+  private getAccountBlockchainWithdrawUrl(blockchain: string): string {
+    return `{baseUrlApi}/api/account/withdraw/{id}/${blockchain}`
   }
 
   private getAccountPaymentHistoryUrl(): string {
@@ -342,10 +332,6 @@ export class ApiWrapper {
 
   private getSendIpnUrl(): string {
     return `{baseUrlApi}/api/account/ipn/{id}`
-  }
-
-  private getOutgoingPaymentUrl(blockchain: string): string {
-    return `{baseUrlApi}/api/account/payment/outgoing/{id}/${blockchain}`
   }
 
   private getAccountSupportTicketUrl(): string {

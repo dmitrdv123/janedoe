@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
 import useApiRequest from '../../../../libs/hooks/useApiRequest'
-import { AccountBlockchainOutgoingPayment } from '../../../../types/account-blockchain-outgoing-payment-result'
 import { ApiWrapper } from '../../../../libs/services/api-wrapper'
 import { INFO_MESSAGE_PAYMENT_HISTORY_OUTGOING_PAYMENT_ERROR } from '../../../../constants'
 import { useInfoMessages } from '../../../../states/application/hook'
+import { TransactionCreationResult } from '../../../../types/transaction-creation-result'
 
 interface PaymentPayTransferButtonProps {
   selectedBlockchain: BlockchainMeta | undefined
@@ -22,7 +22,7 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
 
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
-  const { status: payStatus, process: pay } = useApiRequest<AccountBlockchainOutgoingPayment>()
+  const { status: payStatus, process: pay } = useApiRequest<TransactionCreationResult>()
 
   const handlePay = useCallback(async () => {
     if (!selectedBlockchain || !selectedToken || !selectedAddress || !selectedTokenAmount) {
@@ -31,13 +31,15 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
 
     removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_OUTGOING_PAYMENT_ERROR)
     try {
-      const result = await pay(ApiWrapper.instance.outgoingPaymentRequest(
+      const result = await pay(ApiWrapper.instance.withdrawAccountBlockchainRequest(
         selectedBlockchain.name, selectedAddress, selectedTokenAmount
       ))
-      onSuccess(selectedBlockchain, result?.txid)
+      const message = result?.code ? t(result.code, result.args) : undefined
+
+      onSuccess(selectedBlockchain, result?.txId, message)
     } catch (error) {
       addInfoMessage(
-        t('components.payments.errors.pay_error'),
+        t('components.payment.errors.pay_error'),
         INFO_MESSAGE_PAYMENT_HISTORY_OUTGOING_PAYMENT_ERROR,
         'danger',
         error

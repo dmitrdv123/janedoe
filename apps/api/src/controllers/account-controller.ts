@@ -203,36 +203,12 @@ export class AccountController {
     try {
       assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
       assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
-      assertParam('address', req.params.address, ADDRESS_MAX_LENGTH)
 
-      const result = await this.accountService.withdraw(req.params.id, req.params.blockchain, req.params.address)
-      res.send(result)
-    } catch (err) {
-      processControllerError(res, err as Error)
-    }
-  }
+      const { address, amount } = req.body
+      assertParam('address', address, ADDRESS_MAX_LENGTH)
+      assertParam('amount', amount)
 
-  public async refund(req: Request, res: Response, _next: NextFunction) {
-    try {
-      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
-      assertParam('paymentId', req.params.paymentId, PAYMENT_ID_MAX_LENGTH)
-      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
-      assertParam('transaction', req.params.transaction, TRANSACTION_MAX_LENGTH)
-      const index = tryParseInt(req.params.index)
-      assertNumberParam('index', index)
-
-      const { refundAddress, refundAmount } = req.body
-      assertParam('refund address', refundAddress, ADDRESS_MAX_LENGTH)
-      assertParam('refund amount', refundAmount)
-
-      const result = await this.accountService.refund(
-        req.params.id,
-        req.params.blockchain,
-        req.params.transaction,
-        index as number,
-        refundAddress,
-        refundAmount
-      )
+      const result = await this.accountService.withdraw(req.params.id, req.params.blockchain, address, amount)
       res.send(result)
     } catch (err) {
       processControllerError(res, err as Error)

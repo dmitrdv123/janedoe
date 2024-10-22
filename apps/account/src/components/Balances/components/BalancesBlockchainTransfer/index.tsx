@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { Alert, Button, Image, Spinner } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
-import { convertErrorToMessage, findNativeToken } from '../../../../libs/utils'
+import { convertErrorToMessage, findNativeToken, parseToBigNumber } from '../../../../libs/utils'
 import { CURRENCY_USD_SYMBOL, INFO_MESSAGE_BALANCE_ERROR } from '../../../../constants'
 import { useTokens } from '../../../../states/meta/hook'
 import { useInfoMessages } from '../../../../states/application/hook'
@@ -121,14 +121,17 @@ const BalancesBlockchainTransfer: React.FC<BalancesBlockchainTransferProps> = (p
       </td>
       <td>
         <div className='d-flex justify-content-end'>
-          <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
-            <WithdrawBlockchainTransferButton
-              blockchain={blockchain}
-              isDisable={isDisable || accountBlockchainBalanceStatus === 'processing' || !accountBlockchainBalanceData || accountBlockchainBalanceData.balance <= 0}
-              onProcessing={onProcessing}
-              onSuccess={successWithdrawHandler}
-            />
-          } />
+          {(!!accountBlockchainBalanceData && !!nativeToken) && (
+            <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
+              <WithdrawBlockchainTransferButton
+                blockchain={blockchain}
+                amount={parseToBigNumber(accountBlockchainBalanceData.balance, nativeToken.decimals).toString()}
+                isDisable={isDisable || accountBlockchainBalanceStatus === 'processing' || accountBlockchainBalanceData.balance <= 0}
+                onProcessing={onProcessing}
+                onSuccess={successWithdrawHandler}
+              />
+            } />
+          )}
 
           <Button variant="link" className="ms-3" onClick={accountBlockchainBalanceRefetch} disabled={accountBlockchainBalanceStatus === 'processing'}>
             {t('common.refresh_btn')}

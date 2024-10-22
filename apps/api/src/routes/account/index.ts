@@ -55,17 +55,11 @@ accountRouter.route('/balance/:id/:blockchain').get(
   cacheMiddleware(DEFAULT_ROUTE_ACCOUNT_PAYMENT_CACHING_SECONDS),
   controller.balance.bind(controller)
 )
-accountRouter.route('/withdraw/:id/:blockchain/:address').post(
+accountRouter.route('/withdraw/:id/:blockchain').post(
   expressjwt(jwtConfig),
   jwtDecryptMiddleware(),
   rbacMiddleware('balances', 'Modify'),
   controller.withdraw.bind(controller)
-)
-accountRouter.route('/refund/:id/:paymentId/:blockchain/:transaction/:index').post(
-  expressjwt(jwtConfig),
-  jwtDecryptMiddleware(),
-  rbacMiddleware('balances', 'Modify'),
-  controller.refund.bind(controller)
 )
 accountRouter.route('/ipn/:id/:paymentId/:blockchain/:transaction/:index').get(
   expressjwt(jwtConfig),

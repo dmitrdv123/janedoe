@@ -44,7 +44,7 @@ async function bitcoinCoreServiceTests(): Promise<void> {
 
 async function bitcoinServiceProdTests(): Promise<void> {
   try {
-    await bitcoinService.withdraw('42oz0b2cnmh', 'bc1qtk2hkcqqjdtcmgcpjt9363uypsr0z0kpft9rst')
+    await bitcoinService.withdraw('42oz0b2cnmh', 'bc1qtk2hkcqqjdtcmgcpjt9363uypsr0z0kpft9rst', '295')
   } catch (err) {
     if (err instanceof BitcoinCoreError) {
       const bitcoinCoreError = err as BitcoinCoreError
@@ -89,7 +89,7 @@ async function transactionTests(): Promise<void> {
   const walletAddressBalance2 = await bitcoinService.getWalletAddressBalance(walletName, label2)
   console.log(`wallet ${walletName} address ${label2} balance: ${walletAddressBalance2}`)
 
-  await bitcoinService.withdraw(walletName, address)
+  await bitcoinService.withdraw(walletName, address, '295')
   console.log(`withdrawal of wallet ${walletName} to address ${address} was done`)
 }
 
@@ -125,7 +125,7 @@ async function bitcoinServiceTests(): Promise<void> {
   walletAddresses = await bitcoinDao.listAllWalletAddresses()
   console.log(`loaded all wallet addresses: ${JSON.stringify(walletAddresses)}`)
 
-  await bitcoinService.withdraw(walletName, address)
+  await bitcoinService.withdraw(walletName, address, '295')
   console.log(`withdrawal of wallet ${walletName} to address ${address} was done`)
 }
 

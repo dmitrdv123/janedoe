@@ -47,8 +47,7 @@ export interface AccountService {
   removeAccountApiKeySettings(id: string): Promise<void>
 
   balance(id: string, blockchain: string): Promise<number>
-  withdraw(id: string, blockchain: string, address: string): Promise<TransactionCreationResult>
-  refund(id: string, blockchain: string, transaction: string, index: number, address: string, amount: string): Promise<TransactionCreationResult>
+  withdraw(id: string, blockchain: string, address: string, amount: string): Promise<TransactionCreationResult>
   loadIpn(ipnKey: IpnKey): Promise<IpnData | undefined>
   sendIpn(ipnKey: IpnKey): Promise<IpnResult>
 
@@ -393,7 +392,7 @@ export class AccountServiceImpl implements AccountService {
     }
   }
 
-  public async withdraw(id: string, blockchain: string, address: string): Promise<TransactionCreationResult> {
+  public async withdraw(id: string, blockchain: string, address: string, amount: string): Promise<TransactionCreationResult> {
     switch (blockchain.toLocaleLowerCase()) {
       case BLOCKCHAIN_BTC:
         const settings = await this.loadAccountSettings(id)
@@ -409,35 +408,7 @@ export class AccountServiceImpl implements AccountService {
         }
 
         try {
-          return await this.bitcoinService.withdraw(id, address)
-        } catch (err) {
-          if (err instanceof BitcoinCoreError) {
-            const bitcoinCoreError = err as BitcoinCoreError
-            logger.warn(`AccountService: bitcoin core error happens with code ${bitcoinCoreError.code} and name ${bitcoinCoreError.name} and message ${bitcoinCoreError.message}`)
-            this.processBitcoinError(bitcoinCoreError)
-          }
-
-          throw err
-        }
-      default:
-        logger.error(`AccountService: unsupported blockchain ${blockchain}`)
-        throw new Error(`Unsupported blockchain ${blockchain}`)
-    }
-  }
-
-  public async refund(id: string, blockchain: string, transaction: string, index: number, address: string, amount: string): Promise<TransactionCreationResult> {
-    switch (blockchain.toLocaleLowerCase()) {
-      case BLOCKCHAIN_BTC:
-        try {
-          return await this.bitcoinService.refund(
-            id,
-            {
-              txid: transaction,
-              vout: index
-            },
-            address,
-            amount
-          )
+          return await this.bitcoinService.withdraw(id, address, amount)
         } catch (err) {
           if (err instanceof BitcoinCoreError) {
             const bitcoinCoreError = err as BitcoinCoreError

@@ -12,13 +12,14 @@ import { isNullOrEmptyOrWhitespaces } from '../../../../libs/utils'
 
 interface WithdrawBlockchainTransferButtonProps {
   blockchain: BlockchainMeta
+  amount: string
   isDisable: boolean
   onProcessing: (isProcessing: boolean) => void
   onSuccess: (hash: string | undefined, message?: string | undefined) => void
 }
 
 const WithdrawBlockchainTransferButton: React.FC<WithdrawBlockchainTransferButtonProps> = (props) => {
-  const { blockchain, isDisable, onProcessing, onSuccess } = props
+  const { blockchain, amount, isDisable, onProcessing, onSuccess } = props
 
   const { t } = useTranslation()
   const [walletAddress, setWalletAddress] = useState<string>('')
@@ -47,7 +48,7 @@ const WithdrawBlockchainTransferButton: React.FC<WithdrawBlockchainTransferButto
 
       try {
         onProcessing(true)
-        const res = await withdraw(ApiWrapper.instance.withdrawAccountBlockchainRequest(blockchain.name, walletAddress))
+        const res = await withdraw(ApiWrapper.instance.withdrawAccountBlockchainRequest(blockchain.name, walletAddress, amount))
         const message = res?.code ? t(res.code, res.args) : undefined
 
         onSuccess(res?.txId, message)
@@ -64,7 +65,7 @@ const WithdrawBlockchainTransferButton: React.FC<WithdrawBlockchainTransferButto
     }
 
     setWithdrawValidated(true)
-  }, [t, blockchain, walletAddress, addInfoMessage, onProcessing, onSuccess, removeInfoMessage, withdraw])
+  }, [t, blockchain, amount, walletAddress, addInfoMessage, onProcessing, onSuccess, removeInfoMessage, withdraw])
 
   return (
     <Form noValidate validated={withdrawValidated} onSubmit={withdrawHandler} onBlur={(event) => event.currentTarget.checkValidity()}>
