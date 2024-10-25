@@ -271,6 +271,7 @@ async function bitcoinDaoTests(): Promise<void> {
         vout: -1,
         hex: 'hex2',
         amount: 1,
+        frozen: 0,
         address: 'address2'
       }
     }
@@ -285,12 +286,13 @@ async function bitcoinDaoTests(): Promise<void> {
           vout: i,
           hex: `hex${i}`,
           amount: i + 1,
+          frozen: 0,
           address: `address${i}`
         }
       }
     )
   }
-  await bitcoinDao.saveUtxos(utxos, true)
+  await bitcoinDao.saveUtxos(utxos)
   console.log(`debug >> save utxos done`)
 
   const loadedUtxos = await bitcoinDao.listAllUtxos()

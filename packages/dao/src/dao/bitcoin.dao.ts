@@ -16,15 +16,13 @@ export interface BitcoinDao {
   listAllWalletAddresses(): Promise<BitcoinWalletAddress[]>
   updateWalletAddressCounter(walletName: string): Promise<number>
 
-  saveUtxos(utxos: BitcoinUtxo[], active: boolean): Promise<void>
-  loadUtxo(key: BitcoinUtxoDataKey, active: boolean): Promise<BitcoinUtxo | undefined>
+  saveUtxos(utxos: BitcoinUtxo[]): Promise<void>
+  loadUtxo(key: BitcoinUtxoDataKey): Promise<BitcoinUtxo | undefined>
   deleteUtxos(keys: BitcoinUtxoDataKey[]): Promise<void>
   listAllUtxos(): Promise<BitcoinUtxo[]>
-  listWalletUtxos(walletName: string, active: boolean): Promise<BitcoinUtxo[]>
-  listWalletAddressUtxos(walletName: string, label: string, active: boolean): Promise<BitcoinUtxo[]>
-
-  loadWalletBalance(walletName: string): Promise<number>
-  loadWalletAddressBalance(walletName: string, label: string): Promise<number>
+  listWalletUtxos(walletName: string): Promise<BitcoinUtxo[]>
+  listWalletAddressUtxos(walletName: string, label: string): Promise<BitcoinUtxo[]>
+  updateUtxoFrozen(key: BitcoinUtxoDataKey, frozen: number): Promise<number>
 
   saveWalletTransactions(walletTransactions: BitcoinWalletTransaction[]): Promise<void>
   listWalletTransactions(fromBlockheight: number, toBlockheight: number): Promise<BitcoinWalletTransaction[]>

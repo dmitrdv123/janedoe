@@ -147,6 +147,7 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
               vout: txOutput.n,
               hex: txOutput.scriptPubKey.hex,
               amount: txOutput.value,
+              frozen: 0,
               address: outputAddress
             }
           })
@@ -199,7 +200,7 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
 
     if (utxosToCreate.length > 0) {
       console.log(`debug >> processTransaction: start to save utxo ${JSON.stringify(utxosToCreate)}`)
-      await this.bitcoinDao.saveUtxos(utxosToCreate, true)
+      await this.bitcoinDao.saveUtxos(utxosToCreate)
     }
 
     if (utxosToDelete.length > 0) {

@@ -5,8 +5,8 @@ import { BIP32Factory } from 'bip32'
 import ECPairFactory from 'ecpair'
 
 import { BitcoinUtxoData, BitcoinWalletAddressData, BitcoinWalletAmount, BitcoinWalletData } from '@repo/dao/dist/src/interfaces/bitcoin'
-import { parseBigIntToNumber, parseToBigNumber } from '../utils/bitcoin-utils'
-import { BITCOIN_DECIMALS, BITCOIN_DUST_AMOUNT, BITCOIN_DUST_AMOUNT_SATOSHI } from '../constants'
+import { parseBigIntToNumber, parseToBigNumber, totalAmountUtxos } from '../utils/bitcoin-utils'
+import { BITCOIN_DECIMALS, BITCOIN_DUST_AMOUNT_SATOSHI } from '../constants'
 import { BitcoinCoreError } from '../errors/bitcoin-core-error'
 
 export interface BitcoinUtilsService {
@@ -58,16 +58,23 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
   }
 
   public createTransaction(walletAddressesData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], feeRate: number, address: string, addressRest: string, amount: bigint): bitcoin.Transaction {
-    const utxosDataFiltered = utxosData.filter(utxoData => utxoData.amount > BITCOIN_DUST_AMOUNT)
-    if (utxosDataFiltered.length === 0) {
-      throw new BitcoinCoreError(-26, `All input UTXOs is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+    console.log(`debug >> BitcoinUtilsService, createTransaction: start to create transaction`)
+
+    if (amount <= BITCOIN_DUST_AMOUNT_SATOSHI) {
+      throw new BitcoinCoreError(-26, `Output amount ${amount.toString()} is less or equal limit ${BITCOIN_DUST_AMOUNT_SATOSHI} and could not be withdraw due to network rules.`)
     }
 
-    const amountTotal = utxosDataFiltered.reduce(
-      (acc, utxoData) => acc + parseToBigNumber(utxoData.amount, BITCOIN_DECIMALS), BigInt(0)
-    )
+    const amountTotal = totalAmountUtxos(utxosData)
+    if (amountTotal < amount) {
+      throw new BitcoinCoreError(-26, `Input UTXO's total amount is less than required amount ${amount.toString()}.`)
+    }
 
+    console.log(`debug >> BitcoinUtilsService, createTransaction: total amount ${amountTotal.toString()}`)
+
+    const outputs: BitcoinWalletAmount[] = []
     if (amountTotal - amount > BITCOIN_DUST_AMOUNT_SATOSHI) {
+      console.log(`debug >> BitcoinUtilsService, createTransaction: start to create transactions with 2 outputs`)
+
       const outputsToEstimate: BitcoinWalletAmount[] = [
         {
           address, amount
@@ -77,71 +84,61 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
         }
       ]
 
-      console.log(`debug >> BitcoinUtilsService createTransaction: create for estimation`)
-      console.log(JSON.stringify(walletAddressesData))
-      console.log(JSON.stringify(utxosDataFiltered))
-      // console.log(JSON.stringify(outputsToEstimate))
-      console.log(feeRate)
-      const estimateFeeTx = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
+      const estimateFeeTx = this.doCreateTransaction(walletAddressesData, utxosData, outputsToEstimate, feeRate, true)
       const fee = this.calcFee(estimateFeeTx, feeRate)
 
-      console.log(`debug >> BitcoinUtilsService createTransaction: size ${estimateFeeTx.virtualSize()}`)
-      console.log(`debug >> BitcoinUtilsService createTransaction: fee ${fee}`)
+      console.log(`debug >> BitcoinUtilsService, createTransaction: feeRate ${feeRate}`)
+      console.log(`debug >> BitcoinUtilsService, createTransaction: fee ${fee.toString()}`)
 
-      if (amountTotal - amount - fee > BITCOIN_DUST_AMOUNT_SATOSHI) {
-        const outputs: BitcoinWalletAmount[] = [
-          {
-            address, amount: amount - fee
-          },
-          {
-            address: addressRest, amount: amountTotal - amount
-          }
-        ]
-
-        console.log(`debug >> BitcoinUtilsService createTransaction:`)
-        // console.log(JSON.stringify(outputs))
-
-        return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
+      if (amount - fee <= BITCOIN_DUST_AMOUNT_SATOSHI) {
+        throw new BitcoinCoreError(-26, `Output amount ${amount.toString()} after extracting network fee ${fee.toString()} is less or equal limit ${BITCOIN_DUST_AMOUNT_SATOSHI} and could not be withdraw due to network rules`)
       }
-    }
 
-    if (amount > BITCOIN_DUST_AMOUNT_SATOSHI) {
+      outputs.push(
+        {
+          address, amount: amount - fee
+        },
+        {
+          address: addressRest, amount: amountTotal - amount
+        }
+      )
+    } else {
+      console.log(`debug >> BitcoinUtilsService, createTransaction: start to create transactions with 1 output`)
+
       const outputsToEstimate: BitcoinWalletAmount[] = [
         {
-          address, amount
+          address, amount: amountTotal
         }
       ]
 
-      console.log(`debug >> BitcoinUtilsService createTransaction: create for estimation`)
-      console.log(JSON.stringify(walletAddressesData))
-      console.log(JSON.stringify(utxosDataFiltered))
-      // console.log(JSON.stringify(outputsToEstimate))
-      console.log(feeRate)
-
-      const estimateFeeTx = this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputsToEstimate, feeRate, true)
+      const estimateFeeTx = this.doCreateTransaction(walletAddressesData, utxosData, outputsToEstimate, feeRate, true)
       const fee = this.calcFee(estimateFeeTx, feeRate)
-      console.log(`debug >> BitcoinUtilsService createTransaction: size ${estimateFeeTx.virtualSize()}`)
-      console.log(`debug >> BitcoinUtilsService createTransaction: fee ${fee}`)
 
-      if (amount - fee > BITCOIN_DUST_AMOUNT_SATOSHI) {
-        const outputs: BitcoinWalletAmount[] = [
-          {
-            address, amount: amount - fee
-          }
-        ]
+      console.log(`debug >> BitcoinUtilsService, createTransaction: feeRate ${feeRate}`)
+      console.log(`debug >> BitcoinUtilsService, createTransaction: fee ${fee.toString()}`)
 
-        console.log(`debug >> BitcoinUtilsService createTransaction:`)
-        console.log(`debug >> BitcoinUtilsService createTransaction: amountTotal ${amountTotal}, amount ${amount}, fee ${fee}`)
-        // console.log(JSON.stringify(outputs))
-
-        return this.doCreateTransaction(walletAddressesData, utxosDataFiltered, outputs, feeRate, false)
+      if (amountTotal - fee <= BITCOIN_DUST_AMOUNT_SATOSHI) {
+        throw new BitcoinCoreError(-26, `Output amount ${amountTotal.toString()} after extracting network fee ${fee.toString()} is less or equal limit ${BITCOIN_DUST_AMOUNT_SATOSHI} and could not be withdraw due to network rules`)
       }
+
+      outputs.push(
+        {
+          address, amount: amountTotal - fee
+        }
+      )
     }
 
-    throw new BitcoinCoreError(-26, `Output amount after extracting network fee is less or equal limit ${BITCOIN_DUST_AMOUNT} and could not be withdraw due to network rules`)
+    return this.doCreateTransaction(walletAddressesData, utxosData, outputs, feeRate, true)
   }
 
   private doCreateTransaction(walletAddressesData: BitcoinWalletAddressData[], utxosData: BitcoinUtxoData[], outputs: BitcoinWalletAmount[], feeRate: number, disableFeeCheck?: boolean): bitcoin.Transaction {
+    console.log(`debug >> BitcoinUtilsService, doCreateTransaction: walletAddressesData`)
+    console.log(JSON.stringify(walletAddressesData))
+    console.log(`debug >> BitcoinUtilsService, doCreateTransaction: utxosData`)
+    console.log(JSON.stringify(utxosData))
+    console.log(`debug >> BitcoinUtilsService, doCreateTransaction: outputs`)
+    console.log(JSON.stringify(outputs, (key, value) => typeof value === 'bigint' ? value.toString() : value))
+
     const factory = ECPairFactory(ecc)
 
     const psbt = new bitcoin.Psbt({ network: this.network })
@@ -186,6 +183,6 @@ export class BitcoinUtilsServiceImpl implements BitcoinUtilsService {
     console.log(`debug >> BitcoinUtilsService createTransaction: fee rate ${feeRate}`)
     console.log(`debug >> BitcoinUtilsService createTransaction: fee rate ceil ${Math.ceil(feeRate)}`)
 
-    return BigInt((tx.virtualSize() - 1) * Math.ceil(feeRate))
+    return BigInt(Math.ceil(tx.virtualSize())) * BigInt(Math.ceil(feeRate))
   }
 }

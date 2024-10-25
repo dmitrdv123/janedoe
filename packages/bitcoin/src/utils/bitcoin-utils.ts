@@ -2,6 +2,9 @@ import * as bitcoin from 'bitcoinjs-lib'
 import { formatUnits, parseUnits } from 'viem'
 
 import appConfig from '@repo/common/dist/src/app-config'
+import { BitcoinUtxoData } from '@repo/dao/dist/src/interfaces/bitcoin'
+
+import { BITCOIN_DECIMALS } from '../constants'
 
 export function parseToBigNumber(value: number, decimals: number): bigint {
   return parseUnits(value.toFixed(decimals), decimals)
@@ -63,4 +66,14 @@ export function tryParseInt(val: string | null | undefined): number | undefined 
   } catch {
     return undefined
   }
+}
+
+export function totalAmountUtxos(utxos: BitcoinUtxoData[]): bigint {
+  return utxos.reduce((acc, utxo) => {
+    const delta = parseToBigNumber(utxo.amount, BITCOIN_DECIMALS) - parseToBigNumber(utxo.frozen, BITCOIN_DECIMALS)
+    if (delta > BigInt(0)) {
+      acc += delta
+    }
+    return acc
+  }, BigInt(0))
 }

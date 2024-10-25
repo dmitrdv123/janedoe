@@ -28,6 +28,7 @@ export interface BitcoinUtxoData {
   vout: number
   hex: string
   amount: number
+  frozen: number
   address: string
 }
 
