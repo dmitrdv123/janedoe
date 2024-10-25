@@ -320,7 +320,7 @@
         "wallet_already_loaded_error": "Same wallet is already loaded",
         "wallet_already_exist_error": "There is already a wallet with the same name",
         "transaction_rejected_dust_error": "Transaction was rejected due to a very small amount that is considered as 'dust'",
-        "transaction_inputs_limit_exceed": "UTXOs count {{count}} exceed limit {{limit}}. Submit another transactions to use another ones."
+        "transaction_inputs_limit_exceed": "Part amount {{withdraw}} of {{amount}} was used because input UTXOs count {{count}} exceed limit {{limit}}. Submit another transactions to use the rest."
       }
     }
   },

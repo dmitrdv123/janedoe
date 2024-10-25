@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Button } from 'react-bootstrap'
+import { Button, Spinner } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
@@ -55,6 +55,11 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
       onClick={handlePay}
     >
       {t('components.payment.pay_btn')}
+      {(payStatus === 'processing') && (
+        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className='ms-1'>
+          <span className="visually-hidden">{t('common.processing')}</span>
+        </Spinner>
+      )}
     </Button>
   )
 }
