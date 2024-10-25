@@ -218,7 +218,6 @@ const Payment: React.FC = () => {
       const tokenAmountFormatted = formatToFixed(tokenAmount, selectedToken.decimals)
       setSelectedTokenAmountFormatted(tokenAmountFormatted)
     } else {
-      setSelectedCurrencyAmount('')
       setSelectedTokenAmountFormatted('')
     }
   }, [exchangeRate.data, selectedCurrencyAmount, selectedToken?.decimals, selectedToken?.usdPrice])
