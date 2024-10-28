@@ -107,7 +107,6 @@ const Payment: React.FC = () => {
   const selectBlockchainHandler = useCallback((blockchainToUpdate: BlockchainMeta | undefined) => {
     clearInfoMessage()
     setSelectedBlockchain(blockchainToUpdate)
-    setSelectedToken(undefined)
   }, [clearInfoMessage])
 
   const selectTokenHandler = useCallback((tokenToUpdate: TokenExt | undefined) => {
@@ -184,6 +183,17 @@ const Payment: React.FC = () => {
       return current
     })
   }, [preparedBlockchains])
+
+  useEffect(() => {
+    let token: TokenExt | undefined = undefined
+
+    const asset = selectedBlockchain ? accountPaymentSettings?.assets.find(asset => isBlockchainAsset(selectedBlockchain, asset)) : undefined
+    if (asset) {
+      token = preparedTokens?.find(token => sameTokenAndAsset(asset, token))
+    }
+
+    setSelectedToken(token)
+  }, [accountPaymentSettings?.assets, preparedTokens, selectedBlockchain])
 
   useEffect(() => {
     setSelectedToken(current => {
