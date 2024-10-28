@@ -9,18 +9,20 @@ import { convertWagmiTransactionErrorToMessage } from '../../../../libs/utils'
 import { INFO_MESSAGE_BALANCE_WITHDRAW_ERROR } from '../../../../constants'
 
 interface WithdrawEvmTokenButtonProps {
-  blockchain: BlockchainMeta,
-  token: Token,
-  amount: bigint,
-  isDisable: boolean,
+  blockchain: BlockchainMeta
+  token: Token
+  amount: bigint
+  address: string
+  isDisable: boolean
   onProcessing: (isProcessing: boolean) => void
   onSuccess: (hash: string | undefined) => void
 }
 
 const WithdrawEvmTokenButton: React.FC<WithdrawEvmTokenButtonProps> = (props) => {
-  const { blockchain, token, amount, isDisable, onProcessing, onSuccess } = props
+  const { blockchain, token, amount, address, isDisable, onProcessing, onSuccess } = props
 
   const { t } = useTranslation()
+
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
   const errorCallback = useCallback((error: Error | undefined) => {
@@ -46,6 +48,7 @@ const WithdrawEvmTokenButton: React.FC<WithdrawEvmTokenButtonProps> = (props) =>
     blockchain,
     token,
     amount,
+    address,
     errorCallback,
     successCallback,
     processingCallback

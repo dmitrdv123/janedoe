@@ -8,7 +8,7 @@ import PaymentBlockchainButton from './components/PaymentBlockchainButton'
 import PaymentTokenButton from './components/PaymentTokenButton'
 import { useBlockchains, useTokens } from '../../states/meta/hook'
 import { useSettings } from '../../states/settings/hook'
-import { currencyToTokenAmount, formatToFixed, isBlockchainAsset, parseToBigNumber, sameToken, sameTokenAndAsset, stringComparator, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator, tryParseFloat } from '../../libs/utils'
+import { currencyToTokenAmount, formatToFixed, isBlockchainAsset, isBlockchainNativeToken, parseToBigNumber, sameToken, sameTokenAndAsset, stringComparator, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator, tryParseFloat } from '../../libs/utils'
 import { useAccountCommonSettings, useAccountPaymentSettings } from '../../states/account-settings/hook'
 import { AppSettingsCurrency } from '../../types/app-settings'
 import PaymentCurrencyDropdown from './components/PaymentCurrencyDropdown'
@@ -18,6 +18,8 @@ import TransactionHash from '../TransactionHash'
 import { WithdrawResult } from '../../types/withdraw_result'
 import { TokenExt } from '../../types/token-ext'
 import useReadBalances from '../../libs/hooks/useReadBalances'
+import PaymentPayEvmTokenButton from './components/PaymentPayEvmTokenButton'
+import PaymentPayEvmNativeButton from './components/PaymentPayEvmNativeButton'
 
 const Payment: React.FC = () => {
   const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainMeta | undefined>(undefined)
@@ -317,6 +319,29 @@ const Payment: React.FC = () => {
             <PaymentPayBtcButton
               selectedBlockchain={selectedBlockchain}
               selectedToken={selectedToken}
+              selectedAddress={selectedAddress}
+              selectedTokenAmount={selectedTokenAmount}
+              onSuccess={successHandler}
+            />
+          </div>
+        )}
+
+        {(!!selectedBlockchain && !!selectedToken && !!selectedAddress && !!selectedTokenAmount && selectedBlockchain.type === TransactionType.EVM && !isBlockchainNativeToken(selectedBlockchain, selectedToken)) && (
+          <div className='d-grid mb-2'>
+            <PaymentPayEvmTokenButton
+              selectedBlockchain={selectedBlockchain}
+              selectedToken={selectedToken}
+              selectedAddress={selectedAddress}
+              selectedTokenAmount={selectedTokenAmount}
+              onSuccess={successHandler}
+            />
+          </div>
+        )}
+
+        {(!!selectedBlockchain && !!selectedToken && !!selectedAddress && !!selectedTokenAmount && selectedBlockchain.type === TransactionType.EVM && isBlockchainNativeToken(selectedBlockchain, selectedToken)) && (
+          <div className='d-grid mb-2'>
+            <PaymentPayEvmNativeButton
+              selectedBlockchain={selectedBlockchain}
               selectedAddress={selectedAddress}
               selectedTokenAmount={selectedTokenAmount}
               onSuccess={successHandler}

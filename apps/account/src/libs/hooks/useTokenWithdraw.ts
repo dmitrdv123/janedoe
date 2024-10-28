@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
-import { useAccount } from 'wagmi'
 
 import { ContractCallResult } from '../../types/contract-call-result'
 import { encodeStringToBytes, getAddressOrDefault } from '../utils'
@@ -10,12 +9,11 @@ export default function useTokenWithdraw(
   blockchain: BlockchainMeta,
   token: Token,
   amount: bigint,
+  address: string,
   onError?: (error: Error | undefined) => void,
   onSuccess?: (hash: string | undefined) => void,
   onProcessing?: () => void
 ): ContractCallResult {
-  const { address } = useAccount()
-
   const {
     status,
     data,

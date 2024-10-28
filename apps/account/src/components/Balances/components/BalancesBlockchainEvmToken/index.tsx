@@ -27,7 +27,7 @@ const BalancesBlockchainEvmToken: React.FC<BalancesBlockchainEvmTokenProps> = (p
   const { blockchain, token, balance, isDisable, onProcessing, onSuccess } = props
 
   const { t } = useTranslation()
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
 
   const exchangeRate = useExchangeRate()
   const commonSettings = useAccountCommonSettings()
@@ -75,14 +75,14 @@ const BalancesBlockchainEvmToken: React.FC<BalancesBlockchainEvmTokenProps> = (p
         </div>
       </td>
       <td>
-        {isConnected && (
+        {(isConnected && !!address) && (
           <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
             <>
               {isBlockchainNativeToken(blockchain, token) && (
-                <WithdrawEvmNativeTokenButton blockchain={blockchain} amount={balance} isDisable={isDisable} onProcessing={onProcessing} onSuccess={onSuccess} />
+                <WithdrawEvmNativeTokenButton blockchain={blockchain} amount={balance} address={address} isDisable={isDisable} onProcessing={onProcessing} onSuccess={onSuccess} />
               )}
               {!isBlockchainNativeToken(blockchain, token) && (
-                <WithdrawEvmTokenButton blockchain={blockchain} token={token} amount={balance} isDisable={isDisable} onProcessing={onProcessing} onSuccess={onSuccess} />
+                <WithdrawEvmTokenButton blockchain={blockchain} token={token} amount={balance} address={address} isDisable={isDisable} onProcessing={onProcessing} onSuccess={onSuccess} />
               )}
             </>
           } />
