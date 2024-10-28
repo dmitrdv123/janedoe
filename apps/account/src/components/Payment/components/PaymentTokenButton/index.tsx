@@ -57,7 +57,7 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
           </div>
         )}
 
-        {(selectedToken?.balance && selectedTokenAmount && BigInt(selectedToken.balance) > BigInt(selectedTokenAmount)) && (
+        {(selectedToken?.balance && selectedTokenAmount && BigInt(selectedToken.balance) < BigInt(selectedTokenAmount)) && (
           <div>
             <Form.Text className="text-danger">
               {t('components.payment.errors.no_balance')}
