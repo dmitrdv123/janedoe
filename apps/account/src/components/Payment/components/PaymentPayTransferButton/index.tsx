@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { Button, Spinner } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
-import { BlockchainMeta, Token } from 'rango-sdk-basic'
+import { BlockchainMeta } from 'rango-sdk-basic'
 
 import useApiRequest from '../../../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../../../libs/services/api-wrapper'
@@ -10,25 +10,20 @@ import { useInfoMessages } from '../../../../states/application/hook'
 import { TransactionCreationResult } from '../../../../types/transaction-creation-result'
 
 interface PaymentPayTransferButtonProps {
-  selectedBlockchain: BlockchainMeta | undefined
-  selectedToken: Token | undefined
-  selectedAddress: string | undefined
-  selectedTokenAmount: string | undefined
+  selectedBlockchain: BlockchainMeta
+  selectedAddress: string
+  selectedTokenAmount: string
   onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
 }
 
 const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props) => {
-  const { selectedBlockchain, selectedToken, selectedAddress, selectedTokenAmount, onSuccess } = props
+  const { selectedBlockchain, selectedAddress, selectedTokenAmount, onSuccess } = props
 
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
   const { status: payStatus, process: pay } = useApiRequest<TransactionCreationResult>()
 
   const handlePay = useCallback(async () => {
-    if (!selectedBlockchain || !selectedToken || !selectedAddress || !selectedTokenAmount) {
-      return
-    }
-
     removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_OUTGOING_PAYMENT_ERROR)
     try {
       const result = await pay(ApiWrapper.instance.withdrawAccountBlockchainRequest(
@@ -45,7 +40,7 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
         error
       )
     }
-  }, [selectedBlockchain, selectedToken, selectedAddress, selectedTokenAmount, t, onSuccess, pay, addInfoMessage, removeInfoMessage])
+  }, [selectedBlockchain, selectedAddress, selectedTokenAmount, t, onSuccess, pay, addInfoMessage, removeInfoMessage])
 
   return (
     <Button

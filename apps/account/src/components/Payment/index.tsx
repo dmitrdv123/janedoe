@@ -1,5 +1,5 @@
 import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
-import { Alert, Col, Form, Row } from 'react-bootstrap'
+import { Alert, Button, Col, Form, Row } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { useInfoMessages } from '../../states/application/hook'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -314,11 +314,10 @@ const Payment: React.FC = () => {
           </Form.Group>
         </div>
 
-        {(selectedBlockchain?.type === TransactionType.TRANSFER) && (
+        {(!!selectedBlockchain && !!selectedToken && !!selectedAddress && !!selectedTokenAmount && selectedBlockchain.type === TransactionType.TRANSFER) && (
           <div className='d-grid mb-2'>
             <PaymentPayBtcButton
               selectedBlockchain={selectedBlockchain}
-              selectedToken={selectedToken}
               selectedAddress={selectedAddress}
               selectedTokenAmount={selectedTokenAmount}
               onSuccess={successHandler}
@@ -346,6 +345,18 @@ const Payment: React.FC = () => {
               selectedTokenAmount={selectedTokenAmount}
               onSuccess={successHandler}
             />
+          </div>
+        )}
+
+        {(!selectedBlockchain || !selectedToken || !selectedAddress || !selectedTokenAmount || ![TransactionType.EVM, TransactionType.TRANSFER].includes(selectedBlockchain.type)) && (
+          <div className='d-grid mb-2'>
+            <Button
+              variant="primary"
+              size="lg"
+              disabled
+            >
+              {t('components.payment.pay_btn')}
+            </Button>
           </div>
         )}
       </Form >
