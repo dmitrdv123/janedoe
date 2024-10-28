@@ -38,7 +38,7 @@ const PaymentEvm: React.FC = () => {
                 ETH
               </Form.Control>
               <Form.Control.Feedback type="invalid" style={{ display: 'block' }}>
-                Не хватает баланса
+                Не достаточно баланса
               </Form.Control.Feedback>
               <Form.Text className="text-muted">
                 Баланс: 14267 USDT (= 0.00 USD)

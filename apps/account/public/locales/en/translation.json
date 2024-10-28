@@ -147,7 +147,8 @@
         "currency_amount_required": "Type a currency amount",
         "token_amount_required": "Type a token amount",
         "address_required": "Type a address",
-        "pay_error": "Failed to make the payment"
+        "pay_error": "Failed to make the payment",
+        "no_balance": "Not enough balance"
       }
     },
     "payments": {

@@ -147,7 +147,8 @@
         "currency_amount_required": "Задайте сумму в валюте",
         "token_amount_required": "Задайте сумму в токене",
         "address_required": "Задайте адрес",
-        "pay_error": "Не удалось совершить платеж"
+        "pay_error": "Не удалось совершить платеж",
+        "no_balance": "Не достаточно баланса"
       }
     },
     "payments": {

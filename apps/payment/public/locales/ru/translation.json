@@ -42,7 +42,7 @@
       "swap_and_pay": "Обменять и Оплатить",
       "received": "уже оплачено",
       "select_token": "Выберете токен",
-      "no_balance": "Не хватает баланса",
+      "no_balance": "Не достаточно баланса",
       "conversion_desc": "будет обменян",
       "conversion_token": "обмен на",
       "conversion_select_token": "Выберете токен",
