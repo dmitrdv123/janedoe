@@ -11,7 +11,7 @@ import useNativeTokenWithdraw from '../../../../libs/hooks/useNativeTokenWithdra
 interface PaymentPayEvmNativeButtonProps {
   selectedBlockchain: BlockchainMeta
   selectedAddress: string
-  selectedTokenAmount: string
+  selectedTokenAmount: bigint
   onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
 }
 
@@ -36,7 +36,7 @@ const PaymentPayEvmNativeButton: React.FC<PaymentPayEvmNativeButtonProps> = (pro
 
   const { status: withdrawStatus, handle: withdraw } = useNativeTokenWithdraw(
     selectedBlockchain,
-    BigInt(selectedTokenAmount),
+    selectedTokenAmount,
     selectedAddress,
     errorCallback,
     successCallback

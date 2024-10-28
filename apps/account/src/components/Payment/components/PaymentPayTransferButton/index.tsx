@@ -12,7 +12,7 @@ import { TransactionCreationResult } from '../../../../types/transaction-creatio
 interface PaymentPayTransferButtonProps {
   selectedBlockchain: BlockchainMeta
   selectedAddress: string
-  selectedTokenAmount: string
+  selectedTokenAmount: bigint
   onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
 }
 
@@ -27,7 +27,7 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
     removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_OUTGOING_PAYMENT_ERROR)
     try {
       const result = await pay(ApiWrapper.instance.withdrawAccountBlockchainRequest(
-        selectedBlockchain.name, selectedAddress, selectedTokenAmount
+        selectedBlockchain.name, selectedAddress, selectedTokenAmount.toString()
       ))
       const message = result?.code ? t(result.code, result.args) : undefined
 

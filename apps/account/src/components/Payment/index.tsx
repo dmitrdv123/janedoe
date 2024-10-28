@@ -1,25 +1,23 @@
-import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
-import { Alert, Button, Col, Form, Row } from 'react-bootstrap'
+import { BlockchainMeta } from 'rango-sdk-basic'
+import { Alert, Col, Form, Row } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { useInfoMessages } from '../../states/application/hook'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import PaymentBlockchainButton from './components/PaymentBlockchainButton'
-import PaymentTokenButton from './components/PaymentTokenButton'
 import { useBlockchains, useTokens } from '../../states/meta/hook'
 import { useSettings } from '../../states/settings/hook'
-import { currencyToTokenAmount, formatToFixed, isBlockchainAsset, isBlockchainNativeToken, parseToBigNumber, sameToken, sameTokenAndAsset, stringComparator, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator, tryParseFloat } from '../../libs/utils'
+import { currencyToTokenAmount, formatToFixed, isBlockchainAsset, parseToBigNumber, sameToken, sameTokenAndAsset, stringComparator, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator, tryParseFloat } from '../../libs/utils'
 import { useAccountCommonSettings, useAccountPaymentSettings } from '../../states/account-settings/hook'
 import { AppSettingsCurrency } from '../../types/app-settings'
 import PaymentCurrencyDropdown from './components/PaymentCurrencyDropdown'
 import useSpecificExchangeRate from '../../libs/hooks/useSpecificExchangeRate'
-import PaymentPayBtcButton from './components/PaymentPayTransferButton'
 import TransactionHash from '../TransactionHash'
 import { WithdrawResult } from '../../types/withdraw_result'
 import { TokenExt } from '../../types/token-ext'
 import useReadBalances from '../../libs/hooks/useReadBalances'
-import PaymentPayEvmTokenButton from './components/PaymentPayEvmTokenButton'
-import PaymentPayEvmNativeButton from './components/PaymentPayEvmNativeButton'
+import PaymentTokenButton from './components/PaymentTokenButton'
+import PaymentPayButton from './components/PaymentPayButton'
 
 const Payment: React.FC = () => {
   const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainMeta | undefined>(undefined)
@@ -314,51 +312,15 @@ const Payment: React.FC = () => {
           </Form.Group>
         </div>
 
-        {(!!selectedBlockchain && !!selectedToken && !!selectedAddress && !!selectedTokenAmount && selectedBlockchain.type === TransactionType.TRANSFER) && (
-          <div className='d-grid mb-2'>
-            <PaymentPayBtcButton
-              selectedBlockchain={selectedBlockchain}
-              selectedAddress={selectedAddress}
-              selectedTokenAmount={selectedTokenAmount}
-              onSuccess={successHandler}
-            />
-          </div>
-        )}
-
-        {(!!selectedBlockchain && !!selectedToken && !!selectedAddress && !!selectedTokenAmount && selectedBlockchain.type === TransactionType.EVM && !isBlockchainNativeToken(selectedBlockchain, selectedToken)) && (
-          <div className='d-grid mb-2'>
-            <PaymentPayEvmTokenButton
-              selectedBlockchain={selectedBlockchain}
-              selectedToken={selectedToken}
-              selectedAddress={selectedAddress}
-              selectedTokenAmount={selectedTokenAmount}
-              onSuccess={successHandler}
-            />
-          </div>
-        )}
-
-        {(!!selectedBlockchain && !!selectedToken && !!selectedAddress && !!selectedTokenAmount && selectedBlockchain.type === TransactionType.EVM && isBlockchainNativeToken(selectedBlockchain, selectedToken)) && (
-          <div className='d-grid mb-2'>
-            <PaymentPayEvmNativeButton
-              selectedBlockchain={selectedBlockchain}
-              selectedAddress={selectedAddress}
-              selectedTokenAmount={selectedTokenAmount}
-              onSuccess={successHandler}
-            />
-          </div>
-        )}
-
-        {(!selectedBlockchain || !selectedToken || !selectedAddress || !selectedTokenAmount || ![TransactionType.EVM, TransactionType.TRANSFER].includes(selectedBlockchain.type)) && (
-          <div className='d-grid mb-2'>
-            <Button
-              variant="primary"
-              size="lg"
-              disabled
-            >
-              {t('components.payment.pay_btn')}
-            </Button>
-          </div>
-        )}
+        <div className='mb-2'>
+          <PaymentPayButton
+            selectedBlockchain={selectedBlockchain}
+            selectedToken={selectedToken}
+            selectedAddress={selectedAddress}
+            selectedTokenAmount={selectedTokenAmount}
+            onSuccess={successHandler}
+          />
+        </div>
       </Form >
     </>
   )

@@ -12,7 +12,7 @@ interface PaymentPayEvmTokenButtonProps {
   selectedBlockchain: BlockchainMeta
   selectedToken: Token
   selectedAddress: string
-  selectedTokenAmount: string
+  selectedTokenAmount: bigint
   onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
 }
 
@@ -38,7 +38,7 @@ const PaymentPayEvmTokenButton: React.FC<PaymentPayEvmTokenButtonProps> = (props
   const { status: withdrawStatus, handle: withdraw } = useTokenWithdraw(
     selectedBlockchain,
     selectedToken,
-    BigInt(selectedTokenAmount),
+    selectedTokenAmount,
     selectedAddress,
     errorCallback,
     successCallback
