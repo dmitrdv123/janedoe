@@ -11,8 +11,8 @@
     "app": {
       "home": "Главная",
       "balances": "Балансы",
-      "payment": "Платеж",
-      "payments": "Платежи",
+      "payment": "Платежи",
+      "payments": "История платежей",
       "account_settings": "Настройки аккаунта",
       "payment_settings": "Настройки платежей",
       "documentations": "Документация",
@@ -127,7 +127,7 @@
       "logout_btn": "Выйти"
     },
     "payment": {
-      "title": "Платеж",
+      "title": "Платежи",
       "select_blockchain": "Выберите блокчейн",
       "token_modal_title": "Выберите токен",
       "token_modal_search_placeholder": "Поиск по имени токена или адресу",
@@ -152,7 +152,7 @@
       }
     },
     "payments": {
-      "title": "Платежи",
+      "title": "История платежей",
       "no_payment": "Нет платежей",
       "notification_col": "Уведомление",
       "tran_hash": "Хеш транзакции:",

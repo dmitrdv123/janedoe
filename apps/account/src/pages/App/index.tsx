@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Col, Container, Nav, Navbar } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
-import { Envelope, House, Gear, GraphUpArrow, FileText, CurrencyDollar, Wallet } from 'react-bootstrap-icons'
+import { Envelope, House, Gear, FileText, CurrencyDollar, Wallet, CreditCard, CardList } from 'react-bootstrap-icons'
 
 import './index.css'
 
@@ -118,14 +118,14 @@ const App: React.FC = () => {
 
             <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
               <Nav.Link href="#payment" className="text-white text-decoration-none" active={currentPage === ApplicationPage.PAYMENT}>
-                <GraphUpArrow />
+                <CreditCard />
                 <span className="ms-3 d-none d-sm-inline">{t('pages.app.payment')}</span>
               </Nav.Link>
             } />
 
             <RbacGuard requiredKeys={['payments']} requiredPermission='View' element={
               <Nav.Link href="#payments" className="text-white text-decoration-none" active={currentPage === ApplicationPage.PAYMENTS}>
-                <GraphUpArrow />
+                <CardList />
                 <span className="ms-3 d-none d-sm-inline">{t('pages.app.payments')}</span>
               </Nav.Link>
             } />

@@ -11,8 +11,8 @@
     "app": {
       "home": "Home",
       "balances": "Balances",
-      "payment": "Payment",
-      "payments": "Payments",
+      "payment": "Payments",
+      "payments": "Payments History",
       "account_settings": "Account Settings",
       "payment_settings": "Payment Settings",
       "documentations": "Documentations",
@@ -127,7 +127,7 @@
       "logout_btn": "Logout"
     },
     "payment": {
-      "title": "Payment",
+      "title": "Payments",
       "select_blockchain": "Select a blockchain",
       "token_modal_title": "Select a Token",
       "token_modal_search_placeholder": "Search by token name or address",
@@ -152,7 +152,7 @@
       }
     },
     "payments": {
-      "title": "Payments",
+      "title": "Payment History",
       "no_payment": "No payments",
       "notification_col": "Notification",
       "tran_hash": "Transaction Hash:",
