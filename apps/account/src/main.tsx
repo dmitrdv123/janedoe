@@ -13,7 +13,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import './i18n/config'
 
-import App from './pages/App'
 import reportWebVitals from './reportWebVitals'
 import store from './states/store'
 import Auth from './pages/Auth'
@@ -24,6 +23,15 @@ import Main from './pages/Sandbox/Main'
 import ConfigProvider from './context/config/context'
 import { getTransport } from './libs/utils'
 import { CHAINS } from './constants'
+import { ApplicationPage } from './types/page'
+import AppWrapper from './components/AppWrapper'
+import Home from './components/Home'
+import Balances from './components/Balances'
+import AccountSettings from './components/AccountSettings'
+import Payments from './components/Payments'
+import Payment from './components/Payment'
+import PaymentSettings from './components/PaymentSettings'
+import AccountSupport from './components/AccountSupport'
 
 if (!import.meta.env.VITE_APP_PROJECT_ID) {
   throw new Error('You need to provide VITE_APP_PROJECT_ID env variable')
@@ -88,14 +96,171 @@ root.render(
                 } />
                 <Route path="/app" element={
                   <Suspense fallback={<Loader />}>
-                    <AuthGuard element={<App />} />
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.HOME}
+                        element={<Home />}
+                      />}
+                    />
                   </Suspense>
                 } />
                 <Route path="/app/:id" element={
                   <Suspense fallback={<Loader />}>
-                    <AuthGuard element={<App />} />
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.HOME}
+                        element={<Home />}
+                      />}
+                    />
                   </Suspense>
                 } />
+
+                <Route path="/balances" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.BALANCES}
+                        requiredKeys={['balances']}
+                        requiredPermission='View'
+                        element={<Balances />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+                <Route path="/balances/:id" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.BALANCES}
+                        requiredKeys={['balances']}
+                        requiredPermission='View'
+                        element={<Balances />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+
+                <Route path="/payment" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.PAYMENT}
+                        requiredKeys={['balances']}
+                        requiredPermission='Modify'
+                        element={<Payment />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+                <Route path="/payment/:id" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.PAYMENT}
+                        requiredKeys={['balances']}
+                        requiredPermission='Modify'
+                        element={<Payment />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+
+                <Route path="/payments" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.PAYMENTS}
+                        requiredKeys={['payments']}
+                        requiredPermission='View'
+                        element={<Payments />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+                <Route path="/payments/:id" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.PAYMENTS}
+                        requiredKeys={['payments']}
+                        requiredPermission='View'
+                        element={<Payments />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+
+                <Route path="/account_settings" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.ACCOUNT_SETTINGS}
+                        requiredKeys={['common_settings', 'notification_settings', 'api_settings', 'team_settings']}
+                        requiredPermission='View'
+                        element={<AccountSettings />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+                <Route path="/account_settings/:id" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.ACCOUNT_SETTINGS}
+                        requiredKeys={['common_settings', 'notification_settings', 'api_settings', 'team_settings']}
+                        requiredPermission='View'
+                        element={<AccountSettings />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+
+                <Route path="/payment_settings" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.PAYMENT_SETTINGS}
+                        requiredKeys={['payment_settings']}
+                        requiredPermission='View'
+                        element={<PaymentSettings />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+                <Route path="/payment_settings/:id" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.PAYMENT_SETTINGS}
+                        requiredKeys={['payment_settings']}
+                        requiredPermission='View'
+                        element={<PaymentSettings />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+
+                <Route path="/support" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.SUPPORT}
+                        element={<AccountSupport />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+                <Route path="/support/:id" element={
+                  <Suspense fallback={<Loader />}>
+                    <AuthGuard element={
+                      <AppWrapper
+                        page={ApplicationPage.SUPPORT}
+                        element={<AccountSupport />}
+                      />}
+                    />
+                  </Suspense>
+                } />
+
                 <Route path="/accounts" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={<Accounts />} />

@@ -1,0 +1,15 @@
+.popover-list-group {
+  max-height: calc(100vh - 400px);
+}
+
+.dropdown-currency {
+  max-height: 400px;
+}
+
+.modal-list {
+  height: 100vh;
+}
+
+.modal-list-group {
+  max-height: calc(100vh - 200px);
+}
