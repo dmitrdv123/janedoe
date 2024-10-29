@@ -197,6 +197,8 @@ others:
 - api: do the payment with empty or not correct payment id. Check how api is working
 - api: BitcoinService, withdraw method. We are loading all wallet addresses, but nobody deleted them. Because of that we can have OOM.
 - api, account: for BTC show 3 balances - total - frozen, frozen, available to use in current block
+- account: switch to some page and then to payment history. It always shows notification about new payments.
+- landing: show block with price
 
 improvement backlog:
 - payment: не подписаны блокчейн и токен на форме платежа. Так что Паша подумал что выбирать нужно два токена один source и второй dest
