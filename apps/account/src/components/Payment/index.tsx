@@ -1,9 +1,10 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
 import { BlockchainMeta } from 'rango-sdk-basic'
 import { Alert, Col, Form, Row } from 'react-bootstrap'
-import { useTranslation } from 'react-i18next'
-import { useInfoMessages } from '../../states/application/hook'
-import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { useInfoMessages } from '../../states/application/hook'
 import PaymentBlockchainButton from './components/PaymentBlockchainButton'
 import { useBlockchains, useTokens } from '../../states/meta/hook'
 import { useSettings } from '../../states/settings/hook'
@@ -36,6 +37,7 @@ const Payment: React.FC = () => {
   const commonSettings = useAccountCommonSettings()
   const accountPaymentSettings = useAccountPaymentSettings()
   const exchangeRate = useSpecificExchangeRate(selectedCurrency?.symbol)
+  const location = useLocation()
 
   const {
     tokens: tokensWithBalance
@@ -177,12 +179,21 @@ const Payment: React.FC = () => {
   useEffect(() => {
     setSelectedBlockchain(current => {
       if (!current && preparedBlockchains && preparedBlockchains.length > 0) {
+        const queryParams = new URLSearchParams(location.search)
+        const initialBlockchainName = queryParams.get('blockchain')
+        if (initialBlockchainName) {
+          const initialBlockchain = preparedBlockchains.find(blockchain => blockchain.name.toLocaleLowerCase() === initialBlockchainName.toLocaleLowerCase())
+          if (initialBlockchain) {
+            return initialBlockchain
+          }
+        }
+
         return preparedBlockchains[0]
       }
 
       return current
     })
-  }, [preparedBlockchains])
+  }, [preparedBlockchains, location.search])
 
   useEffect(() => {
     let token: TokenExt | undefined = undefined
@@ -211,6 +222,14 @@ const Payment: React.FC = () => {
   useEffect(() => {
     setSelectedCurrency(current => {
       if (!current && commonSettings) {
+        const currencyFromParam = new URLSearchParams(location.search).get('currency')
+        if (currencyFromParam) {
+          const currency = preparedCurrencies?.find(item => item.symbol.toLocaleLowerCase() === currencyFromParam.toLocaleLowerCase())
+          if (currency) {
+            return currency
+          }
+        }
+
         const currency = preparedCurrencies?.find(item => item.symbol.toLocaleLowerCase() === commonSettings.currency?.toLocaleLowerCase())
         if (currency) {
           return currency
@@ -219,7 +238,22 @@ const Payment: React.FC = () => {
 
       return current
     })
-  }, [commonSettings, preparedCurrencies])
+  }, [commonSettings, preparedCurrencies, location.search])
+
+  useEffect(() => {
+    setSelectedCurrencyAmount(current => {
+      if (!current) {
+        const amount = tryParseFloat(
+          new URLSearchParams(location.search).get('amount')
+        )
+        if (amount) {
+          return amount.toString()
+        }
+      }
+
+      return current
+    })
+  }, [commonSettings, preparedCurrencies, location.search])
 
   useEffect(() => {
     const currencyAmountNum = tryParseFloat(selectedCurrencyAmount)

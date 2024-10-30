@@ -137,7 +137,7 @@
       "search_currency_placeholder": "Search by name",
       "currency_amount": "Currency amount",
       "token_amount": "Token amount",
-      "address": "Address",
+      "address": "Wallet address",
       "pay_btn": "Pay",
       "pay_success": "Payment has been done successfully",
       "errors": {
@@ -146,7 +146,7 @@
         "currency_required": "Select a currency",
         "currency_amount_required": "Type a currency amount",
         "token_amount_required": "Type a token amount",
-        "address_required": "Type a address",
+        "address_required": "Type a wallet address",
         "pay_error": "Failed to make the payment",
         "no_balance": "Not enough balance"
       }
