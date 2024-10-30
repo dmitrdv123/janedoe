@@ -1,9 +1,7 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit'
 import { ApplicationState } from '../../types/application-state'
-import { ApplicationPage } from '../../types/page'
 
 const initialState: ApplicationState = {
-  currentPage: ApplicationPage.HOME,
   infoMessages: []
 }
 
@@ -11,9 +9,6 @@ const applicationSlice = createSlice({
   name: 'application',
   initialState,
   reducers: {
-    setCurrentPage(state, action) {
-      state.currentPage = action.payload
-    },
     addInfoMessage(
       state,
       { payload: { content, key, variant } }: { payload: { content: string; key?: string | undefined; variant?: string | undefined } }
@@ -35,5 +30,5 @@ const applicationSlice = createSlice({
   }
 })
 
-export const { setCurrentPage, addInfoMessage, removeInfoMessage, clearInfoMessage } = applicationSlice.actions
+export const { addInfoMessage, removeInfoMessage, clearInfoMessage } = applicationSlice.actions
 export default applicationSlice.reducer

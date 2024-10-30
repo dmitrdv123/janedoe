@@ -1,5 +1,6 @@
 import { Image } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+
 import { SUPPORTED_LANGUAGES } from '../../../../constants'
 import { useConfig } from '../../../../context/config/hook'
 
@@ -19,7 +20,7 @@ const CreateAccount: React.FC = () => {
             Install a crypto wallet if you don't already have one. With it, you can create an account and log in, as well as withdraw funds. For example, <a href='https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn' target='_blank'>Metamask</a>. It is required for authorization, receiving and withdrawals funds.
           </p>
           <p>
-            Open <a href={config.config?.baseUrlAccount} target="_blank">JaneDoe</a> and click on the button <code>Connect Wallet</code>.
+            Open <a href={`${config.config?.baseUrlAccount}/app`} target="_blank">JaneDoe</a> and click on the button <code>Connect Wallet</code>.
           </p>
           <p>
             <Image src='../locales/en/img/create_account_1.png' fluid/>
@@ -57,7 +58,7 @@ const CreateAccount: React.FC = () => {
           Установите криптокошелек, если его еще у вас нет. С его помощью вы сможете создать учетную запись и авторизоваться а также выводить средства. Например, <a href='https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn' target='_blank'>Metamask</a>. Он необходим для авторизации, получения и вывода средств.
         </p>
         <p>
-          Откройте <a href={config.config?.baseUrlAccount} target="_blank">JaneDoe</a> и нажмите на кнопку <code>Подключить кошелек</code>.
+          Откройте <a href={`${config.config?.baseUrlAccount}/app`} target="_blank">JaneDoe</a> и нажмите на кнопку <code>Подключить кошелек</code>.
         </p>
         <Image src='../locales/ru/img/create_account_1.png' fluid/>
         <p>

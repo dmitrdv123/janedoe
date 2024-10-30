@@ -1,8 +1,13 @@
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
+
 import { SUPPORTED_LANGUAGES } from '../../constants'
+import useNavigationPath from '../../libs/hooks/useNavigationPath'
 
 const Home: React.FC = () => {
   const { t, i18n } = useTranslation()
+
+  const getNavigationPath = useNavigationPath()
 
   return (
     <>
@@ -33,20 +38,20 @@ const Home: React.FC = () => {
             Smart contracts are not changeable and there is no mechanism for blocking your funds in our smart contracts. You even be able to interact with the smart contract directly, for example through <a href="https://etherscan.io/" target='_blank'>etherscan</a> to withdraw all your funds.
           </p>
           <p>
-            Smart contract addresses can be found in <a href='#resources_contracts'>Contract Addresses</a>.
+            Smart contract addresses can be found in <Link to={getNavigationPath('resources_contracts')}>Contract Addresses</Link>.
           </p>
 
           <h2>
             No Integration Required
           </h2>
           <p>
-            You need to use payment links to accept payments. Links can be created independently on your side, no integration required. More details in <a href='#tutorials_receive_payments'>How to receive payments</a>.
+            You need to use payment links to accept payments. Links can be created independently on your side, no integration required. More details in <Link to={getNavigationPath('tutorials_receive_payments')}>How to receive payments</Link>.
           </p>
           <p>
-            If you need JaneDoe can send notifications about new payments to your system. More details in <a href='#tutorials_notifications'>How to receive notifications about payments</a>.
+            If you need JaneDoe can send notifications about new payments to your system. More details in <Link to={getNavigationPath('tutorials_notifications')}>How to receive notifications about payments</Link>.
           </p>
           <p>
-            In addition, you can integrate with our API to retrieve payment history. More details in <a href='#tutorials_api'>How to use API</a>.
+            In addition, you can integrate with our API to retrieve payment history. More details in <Link to={getNavigationPath('tutorials_api')}>How to use API</Link>.
           </p>
 
           <h2>
@@ -59,7 +64,7 @@ const Home: React.FC = () => {
             You will be able to set the payment amount in a fiat currency convenient for you. JaneDoe will automatically calculate the payment amount in tokens taking into account its price and fiat currency exchange rates.
           </p>
           <p>
-            More details in <a href='#resources_blockchains'>Supported Blockchains</a>, <a href='#resources_tokens'>Supported Tokens</a> and <a href='#resources_currencies'>Supported Currencies</a>.
+            More details in <Link to={getNavigationPath('resources_blockchains')}>Supported Blockchains</Link>, <Link to={getNavigationPath('resources_tokens')}>Supported Tokens</Link> and <Link to={getNavigationPath('resources_currencies')}>Supported Currencies</Link>.
           </p>
 
           <h2>
@@ -97,20 +102,20 @@ const Home: React.FC = () => {
             Cмарт-контракты не изменяемы и в наших смарт-контрактах нет механизма блокировки ваших средств. Вы даже сможете напрямую взаимодействовать со смарт-контрактом, например, через <a href="https://etherscan.io/" target='_blank'>etherscan</a>, чтобы вывести все свои средства.
           </p>
           <p>
-            Адреса смартконтрактов можно посмотреть в <a href='#resources_contracts'>Адреса контрактов</a>.
+            Адреса смартконтрактов можно посмотреть в <Link to={getNavigationPath('resources_contracts')}>Адреса контрактов</Link>.
           </p>
 
           <h2>
             Не требуется интеграция
           </h2>
           <p>
-            Чтобы получать платежи вам нужно использовать платежные ссылки. Ссылки могут быть созданы независимо на вашей стороне, никакой интеграции не требуется. Более подробная информация в <a href='#tutorials_receive_payments'>Как получать платежи</a>.
+            Чтобы получать платежи вам нужно использовать платежные ссылки. Ссылки могут быть созданы независимо на вашей стороне, никакой интеграции не требуется. Более подробная информация в <Link to={getNavigationPath('tutorials_receive_payments')}>Как получать платежи</Link>.
           </p>
           <p>
-            Если вам потребуется JaneDoe может слать уведомления о новых платежах в вашу систему. Более подробная информация в <a href='#tutorials_notifications'>Как получать уведомления о платежах</a>.
+            Если вам потребуется JaneDoe может слать уведомления о новых платежах в вашу систему. Более подробная информация в <Link to={getNavigationPath('tutorials_notifications')}>Как получать уведомления о платежах</Link>.
           </p>
           <p>
-            В дополнении вы можете интегрироваться с нашим API для получения истории платежей. Более подробная информация в <a href='#tutorials_api'>Как интегрироваться с API</a>.
+            В дополнении вы можете интегрироваться с нашим API для получения истории платежей. Более подробная информация в <Link to={getNavigationPath('tutorials_api')}>Как интегрироваться с API</Link>.
           </p>
 
           <h2>
@@ -123,7 +128,7 @@ const Home: React.FC = () => {
             Вы сможете задать сумму платежа в удобной вам фиатной валюте. JaneDoe автоматически рассчитает сумму платежа в токене учитывая его стоимость и курсы фиатных валют.
           </p>
           <p>
-            Более подробная информация в <a href='#resources_blockchains'>Поддерживаемые блокчейны</a>, <a href='#resources_tokens'>Поддерживаемые токены</a> и <a href='#resources_currencies'>Поддерживаемые валюты</a>.
+            Более подробная информация в <Link to={getNavigationPath('resources_blockchains')}>Поддерживаемые блокчейны</Link>, <Link to={getNavigationPath('resources_tokens')}>Поддерживаемые токены</Link> и <Link to={getNavigationPath('resources_currencies')}>Поддерживаемые валюты</Link>.
           </p>
 
           <h2>

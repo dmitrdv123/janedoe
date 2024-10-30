@@ -1,5 +1,6 @@
 import { Image } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+
 import { SUPPORTED_LANGUAGES } from '../../../../constants'
 import { useConfig } from '../../../../context/config/hook'
 
@@ -16,7 +17,7 @@ const ShareAccess: React.FC = () => {
       {(i18n.language.toLocaleLowerCase() === 'en' || SUPPORTED_LANGUAGES.findIndex(lang => lang === i18n.language.toLocaleLowerCase()) === -1) && (
         <>
           <p>
-            Open page <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Account Settings</a> and find <code>Team Settings</code>. Click on button <code>Add User</code>. Enter the wallet address to which you are giving access to your account.
+            Open page <a href={`${config.config?.baseUrlAccount}/account_settings`} target="_blank">Account Settings</a> and find <code>Team Settings</code>. Click on button <code>Add User</code>. Enter the wallet address to which you are giving access to your account.
           </p>
           <p>
             <Image src='../locales/en/img/share_access_1.png' fluid />
@@ -45,7 +46,7 @@ const ShareAccess: React.FC = () => {
       {i18n.language.toLocaleLowerCase() === 'ru' && (
         <>
         <p>
-          Откройте страницу <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Настройки аккаунта</a> и найдите <code>Командные настройки</code>. Нажмите на кнопку <code>Добавить пользователя</code>. Введите адрес кошелька, которому вы даете доступ к вашему аккаунту.
+          Откройте страницу <a href={`${config.config?.baseUrlAccount}/account_settings`} target="_blank">Настройки аккаунта</a> и найдите <code>Командные настройки</code>. Нажмите на кнопку <code>Добавить пользователя</code>. Введите адрес кошелька, которому вы даете доступ к вашему аккаунту.
         </p>
         <p>
           <Image src='../locales/ru/img/share_access_1.png' fluid />

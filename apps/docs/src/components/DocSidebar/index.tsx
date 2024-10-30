@@ -1,21 +1,26 @@
 import { Container, Nav, Navbar } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 import { ApplicationPage } from '../../types/page'
-import { useCurrentPage } from '../../states/application/hook'
+import useNavigationPath from '../../libs/hooks/useNavigationPath'
 
 interface DocSidebarProps {
+  page: ApplicationPage
 }
 
-const DocSidebar: React.FC<DocSidebarProps> = () => {
+const DocSidebar: React.FC<DocSidebarProps> = (props) => {
+  const { page } = props
+
   const { t } = useTranslation()
-  const { currentPage } = useCurrentPage()
+
+  const getNavigationPath = useNavigationPath()
 
   return (
     <>
       <Navbar bg="dark" data-bs-theme="dark" className='d-none d-md-inline'>
         <Container>
-          <Navbar.Brand href="#home">
+          <Navbar.Brand as={Link} to={getNavigationPath('')}>
             <span className='fs-4'>
               {import.meta.env.VITE_APP_APP_NAME ?? 'JaneDoe Finance'}
             </span>
@@ -27,56 +32,56 @@ const DocSidebar: React.FC<DocSidebarProps> = () => {
         <Container>
           <Navbar.Toggle aria-controls="sidebar-nav" />
           <Navbar.Collapse id="sidebar-nav">
-            <Nav defaultActiveKey="#" className="nav-pills flex-column mb-auto w-100">
-              <Nav.Link href="#home" className="text-white text-decoration-none" active={currentPage === ApplicationPage.HOME}>
+            <Nav defaultActiveKey={getNavigationPath('')} className="nav-pills flex-column mb-auto w-100">
+              <Nav.Link as={Link} to={getNavigationPath('')} className="text-white text-decoration-none" active={page === ApplicationPage.HOME}>
                 <span className="ms-2">{t('pages.app.home')}</span>
               </Nav.Link>
-              <Nav.Link href="#tutorials" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS}>
+              <Nav.Link as={Link} to={getNavigationPath('tutorials')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS}>
                 <span className="ms-2">{t('pages.app.tutorials')}</span>
               </Nav.Link>
               <Nav.Item>
                 <Nav className="nav-pills flex-column mb-auto w-100 small">
-                  <Nav.Link href="#tutorials_create_account" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS_CREATE_ACCOUNT}>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_create_account')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_CREATE_ACCOUNT}>
                     <span className="ms-4">{t('pages.app.tutorials_create_account')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#tutorials_receive_payments" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS_RECEIVE_PAYMENTS}>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_receive_payments')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_RECEIVE_PAYMENTS}>
                     <span className="ms-4">{t('pages.app.tutorials_receive_payments')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#tutorials_monitor_payments" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS_MONITOR_PAYMENTS}>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_monitor_payments')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_MONITOR_PAYMENTS}>
                     <span className="ms-4">{t('pages.app.tutorials_monitor_payments')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#tutorials_withdraw" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS_WITHDRAW}>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_withdraw')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_WITHDRAW}>
                     <span className="ms-4">{t('pages.app.tutorials_withdraw')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#tutorials_share_access" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS_SHARE_ACCESS}>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_share_access')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_SHARE_ACCESS}>
                     <span className="ms-4">{t('pages.app.tutorials_share_access')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#tutorials_payment_settings" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS_PAYMENT_SETTINGS}>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_payment_settings')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_PAYMENT_SETTINGS}>
                     <span className="ms-4">{t('pages.app.tutorials_payment_settings')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#tutorials_notifications" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS_NOTIFICATIONS}>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_notifications')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_NOTIFICATIONS}>
                     <span className="ms-4">{t('pages.app.tutorials_notifications')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#tutorials_api" className="text-white text-decoration-none" active={currentPage === ApplicationPage.TUTORIALS_API}>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_api')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_API}>
                     <span className="ms-4">{t('pages.app.tutorials_api')}</span>
                   </Nav.Link>
                 </Nav>
               </Nav.Item>
-              <Nav.Link href="#resources" className="text-white text-decoration-none" active={currentPage === ApplicationPage.RESOURCES}>
+              <Nav.Link as={Link} to={getNavigationPath('resources')} className="text-white text-decoration-none" active={page === ApplicationPage.RESOURCES}>
                 <span className="ms-2">{t('pages.app.resources')}</span>
               </Nav.Link>
               <Nav.Item>
                 <Nav className="nav-pills flex-column mb-auto w-100 small">
-                  <Nav.Link href="#resources_currencies" className="text-white text-decoration-none" active={currentPage === ApplicationPage.RESOURCES_CURRENCIES}>
+                  <Nav.Link as={Link} to={getNavigationPath('resources_currencies')} className="text-white text-decoration-none" active={page === ApplicationPage.RESOURCES_CURRENCIES}>
                     <span className="ms-4">{t('pages.app.resources_currencies')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#resources_blockchains" className="text-white text-decoration-none" active={currentPage === ApplicationPage.RESOURCES_BLOCKCHAINS}>
+                  <Nav.Link as={Link} to={getNavigationPath('resources_blockchains')} className="text-white text-decoration-none" active={page === ApplicationPage.RESOURCES_BLOCKCHAINS}>
                     <span className="ms-4">{t('pages.app.resources_blockchains')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#resources_tokens" className="text-white text-decoration-none" active={currentPage === ApplicationPage.RESOURCES_TOKENS}>
+                  <Nav.Link as={Link} to={getNavigationPath('resources_tokens')} className="text-white text-decoration-none" active={page === ApplicationPage.RESOURCES_TOKENS}>
                     <span className="ms-4">{t('pages.app.resources_tokens')}</span>
                   </Nav.Link>
-                  <Nav.Link href="#resources_contracts" className="text-white text-decoration-none" active={currentPage === ApplicationPage.RESOURCES_CONTRACTS}>
+                  <Nav.Link as={Link} to={getNavigationPath('resources_contracts')} className="text-white text-decoration-none" active={page === ApplicationPage.RESOURCES_CONTRACTS}>
                     <span className="ms-4">{t('pages.app.resources_contracts')}</span>
                   </Nav.Link>
                 </Nav>

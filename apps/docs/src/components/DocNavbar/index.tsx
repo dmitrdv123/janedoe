@@ -11,9 +11,11 @@ const AccountNavbar: React.FC = () => {
   const location = useLocation()
 
   const routePath = useMemo(() => {
-    return lang
+    const result = lang
       ? `${location.pathname.slice(lang.length + 1)}${location.hash}`
       : `${location.pathname}${location.hash}`
+
+    return result.startsWith('/') ? result : `/${result}`
   }, [lang, location.pathname, location.hash])
 
   return (

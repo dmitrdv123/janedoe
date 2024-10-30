@@ -1,5 +1,6 @@
 import { Image } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+
 import { SUPPORTED_LANGUAGES } from '../../../../constants'
 import { useConfig } from '../../../../context/config/hook'
 
@@ -16,7 +17,7 @@ const ReceivePayments: React.FC = () => {
       {(i18n.language.toLocaleLowerCase() === 'en' || SUPPORTED_LANGUAGES.findIndex(lang => lang === i18n.language.toLocaleLowerCase()) === -1) && (
         <>
           <p>
-            To accept payments, you simply need to place payment links in a specific format on your website. Your user will be taken to the payment form by clicking on it. Instructions for creating such links and an example can be found on the main page <a href={`${config.config?.baseUrlAccount}/#home`} target="_blank">JaneDoe</a>.
+            To accept payments, you simply need to place payment links in a specific format on your website. Your user will be taken to the payment form by clicking on it. Instructions for creating such links and an example can be found on the main page <a href={`${config.config?.baseUrlAccount}/app`} target="_blank">JaneDoe</a>.
           </p>
           <p>
             <Image src='../locales/en/img/receive_payment_1.png' fluid />
@@ -28,7 +29,7 @@ const ReceivePayments: React.FC = () => {
           </p>
           <ul>
             <li>
-              Account ID - you can get it on the main page <a href={`${config.config?.baseUrlAccount}/#home`} target="_blank">JaneDoe</a>.
+              Account ID - you can get it on the main page <a href={`${config.config?.baseUrlAccount}/app`} target="_blank">JaneDoe</a>.
             </li>
             <li>
               Payment ID - generate any unique identifier that will be used by you to identify the payment. It can consist of alphabetic symbols, numbers, '_' and '-' and be no more than 50 characters long.
@@ -63,7 +64,7 @@ const ReceivePayments: React.FC = () => {
             </li>
           </ul>
           <p>
-            Optionally, you can set custom text that the user will see when paying. To do this, go to the page <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Account Settings</a>, in the <code>Company Description</code> field enter the text and click on the button <code>Save</code>.
+            Optionally, you can set custom text that the user will see when paying. To do this, go to the page <a href={`${config.config?.baseUrlAccount}/account_settings`} target="_blank">Account Settings</a>, in the <code>Company Description</code> field enter the text and click on the button <code>Save</code>.
           </p>
           <p>
             <Image src='../locales/en/img/receive_payment_2.png' fluid />
@@ -80,7 +81,7 @@ const ReceivePayments: React.FC = () => {
       {i18n.language.toLocaleLowerCase() === 'ru' && (
         <>
           <p>
-            Чтобы принимать платежи вам просто необходимо разместить ссылки для оплаты в определенном формате на вашем сайте. Ваш пользователь будет перенаправлен на форму оплаты, нажав на нее. Инструкцию как создавать такие ссылки и пример вы найдете на главной странице <a href={`${config.config?.baseUrlAccount}/#home`} target="_blank">JaneDoe</a>.
+            Чтобы принимать платежи вам просто необходимо разместить ссылки для оплаты в определенном формате на вашем сайте. Ваш пользователь будет перенаправлен на форму оплаты, нажав на нее. Инструкцию как создавать такие ссылки и пример вы найдете на главной странице <a href={`${config.config?.baseUrlAccount}/app`} target="_blank">JaneDoe</a>.
           </p>
           <Image src='../locales/ru/img/receive_payment_1.png' fluid />
 
@@ -90,7 +91,7 @@ const ReceivePayments: React.FC = () => {
           </p>
           <ul>
             <li>
-              Идентификатор вашего аккаунта - вы можете взять его на главной странице <a href={`${config.config?.baseUrlAccount}/#home`} target="_blank">JaneDoe</a>.
+              Идентификатор вашего аккаунта - вы можете взять его на главной странице <a href={`${config.config?.baseUrlAccount}/app`} target="_blank">JaneDoe</a>.
             </li>
             <li>
               Идентификатор платежа - сгенерируйте любой уникальный идентификатор, который будет использоваться вами для идентификации платежа. Он может состоять из буквенных символов, цифр, '_' и '-' и быть длиной не более 50 символов.
@@ -126,7 +127,7 @@ const ReceivePayments: React.FC = () => {
           </ul>
 
           <p>
-            Опционально, вы можете задать произвольный текст, который увидит пользователь при оплате. Для этого перейдите на страницу <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Настройки аккаунта</a>, в поле <code>Описание компании</code> введите текст и нажмите на кнопку <code>Сохранить</code>.
+            Опционально, вы можете задать произвольный текст, который увидит пользователь при оплате. Для этого перейдите на страницу <a href={`${config.config?.baseUrlAccount}/account_settings`} target="_blank">Настройки аккаунта</a>, в поле <code>Описание компании</code> введите текст и нажмите на кнопку <code>Сохранить</code>.
           </p>
           <Image src='../locales/ru/img/receive_payment_2.png' fluid />
           <p>

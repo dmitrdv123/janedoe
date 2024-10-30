@@ -1,5 +1,6 @@
 import { Image } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+
 import { SUPPORTED_LANGUAGES } from '../../../../constants'
 import { useConfig } from '../../../../context/config/hook'
 
@@ -16,7 +17,7 @@ const PaymentSettings: React.FC = () => {
       {(i18n.language.toLocaleLowerCase() === 'en' || SUPPORTED_LANGUAGES.findIndex(lang => lang === i18n.language.toLocaleLowerCase()) === -1) && (
         <>
           <p>
-            You can specify the blockchains and tokens in which you are directly ready to accept payments on the page <a href={`${config.config?.baseUrlAccount}/#payment_settings`} target="_blank">Payment Settings</a>. Users will still be able to make payments in other blockchains and tokens, but the tokens will be converted to the ones you specify.
+            You can specify the blockchains and tokens in which you are directly ready to accept payments on the page <a href={`${config.config?.baseUrlAccount}/payment_settings`} target="_blank">Payment Settings</a>. Users will still be able to make payments in other blockchains and tokens, but the tokens will be converted to the ones you specify.
           </p>
           <p>
             Example:<br />
@@ -91,7 +92,7 @@ const PaymentSettings: React.FC = () => {
       {i18n.language.toLocaleLowerCase() === 'ru' && (
         <>
           <p>
-            Вы можете задать блокчейны и токены, в которых вы непосредственно готовы принимать платежи, на странице <a href={`${config.config?.baseUrlAccount}/#payment_settings`} target="_blank">Настройки платежей</a>. Пользователи по прежнему смогут совершать оплату в других блокчейнах и токенах, но при этом токены будут конвертироваться в один из указанных вами.
+            Вы можете задать блокчейны и токены, в которых вы непосредственно готовы принимать платежи, на странице <a href={`${config.config?.baseUrlAccount}/payment_settings`} target="_blank">Настройки платежей</a>. Пользователи по прежнему смогут совершать оплату в других блокчейнах и токенах, но при этом токены будут конвертироваться в один из указанных вами.
           </p>
           <p>
             Пример:<br/>

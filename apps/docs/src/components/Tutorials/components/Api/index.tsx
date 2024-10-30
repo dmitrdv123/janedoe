@@ -1,5 +1,6 @@
 import { Image } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+
 import { SUPPORTED_LANGUAGES } from '../../../../constants'
 import { useConfig } from '../../../../context/config/hook'
 
@@ -31,7 +32,7 @@ const Api: React.FC = () => {
           </ul>
 
           <p>
-            In order to use the API, you need to generate an <code>API Key</code> on the page <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Account Settings</ a> in the <code>API Settings</code> section.
+            In order to use the API, you need to generate an <code>API Key</code> on the page <a href={`${config.config?.baseUrlAccount}/account_settings`} target="_blank">Account Settings</ a> in the <code>API Settings</code> section.
           </p>
           <p>
             <Image src='../locales/en/img/api_settings_1.png' fluid />
@@ -279,7 +280,7 @@ export interface TransferBlockchainMeta {
         </ul>
 
         <p>
-          Для того чтобы воспользоваться API вам необходимо сгенерировать <code>Ключ API</code> на странице <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Настройки аккаунта</a> в разделе <code>Настройки API</code>.
+          Для того чтобы воспользоваться API вам необходимо сгенерировать <code>Ключ API</code> на странице <a href={`${config.config?.baseUrlAccount}/account_settings`} target="_blank">Настройки аккаунта</a> в разделе <code>Настройки API</code>.
         </p>
         <p>
           <Image src='../locales/ru/img/api_settings_1.png' fluid />

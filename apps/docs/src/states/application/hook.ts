@@ -1,18 +1,8 @@
 import { useCallback } from 'react'
 
 import { useAppDispatch, useAppSelector } from '../../libs/hooks/useAppDispatch'
-import { addInfoMessage, clearInfoMessage, removeInfoMessage, setCurrentPage } from './reducer'
+import { addInfoMessage, clearInfoMessage, removeInfoMessage } from './reducer'
 import { AppState } from '../store'
-import { ApplicationPage } from '../../types/page'
-
-export function useCurrentPage() {
-  const dispatch = useAppDispatch()
-
-  return {
-    currentPage: useAppSelector((state: AppState) => state.application.currentPage),
-    setCurrentPage: useCallback((page: ApplicationPage) => dispatch(setCurrentPage(page)), [dispatch])
-  }
-}
 
 export function useInfoMessages() {
   const dispatch = useAppDispatch()

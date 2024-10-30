@@ -37,11 +37,11 @@ const LanguageWrapper: React.FC<LanguageWrapperProps> = (props) => {
     <>
       <Helmet>
         {(!!config.config && !!lang && lang.toLocaleLowerCase() === DEFAULT_LANGUAGE) && (
-          <link rel="canonical" href={`${config.config?.baseUrlDocs}${location.pathname.slice(lang.length + 1)}${location.pathname.endsWith('/') ? '' : '/'}${['#', '#home'].includes(location.hash.toLocaleLowerCase()) ? '' : location.hash}`} />
+          <link rel="canonical" href={`${config.config?.baseUrlDocs}${location.pathname.slice(lang.length + 1)}${location.pathname.endsWith('/') ? '' : '/'}`} />
         )}
 
         {(!!config.config && (!lang || lang.toLocaleLowerCase() !== DEFAULT_LANGUAGE)) && (
-          <link rel="canonical" href={`${config.config?.baseUrlDocs}${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}${['#', '#home'].includes(location.hash.toLocaleLowerCase()) ? '' : location.hash}`} />
+          <link rel="canonical" href={`${config.config?.baseUrlDocs}${location.pathname}${location.pathname.endsWith('/') ? '' : '/'}`} />
         )}
       </Helmet>
       {element}

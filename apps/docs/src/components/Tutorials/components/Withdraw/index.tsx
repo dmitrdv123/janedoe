@@ -1,5 +1,6 @@
 import { Image } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+
 import { SUPPORTED_LANGUAGES } from '../../../../constants'
 import { useConfig } from '../../../../context/config/hook'
 
@@ -16,7 +17,7 @@ const Withdraw: React.FC = () => {
       {(i18n.language.toLocaleLowerCase() === 'en' || SUPPORTED_LANGUAGES.findIndex(lang => lang === i18n.language.toLocaleLowerCase()) === -1) && (
         <>
           <p>
-            Open the page <a href={`${config.config?.baseUrlAccount}/#balances`} target="_blank">Balances</a>. You will see the your balances for each of the blockchains. <code>Withdraw</code> or <code>Withdraw All</code> buttons allow to withdraw funds to your wallet. Withdrawals will be made to the address of the account owner, the address, that was used for creating the account.
+            Open the page <a href={`${config.config?.baseUrlAccount}/balances`} target="_blank">Balances</a>. You will see the your balances for each of the blockchains. <code>Withdraw</code> or <code>Withdraw All</code> buttons allow to withdraw funds to your wallet. Withdrawals will be made to the address of the account owner, the address, that was used for creating the account.
           </p>
           <p>
             <Image src='../locales/en/img/withdraw_1.png' fluid />
@@ -36,7 +37,7 @@ const Withdraw: React.FC = () => {
       {i18n.language.toLocaleLowerCase() === 'ru' && (
         <>
           <p>
-            Откройте страницу <a href={`${config.config?.baseUrlAccount}/#balances`} target="_blank">Балансы</a>. Вы увидите ваши балансы на вашем счету по каждому из блокчейнов. Кнопки <code>Снять</code> или <code>Снять все</code> позволят вывести средства на ваш кошелек. Вывод средств будет осуществлен на адрес владельца аккаунта, адрес, который был использован для создания аккаунта.
+            Откройте страницу <a href={`${config.config?.baseUrlAccount}/balances`} target="_blank">Балансы</a>. Вы увидите ваши балансы на вашем счету по каждому из блокчейнов. Кнопки <code>Снять</code> или <code>Снять все</code> позволят вывести средства на ваш кошелек. Вывод средств будет осуществлен на адрес владельца аккаунта, адрес, который был использован для создания аккаунта.
           </p>
           <p>
             <Image src='../locales/ru/img/withdraw_1.png' fluid />

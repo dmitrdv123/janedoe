@@ -1,5 +1,6 @@
 import { Image } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+
 import { SUPPORTED_LANGUAGES } from '../../../../constants'
 import { useConfig } from '../../../../context/config/hook'
 
@@ -16,7 +17,7 @@ const Notifications: React.FC = () => {
       {(i18n.language.toLocaleLowerCase() === 'en' || SUPPORTED_LANGUAGES.findIndex(lang => lang === i18n.language.toLocaleLowerCase()) === -1) && (
         <>
           <p>
-            In order to receive notifications about payments, you need to set <code>Notification Settings</code>. Open the <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Account Settings</a> page and find the <code>Notification Settings</code> section. Specify <code>Payment Callback</code> and <code>Secret Key</code> (optionally). Click on button <code>Save</code>.
+            In order to receive notifications about payments, you need to set <code>Notification Settings</code>. Open the <a href={`${config.config?.baseUrlAccount}/account_settings`} target="_blank">Account Settings</a> page and find the <code>Notification Settings</code> section. Specify <code>Payment Callback</code> and <code>Secret Key</code> (optionally). Click on button <code>Save</code>.
           </p>
           <p>
             <Image src='../locales/en/img/notification_settings_1.png' fluid />
@@ -71,7 +72,7 @@ const Notifications: React.FC = () => {
             </li>
           </ul>
           <p>
-            You can view the sending results on the <a href={`${config.config?.baseUrlAccount}/#payments`} target="_blank">Payments</a> page in the <code>Notification</code> column.
+            You can view the sending results on the <a href={`${config.config?.baseUrlAccount}/payments`} target="_blank">Payment History</a> page in the <code>Notification</code> column.
           </p>
           <p>
             <Image src='../locales/en/img/notification_settings_2.png' fluid />
@@ -88,7 +89,7 @@ const Notifications: React.FC = () => {
       {i18n.language.toLocaleLowerCase() === 'ru' && (
         <>
         <p>
-          Для того чтобы получать уведомления о платежах вам необходимо задать <code>Настройки уведомлений</code>. Откройте страницу <a href={`${config.config?.baseUrlAccount}/#account_settings`} target="_blank">Настройки аккаунта</a> и найдите раздел <code>Настройки уведомлений</code>. Укажите <code>Callback URL для платежа</code> и <code>Секретный ключ</code> (опционально). Нажмите на кнопку <code>Сохранить</code>.
+          Для того чтобы получать уведомления о платежах вам необходимо задать <code>Настройки уведомлений</code>. Откройте страницу <a href={`${config.config?.baseUrlAccount}/account_settings`} target="_blank">Настройки аккаунта</a> и найдите раздел <code>Настройки уведомлений</code>. Укажите <code>Callback URL для платежа</code> и <code>Секретный ключ</code> (опционально). Нажмите на кнопку <code>Сохранить</code>.
         </p>
         <p>
           <Image src='../locales/ru/img/notification_settings_1.png' fluid />
@@ -143,7 +144,7 @@ const Notifications: React.FC = () => {
           </li>
         </ul>
         <p>
-          Вы сможете посмотреть результаты отправки на странице <a href={`${config.config?.baseUrlAccount}/#payments`} target="_blank">Платежи</a> в колонке <code>Уведомление</code>.
+          Вы сможете посмотреть результаты отправки на странице <a href={`${config.config?.baseUrlAccount}/payments`} target="_blank">История платежей</a> в колонке <code>Уведомление</code>.
         </p>
         <p>
           <Image src='../locales/ru/img/notification_settings_2.png' fluid />

@@ -6,158 +6,225 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/en</loc>
+    <loc>https://docs.janedoe.fi/en/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials_create_account</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials_receive_payments</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials_monitor_payments</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials_withdraw</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials_share_access</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials_payment_settings</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials_notifications</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://docs.janedoe.fi/en/#tutorials_api</loc>
+    <loc>https://docs.janedoe.fi/ru/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://docs.janedoe.fi/en/#resources</loc>
+    <loc>https://docs.janedoe.fi/tutorials/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/en/#resources_currencies</loc>
+    <loc>https://docs.janedoe.fi/tutorials_create_account/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/en/#resources_blockchains</loc>
+    <loc>https://docs.janedoe.fi/tutorials_receive_payments/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/en/#resources_tokens</loc>
+    <loc>https://docs.janedoe.fi/tutorials_monitor_payments/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/en/#resources_contracts</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-
-  <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials</loc>
+    <loc>https://docs.janedoe.fi/tutorials_withdraw/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials_create_account</loc>
+    <loc>https://docs.janedoe.fi/tutorials_share_access/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials_receive_payments</loc>
+    <loc>https://docs.janedoe.fi/tutorials_payment_settings/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials_monitor_payments</loc>
+    <loc>https://docs.janedoe.fi/tutorials_notifications/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials_withdraw</loc>
+    <loc>https://docs.janedoe.fi/tutorials_api/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials_share_access</loc>
+    <loc>https://docs.janedoe.fi/resources/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials_payment_settings</loc>
+    <loc>https://docs.janedoe.fi/resources_currencies/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials_notifications</loc>
+    <loc>https://docs.janedoe.fi/resources_blockchains/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#tutorials_api</loc>
+    <loc>https://docs.janedoe.fi/resources_tokens/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_contracts/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://docs.janedoe.fi/ru/#resources</loc>
+    <loc>https://docs.janedoe.fi/tutorials/en/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#resources_currencies</loc>
+    <loc>https://docs.janedoe.fi/tutorials_create_account/en/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#resources_blockchains</loc>
+    <loc>https://docs.janedoe.fi/tutorials_receive_payments/en/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#resources_tokens</loc>
+    <loc>https://docs.janedoe.fi/tutorials_monitor_payments/en/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://docs.janedoe.fi/ru/#resources_contracts</loc>
+    <loc>https://docs.janedoe.fi/tutorials_withdraw/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_share_access/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_payment_settings/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_notifications/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_api/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_currencies/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_blockchains/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_tokens/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_contracts/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_create_account/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_receive_payments/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_monitor_payments/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_withdraw/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_share_access/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_payment_settings/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_notifications/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/tutorials_api/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_currencies/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_blockchains/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_tokens/ru/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://docs.janedoe.fi/resources_contracts/ru/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
