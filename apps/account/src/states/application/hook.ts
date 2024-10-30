@@ -2,19 +2,9 @@ import { useCallback } from 'react'
 
 import { ApplicationModal } from '../../types/application-modal'
 import { useAppDispatch, useAppSelector } from '../../libs/hooks/useAppDispatch'
-import { addInfoMessage, removeInfoMessage, clearInfoMessage, setOpenModal, setCurrentPage } from './reducer'
+import { addInfoMessage, removeInfoMessage, clearInfoMessage, setOpenModal } from './reducer'
 import { AppState } from '../store'
-import { ApplicationPage } from '../../types/page'
 import { serializeErrorForRedux } from '../../libs/utils'
-
-export function useCurrentPage() {
-  const dispatch = useAppDispatch()
-
-  return {
-    currentPage: useAppSelector((state: AppState) => state.application.currentPage),
-    setCurrentPage: useCallback((page: ApplicationPage) => dispatch(setCurrentPage(page)), [dispatch])
-  }
-}
 
 export function useModalIsOpen(modal: ApplicationModal): boolean {
   const openModal = useAppSelector((state: AppState) => state.application.openModal)
