@@ -140,6 +140,7 @@
       "address": "Wallet address",
       "pay_btn": "Pay",
       "pay_success": "Payment has been done successfully",
+      "desc": "Payment description (optional)",
       "errors": {
         "blockchain_required": "Select a blockchain",
         "token_required": "Select a token",
@@ -148,7 +149,8 @@
         "token_amount_required": "Type a token amount",
         "address_required": "Type a wallet address",
         "pay_error": "Failed to make the payment",
-        "no_balance": "Not enough balance"
+        "no_balance": "Not enough balance",
+        "desc_limit_exceed": "Description length should be not more than 250 symbols"
       }
     },
     "payments": {

@@ -19,6 +19,7 @@ import useReadBalances from '../../libs/hooks/useReadBalances'
 import PaymentTokenButton from './components/PaymentTokenButton'
 import PaymentPayButton from './components/PaymentPayButton'
 import TransactionHash from '../TransactionHash'
+import { PAYMENT_MAX_DESCRIPTION_LENGTH } from '../../constants'
 
 const Payment: React.FC = () => {
   const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainMeta | undefined>(undefined)
@@ -27,6 +28,7 @@ const Payment: React.FC = () => {
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>(undefined)
   const [selectedCurrencyAmount, setSelectedCurrencyAmount] = useState<string | undefined>(undefined)
   const [selectedTokenAmountFormatted, setSelectedTokenAmountFormatted] = useState<string | undefined>(undefined)
+  const [selectedDesc, setSelectedDesc] = useState<string | undefined>(undefined)
   const [payResults, setPayResults] = useState<{ [key: string]: WithdrawResult }>({})
 
   const { t } = useTranslation()
@@ -256,6 +258,20 @@ const Payment: React.FC = () => {
   }, [commonSettings, preparedCurrencies, location.search])
 
   useEffect(() => {
+    setSelectedDesc(current => {
+      if (!current) {
+        const queryParams = new URLSearchParams(location.search)
+        const desc = queryParams.get('desc')
+        if (desc) {
+          return decodeURIComponent(desc)
+        }
+      }
+
+      return current
+    })
+  }, [location.search])
+
+  useEffect(() => {
     const currencyAmountNum = tryParseFloat(selectedCurrencyAmount)
     if (selectedToken?.usdPrice && currencyAmountNum && exchangeRate.data) {
       const tokenAmount = currencyToTokenAmount(currencyAmountNum, selectedToken.usdPrice, selectedToken.decimals, exchangeRate.data)
@@ -351,6 +367,23 @@ const Payment: React.FC = () => {
             {!selectedAddress && (
               <Form.Text className="text-danger">
                 {t('components.payment.errors.address_required')}
+              </Form.Text>
+            )}
+          </Form.Group>
+        </div>
+
+        <div className='mb-2'>
+          <Form.Group>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder={t('components.payment.desc')}
+              value={selectedDesc ?? ''}
+              onChange={e => setSelectedDesc(e.target.value)}
+            />
+            {(!!selectedDesc && selectedDesc.length > PAYMENT_MAX_DESCRIPTION_LENGTH) && (
+              <Form.Text className="text-danger">
+                {t('components.payment.errors.desc_limit_exceed')}
               </Form.Text>
             )}
           </Form.Group>

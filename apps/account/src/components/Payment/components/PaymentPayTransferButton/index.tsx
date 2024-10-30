@@ -13,11 +13,12 @@ interface PaymentPayTransferButtonProps {
   selectedBlockchain: BlockchainMeta
   selectedAddress: string
   selectedTokenAmount: bigint
+  selectedDesc: string | undefined
   onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
 }
 
 const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props) => {
-  const { selectedBlockchain, selectedAddress, selectedTokenAmount, onSuccess } = props
+  const { selectedBlockchain, selectedAddress, selectedTokenAmount, selectedDesc, onSuccess } = props
 
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
@@ -27,7 +28,7 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
     removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_OUTGOING_PAYMENT_ERROR)
     try {
       const result = await pay(ApiWrapper.instance.withdrawAccountBlockchainRequest(
-        selectedBlockchain.name, selectedAddress, selectedTokenAmount.toString()
+        selectedBlockchain.name, selectedAddress, selectedTokenAmount.toString(), selectedDesc
       ))
       const message = result?.code ? t(result.code, result.args) : undefined
 
@@ -40,7 +41,7 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
         error
       )
     }
-  }, [selectedBlockchain, selectedAddress, selectedTokenAmount, t, onSuccess, pay, addInfoMessage, removeInfoMessage])
+  }, [selectedBlockchain, selectedAddress, selectedTokenAmount, selectedDesc, t, onSuccess, pay, addInfoMessage, removeInfoMessage])
 
   return (
     <Button

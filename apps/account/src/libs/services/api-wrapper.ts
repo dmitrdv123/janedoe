@@ -170,11 +170,11 @@ export class ApiWrapper {
     }
   }
 
-  public withdrawAccountBlockchainRequest(blockchain: string, address: string, amount: string): ApiRequest {
+  public withdrawAccountBlockchainRequest(blockchain: string, address: string, amount: string, desc: string | undefined): ApiRequest {
     return {
       url: this.getAccountBlockchainWithdrawUrl(blockchain),
       method: 'POST',
-      body: JSON.stringify({ address, amount }),
+      body: JSON.stringify({ address, amount, desc: desc ?? '' }),
       authRequired: true
     }
   }
