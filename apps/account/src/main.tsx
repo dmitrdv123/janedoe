@@ -24,14 +24,14 @@ import ConfigProvider from './context/config/context'
 import { getTransport } from './libs/utils'
 import { CHAINS } from './constants'
 import { ApplicationPage } from './types/page'
-import AppWrapper from './components/AppWrapper'
-import Home from './pages/Home'
-import Balances from './pages/Balances'
-import AccountSettings from './pages/AccountSettings'
-import Payments from './pages/Payments'
-import Payment from './pages/Payment'
-import PaymentSettings from './pages/PaymentSettings'
-import AccountSupport from './pages/AccountSupport'
+import App from './pages/App'
+import Home from './components/Home'
+import Balances from './components/Balances'
+import AccountSettings from './components/AccountSettings'
+import Payments from './components/Payments'
+import Payment from './components/Payment'
+import PaymentSettings from './components/PaymentSettings'
+import AccountSupport from './components/AccountSupport'
 
 if (!import.meta.env.VITE_APP_PROJECT_ID) {
   throw new Error('You need to provide VITE_APP_PROJECT_ID env variable')
@@ -97,7 +97,7 @@ root.render(
                 <Route path="/app" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.HOME}
                         element={<Home />}
                       />}
@@ -107,7 +107,7 @@ root.render(
                 <Route path="/app/:id" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.HOME}
                         element={<Home />}
                       />}
@@ -118,7 +118,7 @@ root.render(
                 <Route path="/balances" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.BALANCES}
                         requiredKeys={['balances']}
                         requiredPermission='View'
@@ -130,7 +130,7 @@ root.render(
                 <Route path="/balances/:id" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.BALANCES}
                         requiredKeys={['balances']}
                         requiredPermission='View'
@@ -143,7 +143,7 @@ root.render(
                 <Route path="/payment" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.PAYMENT}
                         requiredKeys={['balances']}
                         requiredPermission='Modify'
@@ -155,7 +155,7 @@ root.render(
                 <Route path="/payment/:id" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.PAYMENT}
                         requiredKeys={['balances']}
                         requiredPermission='Modify'
@@ -168,7 +168,7 @@ root.render(
                 <Route path="/payments" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.PAYMENTS}
                         requiredKeys={['payments']}
                         requiredPermission='View'
@@ -180,7 +180,7 @@ root.render(
                 <Route path="/payments/:id" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.PAYMENTS}
                         requiredKeys={['payments']}
                         requiredPermission='View'
@@ -193,7 +193,7 @@ root.render(
                 <Route path="/account_settings" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.ACCOUNT_SETTINGS}
                         requiredKeys={['common_settings', 'notification_settings', 'api_settings', 'team_settings']}
                         requiredPermission='View'
@@ -205,7 +205,7 @@ root.render(
                 <Route path="/account_settings/:id" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.ACCOUNT_SETTINGS}
                         requiredKeys={['common_settings', 'notification_settings', 'api_settings', 'team_settings']}
                         requiredPermission='View'
@@ -218,7 +218,7 @@ root.render(
                 <Route path="/payment_settings" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.PAYMENT_SETTINGS}
                         requiredKeys={['payment_settings']}
                         requiredPermission='View'
@@ -230,7 +230,7 @@ root.render(
                 <Route path="/payment_settings/:id" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.PAYMENT_SETTINGS}
                         requiredKeys={['payment_settings']}
                         requiredPermission='View'
@@ -243,7 +243,7 @@ root.render(
                 <Route path="/support" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.SUPPORT}
                         element={<AccountSupport />}
                       />}
@@ -253,7 +253,7 @@ root.render(
                 <Route path="/support/:id" element={
                   <Suspense fallback={<Loader />}>
                     <AuthGuard element={
-                      <AppWrapper
+                      <App
                         page={ApplicationPage.SUPPORT}
                         element={<AccountSupport />}
                       />}

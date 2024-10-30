@@ -14,23 +14,23 @@ import store from './states/store'
 import Main from './pages/Sandbox/Main'
 import ConfigProvider from './context/config/context'
 import LanguageWrapper from './components/LanguageWrapper'
-import AppWrapper from './components/AppWrapper'
+import App from './pages/App'
 import { ApplicationPage } from './types/page'
-import Home from './pages/Home'
-import Tutorials from './pages/Tutorials'
-import CreateAccount from './pages/Tutorials/components/CreateAccount'
-import ReceivePayments from './pages/Tutorials/components/ReceivePayments'
-import MonitorPayments from './pages/Tutorials/components/MonitorPayments'
-import Withdraw from './pages/Tutorials/components/Withdraw'
-import ShareAccess from './pages/Tutorials/components/ShareAccess'
-import PaymentSettings from './pages/Tutorials/components/PaymentSettings'
-import Notifications from './pages/Tutorials/components/Notifications'
-import Api from './pages/Tutorials/components/Api'
-import Resources from './pages/Resources'
-import Currencies from './pages/Resources/components/Currencies'
-import Blockchains from './pages/Resources/components/Blockchains'
-import Tokens from './pages/Resources/components/Tokens'
-import Contracts from './pages/Resources/components/Contracts'
+import Home from './components/Home'
+import Tutorials from './components/Tutorials'
+import CreateAccount from './components/Tutorials/components/CreateAccount'
+import ReceivePayments from './components/Tutorials/components/ReceivePayments'
+import MonitorPayments from './components/Tutorials/components/MonitorPayments'
+import Withdraw from './components/Tutorials/components/Withdraw'
+import ShareAccess from './components/Tutorials/components/ShareAccess'
+import PaymentSettings from './components/Tutorials/components/PaymentSettings'
+import Notifications from './components/Tutorials/components/Notifications'
+import Api from './components/Tutorials/components/Api'
+import Resources from './components/Resources'
+import Currencies from './components/Resources/components/Currencies'
+import Blockchains from './components/Resources/components/Blockchains'
+import Tokens from './components/Resources/components/Tokens'
+import Contracts from './components/Resources/components/Contracts'
 
 const root = createRoot(document.getElementById("root") as HTMLElement)
 
@@ -43,7 +43,7 @@ root.render(
             <Routes>
               <Route path="/:lang?" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.HOME}
                     element={<Home />}
                   />
@@ -52,7 +52,7 @@ root.render(
 
               <Route path="/:lang?/tutorials/" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS}
                     element={<Tutorials />}
                   />
@@ -61,7 +61,7 @@ root.render(
 
               <Route path="/:lang?/tutorials_create_account" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS_CREATE_ACCOUNT}
                     element={<CreateAccount />}
                   />
@@ -70,7 +70,7 @@ root.render(
 
               <Route path="/:lang?/tutorials_receive_payments" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS_RECEIVE_PAYMENTS}
                     element={<ReceivePayments />}
                   />
@@ -79,7 +79,7 @@ root.render(
 
               <Route path="/:lang?/tutorials_monitor_payments" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS_MONITOR_PAYMENTS}
                     element={<MonitorPayments />}
                   />
@@ -88,7 +88,7 @@ root.render(
 
               <Route path="/:lang?/tutorials_withdraw" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS_WITHDRAW}
                     element={<Withdraw />}
                   />
@@ -97,7 +97,7 @@ root.render(
 
               <Route path="/:lang?/tutorials_share_access" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS_SHARE_ACCESS}
                     element={<ShareAccess />}
                   />
@@ -106,7 +106,7 @@ root.render(
 
               <Route path="/:lang?/tutorials_payment_settings" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS_PAYMENT_SETTINGS}
                     element={<PaymentSettings />}
                   />
@@ -115,7 +115,7 @@ root.render(
 
               <Route path="/:lang?/tutorials_notifications" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS_NOTIFICATIONS}
                     element={<Notifications />}
                   />
@@ -124,7 +124,7 @@ root.render(
 
               <Route path="/:lang?/tutorials_api" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.TUTORIALS_API}
                     element={<Api />}
                   />
@@ -133,7 +133,7 @@ root.render(
 
               <Route path="/:lang?/resources" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.RESOURCES}
                     element={<Resources />}
                   />
@@ -142,7 +142,7 @@ root.render(
 
               <Route path="/:lang?/resources_currencies" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.RESOURCES_CURRENCIES}
                     element={<Currencies />}
                   />
@@ -151,7 +151,7 @@ root.render(
 
               <Route path="/:lang?/resources_blockchains" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.RESOURCES_BLOCKCHAINS}
                     element={<Blockchains />}
                   />
@@ -160,7 +160,7 @@ root.render(
 
               <Route path="/:lang?/resources_tokens" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.RESOURCES_TOKENS}
                     element={<Tokens />}
                   />
@@ -169,7 +169,7 @@ root.render(
 
               <Route path="/:lang?/resources_contracts" element={<LanguageWrapper element={
                 <Suspense fallback={<Loader />}>
-                  <AppWrapper
+                  <App
                     page={ApplicationPage.RESOURCES_CONTRACTS}
                     element={<Contracts />}
                   />

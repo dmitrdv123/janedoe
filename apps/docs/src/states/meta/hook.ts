@@ -40,7 +40,7 @@ export function useFetchMetaCallback(): () => Promise<MetaResponse | undefined> 
       }
       return meta
     } catch (error) {
-      dispatch(fetchMeta.rejected({ requestId, errorMessage: convertErrorToMessage(error) }))
+      dispatch(fetchMeta.rejected({ requestId, errorMessage: convertErrorToMessage(error, t('common.errors.default')) }))
       throw error
     }
   }, [t, dispatch, loadMeta])

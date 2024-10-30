@@ -1,6 +1,6 @@
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
-export function convertErrorToMessage(error: any, curDepth: number = 1, maxDepth: number = 10): string {
+export function convertErrorToMessage(error: any, defaultMessage: string, curDepth: number = 1, maxDepth: number = 10): string {
   if ('string' === typeof error) {
     return error
   }
@@ -10,15 +10,15 @@ export function convertErrorToMessage(error: any, curDepth: number = 1, maxDepth
   }
 
   if (error.errors) {
-    const result: string[] = error.errors.map((item: any) => convertErrorToMessage(item))
+    const result: string[] = error.errors.map((item: any) => convertErrorToMessage(item, defaultMessage))
     return result.join('\n')
   }
 
   if (error.error && curDepth < maxDepth) {
-    return convertErrorToMessage(error.error, ++curDepth)
+    return convertErrorToMessage(error.error, defaultMessage, ++curDepth)
   }
 
-  return 'Unknown error happens'
+  return defaultMessage
 }
 
 export function findBlockchainByName(blockchains: BlockchainMeta[], name: string): BlockchainMeta | undefined {
