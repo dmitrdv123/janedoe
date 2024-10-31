@@ -23,6 +23,7 @@ import { MetaService } from './meta-service'
 import { PaymentLogKey } from '../interfaces/payment-log'
 import { SettingsService } from './settings-service'
 import { ServiceError } from '../errors/service-error'
+import { PaymentResultService } from './payment-result-service'
 
 export interface AccountService {
   loadAccount(id: string): Promise<Account | undefined>
@@ -54,6 +55,8 @@ export interface AccountService {
   checkPaymentHistoryUpdates(id: string, from: number): Promise<number>
   loadPaymentHistory(id: string, filter: PaymentFilter, last: PaymentLogKey | undefined, size: number | undefined): Promise<PaymentHistoryResponse>
   loadPaymentHistoryDataAsCsv(id: string, filter: PaymentFilter): Promise<string[][]>
+
+  savePaymentSuccess(accountId: string, blockchain: string, txid: string, currency: string, amountCurrency: number, language: string, comment: string | undefined): Promise<void>
 }
 
 export class AccountServiceImpl implements AccountService {
@@ -63,6 +66,7 @@ export class AccountServiceImpl implements AccountService {
     private cryptoService: CryptoService,
     private ipnService: IpnService,
     private paymentLogService: PaymentLogService,
+    private paymentResultService: PaymentResultService,
     private exchangeRateApiService: ExchangeRateApiService,
     private metaService: MetaService,
     private accountDao: AccountDao
@@ -469,6 +473,12 @@ export class AccountServiceImpl implements AccountService {
     return paymentLogs
   }
 
+  public async savePaymentSuccess(accountId: string, blockchain: string, txid: string, currency: string, amountCurrency: number, language: string, comment: string): Promise<void> {
+    logger.debug('AccountService: start to create payment success info')
+    await this.paymentResultService.saveSuccess(accountId, blockchain, txid, currency, amountCurrency, null, language, null, comment)
+    logger.debug('AccountService: end to create payment success info')
+  }
+
   private async convertPaymentLogToPaymentHistory(paymentLog: PaymentLog): Promise<PaymentHistory> {
     const ipnResult = await this.ipnService.loadIpnResult({
       accountId: paymentLog.accountId,
@@ -477,6 +487,8 @@ export class AccountServiceImpl implements AccountService {
       transaction: paymentLog.transaction,
       index: paymentLog.index
     })
+
+    const successResult = await this.paymentResultService.loadSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
 
     const res: PaymentHistory = {
       id: paymentLog.accountId,
@@ -498,6 +510,8 @@ export class AccountServiceImpl implements AccountService {
       tokenSymbol: paymentLog.tokenSymbol,
       tokenDecimals: paymentLog.tokenDecimals,
       tokenUsdPrice: paymentLog.tokenUsdPrice,
+
+      comment: successResult?.comment ?? null,
 
       ipnResult: ipnResult ?? null
     }

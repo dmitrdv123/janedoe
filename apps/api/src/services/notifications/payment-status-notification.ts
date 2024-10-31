@@ -5,12 +5,12 @@ import appConfig from '@repo/common/dist/src/app-config'
 import { EmailService } from '../email-service'
 import { EmailTemplateService } from '../email-template-service'
 import { NotificationObserver } from './notification-observer'
-import { PaymentService } from '../payment-service'
+import { PaymentResultService } from '../payment-result-service'
 import { logger } from '../../utils/logger'
 
 export class PaymentStatusNotificationObserver implements NotificationObserver {
   public constructor(
-    private paymentService: PaymentService,
+    private paymentResultService: PaymentResultService,
     private emailService: EmailService,
     private emailTemplateService: EmailTemplateService,
   ) { }
@@ -24,7 +24,7 @@ export class PaymentStatusNotificationObserver implements NotificationObserver {
     const paymentLog = notification.data as PaymentLog
 
     logger.debug(`PaymentStatusNotificationObserver: start to load success data for account id ${paymentLog.accountId} and payment id ${paymentLog.paymentId}`)
-    const successData = await this.paymentService.loadSuccess(paymentLog.accountId, paymentLog.paymentId)
+    const successData = await this.paymentResultService.loadSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
 
     if (!successData) {
       logger.debug('PaymentStatusNotificationObserver: success data not found')
@@ -34,7 +34,7 @@ export class PaymentStatusNotificationObserver implements NotificationObserver {
     logger.debug('PaymentStatusNotificationObserver: success data')
     logger.debug(successData)
 
-    const emailAddress = successData.email.trim()
+    const emailAddress = successData.email?.trim()
     if (emailAddress && emailAddress.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       const emailContent = await this.emailTemplateService.paymentNotificationEmail(paymentLog.accountId, paymentLog.paymentId, successData.currency, successData.amountCurrency, successData.language, successData.description ?? '', [paymentLog])
 
@@ -46,7 +46,7 @@ export class PaymentStatusNotificationObserver implements NotificationObserver {
     }
 
     logger.debug(`PaymentStatusNotificationObserver: start to remove success data for account id ${paymentLog.accountId} and payment id ${paymentLog.paymentId}`)
-    await this.paymentService.removeSuccess(paymentLog.accountId, paymentLog.paymentId)
+    await this.paymentResultService.removeSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
     logger.debug('PaymentStatusNotificationObserver: end to remove success data')
 
     return true

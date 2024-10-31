@@ -6,10 +6,10 @@ import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSetti
 import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 
-import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, assertUrl, minifyToken, processControllerError, tryParseInt } from '../utils/utils'
+import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, assertUrl, minifyToken, processControllerError, tryParseFloat, tryParseInt } from '../utils/utils'
 import { AccountService } from '../services/account-service'
 import { ExchangeRateApiService } from '../services/exchange-rate-api-service'
-import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, CALLBACK_URL_MAX_LENGTH, CURRENCY_MAX_LENGTH, DEFAULT_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, PERMISSION_PRIORITY, SECRET_KEY_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
+import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, CALLBACK_URL_MAX_LENGTH, COMMENT_MAX_LENGTH, CURRENCY_MAX_LENGTH, DEFAULT_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, LANGUAGE_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, PERMISSION_PRIORITY, SECRET_KEY_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
 import { MetaService } from '../services/meta-service'
 import { SupportService } from '../services/support-service'
 import { PaymentLogKey } from '../interfaces/payment-log'
@@ -388,6 +388,26 @@ export class AccountController {
 
       const ticketId = await this.supportService.createTicket(ticket)
       res.send({ ticketId })
+    } catch (err) {
+      processControllerError(res, err as Error)
+    }
+  }
+
+  public async paymentSuccess(req: Request, res: Response, next: NextFunction) {
+    try {
+      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
+      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
+      assertParam('txid', req.params.txid, TRANSACTION_MAX_LENGTH)
+      assertParam('language', req.body.language, LANGUAGE_MAX_LENGTH)
+      assertMaxLength('comment', req.body.comment, COMMENT_MAX_LENGTH)
+      assertParam('currency', req.body.currency, CURRENCY_MAX_LENGTH)
+
+      const amountCurrency = tryParseFloat(req.body.amountCurrency)
+      assertNumberParam('amount currency', amountCurrency)
+
+      await this.accountService.savePaymentSuccess(req.params.id, req.params.blockchain, req.params.txid, req.params.currency, amountCurrency as number, req.body.language, req.body.comment)
+
+      res.send({})
     } catch (err) {
       processControllerError(res, err as Error)
     }

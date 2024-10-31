@@ -28,6 +28,7 @@ export const CURRENCY_USD = 'usd'
 export const COMMON_SETTINGS_DEFAULT_CURRENCY = CURRENCY_USD
 export const BLOG_PAGE_SIZE = 10
 export const ACCOUNT_SECRET_LENGTH = 64
+export const COMMENT_MAX_LENGTH = 250
 
 // caching
 export const DEFAULT_RANGO_CACHING_SECONDS = 600

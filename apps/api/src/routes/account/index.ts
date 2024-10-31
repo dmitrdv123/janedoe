@@ -164,6 +164,13 @@ accountRouter.route('/payments/updates/:id/:from').get(
   controller.paymentUpdates.bind(controller)
 )
 
+accountRouter.route('/payment/success/:id/:blockchain/:txid').get(
+  expressjwt(jwtConfig),
+  jwtDecryptMiddleware(),
+  rbacMiddleware('balances', 'Modify'),
+  controller.paymentSuccess.bind(controller)
+)
+
 accountRouter.route('/exchange/:currency').post(
   expressjwt(jwtConfig),
   jwtDecryptMiddleware(),

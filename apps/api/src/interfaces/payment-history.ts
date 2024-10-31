@@ -23,6 +23,8 @@ export interface PaymentHistory {
   tokenDecimals: number | null
   tokenUsdPrice: number | null
 
+  comment: string | null
+
   ipnResult: IpnResult | null
 }
 

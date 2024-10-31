@@ -60,6 +60,7 @@ import { PaymentManagerTask } from '../tasks/payment-manager-task'
 import { ExchangeRateTask } from '../tasks/currency-task'
 import { SupportNotificationObserver } from '../services/notifications/support-notification-observer'
 import { ArticleService, ArticleServiceImpl } from '../services/article-service'
+import { PaymentResultService, PaymentResultServiceImpl } from '../services/payment-result-service'
 
 const container = new Container()
 
@@ -122,6 +123,9 @@ container.register(
 container.register('paymentLogService', new PaymentLogServiceImpl(
   awsContainer.resolve<PaymentLogDao>('paymentLogDao'))
 )
+container.register('paymentResultService', new PaymentResultServiceImpl(
+  awsContainer.resolve<PaymentDao>('paymentDao'))
+)
 container.register(
   'accountService',
   new AccountServiceImpl(
@@ -130,6 +134,7 @@ container.register(
     commonContainer.resolve<CryptoService>('cryptoService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<PaymentLogService>('paymentLogService'),
+    container.resolve<PaymentResultService>('paymentResultService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService'),
     container.resolve<MetaService>('metaService'),
     awsContainer.resolve<AccountDao>('accountDao')
@@ -141,7 +146,7 @@ container.register(
     container.resolve<AccountService>('accountService'),
     bitcoinContainer.resolve<BitcoinService>('bitcoinService'),
     container.resolve<PaymentLogService>('paymentLogService'),
-    awsContainer.resolve<PaymentDao>('paymentDao')
+    container.resolve<PaymentResultService>('paymentResultService')
   )
 )
 container.register(
@@ -222,7 +227,7 @@ container.register(
 container.register(
   'paymentStatusNotificationObserver',
   new PaymentStatusNotificationObserver(
-    container.resolve<PaymentService>('paymentService'),
+    container.resolve<PaymentResultService>('paymentResultService'),
     container.resolve<EmailService>('emailService'),
     container.resolve<EmailTemplateService>('emailTemplateService')
   )

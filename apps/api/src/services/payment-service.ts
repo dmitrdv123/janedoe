@@ -1,7 +1,5 @@
 import { Account } from '@repo/dao/dist/src/interfaces/account-profile'
-import { PaymentDao } from '@repo/dao/dist/src/dao/payment.dao'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
-import { PaymentSuccessInfo } from '@repo/dao/dist/src/interfaces/payment-success-info'
 import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 
 import { BLOCKCHAIN_BTC } from '../constants'
@@ -11,14 +9,13 @@ import { Wallet } from '../interfaces/wallet'
 import { PaymentHistory } from '../interfaces/payment-history'
 import { PaymentLogService } from './payment-log-service'
 import { AccountService } from './account-service'
+import { PaymentResultService } from './payment-result-service'
 
 export interface PaymentService {
   paymentSettings(id: string, paymentId: string): Promise<PaymentSettings>
   loadPaymentHistory(id: string, paymentId: string): Promise<PaymentHistory[]>
 
-  saveSuccess(accountId: string, paymentId: string, currency: string, amountCurrency: number, blockchain: string, email: string, language: string): Promise<void>
-  loadSuccess(accountId: string, paymentId: string): Promise<PaymentSuccessInfo | undefined>
-  removeSuccess(accountId: string, paymentId: string): Promise<void>
+  saveSuccess(accountId: string, blockchain: string, txid: string, currency: string, amountCurrency: number, email: string, language: string): Promise<void>
 }
 
 export class PaymentServiceImpl implements PaymentService {
@@ -26,7 +23,7 @@ export class PaymentServiceImpl implements PaymentService {
     private accountService: AccountService,
     private bitcoinService: BitcoinService,
     private paymentLogService: PaymentLogService,
-    private paymentDao: PaymentDao
+    private paymentResultService: PaymentResultService
   ) { }
 
   public async paymentSettings(id: string, paymentId: string): Promise<PaymentSettings> {
@@ -53,39 +50,12 @@ export class PaymentServiceImpl implements PaymentService {
     }
   }
 
-  public async saveSuccess(accountId: string, paymentId: string, currency: string, amountCurrency: number, blockchain: string, email: string, language: string): Promise<void> {
-    const timestamp = Math.floor(Date.now() / 1000)
+  public async saveSuccess(accountId: string, blockchain: string, txid: string, currency: string, amountCurrency: number, email: string, language: string): Promise<void> {
     const settings = await this.accountService.loadAccountSettings(accountId)
 
-    const paymentSuccessInfo: PaymentSuccessInfo = {
-      blockchain,
-      email,
-      timestamp,
-      currency,
-      amountCurrency,
-      language,
-      description: settings?.commonSettings.description ?? null
-    }
-
     logger.debug('PaymentService: start to create payment success info')
-    logger.debug(paymentSuccessInfo)
-    await this.paymentDao.saveSuccess(accountId, paymentId, paymentSuccessInfo)
+    await this.paymentResultService.saveSuccess(accountId, blockchain, txid, currency, amountCurrency, email, language, settings?.commonSettings.description ?? null, null)
     logger.debug('PaymentService: end to create payment success info')
-  }
-
-  public async loadSuccess(accountId: string, paymentId: string): Promise<PaymentSuccessInfo | undefined> {
-    logger.debug(`PaymentService: start to load payment success info for account id ${accountId} and payment id ${paymentId}`)
-    const paymentSuccessInfo = await this.paymentDao.loadSuccess(accountId, paymentId)
-    logger.debug('PaymentService: end to load payment success info')
-    logger.debug(paymentSuccessInfo)
-
-    return paymentSuccessInfo
-  }
-
-  public async removeSuccess(accountId: string, paymentId: string): Promise<void> {
-    logger.debug(`PaymentService: start to delete payment success info for account id ${accountId} and payment id ${paymentId}`)
-    await this.paymentDao.deleteSuccess(accountId, paymentId)
-    logger.debug('PaymentService: end to delete payment success info')
   }
 
   public async loadPaymentHistory(id: string, paymentId: string): Promise<PaymentHistory[]> {
@@ -163,6 +133,8 @@ export class PaymentServiceImpl implements PaymentService {
       tokenSymbol: paymentLog.tokenSymbol,
       tokenDecimals: paymentLog.tokenDecimals,
       tokenUsdPrice: paymentLog.tokenUsdPrice,
+
+      comment: null,
 
       ipnResult: null
     }

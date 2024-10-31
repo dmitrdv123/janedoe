@@ -14,7 +14,7 @@ paymentRouter.route('/zap/swap').get(controller.swap.bind(controller))
 paymentRouter.route('/zap/is-approved').get(controller.isApproved.bind(controller))
 paymentRouter.route('/zap/status').get(controller.status.bind(controller))
 
-paymentRouter.route('/success/:id/:paymentId/:currency/:amountCurrency/:language').post(controller.success.bind(controller))
+paymentRouter.route('/success/:id/:blockchain/:txid').post(controller.success.bind(controller))
 
 paymentRouter.route('/balance').get(
   cacheMiddleware(DEFAULT_ROUTE_PAYMENT_CACHING_SECONDS), controller.balance.bind(controller)

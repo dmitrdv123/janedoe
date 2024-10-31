@@ -8,7 +8,7 @@ import { PaymentService } from '../services/payment-service'
 import { ExchangeRateApiService } from '../services/exchange-rate-api-service'
 import { MetaService } from '../services/meta-service'
 import { SupportService } from '../services/support-service'
-import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, CURRENCY_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, LANGUAGE_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
+import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, COMMENT_MAX_LENGTH, CURRENCY_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, LANGUAGE_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
 import { SettingsService } from '../services/settings-service'
 import { RangoService } from '../services/rango-service'
 
@@ -126,19 +126,25 @@ export class PaymentController {
 
   public async success(req: Request, res: Response, next: NextFunction) {
     try {
-      if (req.body.blockchain && req.body.email) {
-        assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
-        assertParam('payment id', req.params.paymentId, PAYMENT_ID_MAX_LENGTH)
-        assertParam('currency', req.params.currency, CURRENCY_MAX_LENGTH)
-        assertParam('language', req.params.language, LANGUAGE_MAX_LENGTH)
-        assertParam('blockchain', req.body.blockchain, BLOCKCHAIN_MAX_LENGTH)
-        assertParam('email', req.body.email, EMAIL_MAX_LENGTH)
+      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
+      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
+      assertParam('txid', req.params.txid, TRANSACTION_MAX_LENGTH)
+      assertParam('language', req.body.language, LANGUAGE_MAX_LENGTH)
+      assertParam('email', req.body.email, EMAIL_MAX_LENGTH)
+      assertParam('currency', req.body.currency, CURRENCY_MAX_LENGTH)
 
-        const amountCurrency = tryParseFloat(req.params.amountCurrency)
-        assertNumberParam('amount currency', amountCurrency)
+      const amountCurrency = tryParseFloat(req.body.amountCurrency)
+      assertNumberParam('amount currency', amountCurrency)
 
-        await this.paymentService.saveSuccess(req.params.id, req.params.paymentId, req.params.currency, amountCurrency as number, req.body.blockchain, req.body.email, req.params.language)
-      }
+      await this.paymentService.saveSuccess(
+        req.params.id,
+        req.params.blockchain,
+        req.params.txid,
+        req.body.currency,
+        amountCurrency as number,
+        req.body.email,
+        req.body.language
+      )
 
       res.send({})
     } catch (err) {
