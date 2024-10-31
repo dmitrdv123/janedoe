@@ -1,9 +1,11 @@
 export interface PaymentSuccessInfo {
   timestamp: number
   blockchain: string
-  email: string
+  txid: string
+  email: string | null
+  language: string
   currency: string
   amountCurrency: number
   description: string | null
-  language: string
+  comment: string | null
 }

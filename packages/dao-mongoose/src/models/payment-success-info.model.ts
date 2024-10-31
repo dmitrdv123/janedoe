@@ -8,10 +8,10 @@ const PaymentSuccessInfoSchema = new Schema<PaymentSuccessInfoWithId>({
 
   timestamp: { type: Number, required: true },
   blockchain: { type: String, required: true, trim: true },
+  txid: { type: String, required: true, trim: true },
   email: { type: String, required: true, trim: true, lowercase: true },
-  currency: { type: String, required: true, trim: true, lowercase: true },
-  amountCurrency: { type: Number, required: true },
   description: { type: String, required: false, trim: true },
+  comment: { type: String, required: false, trim: true },
   language: { type: String, required: true, trim: true, lowercase: true },
 })
 PaymentSuccessInfoSchema.plugin(toJSON)
