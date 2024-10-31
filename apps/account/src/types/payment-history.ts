@@ -24,6 +24,8 @@ export interface PaymentHistory {
   tokenDecimals: number | null
   tokenUsdPrice: number | null
 
+  comment: string | null
+
   ipnResult: IpnResult | null
 }
 
@@ -75,6 +77,8 @@ export interface PaymentHistoryData {
   currency: string | null
   currencyExchangeRateAtPaymentTime: number | null
   currencyExchangeRateAtCurTime: number | null
+
+  comment: string | null
 
   ipnResult: IpnResult | null
 }

@@ -170,11 +170,11 @@ export class ApiWrapper {
     }
   }
 
-  public withdrawAccountBlockchainRequest(blockchain: string, address: string, amount: string, desc: string | undefined): ApiRequest {
+  public withdrawAccountBlockchainRequest(blockchain: string, address: string, amount: string): ApiRequest {
     return {
       url: this.getAccountBlockchainWithdrawUrl(blockchain),
       method: 'POST',
-      body: JSON.stringify({ address, amount, desc: desc ?? '' }),
+      body: JSON.stringify({ address, amount }),
       authRequired: true
     }
   }
@@ -239,6 +239,16 @@ export class ApiWrapper {
       url: this.getAccountSupportTicketUrl(),
       method: 'POST',
       body: JSON.stringify(ticket)
+    }
+  }
+
+  public successRequest(blockchain: string, txid: string, currency: string, amountCurrency: number, language: string, comment: string | null): ApiRequest {
+    return {
+      url: this.getSuccessUrl(blockchain, txid),
+      method: 'POST',
+      body: JSON.stringify({
+        blockchain, txid, currency, amountCurrency, language, comment
+      })
     }
   }
 
@@ -336,6 +346,10 @@ export class ApiWrapper {
 
   private getAccountSupportTicketUrl(): string {
     return `{baseUrlApi}/api/account/support/{id}`
+  }
+
+  private getSuccessUrl(blockchain: string, txid: string): string {
+    return `{baseUrlApi}/api/account/payment/success/{id}/${blockchain}/${txid}`
   }
 
   private getNonceUrl(): string {

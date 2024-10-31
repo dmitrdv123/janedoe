@@ -19,7 +19,9 @@ import useReadBalances from '../../libs/hooks/useReadBalances'
 import PaymentTokenButton from './components/PaymentTokenButton'
 import PaymentPayButton from './components/PaymentPayButton'
 import TransactionHash from '../TransactionHash'
-import { PAYMENT_MAX_DESCRIPTION_LENGTH } from '../../constants'
+import { PAYMENT_MAX_COMMENT_LENGTH } from '../../constants'
+import useApiRequest from '../../libs/hooks/useApiRequest'
+import { ApiWrapper } from '../../libs/services/api-wrapper'
 
 const Payment: React.FC = () => {
   const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainMeta | undefined>(undefined)
@@ -28,10 +30,10 @@ const Payment: React.FC = () => {
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>(undefined)
   const [selectedCurrencyAmount, setSelectedCurrencyAmount] = useState<string | undefined>(undefined)
   const [selectedTokenAmountFormatted, setSelectedTokenAmountFormatted] = useState<string | undefined>(undefined)
-  const [selectedDesc, setSelectedDesc] = useState<string | undefined>(undefined)
+  const [selectedComment, setSelectedComment] = useState<string | undefined>(undefined)
   const [payResults, setPayResults] = useState<{ [key: string]: WithdrawResult }>({})
 
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { clearInfoMessage } = useInfoMessages()
   const blockchains = useBlockchains()
   const tokens = useTokens()
@@ -40,6 +42,7 @@ const Payment: React.FC = () => {
   const accountPaymentSettings = useAccountPaymentSettings()
   const exchangeRate = useSpecificExchangeRate(selectedCurrency?.symbol)
   const location = useLocation()
+  const { process: successPayment } = useApiRequest()
 
   const {
     tokens: tokensWithBalance
@@ -159,6 +162,20 @@ const Payment: React.FC = () => {
   }, [exchangeRate, selectedToken?.decimals, selectedToken?.usdPrice])
 
   const successHandler = useCallback((blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => {
+    const currencyAmountNum = tryParseFloat(selectedCurrencyAmount)
+    if (selectedBlockchain?.name && selectedCurrency?.symbol && selectedCurrencyAmount && currencyAmountNum && hash) {
+      successPayment(
+        ApiWrapper.instance.successRequest(
+          selectedBlockchain.name,
+          hash,
+          selectedCurrency.symbol,
+          currencyAmountNum,
+          i18n.resolvedLanguage ?? 'EN',
+          selectedComment ?? null
+        )
+      )
+    }
+
     setPayResults(val => {
       if (val[blockchain.name] && val[blockchain.name].hash === hash) {
         return val
@@ -168,7 +185,7 @@ const Payment: React.FC = () => {
       res[blockchain.name] = { blockchain, hash, message }
       return res
     })
-  }, [])
+  }, [selectedBlockchain?.name, selectedComment, selectedCurrency?.symbol, selectedCurrencyAmount, i18n.resolvedLanguage, successPayment])
 
   const removePayResultHandler = (blockchain: string) => {
     setPayResults(val => {
@@ -258,12 +275,12 @@ const Payment: React.FC = () => {
   }, [commonSettings, preparedCurrencies, location.search])
 
   useEffect(() => {
-    setSelectedDesc(current => {
+    setSelectedComment(current => {
       if (!current) {
         const queryParams = new URLSearchParams(location.search)
-        const desc = queryParams.get('desc')
-        if (desc) {
-          return decodeURIComponent(desc)
+        const comment = queryParams.get('comment')
+        if (comment) {
+          return decodeURIComponent(comment)
         }
       }
 
@@ -377,13 +394,13 @@ const Payment: React.FC = () => {
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder={t('components.payment.desc')}
-              value={selectedDesc ?? ''}
-              onChange={e => setSelectedDesc(e.target.value)}
+              placeholder={t('components.payment.comment')}
+              value={selectedComment ?? ''}
+              onChange={e => setSelectedComment(e.target.value)}
             />
-            {(!!selectedDesc && selectedDesc.length > PAYMENT_MAX_DESCRIPTION_LENGTH) && (
+            {(!!selectedComment && selectedComment.length > PAYMENT_MAX_COMMENT_LENGTH) && (
               <Form.Text className="text-danger">
-                {t('components.payment.errors.desc_limit_exceed')}
+                {t('components.payment.errors.comment_limit_exceed')}
               </Form.Text>
             )}
           </Form.Group>

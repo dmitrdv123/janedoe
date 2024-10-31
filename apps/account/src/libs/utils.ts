@@ -448,6 +448,7 @@ export function convertPaymentHistoryToPaymentHistoryData(
     currencyExchangeRateAtPaymentTime: currencyExchangeRateAtPaymentTime,
     currencyExchangeRateAtCurTime: currentExchangeRate ?? null,
 
+    comment: item.comment,
     ipnResult: item.ipnResult
   }
 

@@ -39,7 +39,7 @@ export const PAGE_SIZE = 20
 export const ACCOUNT_ID_LENGTH = 11
 export const PAYMENT_HISTORY_PAGE_SIZE = 25
 export const COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH = 250
-export const PAYMENT_MAX_DESCRIPTION_LENGTH = 250
+export const PAYMENT_MAX_COMMENT_LENGTH = 250
 
 export const PERMISSION_KEYS = ['balances', 'payments', 'common_settings', 'notification_settings', 'api_settings', 'team_settings', 'payment_settings']
 export const DEFAULT_PERMISSIONS = Object.fromEntries(PERMISSION_KEYS.map(key => [key, 'View' as Permission]))
