@@ -11,6 +11,7 @@ import { useInfoMessages } from '../../states/application/hook'
 export default function usePaymentRestAmount() {
   const [restCurrencyAmount, setRestCurrencyAmount] = useState(0)
   const [receivedCurrencyAmount, setReceivedCurrencyAmount] = useState(0)
+  const [lastTxId, setLastTxId] = useState<string | undefined>(undefined)
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const isPaymentHistoryLoadingRef = useRef(false)
 
@@ -34,12 +35,17 @@ export default function usePaymentRestAmount() {
     try {
       isPaymentHistoryLoadingRef.current = true
       const result = await loadPaymentHistory(blockchains, tokens)
+
+      const recentPaymentHistoryItem = result && result.length > 0
+        ? result.reduce((prev, current) => (prev.timestamp > current.timestamp) ? prev : current, result[0])
+        : undefined
+
       const amountUsd = result?.reduce((acc, item) => acc + (item.amountUsdAtPaymentTime ?? 0), 0) ?? 0
       const receivedCurrencyAmountTmp = exchangeRate * amountUsd
-
       const delta = requiredCurrencyAmount - receivedCurrencyAmountTmp
       const restCurrencyAmountTmp = delta <= 0 ? 0 : delta
 
+      setLastTxId(recentPaymentHistoryItem?.transaction);
       setReceivedCurrencyAmount(receivedCurrencyAmountTmp)
       setRestCurrencyAmount(restCurrencyAmountTmp)
       setStatus('success')
@@ -61,6 +67,7 @@ export default function usePaymentRestAmount() {
     restCurrencyAmount,
     receivedCurrencyAmount,
     status,
+    lastTxId,
     reload: reloadHandler
   }
 }

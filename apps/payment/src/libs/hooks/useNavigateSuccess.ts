@@ -20,16 +20,16 @@ export default function useNavigateSuccess(blockchain?: string | undefined, emai
     const handler = async () => {
       removeInfoMessage(INFO_MESSAGE_PAYMENT_SUCCESS_ERROR)
       try {
-        if (id && paymentId && currency && amount && blockchain && email) {
+        if (id && blockchain && txId && currency && amount && email) {
           await success(
             ApiWrapper.instance.successRequest(
               id,
-              paymentId,
+              blockchain,
+              txId,
               currency,
               amount,
               i18n.resolvedLanguage ?? 'EN',
-              email,
-              blockchain,
+              email
             )
           )
         }

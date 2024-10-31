@@ -43,6 +43,7 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
   const {
     restCurrencyAmount: restCurrencyAmountUpdated,
     receivedCurrencyAmount: receivedCurrencyAmountUpdated,
+    lastTxId: lastReceivedTxId,
     status: reloadReceivedAmountStatus,
     reload: reloadReceivedAmount
   } = usePaymentRestAmount()
@@ -100,9 +101,9 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
 
   useEffect(() => {
     if (roundNumber(restCurrencyAmount, DEFAULT_CURRENCY_DECIMAL_PLACES) === 0) {
-      navigateSuccessHandler()
+      navigateSuccessHandler(lastReceivedTxId)
     }
-  }, [restCurrencyAmount, navigateSuccessHandler])
+  }, [restCurrencyAmount, lastReceivedTxId, navigateSuccessHandler])
 
   useEffect(() => {
     if (!token?.usdPrice || !exchangeRate) {
