@@ -168,7 +168,14 @@ const Payments: React.FC = () => {
           {dt.toLocaleDateString()} {dt.toLocaleTimeString()}
         </td>
         <td>
-          <TextWithCopy value={paymentHistoryItem.paymentId} />
+          <div>
+            <TextWithCopy value={paymentHistoryItem.paymentId} />
+          </div>
+          {!!paymentHistoryItem.comment && (
+            <div>
+              {paymentHistoryItem.comment}
+            </div>
+          )}
         </td>
         <td>
           {!!token && (
