@@ -132,16 +132,14 @@ export class PaymentController {
       assertParam('language', req.body.language, LANGUAGE_MAX_LENGTH)
       assertParam('email', req.body.email, EMAIL_MAX_LENGTH)
       assertParam('currency', req.body.currency, CURRENCY_MAX_LENGTH)
-
-      const amountCurrency = tryParseFloat(req.body.amountCurrency)
-      assertNumberParam('amount currency', amountCurrency)
+      assertNumberParam('amount currency', req.body.amountCurrency)
 
       await this.paymentService.saveSuccess(
         req.params.id,
         req.params.blockchain,
         req.params.txid,
         req.body.currency,
-        amountCurrency as number,
+        req.body.amountCurrency,
         req.body.email,
         req.body.language
       )

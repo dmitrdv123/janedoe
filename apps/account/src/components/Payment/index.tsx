@@ -19,7 +19,7 @@ import useReadBalances from '../../libs/hooks/useReadBalances'
 import PaymentTokenButton from './components/PaymentTokenButton'
 import PaymentPayButton from './components/PaymentPayButton'
 import TransactionHash from '../TransactionHash'
-import { PAYMENT_MAX_COMMENT_LENGTH } from '../../constants'
+import { INFO_MESSAGE_ACCOUNT_PAYMENT_SUCCESS_ERROR, PAYMENT_MAX_COMMENT_LENGTH } from '../../constants'
 import useApiRequest from '../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
 
@@ -43,6 +43,7 @@ const Payment: React.FC = () => {
   const exchangeRate = useSpecificExchangeRate(selectedCurrency?.symbol)
   const location = useLocation()
   const { process: successPayment } = useApiRequest()
+  const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
   const {
     tokens: tokensWithBalance
@@ -161,19 +162,32 @@ const Payment: React.FC = () => {
     setSelectedCurrencyAmount(currencyAmountToUpdate)
   }, [exchangeRate, selectedToken?.decimals, selectedToken?.usdPrice])
 
-  const successHandler = useCallback((blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => {
-    const currencyAmountNum = tryParseFloat(selectedCurrencyAmount)
-    if (selectedBlockchain?.name && selectedCurrency?.symbol && selectedCurrencyAmount && currencyAmountNum && hash) {
-      successPayment(
-        ApiWrapper.instance.successRequest(
-          selectedBlockchain.name,
-          hash,
-          selectedCurrency.symbol,
-          currencyAmountNum,
-          i18n.resolvedLanguage ?? 'EN',
-          selectedComment ?? null
+  const successHandler = useCallback(async (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => {
+    const sendSuccess = async () => {
+      try {
+        removeInfoMessage(INFO_MESSAGE_ACCOUNT_PAYMENT_SUCCESS_ERROR)
+
+        const currencyAmountNum = tryParseFloat(selectedCurrencyAmount)
+        if (selectedBlockchain?.name && selectedCurrency?.symbol && currencyAmountNum !== undefined && hash) {
+          await successPayment(
+            ApiWrapper.instance.successRequest(
+              selectedBlockchain.name,
+              hash,
+              selectedCurrency.symbol,
+              currencyAmountNum,
+              i18n.resolvedLanguage ?? 'EN',
+              selectedComment ?? null
+            )
+          )
+        }
+      } catch (error) {
+        addInfoMessage(
+          t('components.payment.errors.fail_success'),
+          INFO_MESSAGE_ACCOUNT_PAYMENT_SUCCESS_ERROR,
+          'danger',
+          error
         )
-      )
+      }
     }
 
     setPayResults(val => {
@@ -185,7 +199,9 @@ const Payment: React.FC = () => {
       res[blockchain.name] = { blockchain, hash, message }
       return res
     })
-  }, [selectedBlockchain?.name, selectedComment, selectedCurrency?.symbol, selectedCurrencyAmount, i18n.resolvedLanguage, successPayment])
+
+    sendSuccess()
+  }, [selectedBlockchain?.name, selectedComment, selectedCurrency?.symbol, selectedCurrencyAmount, i18n.resolvedLanguage, t, successPayment, addInfoMessage, removeInfoMessage])
 
   const removePayResultHandler = (blockchain: string) => {
     setPayResults(val => {

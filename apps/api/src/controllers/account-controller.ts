@@ -401,11 +401,17 @@ export class AccountController {
       assertParam('language', req.body.language, LANGUAGE_MAX_LENGTH)
       assertMaxLength('comment', req.body.comment, COMMENT_MAX_LENGTH)
       assertParam('currency', req.body.currency, CURRENCY_MAX_LENGTH)
+      assertNumberParam('amount currency', req.body.amountCurrency)
 
-      const amountCurrency = tryParseFloat(req.body.amountCurrency)
-      assertNumberParam('amount currency', amountCurrency)
-
-      await this.accountService.savePaymentSuccess(req.params.id, req.params.blockchain, req.params.txid, req.params.currency, amountCurrency as number, req.body.language, req.body.comment)
+      await this.accountService.savePaymentSuccess(
+        req.params.id,
+        req.params.blockchain,
+        req.params.txid,
+        req.body.currency,
+        req.body.amountCurrency,
+        req.body.language,
+        req.body.comment
+      )
 
       res.send({})
     } catch (err) {

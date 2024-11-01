@@ -36,14 +36,4 @@ export class PaymentDaoImpl implements PaymentDao {
 
     return result.Item ? unmarshall(result.Item).paymentSuccessInfo as PaymentSuccessInfo : undefined
   }
-
-  public async deleteSuccess(accountId: string, blockchain: string, txid: string): Promise<void> {
-    await this.dynamoService.deleteItem({
-      TableName: appConfig.TABLE_NAME,
-      Key: marshall({
-        pk: generateKey(PaymentDaoImpl.PK_PREFIX, accountId),
-        sk: generateKey(blockchain.toLocaleLowerCase(), txid)
-      })
-    })
-  }
 }

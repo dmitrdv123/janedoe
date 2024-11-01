@@ -32,6 +32,7 @@ export const INFO_MESSAGE_BALANCE_WITHDRAW_ERROR = 'balance_withdraw_error'
 export const INFO_MESSAGE_EXCHANGE_RATE_ERROR = 'exchange_rate_load_error'
 export const INFO_MESSAGE_SHARED_ACCOUNT_LOAD_ERROR = 'shared_account_load_error'
 export const INFO_MESSAGE_SUPPORT_SUBMIT_ERROR = 'support_submit_error'
+export const INFO_MESSAGE_ACCOUNT_PAYMENT_SUCCESS_ERROR = 'payment_success_error'
 
 export const CURRENCY_USD_SYMBOL = 'usd'
 export const BLOCKCHAIN_BTC = 'btc'

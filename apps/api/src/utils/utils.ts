@@ -23,8 +23,8 @@ export function assertParam(name: string, value: string | null | undefined, maxL
   }
 }
 
-export function assertNumberParam(name: string, value: number | undefined): void {
-  if (value === undefined) {
+export function assertNumberParam(name: string, value: number | null | undefined): void {
+  if (value === null || value === undefined || isNaN(value)) {
     throw new ServiceError(`${name} is not set or empty`, 'common.errors.param_not_set', { name })
   }
 }

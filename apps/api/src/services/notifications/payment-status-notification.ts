@@ -45,10 +45,6 @@ export class PaymentStatusNotificationObserver implements NotificationObserver {
       logger.debug('PaymentStatusNotificationObserver: email address is not valid or no set')
     }
 
-    logger.debug(`PaymentStatusNotificationObserver: start to remove success data for account id ${paymentLog.accountId} and payment id ${paymentLog.paymentId}`)
-    await this.paymentResultService.removeSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
-    logger.debug('PaymentStatusNotificationObserver: end to remove success data')
-
     return true
   }
 }
