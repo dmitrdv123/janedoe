@@ -332,10 +332,10 @@ const Payments: React.FC = () => {
               />
             </th>
             <th scope="col">
-              {t('components.payments.payment_id_col')}
+              {t('components.payments.payment_col')}
               <TableFilterText
                 id="payment_history_payment_id"
-                placeholder={t('components.payments.payment_id_placeholder')}
+                placeholder={t('components.payments.payment_placeholder')}
                 value={paymentHistoryDataFilter.paymentId}
                 onChange={paymentIdFilterHandler}
               />
