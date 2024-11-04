@@ -11,11 +11,13 @@ import { COMMON_SETTINGS_DEFAULT_CURRENCY, DEFAULT_FIAT_DECIMAL_PLACES } from '.
 import { AccountService } from '../account-service'
 import { roundNumber } from '../../utils/utils'
 import { PaymentService } from '../payment-service'
+import { PaymentResultService } from '../payment-result-service'
 
 export class IpnNotificationObserver implements NotificationObserver {
   public constructor(
     private accountService: AccountService,
     private paymentService: PaymentService,
+    private paymentResultService: PaymentResultService,
     private ipnService: IpnService,
     private exchangeRateApiService: ExchangeRateApiService
   ) { }
@@ -64,6 +66,8 @@ export class IpnNotificationObserver implements NotificationObserver {
       return acc
     }, null as number | null)
 
+    const paymentSuccess = await this.paymentResultService.loadSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
+
     const ipn: IpnData = {
       accountId: paymentLog.accountId,
       paymentId: paymentLog.paymentId,
@@ -90,7 +94,9 @@ export class IpnNotificationObserver implements NotificationObserver {
       tokenDecimals: paymentLog.tokenDecimals,
       tokenUsdPrice: paymentLog.tokenUsdPrice,
       currency: currency,
-      currencyExchangeRate: currencyExchangeRate
+      currencyExchangeRate: currencyExchangeRate,
+
+      comment: paymentSuccess?.comment ?? null
     }
     logger.debug('IpnNotificationObserver: ipn')
     logger.debug(ipn)

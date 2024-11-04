@@ -169,6 +169,7 @@ container.register('apiService',
     container.resolve<AccountService>('accountService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<PaymentLogService>('paymentLogService'),
+    container.resolve<PaymentResultService>('paymentResultService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService'),
     container.resolve<MetaService>('metaService')
   )
@@ -237,6 +238,7 @@ container.register(
   new IpnNotificationObserver(
     container.resolve<AccountService>('accountService'),
     container.resolve<PaymentService>('paymentService'),
+    container.resolve<PaymentResultService>('paymentResultService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService')
   )

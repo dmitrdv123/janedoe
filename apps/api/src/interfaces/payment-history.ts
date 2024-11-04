@@ -64,5 +64,7 @@ export interface PaymentHistoryData {
   currencyExchangeRateAtPaymentTime: number | null
   currencyExchangeRateAtCurTime: number | null
 
+  comment: string | null
+
   ipnResult: IpnResult | null
 }

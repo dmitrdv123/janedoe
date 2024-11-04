@@ -203,6 +203,7 @@ export function isToken(token: Token, blockchain: string, symbol: string, addres
 export function convertPaymentLogToPaymentHistoryData(
   paymentLog: PaymentLog,
   ipnResult: IpnResult | undefined,
+  comment: string | null,
   meta: MetaResponse,
   currency: string,
   currencyExchangeRateAtCurTime: number | null,
@@ -252,6 +253,8 @@ export function convertPaymentLogToPaymentHistoryData(
     currency: currency,
     currencyExchangeRateAtPaymentTime: currencyExchangeRateAtPaymentTime,
     currencyExchangeRateAtCurTime: currencyExchangeRateAtCurTime,
+
+    comment: comment ?? null,
 
     ipnResult: ipnResult ?? null
   }

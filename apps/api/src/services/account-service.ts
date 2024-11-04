@@ -148,6 +148,8 @@ export class AccountServiceImpl implements AccountService {
       'Currency Exchange Rate (Payment Time)',
       'Currency Exchange Rate (Current Time)',
 
+      'Comment',
+
       'Notification Result'
     ]
 
@@ -172,9 +174,12 @@ export class AccountServiceImpl implements AccountService {
           index: item.index
         })
 
+        const paymentSuccess = await this.paymentResultService.loadSuccess(item.accountId, item.blockchain, item.transaction)
+
         return convertPaymentLogToPaymentHistoryData(
           item,
           ipnResult,
+          paymentSuccess?.comment ?? null,
           meta,
           currency,
           currencyExchangeRates[now],

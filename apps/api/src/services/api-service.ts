@@ -9,6 +9,7 @@ import { AccountService } from './account-service'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { MetaService } from './meta-service'
 import { SettingsService } from './settings-service'
+import { PaymentResultService } from './payment-result-service'
 
 export interface ApiService {
   loadPaymentHistory(id: string, from: number | undefined, to: number | undefined): Promise<PaymentHistoryData[]>
@@ -22,6 +23,7 @@ export class ApiServiceImpl implements ApiService {
     private accountService: AccountService,
     private ipnService: IpnService,
     private paymentLogService: PaymentLogService,
+    private paymentResultService: PaymentResultService,
     private exchangeRateApiService: ExchangeRateApiService,
     private metaService: MetaService
   ) { }
@@ -50,9 +52,12 @@ export class ApiServiceImpl implements ApiService {
           index: paymentLog.index
         })
 
+        const paymentSuccess = await this.paymentResultService.loadSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
+
         return convertPaymentLogToPaymentHistoryData(
           paymentLog,
           ipnResult,
+          paymentSuccess?.comment ?? null,
           meta,
           currency,
           currencyExchangeRates[now],
