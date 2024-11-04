@@ -10,7 +10,7 @@ if (!script) {
 
 try {
   // Run the specified TypeScript file using ts-node
-  execSync(`node dist/${script}.js`, { stdio: 'inherit' })
+  execSync(`node dist/${script}.js`, { stdio: 'inherit', env: { ...process.env, NODE_ENV: process.env.NODE_ENV } })
 } catch (error) {
   console.error(`Failed to run ${script}:`, error)
   process.exit(1)
