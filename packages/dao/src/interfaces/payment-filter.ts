@@ -9,4 +9,5 @@ export interface PaymentFilter {
   direction?: PaymentLogDirection
   blockchains?: string[]
   transaction?: string
+  comment?: string
 }

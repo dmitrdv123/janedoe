@@ -23,9 +23,7 @@ export class PaymentDaoImpl implements PaymentDao {
     return result?.toJSON()
   }
 
-  public async deleteSuccess(accountId: string, blockchain: string, txid: string): Promise<void> {
-    await PaymentSuccessInfoModel.deleteOne({
-      _id: [accountId, blockchain, txid].join(':')
-    })
+  public async listSuccess(accountId: string, comment?: string | undefined): Promise<PaymentSuccessInfo[]> {
+    throw new Error('Method not implemented.')
   }
 }

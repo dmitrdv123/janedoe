@@ -36,6 +36,8 @@ export interface IpnData {
 
   currency: string | null
   currencyExchangeRate: number | null
+
+  comment: string | null
 }
 
 export interface IpnResult {
