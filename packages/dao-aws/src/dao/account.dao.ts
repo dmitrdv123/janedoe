@@ -128,7 +128,7 @@ export class AccountDaoImpl implements AccountDao {
       ScanIndexForward: false
     }
 
-    return await queryItems(this.dynamoService, 'sharedAccount', request)
+    return await queryItems(this.dynamoService, request, 'sharedAccount')
   }
 
   public async loadAccountSettings(id: string): Promise<AccountSettings | undefined> {
@@ -208,7 +208,7 @@ export class AccountDaoImpl implements AccountDao {
         ':pk': generateKey(AccountDaoImpl.PK_SHARED_ACCOUNT_PREFIX, id),
       })
     }
-    const sharedAccounts = await queryItems<SharedAccount>(this.dynamoService, 'sharedAccount', request)
+    const sharedAccounts = await queryItems<SharedAccount>(this.dynamoService, request, 'sharedAccount')
 
     const deleteRequests = sharedAccounts.map(sharedAccount => ({
       DeleteRequest: {

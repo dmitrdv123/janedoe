@@ -1,5 +1,6 @@
 export interface TransactionCreationResult {
-  txId: string
+  transaction: string
+  index: number
   message: string
   code: string
   args: {[key: string]: string}

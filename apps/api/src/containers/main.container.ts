@@ -5,9 +5,8 @@ import { IpnDao } from '@repo/dao/dist/src/dao/ipn.dao'
 import { NotificationDao } from '@repo/dao/dist/src/dao/notification.dao'
 import { MetaDao } from '@repo/dao/dist/src/dao/meta.dao'
 import { ExchangeRateDao } from '@repo/dao/dist/src/dao/exchange-rate.dao'
-import { PaymentLogDao } from '@repo/dao/dist/src/dao/payment-log.dao'
-import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import { PaymentDao } from '@repo/dao/dist/src/dao/payment.dao'
+import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import { AuthDao } from '@repo/dao/dist/src/dao/auth.dao'
 import { SettingsDao } from '@repo/dao/dist/src/dao/settings.dao'
 import { EmailTemplateDao } from '@repo/dao/dist/src/dao/email-template.dao'
@@ -60,7 +59,7 @@ import { PaymentManagerTask } from '../tasks/payment-manager-task'
 import { ExchangeRateTask } from '../tasks/currency-task'
 import { SupportNotificationObserver } from '../services/notifications/support-notification-observer'
 import { ArticleService, ArticleServiceImpl } from '../services/article-service'
-import { PaymentResultService, PaymentResultServiceImpl } from '../services/payment-result-service'
+import { PaymentSuccessService, PaymentSuccessServiceImpl } from '../services/payment-success-service'
 
 const container = new Container()
 
@@ -91,7 +90,8 @@ container.register('exchangeRateApiWrapperService', new ExchangeRateApiWrapperSe
 container.register(
   'ipnService',
   new IpnServiceImpl(
-    awsContainer.resolve<IpnDao>('ipnDao')
+    awsContainer.resolve<IpnDao>('ipnDao'),
+    awsContainer.resolve<PaymentDao>('paymentDao')
   )
 )
 container.register(
@@ -121,9 +121,9 @@ container.register(
   )
 )
 container.register('paymentLogService', new PaymentLogServiceImpl(
-  awsContainer.resolve<PaymentLogDao>('paymentLogDao'))
+  awsContainer.resolve<PaymentDao>('paymentDao'))
 )
-container.register('paymentResultService', new PaymentResultServiceImpl(
+container.register('paymentSuccessService', new PaymentSuccessServiceImpl(
   awsContainer.resolve<PaymentDao>('paymentDao'))
 )
 container.register(
@@ -134,7 +134,7 @@ container.register(
     commonContainer.resolve<CryptoService>('cryptoService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<PaymentLogService>('paymentLogService'),
-    container.resolve<PaymentResultService>('paymentResultService'),
+    container.resolve<PaymentSuccessService>('paymentSuccessService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService'),
     container.resolve<MetaService>('metaService'),
     awsContainer.resolve<AccountDao>('accountDao')
@@ -146,7 +146,7 @@ container.register(
     container.resolve<AccountService>('accountService'),
     bitcoinContainer.resolve<BitcoinService>('bitcoinService'),
     container.resolve<PaymentLogService>('paymentLogService'),
-    container.resolve<PaymentResultService>('paymentResultService')
+    container.resolve<PaymentSuccessService>('paymentSuccessService')
   )
 )
 container.register(
@@ -167,9 +167,7 @@ container.register('apiService',
   new ApiServiceImpl(
     container.resolve<SettingsService>('settingsService'),
     container.resolve<AccountService>('accountService'),
-    container.resolve<IpnService>('ipnService'),
     container.resolve<PaymentLogService>('paymentLogService'),
-    container.resolve<PaymentResultService>('paymentResultService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService'),
     container.resolve<MetaService>('metaService')
   )
@@ -228,7 +226,7 @@ container.register(
 container.register(
   'paymentStatusNotificationObserver',
   new PaymentStatusNotificationObserver(
-    container.resolve<PaymentResultService>('paymentResultService'),
+    container.resolve<PaymentSuccessService>('paymentSuccessService'),
     container.resolve<EmailService>('emailService'),
     container.resolve<EmailTemplateService>('emailTemplateService')
   )
@@ -237,8 +235,8 @@ container.register(
   'ipnNotificationObserver',
   new IpnNotificationObserver(
     container.resolve<AccountService>('accountService'),
-    container.resolve<PaymentService>('paymentService'),
-    container.resolve<PaymentResultService>('paymentResultService'),
+    container.resolve<PaymentLogService>('paymentLogService'),
+    container.resolve<PaymentSuccessService>('paymentSuccessService'),
     container.resolve<IpnService>('ipnService'),
     container.resolve<ExchangeRateApiService>('exchangeRateApiService')
   )

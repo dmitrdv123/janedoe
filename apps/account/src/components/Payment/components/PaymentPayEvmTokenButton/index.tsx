@@ -13,11 +13,12 @@ interface PaymentPayEvmTokenButtonProps {
   selectedToken: Token
   selectedAddress: string
   selectedTokenAmount: bigint
+  disabled: boolean
   onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
 }
 
 const PaymentPayEvmTokenButton: React.FC<PaymentPayEvmTokenButtonProps> = (props) => {
-  const { selectedBlockchain, selectedToken, selectedAddress, selectedTokenAmount, onSuccess } = props
+  const { selectedBlockchain, selectedToken, selectedAddress, selectedTokenAmount, disabled, onSuccess } = props
 
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
@@ -48,7 +49,7 @@ const PaymentPayEvmTokenButton: React.FC<PaymentPayEvmTokenButtonProps> = (props
     <Button
       variant="primary"
       size="lg"
-      disabled={withdrawStatus === 'processing'}
+      disabled={disabled || withdrawStatus === 'processing'}
       onClick={withdraw}
     >
       {t('components.payment.pay_btn')}

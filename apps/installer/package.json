@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apprunner-alpha": "2.153.0-alpha.0",
-    "@aws-sdk/client-cloudformation": "^3.635.0",
+    "@aws-sdk/client-cloudformation": "^3.682.0",
     "@repo/bitcoin": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/dao": "workspace:*",

@@ -72,7 +72,7 @@ export class ArticleDaoImpl implements ArticleDao {
         ':pk': generateKey(ArticleDaoImpl.PK_PREFIX)
       })
     }
-    const articles = await queryItems<Article>(this.dynamoService, 'article', request)
+    const articles = await queryItems<Article>(this.dynamoService, request, 'article')
 
     const deleteRequests = articles.map(article => ({
       DeleteRequest: {

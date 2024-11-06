@@ -5,7 +5,7 @@ import { DynamoDB } from '@aws-sdk/client-dynamodb'
 
 import { AccountDaoImpl } from '@repo/dao-aws/dist/src/dao/account.dao'
 import { BitcoinDaoImpl } from '@repo/dao-aws/dist/src/dao/bitcoin.dao'
-import { PaymentLogDaoImpl } from '@repo/dao-aws/dist/src/dao/payment-log.dao'
+import { PaymentDaoImpl } from '@repo/dao-aws/dist/src/dao/payment.dao'
 import { NotificationDaoImpl } from '@repo/dao-aws/dist/src/dao/notification.dao'
 import { DynamoServiceImpl } from '@repo/dao-aws/dist/src/services/dynamo.service'
 import { BitcoinCoreServiceImpl } from '@repo/bitcoin/dist/src/services/bitcoin-core.service'
@@ -18,7 +18,6 @@ import { NotificationType } from '@repo/dao/dist/src/interfaces/notification'
 import { CacheServiceImpl } from '@repo/common/dist/src/services/cache-service'
 import { getBitcoinNetwork } from '@repo/bitcoin/dist/src/utils/bitcoin-utils'
 import { BitcoinCoreError } from '@repo/bitcoin/dist/src/errors/bitcoin-core-error'
-import { CryptoServiceImpl } from '@repo/common/dist/src/services/crypto-service'
 
 import { createAppConfig } from './app-config'
 import { loadFile } from './utils'
@@ -29,13 +28,12 @@ const dynamoService = new DynamoServiceImpl(new DynamoDB())
 const cacheService = new CacheServiceImpl()
 const accountDao = new AccountDaoImpl(dynamoService)
 const bitcoinDao = new BitcoinDaoImpl(dynamoService, cacheService)
-const paymentLogDao = new PaymentLogDaoImpl(dynamoService)
+const paymentDao = new PaymentDaoImpl(dynamoService)
 const notificationDao = new NotificationDaoImpl(dynamoService)
 const bitcoinUtilsService = new BitcoinUtilsServiceImpl(getBitcoinNetwork())
 const bitcoinCoreService = new BitcoinCoreServiceImpl()
 const bitcoinService = new BitcoinServiceImpl(bitcoinCoreService, bitcoinUtilsService, bitcoinDao)
-const cryptoService = new CryptoServiceImpl()
-const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, cacheService, cryptoService, bitcoinDao)
+const bitcoinBlockService = new BitcoinBlockServiceImpl(bitcoinCoreService, cacheService, bitcoinDao)
 
 async function bitcoinCoreServiceTests(): Promise<void> {
   const feeRate = await bitcoinCoreService.getFeeRate(3)
@@ -378,7 +376,7 @@ async function accountDaoTests(): Promise<void> {
 }
 
 async function paymentLogDaoTests(): Promise<void> {
-  await paymentLogDao.savePaymentLog({
+  await paymentDao.savePaymentLog({
     accountId: 'accountId1',
     paymentId: 'paymentId11',
 
@@ -401,7 +399,7 @@ async function paymentLogDaoTests(): Promise<void> {
   })
   console.log(`debug >> save payment log done`)
 
-  await paymentLogDao.savePaymentLog({
+  await paymentDao.savePaymentLog({
     accountId: 'accountId1',
     paymentId: 'paymentId12',
 
@@ -424,7 +422,7 @@ async function paymentLogDaoTests(): Promise<void> {
   })
   console.log(`debug >> save payment log done`)
 
-  await paymentLogDao.savePaymentLog({
+  await paymentDao.savePaymentLog({
     accountId: 'accountId2',
     paymentId: 'paymentId21',
 
@@ -448,17 +446,17 @@ async function paymentLogDaoTests(): Promise<void> {
   console.log(`debug >> save payment log done`)
 
   let account = 'accountId1'
-  let paymentLogs = await paymentLogDao.listPaymentLogs(account)
+  let paymentLogs = await paymentDao.listPaymentLogs(account)
   console.log(`debug >> loading payment logs for ${account} done: found ${paymentLogs.length} payment logs`)
   console.log(JSON.stringify(paymentLogs))
 
   account = 'accountId2'
-  paymentLogs = await paymentLogDao.listPaymentLogs(account)
+  paymentLogs = await paymentDao.listPaymentLogs(account)
   console.log(`debug >> loading payment logs for ${account} done: found ${paymentLogs.length} payment logs`)
   console.log(JSON.stringify(paymentLogs))
 
   account = 'accountId3'
-  paymentLogs = await paymentLogDao.listPaymentLogs(account)
+  paymentLogs = await paymentDao.listPaymentLogs(account)
   console.log(`debug >> loading payment logs for ${account} done: found ${paymentLogs.length} payment logs`)
   console.log(JSON.stringify(paymentLogs))
 }

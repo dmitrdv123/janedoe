@@ -31,12 +31,16 @@ export class SupportDaoImpl implements SupportDao {
   }
 
   public async listTickets(): Promise<SupportTicket[]> {
-    return await queryItems(this.dynamoService, 'ticket', {
-      TableName: appConfig.TABLE_NAME,
-      KeyConditionExpression: 'pk = :pk',
-      ExpressionAttributeValues: marshall({
-        ':pk': generateKey(SupportDaoImpl.PK_PREFIX)
-      })
-    })
+    return await queryItems(
+      this.dynamoService,
+      {
+        TableName: appConfig.TABLE_NAME,
+        KeyConditionExpression: 'pk = :pk',
+        ExpressionAttributeValues: marshall({
+          ':pk': generateKey(SupportDaoImpl.PK_PREFIX)
+        })
+      },
+      'ticket'
+    )
   }
 }

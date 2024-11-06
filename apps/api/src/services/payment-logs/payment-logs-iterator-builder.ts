@@ -2,7 +2,6 @@ import { BlockchainMeta, TransactionType } from 'rango-sdk-basic'
 
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
 import { BitcoinBlockService } from '@repo/bitcoin/dist/src/services/bitcoin-block.service'
-import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { SettingsService } from '../settings-service'
 import { getAddressOrDefault } from '../../utils/utils'
@@ -21,8 +20,7 @@ export class PaymentLogsIteratorBuilder {
     private accountService: AccountService,
     private evmService: EvmService,
     private bitcoinBlockService: BitcoinBlockService,
-    private metaService: MetaService,
-    private cryptoService: CryptoService
+    private metaService: MetaService
   ) { }
 
   public withSkip(lastProcessed: string | undefined): PaymentLogsIteratorBuilder {
@@ -46,7 +44,7 @@ export class PaymentLogsIteratorBuilder {
           throw new Error(`Blockchain ${blockchain.name} is not supported`)
         }
 
-        result = new EvmPaymentLogsIterator(blockchain, janeDoeAddress, wrappedNativeAddress, this.accountService, this.evmService, this.metaService, this.settingsService, this.cryptoService)
+        result = new EvmPaymentLogsIterator(blockchain, janeDoeAddress, wrappedNativeAddress, this.accountService, this.evmService, this.metaService, this.settingsService)
         break
       case TransactionType.TRANSFER:
         switch (blockchain.name.toLocaleLowerCase()) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Button, OverlayTrigger, Popover, Form } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Filter, FilterCircleFill } from 'react-bootstrap-icons'
@@ -8,7 +8,7 @@ import { PaymentHistoryDirection } from '../../../../types/payment-history'
 
 interface TableFilterDetailsProps {
   id: string
-  transactionHash: string
+  transaction: string
   from: string
   to: string
   direction: PaymentHistoryDirection | null
@@ -16,44 +16,46 @@ interface TableFilterDetailsProps {
 }
 
 const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {
-  const [transactionHash, setTransactionHash] = useState<string>('')
-  const [from, setFrom] = useState<string>('')
-  const [to, setTo] = useState<string>('')
-  const [direction, setDirection] = useState<PaymentHistoryDirection | null>(null)
+  const { id, transaction, from, to, direction, onChange } = props
+
+  const [selectedTransaction, setSelectedTransaction] = useState<string>('')
+  const [selectedFrom, setSelectedFrom] = useState<string>('')
+  const [selectedTo, setSelectedTo] = useState<string>('')
+  const [selectedDirection, setSelectedDirection] = useState<PaymentHistoryDirection | null>(null)
   const [show, setShow] = React.useState(false)
 
   const { t } = useTranslation()
 
   useEffect(() => {
-    setTransactionHash(props.transactionHash)
-  }, [props.transactionHash])
+    setSelectedTransaction(transaction)
+  }, [transaction])
 
   useEffect(() => {
-    setFrom(props.from)
-  }, [props.from])
+    setSelectedFrom(from)
+  }, [from])
 
   useEffect(() => {
-    setTo(props.to)
-  }, [props.to])
+    setSelectedTo(to)
+  }, [to])
 
   useEffect(() => {
-    setDirection(props.direction)
-  }, [props.direction])
+    setSelectedDirection(direction)
+  }, [direction])
 
   const handleToggle = () => {
     setShow((prev) => !prev);
   }
 
-  const applyHandler = () => {
+  const applyHandler = useCallback(() => {
     handleToggle()
-    props.onChange(transactionHash, from, to, direction)
-  }
+    onChange(selectedTransaction, selectedFrom, selectedTo, selectedDirection)
+  }, [selectedDirection, selectedFrom, selectedTo, selectedTransaction, onChange])
 
   const clearHandler = () => {
-    setTransactionHash('')
-    setFrom('')
-    setTo('')
-    setDirection(null)
+    setSelectedTransaction('')
+    setSelectedFrom('')
+    setSelectedTo('')
+    setSelectedDirection(null)
   }
 
   return (
@@ -61,35 +63,35 @@ const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {
       show={show}
       onToggle={handleToggle}
       trigger="click"
-      key={`filter_${props.id}`}
+      key={`filter_${id}`}
       placement="bottom"
       rootClose
       overlay={
-        <Popover id={`popover_${props.id}`}>
+        <Popover id={`popover_${id}`}>
           <Popover.Body>
             <Form.Group className="mb-3">
               <Form.Label>
                 {t('components.payments.tran_hash')}
               </Form.Label>
-              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.tran_hash_placeholder')} onChange={e => setTransactionHash(e.target.value)} value={transactionHash} />
+              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.tran_hash_placeholder')} onChange={e => setSelectedTransaction(e.target.value)} value={selectedTransaction} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
                 {t('components.payments.from')}
               </Form.Label>
-              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.from_placeholder')} onChange={e => setFrom(e.target.value)} value={from} />
+              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.from_placeholder')} onChange={e => setSelectedFrom(e.target.value)} value={selectedFrom} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
                 {t('components.payments.to')}
               </Form.Label>
-              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.to_placeholder')} onChange={e => setTo(e.target.value)} value={to} />
+              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.to_placeholder')} onChange={e => setSelectedTo(e.target.value)} value={selectedTo} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
                 {t('components.payments.direction')}
               </Form.Label>
-              <Form.Control as="select" className='mb-3' onChange={e => setDirection(e.target.value ? e.target.value as PaymentHistoryDirection : null)} value={direction ?? ''}>
+              <Form.Control as="select" className='mb-3' onChange={e => setSelectedDirection(e.target.value ? e.target.value as PaymentHistoryDirection : null)} value={selectedDirection ?? ''}>
                 <option value="">{t('components.payments.direction_placeholder')}</option>
                 <option value="incoming">{t('components.payments.incoming')}</option>
                 <option value="outgoing">{t('components.payments.outgoing')}</option>
@@ -107,10 +109,10 @@ const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {
       }
     >
       <Button variant='link' size='sm' className="text-dark pt-0 pb-0">
-        {(isNullOrEmptyOrWhitespaces(props.transactionHash) && isNullOrEmptyOrWhitespaces(props.from) && isNullOrEmptyOrWhitespaces(props.to) && props.direction === null) && (
+        {(isNullOrEmptyOrWhitespaces(selectedTransaction) && isNullOrEmptyOrWhitespaces(selectedFrom) && isNullOrEmptyOrWhitespaces(selectedTo) && selectedDirection === null) && (
           <Filter />
         )}
-        {(!isNullOrEmptyOrWhitespaces(props.transactionHash) || !isNullOrEmptyOrWhitespaces(props.from) || !isNullOrEmptyOrWhitespaces(props.to) || props.direction !== null) && (
+        {(!isNullOrEmptyOrWhitespaces(selectedTransaction) || !isNullOrEmptyOrWhitespaces(selectedFrom) || !isNullOrEmptyOrWhitespaces(selectedTo) || selectedDirection !== null) && (
           <FilterCircleFill />
         )}
       </Button>

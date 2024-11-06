@@ -47,8 +47,7 @@ export class PaymentTask implements Task {
       this.accountService,
       this.evmService,
       this.bitcoinBlockService,
-      this.metaService,
-      this.cryptoService
+      this.metaService
     )
       .withSkip(this.lastProcessed)
       .build(this.blockchain)

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, useRef } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Alert, Button, Spinner, Table } from 'react-bootstrap'
 import { CheckCircle, ExclamationCircle } from 'react-bootstrap-icons'
@@ -19,7 +20,7 @@ import useApiRequest from '../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
 import usePaymentHistoryUpdates from '../../libs/hooks/usePaymentHistoryUpdates'
 import TableFilterDetails from './components/TableFilterDetails'
-import TableFilterText from './components/TableFilterText'
+import TableFilterPayment from './components/TableFilterPayment'
 import TokenShortDetails from '../TokenShortDetails'
 import TokenAmount from '../TokenAmount'
 import CurrencyAmount from '../CurrencyAmount'
@@ -36,6 +37,9 @@ const Payments: React.FC = () => {
   const observer = useRef<IntersectionObserver>()
 
   const { t } = useTranslation()
+  const { id } = useParams()
+  const navigate = useNavigate()
+
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
   const openIpnModal = useToggleModal(ApplicationModal.IPN)
 
@@ -145,10 +149,11 @@ const Payments: React.FC = () => {
     }))
   }, [])
 
-  const paymentIdFilterHandler = useCallback((filterPaymentId: string) => {
+  const paymentFilterHandler = useCallback((filterPaymentId: string, filterComment: string) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
-      paymentId: filterPaymentId
+      paymentId: filterPaymentId,
+      comment: filterComment,
     }))
   }, [])
 
@@ -157,6 +162,8 @@ const Payments: React.FC = () => {
     const token = paymentHistoryItem.token ?? undefined
 
     const dt = convertTimestampToDate(paymentHistoryItem.timestamp)
+
+    const refundComment = encodeURIComponent(`${t('components.payments.refund_comment')} ${paymentHistoryItem.paymentId}`)
 
     return (
       <tr
@@ -171,9 +178,9 @@ const Payments: React.FC = () => {
           <div>
             <TextWithCopy value={paymentHistoryItem.paymentId} />
           </div>
-          {!!paymentHistoryItem.comment && (
+          {!!paymentHistoryItem.paymentSuccess?.comment && (
             <div>
-              {paymentHistoryItem.comment}
+              {paymentHistoryItem.paymentSuccess.comment}
             </div>
           )}
         </td>
@@ -261,9 +268,16 @@ const Payments: React.FC = () => {
             </Button>
           )}
         </td>
+        <td>
+          {(paymentHistoryItem.direction === 'incoming') && (
+            <Button variant="outline-secondary" onClick={() => navigate(`/payment/${id ?? ''}?currency=${paymentHistoryItem.currency}&currencyAmount=${paymentHistoryItem.amountCurrencyAtPaymentTime}&comment=${refundComment}`, { replace: true })}>
+              {t('components.payments.refund_btn')}
+            </Button>
+          )}
+        </td>
       </tr>
     )
-  }, [t, lastPaymentElementRef, openIpnModalHandler])
+  }, [id, t, lastPaymentElementRef, openIpnModalHandler, navigate])
 
   return (
     <>
@@ -296,7 +310,8 @@ const Payments: React.FC = () => {
                 to: paymentHistoryDataFilter.to.trim() ? paymentHistoryDataFilter.to.trim() : undefined,
                 direction: paymentHistoryDataFilter.direction ? paymentHistoryDataFilter.direction : undefined,
                 blockchains: paymentHistoryDataFilter.blockchains.length > 0 ? paymentHistoryDataFilter.blockchains : undefined,
-                transaction: paymentHistoryDataFilter.transactionHash.trim() ? paymentHistoryDataFilter.transactionHash.trim() : undefined
+                transaction: paymentHistoryDataFilter.transaction.trim() ? paymentHistoryDataFilter.transaction.trim() : undefined,
+                comment: paymentHistoryDataFilter.comment.trim() ? paymentHistoryDataFilter.comment.trim() : undefined
               })
             )
             const csvContent = 'data:text/csv;charset=utf-8,' + (csvData ?? []).join("\n")
@@ -333,11 +348,11 @@ const Payments: React.FC = () => {
             </th>
             <th scope="col">
               {t('components.payments.payment_col')}
-              <TableFilterText
-                id="payment_history_payment_id"
-                placeholder={t('components.payments.payment_placeholder')}
-                value={paymentHistoryDataFilter.paymentId}
-                onChange={paymentIdFilterHandler}
+              <TableFilterPayment
+                id="payment_history_payment"
+                paymentId={paymentHistoryDataFilter.paymentId}
+                comment={paymentHistoryDataFilter.comment}
+                onChange={paymentFilterHandler}
               />
             </th>
             <th scope="col">
@@ -355,7 +370,7 @@ const Payments: React.FC = () => {
               {t('components.payments.details_col')}
               <TableFilterDetails
                 id="payment_history_details"
-                transactionHash={paymentHistoryDataFilter.transactionHash}
+                transaction={paymentHistoryDataFilter.transaction}
                 from={paymentHistoryDataFilter.from}
                 to={paymentHistoryDataFilter.to}
                 direction={paymentHistoryDataFilter.direction}
@@ -365,6 +380,7 @@ const Payments: React.FC = () => {
             <th>
               {t('components.payments.notification_col')}
             </th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

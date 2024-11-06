@@ -9,11 +9,11 @@
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -r pino-pretty -r node-cache -q dist/index.js\""
   },
   "dependencies": {
-    "@aws-sdk/client-cloudwatch": "^3.635.0",
-    "@aws-sdk/client-dynamodb": "^3.635.0",
-    "@aws-sdk/client-s3": "^3.635.0",
-    "@aws-sdk/client-secrets-manager": "^3.635.0",
-    "@aws-sdk/util-dynamodb": "^3.635.0",
+    "@aws-sdk/client-cloudwatch": "^3.682.0",
+    "@aws-sdk/client-dynamodb": "^3.682.0",
+    "@aws-sdk/client-s3": "^3.682.0",
+    "@aws-sdk/client-secrets-manager": "^3.682.0",
+    "@aws-sdk/util-dynamodb": "^3.682.0",
     "@repo/bitcoin": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/dao": "workspace:*",

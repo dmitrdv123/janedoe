@@ -6,7 +6,6 @@ import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 import { EvmEvent, EvmPayment, EvmPaymentDirection, EvmPaymentEvent, EvmWithdrawBatchEvent, EvmWithdrawEvent } from '@repo/evm/dist/src/interfaces/evm-event'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
-import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { logger } from '../../utils/logger'
 import { AbiEvent } from 'abitype'
@@ -20,8 +19,8 @@ import { SettingsService } from '../settings-service'
 export class EvmPaymentLogsIterator implements PaymentLogsIterator {
   private fromBlock: bigint = BigInt(0)
   private paymentEvent: AbiEvent = parseAbiItem('event PayFrom(uint256 dt, address from, address indexed to, address token, uint256 amount, bytes paymentId)')
-  private withdrawEvent: AbiEvent = parseAbiItem('event WithdrawTo(uint256 dt, address from, address to, address token, uint256 amount, bytes paymentId)')
-  private withdrawBatchEvent: AbiEvent = parseAbiItem('event WithdrawToBatch(uint256 dt, address from, address[] accounts, address[] tokens, uint256[] amounts, bytes paymentId)')
+  private withdrawEvent: AbiEvent = parseAbiItem('event WithdrawTo(uint256 dt, address from, address to, address token, uint256 amount)')
+  private withdrawBatchEvent: AbiEvent = parseAbiItem('event WithdrawToBatch(uint256 dt, address from, address[] accounts, address[] tokens, uint256[] amounts)')
 
   public constructor(
     private blockchain: EvmBlockchainMeta,
@@ -31,7 +30,6 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
     private evmService: EvmService,
     private metaService: MetaService,
     private settingsService: SettingsService,
-    private cryptoService: CryptoService
   ) { }
 
   public lastProcessed(): string {
@@ -72,7 +70,6 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
       ...paymentEvents.map(event => ({
         blockNumber: event.blockNumber,
         transactionHash: event.transactionHash,
-        logIndex: event.logIndex,
         dt: event.data.dt,
         from: event.data.from,
         to: event.data.to,
@@ -84,26 +81,24 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
       ...withdrawEvents.map(event => ({
         blockNumber: event.blockNumber,
         transactionHash: event.transactionHash,
-        logIndex: event.logIndex,
         dt: event.data.dt,
         from: event.data.from,
         to: event.data.to,
         token: event.data.token,
         amount: event.data.amount,
-        paymentId: '',
+        paymentId: `${this.blockchain.name.toLocaleLowerCase()}_${event.transactionHash}`,
         direction: 'outgoing' as EvmPaymentDirection
       })),
       ...withdrawBatchEvents.flatMap(event =>
         event.data.tokens.map((account, index) => ({
           blockNumber: event.blockNumber,
           transactionHash: event.transactionHash,
-          logIndex: event.logIndex,
           dt: event.data.dt,
           from: event.data.from,
           to: account,
           token: event.data.tokens[index],
           amount: event.data.amounts[index],
-          paymentId: '',
+          paymentId: `${this.blockchain.name.toLocaleLowerCase()}_${event.transactionHash}_${index}`,
           direction: 'outgoing' as EvmPaymentDirection
         }))
       )
@@ -151,7 +146,7 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
 
     let paymentId: string
     if (payment.direction === 'outgoing') {
-      paymentId = this.cryptoService.generateRandom()
+      paymentId = payment.paymentId
     } else {
       const protocolPaymentId = payment.paymentId
       if (protocolPaymentId.length < ACCOUNT_ID_LENGTH + 1) {
@@ -186,7 +181,7 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
       block: payment.blockNumber.toString(),
       timestamp: timestamp,
       transaction: payment.transactionHash,
-      index: payment.logIndex,
+      index: 0
     }
 
     logger.debug('EvmPaymentLogsIteratorService: payment log')

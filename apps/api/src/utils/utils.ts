@@ -5,8 +5,7 @@ import { BlockchainMeta, MetaResponse, Token } from 'rango-sdk-basic'
 import { nanoid } from 'nanoid'
 import { Response } from 'express'
 
-import { IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
-import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
+import { PaymentHistory } from '@repo/dao/dist/src/interfaces/payment-history'
 
 import { PaymentHistoryData } from '../interfaces/payment-history'
 import { ServiceError } from '../errors/service-error'
@@ -200,63 +199,43 @@ export function isToken(token: Token, blockchain: string, symbol: string, addres
     )
 }
 
-export function convertPaymentLogToPaymentHistoryData(
-  paymentLog: PaymentLog,
-  ipnResult: IpnResult | undefined,
-  comment: string | null,
+export function convertPaymentHistoryToPaymentHistoryData(
+  paymentHistory: PaymentHistory,
   meta: MetaResponse,
   currency: string,
   currencyExchangeRateAtCurTime: number | null,
   currencyExchangeRates: { [timestamp: number]: number | null }
 ): PaymentHistoryData {
-  const currencyExchangeRateAtPaymentTime = currencyExchangeRates[paymentLog.timestamp]
+  const currencyExchangeRateAtPaymentTime = currencyExchangeRates[paymentHistory.timestamp]
 
-  const token = paymentLog.tokenSymbol
-    ? meta.tokens.find(token => paymentLog.tokenSymbol && isToken(token, paymentLog.blockchain, paymentLog.tokenSymbol, paymentLog.tokenAddress))
+  const token = paymentHistory.tokenSymbol
+    ? meta.tokens.find(token => paymentHistory.tokenSymbol && isToken(token, paymentHistory.blockchain, paymentHistory.tokenSymbol, paymentHistory.tokenAddress))
     : undefined
 
   const amountUsdAtCurTime = token?.usdPrice
-    ? tokenAmountToUsd(paymentLog.amount, token.usdPrice, token.decimals) ?? null
+    ? tokenAmountToUsd(paymentHistory.amount, token.usdPrice, token.decimals) ?? null
     : null
-  const amountCurrencyAtPaymentTime = paymentLog.amountUsd && currencyExchangeRateAtPaymentTime
-    ? currencyExchangeRateAtPaymentTime * paymentLog.amountUsd
+  const amountCurrencyAtPaymentTime = paymentHistory.amountUsd && currencyExchangeRateAtPaymentTime
+    ? currencyExchangeRateAtPaymentTime * paymentHistory.amountUsd
     : null
   const amountCurrencyAtCurTime = amountUsdAtCurTime && currencyExchangeRateAtCurTime
     ? currencyExchangeRateAtCurTime * amountUsdAtCurTime
     : null
 
   return {
-    id: paymentLog.accountId,
-    paymentId: paymentLog.paymentId,
+    ...paymentHistory,
 
-    block: paymentLog.block,
-    timestamp: paymentLog.timestamp,
-    transaction: paymentLog.transaction,
-    index: paymentLog.index,
-
-    from: paymentLog.from,
-    to: paymentLog.to,
-    direction: paymentLog.direction,
-    amount: paymentLog.amount,
-    amountUsdAtPaymentTime: paymentLog.amountUsd === null ? null : roundNumber(paymentLog.amountUsd, DEFAULT_FIAT_DECIMAL_PLACES),
+    amountUsdAtPaymentTime: paymentHistory.amountUsd === null ? null : roundNumber(paymentHistory.amountUsd, DEFAULT_FIAT_DECIMAL_PLACES),
     amountUsdAtCurTime: amountUsdAtCurTime === null ? null : roundNumber(amountUsdAtCurTime, DEFAULT_FIAT_DECIMAL_PLACES),
     amountCurrencyAtPaymentTime: amountCurrencyAtPaymentTime === null ? null : roundNumber(amountCurrencyAtPaymentTime, DEFAULT_FIAT_DECIMAL_PLACES),
     amountCurrencyAtCurTime: amountCurrencyAtCurTime === null ? null : roundNumber(amountCurrencyAtCurTime, DEFAULT_FIAT_DECIMAL_PLACES),
 
-    blockchain: paymentLog.blockchain,
-    tokenAddress: paymentLog.tokenAddress,
-    tokenSymbol: paymentLog.tokenSymbol,
-    tokenDecimals: paymentLog.tokenDecimals,
-    tokenUsdPriceAtPaymentTime: paymentLog.tokenUsdPrice,
+    tokenUsdPriceAtPaymentTime: paymentHistory.tokenUsdPrice,
     tokenUsdPriceAtCurTime: token?.usdPrice ?? null,
 
     currency: currency,
     currencyExchangeRateAtPaymentTime: currencyExchangeRateAtPaymentTime,
     currencyExchangeRateAtCurTime: currencyExchangeRateAtCurTime,
-
-    comment: comment ?? null,
-
-    ipnResult: ipnResult ?? null
   }
 }
 

@@ -1,6 +1,9 @@
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
-export interface PaymentHistory {
+export type PaymentLogDirection = 'incoming' | 'outgoing'
+
+export interface PaymentLog {
+  accountId: string
   paymentId: string
 
   block: string
@@ -10,6 +13,8 @@ export interface PaymentHistory {
 
   from: string | null
   to: string
+  direction: PaymentLogDirection
+
   amount: string
   amountUsd: number | null
 
@@ -20,11 +25,12 @@ export interface PaymentHistory {
   tokenUsdPrice: number | null
 }
 
-export interface PaymentHistoryResponse {
-  data: PaymentHistory[]
+export interface PaymentLogResponse {
+  data: PaymentLog[]
 }
 
-export interface PaymentHistoryData {
+export interface PaymentLogData {
+  accountId: string
   paymentId: string
 
   block: string
@@ -34,6 +40,8 @@ export interface PaymentHistoryData {
 
   from: string | null
   to: string
+  direction: PaymentLogDirection
+
   amount: string
   amountUsdAtPaymentTime: number | null
   amountUsdAtCurTime: number | null

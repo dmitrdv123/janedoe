@@ -13,11 +13,12 @@ interface PaymentPayTransferButtonProps {
   selectedBlockchain: BlockchainMeta
   selectedAddress: string
   selectedTokenAmount: bigint
+  disabled: boolean
   onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
 }
 
 const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props) => {
-  const { selectedBlockchain, selectedAddress, selectedTokenAmount, onSuccess } = props
+  const { selectedBlockchain, selectedAddress, selectedTokenAmount, disabled, onSuccess } = props
 
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
@@ -46,7 +47,7 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
     <Button
       variant="primary"
       size="lg"
-      disabled={payStatus === 'processing'}
+      disabled={disabled || payStatus === 'processing'}
       onClick={handlePay}
     >
       {t('components.payment.pay_btn')}

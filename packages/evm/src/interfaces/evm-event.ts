@@ -5,7 +5,6 @@ export type EvmPaymentDirection = 'incoming' | 'outgoing'
 export interface EvmPayment {
   blockNumber: bigint
   transactionHash: `0x${string}`
-  logIndex: number
   dt: bigint
   from: Address
   to: Address
@@ -30,7 +29,6 @@ export interface EvmWithdrawEvent {
   to: Address
   token: Address
   amount: bigint
-  paymentId: Hex
 }
 
 export interface EvmWithdrawBatchEvent {
@@ -39,12 +37,10 @@ export interface EvmWithdrawBatchEvent {
   accounts: Address[]
   tokens: Address[]
   amounts: bigint[]
-  paymentId: Hex
 }
 
 export interface EvmEvent<T> {
   blockNumber: bigint
   transactionHash: `0x${string}`
-  logIndex: number
   data: T
 }

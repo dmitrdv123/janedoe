@@ -24,8 +24,10 @@ export default function useNavigateSuccess(blockchain?: string | undefined, emai
           await success(
             ApiWrapper.instance.successRequest(
               id,
+              paymentId,
               blockchain,
               txId,
+              0,
               currency,
               amount,
               i18n.resolvedLanguage ?? 'EN',

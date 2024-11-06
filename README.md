@@ -219,7 +219,9 @@ improvement backlog:
   - api: use rest api with edge optimized endpoint instead of http api which does not support it
 
 long term backlog:
-
+- donations
+- recurrent payments
+- resellers
 - api: command line tools to extract statistics about new accounts, payments, errors and etc
 - account, payment: return payment that is less than expected, return amount that is over the price
 - account: news page

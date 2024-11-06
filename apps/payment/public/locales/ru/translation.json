@@ -21,7 +21,7 @@
       "at_cur_time": "Настоящее время:",
       "at_payment_time": "Время платежа:",
       "errors": {
-        "payment_history_load_error": "Не удалось загрузить историю платежей"
+        "payment_logs_load_error": "Не удалось загрузить платежи"
       }
     }
   },

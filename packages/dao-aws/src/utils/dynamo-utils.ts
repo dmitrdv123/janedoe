@@ -48,7 +48,7 @@ export async function batchReadItemsByChunks<T>(dynamoService: DynamoService, ta
   return allItems
 }
 
-export async function queryItems<T>(dynamoService: DynamoService, field: string, request: QueryInput): Promise<T[]> {
+export async function queryItems<T>(dynamoService: DynamoService, request: QueryInput, field?: string | undefined): Promise<T[]> {
   let allItems: T[] = []
   let lastEvaluatedKey: Record<string, AttributeValue> | undefined = undefined
 
@@ -60,7 +60,9 @@ export async function queryItems<T>(dynamoService: DynamoService, field: string,
 
     if (nextResult.Items) {
       allItems = allItems.concat(
-        nextResult.Items.map(item => unmarshall(item)[field])
+        nextResult.Items.map(item =>
+          field ? unmarshall(item)[field] : item
+        )
       )
     }
 

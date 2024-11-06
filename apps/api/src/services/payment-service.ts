@@ -6,16 +6,14 @@ import { BLOCKCHAIN_BTC } from '../constants'
 import { logger } from '../utils/logger'
 import { PaymentSettings } from '../interfaces/payment-settings'
 import { Wallet } from '../interfaces/wallet'
-import { PaymentHistory } from '../interfaces/payment-history'
 import { PaymentLogService } from './payment-log-service'
 import { AccountService } from './account-service'
-import { PaymentResultService } from './payment-result-service'
+import { PaymentSuccessService } from './payment-success-service'
 
 export interface PaymentService {
   paymentSettings(id: string, paymentId: string): Promise<PaymentSettings>
-  loadPaymentHistory(id: string, paymentId: string): Promise<PaymentHistory[]>
-
-  saveSuccess(accountId: string, blockchain: string, txid: string, currency: string, amountCurrency: number, email: string, language: string): Promise<void>
+  listPaymentLogs(id: string, paymentId: string): Promise<PaymentLog[]>
+  savePaymentSuccess(accountId: string, paymentId: string, blockchain: string, transaction: string, index: number, currency: string, amountCurrency: number, email: string, language: string): Promise<void>
 }
 
 export class PaymentServiceImpl implements PaymentService {
@@ -23,22 +21,22 @@ export class PaymentServiceImpl implements PaymentService {
     private accountService: AccountService,
     private bitcoinService: BitcoinService,
     private paymentLogService: PaymentLogService,
-    private paymentResultService: PaymentResultService
+    private paymentSuccessService: PaymentSuccessService
   ) { }
 
-  public async paymentSettings(id: string, paymentId: string): Promise<PaymentSettings> {
-    logger.debug(`PaymentService: start to load account for id ${id}`)
-    const account = await this.accountService.loadAccount(id)
+  public async paymentSettings(accountId: string, paymentId: string): Promise<PaymentSettings> {
+    logger.debug(`PaymentService: start to load account for account Id ${accountId}`)
+    const account = await this.accountService.loadAccount(accountId)
     logger.debug('PaymentService: end to load account')
 
     if (!account) {
-      logger.error(`PaymentService: account not found for ${id}`)
-      throw new Error(`Account not found for ${id}`)
+      logger.error(`PaymentService: account not found for ${accountId}`)
+      throw new Error(`Account not found for ${accountId}`)
     }
     logger.debug(account)
 
-    logger.debug(`PaymentService: start to process wallets for id ${id} and payment id ${paymentId}`)
-    const wallets = await this.processWallets(id, paymentId, account)
+    logger.debug(`PaymentService: start to process wallets for account Id ${accountId} and payment Id ${paymentId}`)
+    const wallets = await this.processWallets(accountId, paymentId, account)
     logger.debug('PaymentService: end to process wallets')
     logger.debug(wallets)
 
@@ -50,26 +48,23 @@ export class PaymentServiceImpl implements PaymentService {
     }
   }
 
-  public async saveSuccess(accountId: string, blockchain: string, txid: string, currency: string, amountCurrency: number, email: string, language: string): Promise<void> {
+  public async savePaymentSuccess(accountId: string, paymentId: string, blockchain: string, transaction: string, index: number, currency: string, amountCurrency: number, email: string, language: string): Promise<void> {
     const settings = await this.accountService.loadAccountSettings(accountId)
 
-    logger.debug('PaymentService: start to create payment success info')
-    await this.paymentResultService.saveSuccess(accountId, blockchain, txid, currency, amountCurrency, email, language, settings?.commonSettings.description ?? null, null)
-    logger.debug('PaymentService: end to create payment success info')
+    logger.debug('PaymentService: start to create payment result')
+    await this.paymentSuccessService.savePaymentSuccess(
+      accountId, paymentId, blockchain, transaction, index, currency, amountCurrency, email, language, settings?.commonSettings.description ?? null, null
+    )
+    logger.debug('PaymentService: end to create payment result')
   }
 
-  public async loadPaymentHistory(id: string, paymentId: string): Promise<PaymentHistory[]> {
-    logger.debug(`PaymentService: start to list payment logs for id ${id} and payment id ${paymentId}`)
-    const paymentLogs = await this.paymentLogService.listPaymentLogs(id, { paymentId })
-    logger.debug(`PaymentService: found ${paymentLogs.length} payment logs`)
+  public async listPaymentLogs(accountId: string, paymentId: string): Promise<PaymentLog[]> {
+    logger.debug(`PaymentService: start to list payment history for account Id ${accountId} and payment id ${paymentId}`)
+    const paymentLogs = await this.paymentLogService.listPaymentLogs(accountId, { paymentId, direction: 'incoming' })
+    logger.debug(`PaymentService: found ${paymentLogs.length} payment history`)
     logger.debug(paymentLogs)
 
-    logger.debug(`PaymentService: start to convert to payment history`)
-    const paymentHistory = paymentLogs.map(paymentLog => this.convertPaymentLogToPaymentHistory(paymentLog))
-    logger.debug(`PaymentService: end to convert to payment history`)
-    logger.debug(paymentHistory)
-
-    return paymentHistory
+    return paymentLogs
   }
 
   private async processWallets(id: string, paymentId: string, account: Account): Promise<Wallet[]> {
@@ -110,35 +105,5 @@ export class PaymentServiceImpl implements PaymentService {
     )
 
     return updatedWallets.filter(item => !!item) as Wallet[]
-  }
-
-  private convertPaymentLogToPaymentHistory(paymentLog: PaymentLog): PaymentHistory {
-    const res: PaymentHistory = {
-      id: paymentLog.accountId,
-      paymentId: paymentLog.paymentId,
-
-      block: paymentLog.block,
-      timestamp: paymentLog.timestamp,
-      transaction: paymentLog.transaction,
-      index: paymentLog.index,
-
-      from: paymentLog.from,
-      to: paymentLog.to,
-      direction: paymentLog.direction,
-      amount: paymentLog.amount,
-      amountUsd: paymentLog.amountUsd,
-
-      blockchain: paymentLog.blockchain,
-      tokenAddress: paymentLog.tokenAddress,
-      tokenSymbol: paymentLog.tokenSymbol,
-      tokenDecimals: paymentLog.tokenDecimals,
-      tokenUsdPrice: paymentLog.tokenUsdPrice,
-
-      comment: null,
-
-      ipnResult: null
-    }
-
-    return res
   }
 }

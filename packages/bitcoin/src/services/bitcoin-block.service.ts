@@ -1,9 +1,9 @@
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
 import { BitcoinBlock, BitcoinTransaction, BitcoinUtxo, BitcoinWalletAddress, BitcoinWalletTransaction } from '@repo/dao/dist/src/interfaces/bitcoin'
 import { CacheService } from '@repo/common/dist/src/services/cache-service'
-import { CryptoService } from '@repo/common/dist/src/services/crypto-service'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
+import { BITCOIN_BLOCKCHAIN_NAME } from '../constants'
 
 export interface BitcoinBlockService {
   getBlock(blockhash: string): Promise<BitcoinBlock>
@@ -22,7 +22,6 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
   public constructor(
     private bitcoinCoreService: BitcoinCoreService,
     private cacheService: CacheService,
-    private cryptoService: CryptoService,
     private bitcoinDao: BitcoinDao
   ) { }
 
@@ -155,9 +154,9 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
 
         // create outgoing wallet transactions
         walletNames.forEach(
-          key => walletTransactions.push({
-            walletName: key,
-            label: `${key}${this.cryptoService.generateRandom()}`,
+          walletName => walletTransactions.push({
+            walletName,
+            label: `${walletName}${BITCOIN_BLOCKCHAIN_NAME}_${tx.txid}_${txOutput.n}`,
             data: {
               txid: tx.txid,
               vout: txOutput.n,
@@ -176,9 +175,9 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
 
     // create outgoing wallet transactions for fee
     walletNames.forEach(
-      key => walletTransactions.push({
-        walletName: key,
-        label: `${key}${this.cryptoService.generateRandom()}`,
+      walletName => walletTransactions.push({
+        walletName,
+        label: `${walletName}${BITCOIN_BLOCKCHAIN_NAME}_${tx.txid}_fee`,
         data: {
           txid: tx.txid,
           vout: -1,

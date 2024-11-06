@@ -418,6 +418,7 @@ export function convertPaymentHistoryToPaymentHistoryData(
     ? currencyExchangeRateAtPaymentTime * item.amountUsd : null
 
   const res: PaymentHistoryData = {
+    accountId: item.accountId,
     paymentId: item.paymentId,
 
     block: item.block,
@@ -448,7 +449,7 @@ export function convertPaymentHistoryToPaymentHistoryData(
     currencyExchangeRateAtPaymentTime: currencyExchangeRateAtPaymentTime,
     currencyExchangeRateAtCurTime: currentExchangeRate ?? null,
 
-    comment: item.comment,
+    paymentSuccess: item.paymentSuccess,
     ipnResult: item.ipnResult
   }
 

@@ -21,7 +21,7 @@ export default function useTokenConvert(): ContractCallResult<PaymentDetails> {
   const [details, setDetails] = useState<string | undefined>(undefined)
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
   const [error, setError] = useState<Error | undefined>(undefined)
-  const [requestId, setRequestId] = useState<string | undefined>('75482fab-09a3-479f-a17c-e13d5b07c0ab')
+  const [requestId, setRequestId] = useState<string | undefined>(undefined)
 
   const { status: switchChainStatus, error: switchChainError, switchChain } = useSwitchChain()
   const { chainId: currentChainId } = useAccount()

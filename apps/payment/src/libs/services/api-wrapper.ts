@@ -178,12 +178,12 @@ export class ApiWrapper {
     }
   }
 
-  public successRequest(id: string, blockchain: string, txid: string, currency: string, amountCurrency: number, language: string, email: string | null): ApiRequest {
+  public successRequest(id: string, paymentId: string, blockchain: string, transaction: string, index: number, currency: string, amountCurrency: number, language: string, email: string | null): ApiRequest {
     return {
-      url: this.getSuccessUrl(id, blockchain, txid),
+      url: this.getSuccessUrl(id, paymentId),
       method: 'POST',
       body: JSON.stringify({
-        blockchain, txid, currency, amountCurrency, language, email
+        blockchain, transaction, index, currency, amountCurrency, language, email
       })
     }
   }
@@ -194,9 +194,9 @@ export class ApiWrapper {
     }
   }
 
-  public paymentHistoryRequest(id: string, paymentId: string): ApiRequest {
+  public paymentLogsRequest(id: string, paymentId: string): ApiRequest {
     return {
-      url: this.getPaymentHistoryUrl(id, paymentId),
+      url: this.getPaymentLogsUrl(id, paymentId),
       method: 'GET'
     }
   }
@@ -237,12 +237,12 @@ export class ApiWrapper {
     return `{baseUrlApi}/api/payment/zap/status?${params}`
   }
 
-  private getSuccessUrl(id: string, blockchain: string, txid: string): string {
-    return `{baseUrlApi}/api/payment/success/${id}/${blockchain}/${txid}`
+  private getSuccessUrl(id: string, paymentId: string): string {
+    return `{baseUrlApi}/api/payment/success/${id}/${paymentId}`
   }
 
-  private getPaymentHistoryUrl(id: string, paymentId: string): string {
-    return `{baseUrlApi}/api/payment/history/${id}/${paymentId}`
+  private getPaymentLogsUrl(id: string, paymentId: string): string {
+    return `{baseUrlApi}/api/payment/log/${id}/${paymentId}`
   }
 
   private getExchangeRateUrl(currency: string): string {

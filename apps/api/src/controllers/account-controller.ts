@@ -6,7 +6,7 @@ import { AccountCommonSettings, AccountNotificationSettings, AccountPaymentSetti
 import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 
-import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, assertUrl, minifyToken, processControllerError, tryParseFloat, tryParseInt } from '../utils/utils'
+import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, assertUrl, minifyToken, processControllerError, tryParseInt } from '../utils/utils'
 import { AccountService } from '../services/account-service'
 import { ExchangeRateApiService } from '../services/exchange-rate-api-service'
 import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, CALLBACK_URL_MAX_LENGTH, COMMENT_MAX_LENGTH, CURRENCY_MAX_LENGTH, DEFAULT_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, LANGUAGE_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, PERMISSION_PRIORITY, SECRET_KEY_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
@@ -201,14 +201,15 @@ export class AccountController {
 
   public async withdraw(req: Request, res: Response, _next: NextFunction) {
     try {
-      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
-      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
-
+      const { id: accountId, blockchain } = req.params
       const { address, amount } = req.body
+
+      assertParam('id', accountId, ACCOUNT_ID_LENGTH)
+      assertParam('blockchain', blockchain, BLOCKCHAIN_MAX_LENGTH)
       assertParam('address', address, ADDRESS_MAX_LENGTH)
       assertParam('amount', amount)
 
-      const result = await this.accountService.withdraw(req.params.id, req.params.blockchain, address, amount)
+      const result = await this.accountService.withdraw(accountId, blockchain, address, amount)
       res.send(result)
     } catch (err) {
       processControllerError(res, err as Error)
@@ -395,22 +396,29 @@ export class AccountController {
 
   public async paymentSuccess(req: Request, res: Response, next: NextFunction) {
     try {
-      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
-      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
-      assertParam('txid', req.params.txid, TRANSACTION_MAX_LENGTH)
-      assertParam('language', req.body.language, LANGUAGE_MAX_LENGTH)
-      assertMaxLength('comment', req.body.comment, COMMENT_MAX_LENGTH)
-      assertParam('currency', req.body.currency, CURRENCY_MAX_LENGTH)
-      assertNumberParam('amount currency', req.body.amountCurrency)
+      const { id: accountId, paymentId } = req.params
+      const { blockchain, transaction, index, language, comment, currency, amountCurrency } = req.body
+
+      assertParam('id', accountId, ACCOUNT_ID_LENGTH)
+      assertParam('paymentId',paymentId, PAYMENT_ID_MAX_LENGTH)
+      assertParam('blockchain', blockchain, BLOCKCHAIN_MAX_LENGTH)
+      assertParam('transaction', transaction, TRANSACTION_MAX_LENGTH)
+      assertNumberParam('index', index)
+      assertParam('language', language, LANGUAGE_MAX_LENGTH)
+      assertMaxLength('comment', comment, COMMENT_MAX_LENGTH)
+      assertParam('currency', currency, CURRENCY_MAX_LENGTH)
+      assertNumberParam('amount currency', amountCurrency)
 
       await this.accountService.savePaymentSuccess(
-        req.params.id,
-        req.params.blockchain,
-        req.params.txid,
-        req.body.currency,
-        req.body.amountCurrency,
-        req.body.language,
-        req.body.comment
+        accountId,
+        paymentId,
+        blockchain,
+        transaction,
+        index,
+        currency,
+        amountCurrency,
+        language,
+        comment
       )
 
       res.send({})

@@ -56,7 +56,14 @@ export default function useTokensWithdraw(
         return acc
       }, [[], [], []] as [`0x${string}`[], `0x${string}`[], bigint[]])
 
-      return res ? [res[0], res[1], res[2], encodeStringToBytes('')] : undefined
+    return res
+      ? [
+        res[0],
+        res[1],
+        res[2],
+        encodeStringToBytes('') // paymentId
+      ]
+      : undefined
   }, [address, appSettings, blockchain, tokens])
 
   const {

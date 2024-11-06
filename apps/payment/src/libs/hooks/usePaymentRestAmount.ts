@@ -2,10 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useBlockchains, useExchangeRate, useTokens } from '../../states/settings/hook'
-import usePaymentHistory from './usePaymentHistory'
+import usePaymentLogs from './usePaymentLog'
 import usePaymentData from './usePaymentData'
 import { ApiRequestStatus } from '../../types/api-request'
-import { INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
+import { INFO_MESSAGE_PAYMENT_LOGS_ERROR } from '../../constants'
 import { useInfoMessages } from '../../states/application/hook'
 
 export default function usePaymentRestAmount() {
@@ -13,7 +13,7 @@ export default function usePaymentRestAmount() {
   const [receivedCurrencyAmount, setReceivedCurrencyAmount] = useState(0)
   const [lastTxId, setLastTxId] = useState<string | undefined>(undefined)
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
-  const isPaymentHistoryLoadingRef = useRef(false)
+  const isPaymentLogsLoadingRef = useRef(false)
 
   const { t } = useTranslation()
 
@@ -22,21 +22,21 @@ export default function usePaymentRestAmount() {
   const exchangeRate = useExchangeRate()
   const { amount: requiredCurrencyAmount } = usePaymentData()
 
-  const loadPaymentHistory = usePaymentHistory()
+  const loadPaymentLogs = usePaymentLogs()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
   const reloadHandler = useCallback(async () => {
-    removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
+    removeInfoMessage(INFO_MESSAGE_PAYMENT_LOGS_ERROR)
 
     if (!blockchains || !tokens || !exchangeRate) {
       return
     }
 
     try {
-      isPaymentHistoryLoadingRef.current = true
-      const result = await loadPaymentHistory(blockchains, tokens)
+      isPaymentLogsLoadingRef.current = true
+      const result = await loadPaymentLogs(blockchains, tokens)
 
-      const recentPaymentHistoryItem = result && result.length > 0
+      const recentPaymentLogItem = result && result.length > 0
         ? result.reduce((prev, current) => (prev.timestamp > current.timestamp) ? prev : current, result[0])
         : undefined
 
@@ -45,7 +45,7 @@ export default function usePaymentRestAmount() {
       const delta = requiredCurrencyAmount - receivedCurrencyAmountTmp
       const restCurrencyAmountTmp = delta <= 0 ? 0 : delta
 
-      setLastTxId(recentPaymentHistoryItem?.transaction);
+      setLastTxId(recentPaymentLogItem?.transaction)
       setReceivedCurrencyAmount(receivedCurrencyAmountTmp)
       setRestCurrencyAmount(restCurrencyAmountTmp)
       setStatus('success')
@@ -53,12 +53,12 @@ export default function usePaymentRestAmount() {
       setRestCurrencyAmount(requiredCurrencyAmount)
       setStatus('error')
 
-      addInfoMessage(t('hooks.payment_rest_amount.errors.load_error'), INFO_MESSAGE_PAYMENT_HISTORY_ERROR, 'error', error)
+      addInfoMessage(t('hooks.payment_rest_amount.errors.load_error'), INFO_MESSAGE_PAYMENT_LOGS_ERROR, 'error', error)
     }
-  }, [blockchains, tokens, exchangeRate, requiredCurrencyAmount, t, loadPaymentHistory, addInfoMessage, removeInfoMessage])
+  }, [blockchains, tokens, exchangeRate, requiredCurrencyAmount, t, loadPaymentLogs, addInfoMessage, removeInfoMessage])
 
   useEffect(() => {
-    if (!isPaymentHistoryLoadingRef.current) {
+    if (!isPaymentLogsLoadingRef.current) {
       reloadHandler()
     }
   }, [reloadHandler])

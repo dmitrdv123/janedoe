@@ -6,11 +6,11 @@ import './index.css'
 
 import { convertTimestampToDate, roundNumber } from '../../libs/utils'
 import { useInfoMessages } from '../../states/application/hook'
-import { CURRENCY_USD_SYMBOL, DEFAULT_CURRENCY_DECIMAL_PLACES, INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
+import { CURRENCY_USD_SYMBOL, DEFAULT_CURRENCY_DECIMAL_PLACES, INFO_MESSAGE_PAYMENT_LOGS_ERROR } from '../../constants'
 import TransactionHash from '../../components/TransactionHash'
 import SettingsLoader from '../../states/settings/loader'
-import usePaymentHistory from '../../libs/hooks/usePaymentHistory'
-import { PaymentHistoryData } from '../../types/payment-history'
+import usePaymentLogs from '../../libs/hooks/usePaymentLog'
+import { PaymentLogData } from '../../types/payment-log'
 import WalletAddress from '../../components/WalletAddress'
 import TokenDetails from '../../components/TokenDetails'
 import TokenAmount from '../../components/TokenAmount'
@@ -24,20 +24,20 @@ import { ApiRequestStatus } from '../../types/api-request'
 
 const PaymentStatus: React.FC = () => {
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
-  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryData[] | undefined>(undefined)
-  const isPaymentHistoryLoadingRef = useRef(false)
+  const [paymentLogs, setPaymentLogs] = useState<PaymentLogData[] | undefined>(undefined)
+  const isPaymentLogsLoadingRef = useRef(false)
 
   const { amount } = usePaymentData()
   const { t } = useTranslation()
 
-  const load = usePaymentHistory()
+  const load = usePaymentLogs()
   const blockchains = useBlockchains()
   const tokens = useTokens()
   const exchangeRate = useExchangeRate()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
 
   const reload = useCallback(async () => {
-    removeInfoMessage(INFO_MESSAGE_PAYMENT_HISTORY_ERROR)
+    removeInfoMessage(INFO_MESSAGE_PAYMENT_LOGS_ERROR)
     setStatus('processing')
 
     if (!blockchains || !tokens || !exchangeRate) {
@@ -45,24 +45,24 @@ const PaymentStatus: React.FC = () => {
     }
 
     try {
-      isPaymentHistoryLoadingRef.current = true
+      isPaymentLogsLoadingRef.current = true
       const result = await load(blockchains, tokens)
 
-      setPaymentHistory(result)
+      setPaymentLogs(result)
       setStatus('success')
     } catch (error) {
-      addInfoMessage(t('pages.payment_status.errors.payment_history_load_error'), INFO_MESSAGE_PAYMENT_HISTORY_ERROR, 'danger', error)
+      addInfoMessage(t('pages.payment_status.errors.payment_logs_load_error'), INFO_MESSAGE_PAYMENT_LOGS_ERROR, 'danger', error)
       setStatus('error')
     }
   }, [blockchains, tokens, exchangeRate, t, load, addInfoMessage, removeInfoMessage])
 
   useEffect(() => {
-    if (!isPaymentHistoryLoadingRef.current) {
+    if (!isPaymentLogsLoadingRef.current) {
       reload()
     }
   }, [reload])
 
-  const getPaymentHistory = (item: PaymentHistoryData) => {
+  const getPaymentLogs = (item: PaymentLogData) => {
     const blockchain = item.blockchain ?? undefined
     const token = item.token ?? undefined
 
@@ -136,8 +136,8 @@ const PaymentStatus: React.FC = () => {
     )
   }
 
-  const isDone = (paymentHistoryToUse: PaymentHistoryData[], amountToUse: number): boolean => {
-    const receivedAmount = paymentHistoryToUse.reduce(
+  const isDone = (paymentLogsToUse: PaymentLogData[], amountToUse: number): boolean => {
+    const receivedAmount = paymentLogsToUse.reduce(
       (total, item) => total + (item.amountCurrencyAtPaymentTime ?? 0)
       , 0
     )
@@ -159,7 +159,7 @@ const PaymentStatus: React.FC = () => {
             <PaymentDataInfo />
           </div>
 
-          {(status === 'success' && paymentHistory && isDone(paymentHistory, amount)) && (
+          {(status === 'success' && paymentLogs && isDone(paymentLogs, amount)) && (
             <Alert variant="success">
               {t('pages.payment_status.success')}
             </Alert>
@@ -199,7 +199,7 @@ const PaymentStatus: React.FC = () => {
                 </tr>
               )}
 
-              {(status === 'success' && paymentHistory && paymentHistory.length === 0) && (
+              {(status === 'success' && paymentLogs && paymentLogs.length === 0) && (
                 <tr>
                   <td colSpan={7}>
                     {t('pages.payment_status.table_no_payments')}
@@ -207,7 +207,7 @@ const PaymentStatus: React.FC = () => {
                 </tr>
               )}
 
-              {(status === 'success' && paymentHistory && paymentHistory.length > 0) && paymentHistory.map(item => getPaymentHistory(item))}
+              {(status === 'success' && paymentLogs && paymentLogs.length > 0) && paymentLogs.map(item => getPaymentLogs(item))}
             </tbody>
           </Table>
         </Container>

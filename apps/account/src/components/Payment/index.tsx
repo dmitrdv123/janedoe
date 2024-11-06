@@ -32,6 +32,7 @@ const Payment: React.FC = () => {
   const [selectedTokenAmountFormatted, setSelectedTokenAmountFormatted] = useState<string | undefined>(undefined)
   const [selectedComment, setSelectedComment] = useState<string | undefined>(undefined)
   const [payResults, setPayResults] = useState<{ [key: string]: WithdrawResult }>({})
+  const [isValid, setIsValid] = useState<boolean>(false)
 
   const { t, i18n } = useTranslation()
   const { clearInfoMessage } = useInfoMessages()
@@ -109,7 +110,7 @@ const Payment: React.FC = () => {
       return undefined
     }
 
-    return parseToBigNumber(amountNum, selectedToken.decimals).toString()
+    return parseToBigNumber(amountNum, selectedToken.decimals)
   }, [selectedToken, selectedTokenAmountFormatted])
 
   const selectBlockchainHandler = useCallback((blockchainToUpdate: BlockchainMeta | undefined) => {
@@ -171,8 +172,10 @@ const Payment: React.FC = () => {
         if (selectedBlockchain?.name && selectedCurrency?.symbol && currencyAmountNum !== undefined && hash) {
           await successPayment(
             ApiWrapper.instance.successRequest(
+              [blockchain.name.toLocaleLowerCase(), hash, 0].join('_'),
               selectedBlockchain.name,
               hash,
+              0,
               selectedCurrency.symbol,
               currencyAmountNum,
               i18n.resolvedLanguage ?? 'EN',
@@ -279,7 +282,7 @@ const Payment: React.FC = () => {
     setSelectedCurrencyAmount(current => {
       if (!current) {
         const amount = tryParseFloat(
-          new URLSearchParams(location.search).get('amount')
+          new URLSearchParams(location.search).get('currencyAmount')
         )
         if (amount) {
           return amount.toString()
@@ -314,6 +317,17 @@ const Payment: React.FC = () => {
       setSelectedTokenAmountFormatted('')
     }
   }, [exchangeRate.data, selectedCurrencyAmount, selectedToken?.decimals, selectedToken?.usdPrice])
+
+  useEffect(() => {
+    const res = !!selectedBlockchain
+      && !!selectedToken
+      && !!selectedAddress
+      && !!selectedTokenAmount
+      && selectedTokenAmount > BigInt(0)
+      && (!selectedComment || selectedComment.length <= PAYMENT_MAX_COMMENT_LENGTH)
+
+    setIsValid(res)
+  }, [selectedAddress, selectedBlockchain, selectedComment, selectedToken, selectedTokenAmount])
 
   return (
     <>
@@ -428,6 +442,7 @@ const Payment: React.FC = () => {
             selectedToken={selectedToken}
             selectedAddress={selectedAddress}
             selectedTokenAmount={selectedTokenAmount}
+            disabled={!isValid}
             onSuccess={successHandler}
           />
         </div>

@@ -3,12 +3,12 @@ import { NextFunction, Request, Response } from 'express'
 import { SupportTicket } from '@repo/dao/dist/src/interfaces/support-ticket'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 
-import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, minifyToken, paramsFromUrl, processControllerError, tryParseFloat } from '../utils/utils'
+import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, minifyToken, paramsFromUrl, processControllerError, tryParseInt } from '../utils/utils'
 import { PaymentService } from '../services/payment-service'
 import { ExchangeRateApiService } from '../services/exchange-rate-api-service'
 import { MetaService } from '../services/meta-service'
 import { SupportService } from '../services/support-service'
-import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, COMMENT_MAX_LENGTH, CURRENCY_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, LANGUAGE_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
+import { ADDRESS_MAX_LENGTH, BLOCKCHAIN_MAX_LENGTH, CURRENCY_MAX_LENGTH, DESC_MAX_LENGTH, EMAIL_MAX_LENGTH, LANGUAGE_MAX_LENGTH, PAYMENT_ID_MAX_LENGTH, TICKET_TYPE_MAX_LENGTH, TOKEN_MAX_LENGTH, TRANSACTION_MAX_LENGTH } from '../constants'
 import { SettingsService } from '../services/settings-service'
 import { RangoService } from '../services/rango-service'
 
@@ -93,10 +93,12 @@ export class PaymentController {
 
   public async payments(req: Request, res: Response, next: NextFunction) {
     try {
-      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
-      assertParam('payment id', req.params.paymentId, PAYMENT_ID_MAX_LENGTH)
+      const { id: accountId, paymentId } = req.params
 
-      const data = await this.paymentService.loadPaymentHistory(req.params.id, req.params.paymentId)
+      assertParam('id', accountId, ACCOUNT_ID_LENGTH)
+      assertParam('payment id', paymentId, PAYMENT_ID_MAX_LENGTH)
+
+      const data = await this.paymentService.listPaymentLogs(accountId, paymentId)
       res.send({ data })
     } catch (err) {
       processControllerError(res, err as Error)
@@ -124,24 +126,31 @@ export class PaymentController {
     }
   }
 
-  public async success(req: Request, res: Response, next: NextFunction) {
+  public async paymentSuccess(req: Request, res: Response, next: NextFunction) {
     try {
-      assertParam('id', req.params.id, ACCOUNT_ID_LENGTH)
-      assertParam('blockchain', req.params.blockchain, BLOCKCHAIN_MAX_LENGTH)
-      assertParam('txid', req.params.txid, TRANSACTION_MAX_LENGTH)
-      assertParam('language', req.body.language, LANGUAGE_MAX_LENGTH)
-      assertParam('email', req.body.email, EMAIL_MAX_LENGTH)
-      assertParam('currency', req.body.currency, CURRENCY_MAX_LENGTH)
-      assertNumberParam('amount currency', req.body.amountCurrency)
+      const { id: accountId, paymentId } = req.params
+      const { blockchain, transaction, index, language, email, currency, amountCurrency } = req.body
 
-      await this.paymentService.saveSuccess(
-        req.params.id,
-        req.params.blockchain,
-        req.params.txid,
-        req.body.currency,
-        req.body.amountCurrency,
-        req.body.email,
-        req.body.language
+      assertParam('id', accountId, ACCOUNT_ID_LENGTH)
+      assertParam('paymentId', paymentId, PAYMENT_ID_MAX_LENGTH)
+      assertParam('blockchain', blockchain, BLOCKCHAIN_MAX_LENGTH)
+      assertParam('transaction', transaction, TRANSACTION_MAX_LENGTH)
+      assertNumberParam('index', index)
+      assertParam('language', language, LANGUAGE_MAX_LENGTH)
+      assertParam('email', email, EMAIL_MAX_LENGTH)
+      assertParam('currency', currency, CURRENCY_MAX_LENGTH)
+      assertNumberParam('amount currency', amountCurrency)
+
+      await this.paymentService.savePaymentSuccess(
+        accountId,
+        paymentId,
+        blockchain,
+        transaction,
+        index,
+        currency,
+        amountCurrency,
+        email,
+        language
       )
 
       res.send({})

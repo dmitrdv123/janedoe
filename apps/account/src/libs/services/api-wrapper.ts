@@ -242,12 +242,12 @@ export class ApiWrapper {
     }
   }
 
-  public successRequest(blockchain: string, txid: string, currency: string, amountCurrency: number, language: string, comment: string | null): ApiRequest {
+  public successRequest(paymentId: string, blockchain: string, transaction: string, index: number, currency: string, amountCurrency: number, language: string, comment: string | null): ApiRequest {
     return {
-      url: this.getSuccessUrl(blockchain, txid),
+      url: this.getSuccessUrl(paymentId),
       method: 'POST',
       body: JSON.stringify({
-        blockchain, txid, currency, amountCurrency, language, comment
+        blockchain, transaction, index, currency, amountCurrency, language, comment
       })
     }
   }
@@ -348,8 +348,8 @@ export class ApiWrapper {
     return `{baseUrlApi}/api/account/support/{id}`
   }
 
-  private getSuccessUrl(blockchain: string, txid: string): string {
-    return `{baseUrlApi}/api/account/payment/success/{id}/${blockchain}/${txid}`
+  private getSuccessUrl(paymentId: string): string {
+    return `{baseUrlApi}/api/account/payment/success/{id}/${paymentId}`
   }
 
   private getNonceUrl(): string {

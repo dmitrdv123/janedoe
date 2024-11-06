@@ -23,7 +23,7 @@ export class NotificationDaoImpl implements NotificationDao {
       })
     }
 
-    return await queryItems<Notification<T>>(this.dynamoService, 'notification', request)
+    return await queryItems<Notification<T>>(this.dynamoService, request, 'notification')
   }
 
   public async saveNotification<T>(notification: Notification<T>): Promise<void> {

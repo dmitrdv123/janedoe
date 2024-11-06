@@ -10,14 +10,14 @@ import { ExchangeRateApiService } from '../exchange-rate-api-service'
 import { COMMON_SETTINGS_DEFAULT_CURRENCY, DEFAULT_FIAT_DECIMAL_PLACES } from '../../constants'
 import { AccountService } from '../account-service'
 import { roundNumber } from '../../utils/utils'
-import { PaymentService } from '../payment-service'
-import { PaymentResultService } from '../payment-result-service'
+import { PaymentSuccessService } from '../payment-success-service'
+import { PaymentLogService } from '../payment-log-service'
 
 export class IpnNotificationObserver implements NotificationObserver {
   public constructor(
     private accountService: AccountService,
-    private paymentService: PaymentService,
-    private paymentResultService: PaymentResultService,
+    private paymentLogService: PaymentLogService,
+    private paymentSuccessService: PaymentSuccessService,
     private ipnService: IpnService,
     private exchangeRateApiService: ExchangeRateApiService
   ) { }
@@ -41,7 +41,7 @@ export class IpnNotificationObserver implements NotificationObserver {
       ? paymentLog.amountUsd * currencyExchangeRate
       : null
 
-    const payments = await this.paymentService.loadPaymentHistory(paymentLog.accountId, paymentLog.paymentId)
+    const payments = await this.paymentLogService.listPaymentHistory(paymentLog.accountId, {paymentId: paymentLog.paymentId})
     const totalAmountUsd = payments.reduce((acc, cur) => {
       if (cur.amountUsd) {
         acc = acc ? acc + cur.amountUsd : cur.amountUsd
@@ -66,7 +66,9 @@ export class IpnNotificationObserver implements NotificationObserver {
       return acc
     }, null as number | null)
 
-    const paymentSuccess = await this.paymentResultService.loadSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
+    const paymentSuccess = await this.paymentSuccessService.loadPaymentSuccess(
+      paymentLog.accountId, paymentLog.paymentId, paymentLog.blockchain, paymentLog.transaction, paymentLog.index
+    )
 
     const ipn: IpnData = {
       accountId: paymentLog.accountId,

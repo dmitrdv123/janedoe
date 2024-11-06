@@ -154,14 +154,18 @@ export class BitcoinDaoImpl implements BitcoinDao {
   }
 
   public async listWalletAddresses(walletName: string): Promise<BitcoinWalletAddress[]> {
-    const walletAddresses: BitcoinWalletAddress[] = await queryItems(this.dynamoService, 'walletAddress', {
-      TableName: appConfig.TABLE_NAME,
-      KeyConditionExpression: 'pk = :pk and begins_with(sk, :sk_prefix)',
-      ExpressionAttributeValues: marshall({
-        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX),
-        ':sk_prefix': generateKey(walletName, '')
-      })
-    })
+    const walletAddresses: BitcoinWalletAddress[] = await queryItems(
+      this.dynamoService,
+      {
+        TableName: appConfig.TABLE_NAME,
+        KeyConditionExpression: 'pk = :pk and begins_with(sk, :sk_prefix)',
+        ExpressionAttributeValues: marshall({
+          ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX),
+          ':sk_prefix': generateKey(walletName, '')
+        })
+      },
+      'walletAddress'
+    )
 
     return walletAddresses.map(item => {
       const walletAddress: BitcoinWalletAddress = { ...item }
@@ -171,13 +175,17 @@ export class BitcoinDaoImpl implements BitcoinDao {
   }
 
   public async listAllWalletAddresses(): Promise<BitcoinWalletAddress[]> {
-    return await queryItems(this.dynamoService, 'walletAddress', {
-      TableName: appConfig.TABLE_NAME,
-      KeyConditionExpression: 'pk = :pk',
-      ExpressionAttributeValues: marshall({
-        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX)
-      })
-    })
+    return await queryItems(
+      this.dynamoService,
+      {
+        TableName: appConfig.TABLE_NAME,
+        KeyConditionExpression: 'pk = :pk',
+        ExpressionAttributeValues: marshall({
+          ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_WALLET_ADDRESS_PREFIX)
+        })
+      },
+      'walletAddress'
+    )
   }
 
   public async updateWalletAddressCounter(walletName: string): Promise<number> {
@@ -281,36 +289,48 @@ export class BitcoinDaoImpl implements BitcoinDao {
   }
 
   public async listWalletUtxos(walletName: string): Promise<BitcoinUtxo[]> {
-    return await queryItems(this.dynamoService, 'utxo', {
-      TableName: appConfig.TABLE_NAME,
-      IndexName: 'gsi_pk1-gsi_sk1-index',
-      KeyConditionExpression: 'gsi_pk1 = :pk',
-      ExpressionAttributeValues: marshall({
-        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, walletName)
-      })
-    })
+    return await queryItems(
+      this.dynamoService,
+      {
+        TableName: appConfig.TABLE_NAME,
+        IndexName: 'gsi_pk1-gsi_sk1-index',
+        KeyConditionExpression: 'gsi_pk1 = :pk',
+        ExpressionAttributeValues: marshall({
+          ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, walletName)
+        })
+      },
+      'utxo'
+    )
   }
 
   public async listWalletAddressUtxos(walletName: string, label: string): Promise<BitcoinUtxo[]> {
-    return await queryItems(this.dynamoService, 'utxo', {
-      TableName: appConfig.TABLE_NAME,
-      IndexName: 'gsi_pk1-gsi_sk1-index',
-      KeyConditionExpression: 'gsi_pk1 = :pk and gsi_sk1= :sk',
-      ExpressionAttributeValues: marshall({
-        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, walletName),
-        ':sk': label,
-      })
-    })
+    return await queryItems(
+      this.dynamoService,
+      {
+        TableName: appConfig.TABLE_NAME,
+        IndexName: 'gsi_pk1-gsi_sk1-index',
+        KeyConditionExpression: 'gsi_pk1 = :pk and gsi_sk1= :sk',
+        ExpressionAttributeValues: marshall({
+          ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX, walletName),
+          ':sk': label,
+        })
+      },
+      'utxo'
+    )
   }
 
   public async listAllUtxos(): Promise<BitcoinUtxo[]> {
-    return await queryItems(this.dynamoService, 'utxo', {
-      TableName: appConfig.TABLE_NAME,
-      KeyConditionExpression: 'pk = :pk',
-      ExpressionAttributeValues: marshall({
-        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX)
-      })
-    })
+    return await queryItems(
+      this.dynamoService,
+      {
+        TableName: appConfig.TABLE_NAME,
+        KeyConditionExpression: 'pk = :pk',
+        ExpressionAttributeValues: marshall({
+          ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_UTXO_PREFIX)
+        })
+      },
+      'utxo'
+    )
   }
 
   public async saveWalletTransactions(walletTransactions: BitcoinWalletTransaction[]): Promise<void> {
@@ -334,15 +354,19 @@ export class BitcoinDaoImpl implements BitcoinDao {
   }
 
   public async listWalletTransactions(fromBlockheight: number, toBlockheight: number): Promise<BitcoinWalletTransaction[]> {
-    return await queryItems(this.dynamoService, 'transactionOutput', {
-      TableName: appConfig.TABLE_NAME,
-      IndexName: 'gsi_pk2-gsi_sk2-index',
-      KeyConditionExpression: 'gsi_pk2 = :pk AND gsi_sk2 BETWEEN :fromBlockheight AND :toBlockheight',
-      ExpressionAttributeValues: marshall({
-        ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_TRANSACTION_PREFIX),
-        ':fromBlockheight': fromBlockheight,
-        ':toBlockheight': toBlockheight
-      })
-    })
+    return await queryItems(
+      this.dynamoService,
+      {
+        TableName: appConfig.TABLE_NAME,
+        IndexName: 'gsi_pk2-gsi_sk2-index',
+        KeyConditionExpression: 'gsi_pk2 = :pk AND gsi_sk2 BETWEEN :fromBlockheight AND :toBlockheight',
+        ExpressionAttributeValues: marshall({
+          ':pk': generateKey(BitcoinDaoImpl.PK_PREFIX, BitcoinDaoImpl.PK_TRANSACTION_PREFIX),
+          ':fromBlockheight': fromBlockheight,
+          ':toBlockheight': toBlockheight
+        })
+      },
+      'transactionOutput'
+    )
   }
 }

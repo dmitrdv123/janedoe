@@ -21,7 +21,7 @@
       "at_cur_time": "At present time:",
       "at_payment_time": "At payment time:",
       "errors": {
-        "payment_history_load_error": "Failed to load payment history"
+        "payment_logs_load_error": "Failed to load payments"
       }
     }
   },

@@ -2,7 +2,6 @@ import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import { Account, AccountProfile } from '@repo/dao/dist/src/interfaces/account-profile'
 import { SharedAccount } from '@repo/dao/dist/src/interfaces/shared-account'
 import { IpnData, IpnKey, IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
-import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { AccountApiSettings, AccountCommonSettings, AccountNotificationSettings, AccountPaymentSettings, AccountSettings, AccountTeamSettings } from '@repo/dao/dist/src/interfaces/account-settings'
 import { PaymentFilter } from '@repo/dao/dist/src/interfaces/payment-filter'
 import { AppSettings } from '@repo/dao/dist/src/interfaces/settings'
@@ -15,15 +14,15 @@ import { TransactionCreationResult } from '@repo/common/dist/src/interfaces/tran
 import { ACCOUNT_SECRET_LENGTH, BLOCKCHAIN_BTC, COMMON_SETTINGS_DEFAULT_CURRENCY, COMMON_SETTINGS_MAX_DESCRIPTION_LENGTH } from '../constants'
 import { logger } from '../utils/logger'
 import { IpnService } from './ipn-service'
-import { PaymentHistory, PaymentHistoryResponse } from '../interfaces/payment-history'
+import { PaymentHistoryResponse } from '../interfaces/payment-history'
 import { PaymentLogService } from './payment-log-service'
-import { convertPaymentLogToPaymentHistoryData, getAddressOrDefault, isNullOrEmptyOrWhitespaces, isValidUrl } from '../utils/utils'
+import { convertPaymentHistoryToPaymentHistoryData, getAddressOrDefault, isNullOrEmptyOrWhitespaces, isValidUrl } from '../utils/utils'
 import { ExchangeRateApiService } from './exchange-rate-api-service'
 import { MetaService } from './meta-service'
 import { PaymentLogKey } from '../interfaces/payment-log'
 import { SettingsService } from './settings-service'
 import { ServiceError } from '../errors/service-error'
-import { PaymentResultService } from './payment-result-service'
+import { PaymentSuccessService } from './payment-success-service'
 
 export interface AccountService {
   loadAccount(id: string): Promise<Account | undefined>
@@ -56,7 +55,7 @@ export interface AccountService {
   loadPaymentHistory(id: string, filter: PaymentFilter, last: PaymentLogKey | undefined, size: number | undefined): Promise<PaymentHistoryResponse>
   loadPaymentHistoryDataAsCsv(id: string, filter: PaymentFilter): Promise<string[][]>
 
-  savePaymentSuccess(accountId: string, blockchain: string, txid: string, currency: string, amountCurrency: number, language: string, comment: string | undefined): Promise<void>
+  savePaymentSuccess(accountId: string, paymentId: string, blockchain: string, transaction: string, index: number, currency: string, amountCurrency: number, language: string, comment: string): Promise<void>
 }
 
 export class AccountServiceImpl implements AccountService {
@@ -66,14 +65,14 @@ export class AccountServiceImpl implements AccountService {
     private cryptoService: CryptoService,
     private ipnService: IpnService,
     private paymentLogService: PaymentLogService,
-    private paymentResultService: PaymentResultService,
+    private paymentSuccessService: PaymentSuccessService,
     private exchangeRateApiService: ExchangeRateApiService,
     private metaService: MetaService,
     private accountDao: AccountDao
   ) { }
 
   public async checkPaymentHistoryUpdates(id: string, from: number): Promise<number> {
-    const filteredPaymentLogs = await this.loadPaymentLogs(id, {
+    const filteredPaymentLogs = await this.paymentLogService.listPaymentHistory(id, {
       timestampFrom: from + 1
     })
 
@@ -81,7 +80,7 @@ export class AccountServiceImpl implements AccountService {
   }
 
   public async loadPaymentHistory(id: string, filter: PaymentFilter, last: PaymentLogKey | undefined, size: number | undefined): Promise<PaymentHistoryResponse> {
-    const filteredPaymentLogs = await this.loadPaymentLogs(id, filter)
+    const filteredPaymentLogs = await this.paymentLogService.listPaymentHistory(id, filter)
 
     const lastIdx = last ?
       filteredPaymentLogs.findIndex(
@@ -104,121 +103,104 @@ export class AccountServiceImpl implements AccountService {
     const startIdx = lastIdx + 1
     const endIdx = size ? startIdx + size : undefined
     logger.debug(`AccountService: start to slice payment logs from ${startIdx} to ${endIdx} and convert to payment history`)
-    const paymentHistory = await Promise.all(
-      filteredPaymentLogs
-        .slice(startIdx, endIdx)
-        .map(paymentLog => this.convertPaymentLogToPaymentHistory(paymentLog))
-    )
-    logger.debug(`AccountService: ${paymentHistory.length} items after slicing and converting payment logs to payment history`)
-    logger.debug(paymentHistory)
+    const data = filteredPaymentLogs.slice(startIdx, endIdx)
+    logger.debug(`AccountService: ${data.length} items after slicing and converting payment logs to payment history`)
+    logger.debug(data)
 
     return {
-      data: paymentHistory,
+      data,
       totalSize: filteredPaymentLogs.length
     }
   }
 
   public async loadPaymentHistoryDataAsCsv(id: string, filter: PaymentFilter): Promise<string[][]> {
     const headers = [
-      'Payment Id',
+      '"Payment Id"',
 
-      'Block',
-      'Timestamp',
-      'Transaction',
-      'Index',
+      '"Block"',
+      '"Timestamp"',
+      '"Transaction"',
+      '"Index"',
 
-      'From',
-      'To',
-      'Direction',
+      '"From"',
+      '"To"',
+      '"Direction"',
 
-      'Amount',
-      'Amount USD (Payment Time)',
-      'Amount USD (Current Time)',
-      'Amount Currency (Payment Time)',
-      'Amount Currency (Current Time)',
+      '"Amount"',
+      '"Amount USD (Payment Time)"',
+      '"Amount USD (Current Time)"',
+      '"Amount Currency (Payment Time)"',
+      '"Amount Currency (Current Time)"',
 
-      'Blockchain',
-      'Token Address',
-      'Token Symbol',
-      'Token Decimals',
-      'Token USD Price (Payment Time)',
-      'Token USD Price (Current Time)',
+      '"Blockchain"',
+      '"Token Address"',
+      '"Token Symbol"',
+      '"Token Decimals"',
+      '"Token USD Price (Payment Time)"',
+      '"Token USD Price (Current Time)"',
 
-      'Currency',
-      'Currency Exchange Rate (Payment Time)',
-      'Currency Exchange Rate (Current Time)',
+      '"Currency"',
+      '"Currency Exchange Rate (Payment Time)"',
+      '"Currency Exchange Rate (Current Time)"',
 
-      'Comment',
+      '"Comment"',
 
-      'Notification Result'
+      '"Notification Result"'
     ]
 
-    const [settings, paymentLogs, meta] = await Promise.all([
+    const [settings, paymentHistory, meta] = await Promise.all([
       this.loadAccountSettings(id),
-      this.loadPaymentLogs(id, filter),
+      this.paymentLogService.listPaymentHistory(id, filter),
       this.metaService.meta()
     ])
 
     const now = Math.floor(Date.now() / 1000)
-    const timestamps = paymentLogs.map(item => item.timestamp)
+    const timestamps = paymentHistory.map(item => item.timestamp)
     const currency = settings?.commonSettings.currency ?? COMMON_SETTINGS_DEFAULT_CURRENCY
     const currencyExchangeRates = await this.exchangeRateApiService.exchangeRates(currency, [...timestamps, now])
 
-    const paymentHistoryData = await Promise.all(
-      paymentLogs.map(async item => {
-        const ipnResult = await this.ipnService.loadIpnResult({
-          accountId: item.accountId,
-          paymentId: item.paymentId,
-          blockchain: item.blockchain,
-          transaction: item.transaction,
-          index: item.index
-        })
-
-        const paymentSuccess = await this.paymentResultService.loadSuccess(item.accountId, item.blockchain, item.transaction)
-
-        return convertPaymentLogToPaymentHistoryData(
-          item,
-          ipnResult,
-          paymentSuccess?.comment ?? null,
-          meta,
-          currency,
-          currencyExchangeRates[now],
-          currencyExchangeRates
-        )
-      })
+    const paymentHistoryData = paymentHistory.map(item => convertPaymentHistoryToPaymentHistoryData(
+      item,
+      meta,
+      currency,
+      currencyExchangeRates[now],
+      currencyExchangeRates
+    )
     )
 
     const data = paymentHistoryData.map(item => {
       return [
-        item.paymentId, // 'Payment Id'
+        this.wrapByQuote(item.paymentId), // 'Payment Id'
 
-        item.block, // 'Block'
-        item.timestamp.toString(), // 'Timestamp'
-        item.transaction, // 'Transaction'
-        item.index.toString(), // 'Index'
+        this.wrapByQuote(item.block), // 'Block'
+        this.wrapByQuote(item.timestamp.toString()), // 'Timestamp'
+        this.wrapByQuote(item.transaction), // 'Transaction'
+        this.wrapByQuote(item.index.toString()), // 'Index'
 
-        item.from ?? '', // 'From'
-        item.to, // 'To'
-        item.direction, // 'Direction'
+        this.wrapByQuote(item.from), // 'From'
+        this.wrapByQuote(item.to), // 'To'
+        this.wrapByQuote(item.direction), // 'Direction'
 
-        item.amount, // 'Amount'
-        item.amountUsdAtPaymentTime?.toString() ?? '', // 'Amount USD (Payment Time)'
-        item.amountUsdAtCurTime?.toString() ?? '', // 'Amount USD (Current Time)'
-        item.amountCurrencyAtPaymentTime?.toString() ?? '', // 'Amount Currency (Payment Time)'
-        item.amountCurrencyAtCurTime?.toString() ?? '', // 'Amount Currency (Current Time)',
+        this.wrapByQuote(item.amount), // 'Amount'
+        this.wrapByQuote(item.amountUsdAtPaymentTime?.toString()), // 'Amount USD (Payment Time)'
+        this.wrapByQuote(item.amountUsdAtCurTime?.toString()), // 'Amount USD (Current Time)'
+        this.wrapByQuote(item.amountCurrencyAtPaymentTime?.toString()), // 'Amount Currency (Payment Time)'
+        this.wrapByQuote(item.amountCurrencyAtCurTime?.toString()), // 'Amount Currency (Current Time)',
 
-        item.blockchain, // 'Blockchain'
-        item.tokenAddress ?? '', // 'Token Address'
-        item.tokenSymbol ?? '', // 'Token Symbol'
-        item.tokenDecimals?.toString() ?? '', // 'Token Decimals'
-        item.tokenUsdPriceAtPaymentTime?.toString() ?? '', // 'Token USD Price (Payment Time)',
-        item.tokenUsdPriceAtCurTime?.toString() ?? '', // 'Token USD Price (Current Time)',
+        this.wrapByQuote(item.blockchain), // 'Blockchain'
+        this.wrapByQuote(item.tokenAddress), // 'Token Address'
+        this.wrapByQuote(item.tokenSymbol), // 'Token Symbol'
+        this.wrapByQuote(item.tokenDecimals?.toString()), // 'Token Decimals'
+        this.wrapByQuote(item.tokenUsdPriceAtPaymentTime?.toString()), // 'Token USD Price (Payment Time)',
+        this.wrapByQuote(item.tokenUsdPriceAtCurTime?.toString()), // 'Token USD Price (Current Time)',
 
-        item.currency ?? '', // 'Currency'
-        item.currencyExchangeRateAtPaymentTime?.toString() ?? '', // 'Currency Exchange Rate' (Payment Time)
-        item.currencyExchangeRateAtCurTime?.toString() ?? '', // 'Currency Exchange Rate' (Current Time)
+        this.wrapByQuote(item.currency), // 'Currency'
+        this.wrapByQuote(item.currencyExchangeRateAtPaymentTime?.toString()), // 'Currency Exchange Rate' (Payment Time)
+        this.wrapByQuote(item.currencyExchangeRateAtCurTime?.toString()), // 'Currency Exchange Rate' (Current Time)
 
-        item.ipnResult?.error ? 'error' : (item.ipnResult?.result ? 'success' : '') // 'Notification Result'
+        this.wrapByQuote(item.paymentSuccess?.comment),
+
+        this.wrapByQuote(item.ipnResult?.error ? 'error' : (item.ipnResult?.result ? 'success' : '')) // 'Notification Result'
       ]
     })
 
@@ -469,59 +451,10 @@ export class AccountServiceImpl implements AccountService {
     return result
   }
 
-  public async loadPaymentLogs(id: string, filter: PaymentFilter): Promise<PaymentLog[]> {
-    logger.debug(`AccountService: start to list payment logs for id ${id} from ${filter.timestampFrom} to ${filter.timestampTo}`)
-    let paymentLogs = await this.paymentLogService.listPaymentLogs(id, filter)
-    logger.debug(`AccountService: found ${paymentLogs.length} payment logs`)
-    logger.debug(paymentLogs)
-
-    return paymentLogs
-  }
-
-  public async savePaymentSuccess(accountId: string, blockchain: string, txid: string, currency: string, amountCurrency: number, language: string, comment: string): Promise<void> {
+  public async savePaymentSuccess(accountId: string, paymentId: string, blockchain: string, transaction: string, index: number, currency: string, amountCurrency: number, language: string, comment: string): Promise<void> {
     logger.debug('AccountService: start to create payment success info')
-    await this.paymentResultService.saveSuccess(accountId, blockchain, txid, currency, amountCurrency, null, language, null, comment)
+    await this.paymentSuccessService.savePaymentSuccess(accountId, paymentId, blockchain, transaction, index, currency, amountCurrency, null, language, null, comment)
     logger.debug('AccountService: end to create payment success info')
-  }
-
-  private async convertPaymentLogToPaymentHistory(paymentLog: PaymentLog): Promise<PaymentHistory> {
-    const ipnResult = await this.ipnService.loadIpnResult({
-      accountId: paymentLog.accountId,
-      paymentId: paymentLog.paymentId,
-      blockchain: paymentLog.blockchain,
-      transaction: paymentLog.transaction,
-      index: paymentLog.index
-    })
-
-    const successResult = await this.paymentResultService.loadSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
-
-    const res: PaymentHistory = {
-      id: paymentLog.accountId,
-      paymentId: paymentLog.paymentId,
-
-      block: paymentLog.block,
-      timestamp: paymentLog.timestamp,
-      transaction: paymentLog.transaction,
-      index: paymentLog.index,
-
-      from: paymentLog.from,
-      to: paymentLog.to,
-      direction: paymentLog.direction,
-      amount: paymentLog.amount,
-      amountUsd: paymentLog.amountUsd,
-
-      blockchain: paymentLog.blockchain,
-      tokenAddress: paymentLog.tokenAddress,
-      tokenSymbol: paymentLog.tokenSymbol,
-      tokenDecimals: paymentLog.tokenDecimals,
-      tokenUsdPrice: paymentLog.tokenUsdPrice,
-
-      comment: successResult?.comment ?? null,
-
-      ipnResult: ipnResult ?? null
-    }
-
-    return res
   }
 
   private assertPaymentSettings(settings: AccountPaymentSettings): void {
@@ -779,5 +712,11 @@ export class AccountServiceImpl implements AccountService {
       default:
         throw new ServiceError(bitcoinCoreError.message, 'services.errors.bitcoin_errors.internal_server_error')
     }
+  }
+
+  private wrapByQuote(value: string | null | undefined): string {
+    return value
+      ? `"${value.replace(/"/g, '""')}"`
+      : '""'
   }
 }

@@ -1,7 +1,6 @@
 import { PaymentHistoryData } from '../interfaces/payment-history'
 import { PaymentLogService } from './payment-log-service'
-import { convertPaymentLogToPaymentHistoryData } from '../utils/utils'
-import { IpnService } from './ipn-service'
+import { convertPaymentHistoryToPaymentHistoryData } from '../utils/utils'
 import { ExchangeRateApiService } from './exchange-rate-api-service'
 import { logger } from '../utils/logger'
 import { COMMON_SETTINGS_DEFAULT_CURRENCY } from '../constants'
@@ -9,7 +8,6 @@ import { AccountService } from './account-service'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { MetaService } from './meta-service'
 import { SettingsService } from './settings-service'
-import { PaymentResultService } from './payment-result-service'
 
 export interface ApiService {
   loadPaymentHistory(id: string, from: number | undefined, to: number | undefined): Promise<PaymentHistoryData[]>
@@ -21,9 +19,7 @@ export class ApiServiceImpl implements ApiService {
   public constructor(
     private settingsService: SettingsService,
     private accountService: AccountService,
-    private ipnService: IpnService,
     private paymentLogService: PaymentLogService,
-    private paymentResultService: PaymentResultService,
     private exchangeRateApiService: ExchangeRateApiService,
     private metaService: MetaService
   ) { }
@@ -31,45 +27,29 @@ export class ApiServiceImpl implements ApiService {
   public async loadPaymentHistory(id: string, from?: number | undefined, to?: number | undefined): Promise<PaymentHistoryData[]> {
     logger.debug(`ApiService: start to load payment history for id ${id} from ${from} to ${to}`)
 
-    const [settings, paymentLogs, meta] = await Promise.all([
+    const [settings, paymentHistory, meta] = await Promise.all([
       this.accountService.loadAccountSettings(id),
-      this.paymentLogService.listPaymentLogs(id, { timestampFrom: from, timestampTo: to }),
+      this.paymentLogService.listPaymentHistory(id, { timestampFrom: from, timestampTo: to }),
       this.metaService.meta()
     ])
 
     const now = Math.floor(Date.now() / 1000)
-    const timestamps = paymentLogs.map(paymentLog => paymentLog.timestamp)
+    const timestamps = paymentHistory.map(item => item.timestamp)
     const currency = settings?.commonSettings.currency ?? COMMON_SETTINGS_DEFAULT_CURRENCY
     const currencyExchangeRates = await this.exchangeRateApiService.exchangeRates(currency, [...timestamps, now])
 
-    const paymentHistory = await Promise.all(
-      paymentLogs.map(async paymentLog => {
-        const ipnResult = await this.ipnService.loadIpnResult({
-          accountId: paymentLog.accountId,
-          paymentId: paymentLog.paymentId,
-          blockchain: paymentLog.blockchain,
-          transaction: paymentLog.transaction,
-          index: paymentLog.index
-        })
-
-        const paymentSuccess = await this.paymentResultService.loadSuccess(paymentLog.accountId, paymentLog.blockchain, paymentLog.transaction)
-
-        return convertPaymentLogToPaymentHistoryData(
-          paymentLog,
-          ipnResult,
-          paymentSuccess?.comment ?? null,
-          meta,
-          currency,
-          currencyExchangeRates[now],
-          currencyExchangeRates
-        )
-      })
-    )
+    const paymentHistoryData = paymentHistory.map(item => convertPaymentHistoryToPaymentHistoryData(
+      item,
+      meta,
+      currency,
+      currencyExchangeRates[now],
+      currencyExchangeRates
+    ))
 
     logger.debug('ApiService: end to load payment history')
-    logger.debug(paymentHistory)
+    logger.debug(paymentHistoryData)
 
-    return paymentHistory
+    return paymentHistoryData
   }
 
   public async loadBlockchains(): Promise<BlockchainMeta[]> {

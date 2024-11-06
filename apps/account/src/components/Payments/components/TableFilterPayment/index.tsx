@@ -5,29 +5,29 @@ import { Filter, FilterCircleFill } from 'react-bootstrap-icons'
 
 import { isNullOrEmptyOrWhitespaces } from '../../../../libs/utils'
 
-interface TableFilterDateProps {
+interface TableFilterPaymentProps {
   id: string
-  from: string
-  to: string
-  onChange: (from: string, to: string) => void
+  paymentId: string
+  comment: string
+  onChange: (paymentId: string, comment: string) => void
 }
 
-const TableFilterDate: React.FC<TableFilterDateProps> = (props) => {
-  const { id, from, to, onChange } = props
+const TableFilterPayment: React.FC<TableFilterPaymentProps> = (props) => {
+  const { id, paymentId, comment, onChange } = props
 
-  const [selectedFrom, setSelectedFrom] = useState<string>('')
-  const [selectedTo, setSelectedTo] = useState<string>('')
+  const [selectedPaymentId, setSelectedPaymentId] = useState<string>('')
+  const [selectedComment, setSelectedComment] = useState<string>('')
   const [show, setShow] = React.useState(false)
 
   const { t } = useTranslation()
 
   useEffect(() => {
-    setSelectedFrom(from)
-  }, [from])
+    setSelectedPaymentId(paymentId)
+  }, [paymentId])
 
   useEffect(() => {
-    setSelectedTo(to)
-  }, [to])
+    setSelectedComment(comment)
+  }, [comment])
 
   const handleToggle = () => {
     setShow((prev) => !prev);
@@ -35,12 +35,12 @@ const TableFilterDate: React.FC<TableFilterDateProps> = (props) => {
 
   const applyHandler = useCallback(() => {
     handleToggle()
-    onChange(selectedFrom, selectedTo)
-  }, [selectedFrom, selectedTo, onChange])
+    onChange(selectedPaymentId, selectedComment)
+  }, [selectedComment, selectedPaymentId, onChange])
 
   const clearHandler = () => {
-    setSelectedFrom('')
-    setSelectedTo('')
+    setSelectedPaymentId('')
+    setSelectedComment('')
   }
 
   return (
@@ -56,15 +56,16 @@ const TableFilterDate: React.FC<TableFilterDateProps> = (props) => {
           <Popover.Body>
             <Form.Group className="mb-3">
               <Form.Label>
-                {t('components.payments.date_from')}
+                {t('components.payments.payment_id')}
               </Form.Label>
-              <Form.Control type="date" className='mb-3' placeholder={t('components.payments.date_from_placeholder')} onChange={e => setSelectedFrom(e.target.value)} value={selectedFrom} />
+              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.payment_id_placeholder')} onChange={e => setSelectedPaymentId(e.target.value)} value={selectedPaymentId} />
             </Form.Group>
+
             <Form.Group className="mb-3">
               <Form.Label>
-                {t('components.payments.date_to')}
+                {t('components.payments.payment_comment')}
               </Form.Label>
-              <Form.Control type="date" className='mb-3' placeholder={t('components.payments.date_to_placeholder')} onChange={e => setSelectedTo(e.target.value)} value={selectedTo} />
+              <Form.Control type="text" className='mb-3' placeholder={t('components.payments.payment_comment_placeholder')} onChange={e => setSelectedComment(e.target.value)} value={selectedComment} />
             </Form.Group>
 
             <Button variant="primary" onClick={applyHandler}>
@@ -78,10 +79,10 @@ const TableFilterDate: React.FC<TableFilterDateProps> = (props) => {
       }
     >
       <Button variant='link' size='sm' className="text-dark pt-0 pb-0">
-        {(isNullOrEmptyOrWhitespaces(selectedFrom) && isNullOrEmptyOrWhitespaces(selectedTo)) && (
+        {(isNullOrEmptyOrWhitespaces(selectedPaymentId) && isNullOrEmptyOrWhitespaces(selectedComment)) && (
           <Filter />
         )}
-        {(!isNullOrEmptyOrWhitespaces(selectedFrom) || !isNullOrEmptyOrWhitespaces(selectedTo)) && (
+        {(!isNullOrEmptyOrWhitespaces(selectedPaymentId) || !isNullOrEmptyOrWhitespaces(selectedComment)) && (
           <FilterCircleFill />
         )}
       </Button>
@@ -89,4 +90,4 @@ const TableFilterDate: React.FC<TableFilterDateProps> = (props) => {
   )
 }
 
-export default TableFilterDate
+export default TableFilterPayment

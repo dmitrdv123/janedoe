@@ -12,11 +12,12 @@ interface PaymentPayEvmNativeButtonProps {
   selectedBlockchain: BlockchainMeta
   selectedAddress: string
   selectedTokenAmount: bigint
+  disabled: boolean
   onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
 }
 
 const PaymentPayEvmNativeButton: React.FC<PaymentPayEvmNativeButtonProps> = (props) => {
-  const { selectedBlockchain, selectedAddress, selectedTokenAmount, onSuccess } = props
+  const { selectedBlockchain, selectedAddress, selectedTokenAmount, disabled, onSuccess } = props
 
   const { t } = useTranslation()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
@@ -46,7 +47,7 @@ const PaymentPayEvmNativeButton: React.FC<PaymentPayEvmNativeButtonProps> = (pro
     <Button
       variant="primary"
       size="lg"
-      disabled={withdrawStatus === 'processing'}
+      disabled={disabled || withdrawStatus === 'processing'}
       onClick={withdraw}
     >
       {t('components.payment.pay_btn')}

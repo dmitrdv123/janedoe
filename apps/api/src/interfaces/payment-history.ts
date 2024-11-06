@@ -1,32 +1,7 @@
 import { IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
 import { PaymentLogDirection } from '@repo/dao/dist/src/interfaces/payment-log'
-
-export interface PaymentHistory {
-  id: string
-  paymentId: string
-
-  block: string
-  timestamp: number
-  transaction: string
-  index: number
-
-  from: string | null
-  to: string
-  direction: PaymentLogDirection
-
-  amount: string
-  amountUsd: number | null
-
-  blockchain: string
-  tokenAddress: string | null
-  tokenSymbol: string | null
-  tokenDecimals: number | null
-  tokenUsdPrice: number | null
-
-  comment: string | null
-
-  ipnResult: IpnResult | null
-}
+import { PaymentHistory } from '@repo/dao/dist/src/interfaces/payment-history'
+import { PaymentSuccess } from '@repo/dao/dist/src/interfaces/payment-success'
 
 export interface PaymentHistoryResponse {
   totalSize: number
@@ -34,7 +9,7 @@ export interface PaymentHistoryResponse {
 }
 
 export interface PaymentHistoryData {
-  id: string
+  accountId: string
   paymentId: string
 
   block: string
@@ -64,7 +39,6 @@ export interface PaymentHistoryData {
   currencyExchangeRateAtPaymentTime: number | null
   currencyExchangeRateAtCurTime: number | null
 
-  comment: string | null
-
+  paymentSuccess: PaymentSuccess | null
   ipnResult: IpnResult | null
 }

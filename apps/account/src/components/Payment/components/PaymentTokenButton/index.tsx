@@ -13,7 +13,7 @@ import TokenAmountWithCurrency from '../../../TokenAmountWithCurrency'
 interface PaymentTokenButtonProps {
   selectedBlockchain: BlockchainMeta | undefined
   selectedToken: TokenExt | undefined
-  selectedTokenAmount: string | undefined
+  selectedTokenAmount: bigint | undefined
   selectedCurrency: AppSettingsCurrency | undefined
   tokens: TokenExt[]
   onUpdate: (token: TokenExt | undefined) => void
@@ -57,7 +57,7 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
           </div>
         )}
 
-        {(selectedToken?.balance && selectedTokenAmount && BigInt(selectedToken.balance) < BigInt(selectedTokenAmount)) && (
+        {(selectedToken?.balance && selectedTokenAmount !== undefined && BigInt(selectedToken.balance) < selectedTokenAmount) && (
           <div>
             <Form.Text className="text-danger">
               {t('components.payment.errors.no_balance')}

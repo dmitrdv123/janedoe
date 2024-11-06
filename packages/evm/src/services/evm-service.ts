@@ -55,7 +55,6 @@ export class EvmServiceImpl implements EvmService {
           {
             blockNumber: log.blockNumber,
             transactionHash: log.transactionHash,
-            logIndex: log.logIndex,
             data: log.args as T
           }
         ))

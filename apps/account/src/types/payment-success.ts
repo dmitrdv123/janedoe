@@ -1,7 +1,12 @@
-export interface PaymentSuccessInfo {
+export interface PaymentSuccess {
+  accountId: string
+  paymentId: string
+
   timestamp: number
   blockchain: string
-  txid: string
+  transaction: string
+  index: number
+
   email: string | null
   language: string
   currency: string

@@ -53,7 +53,8 @@ export default function usePaymentHistory(filter: PaymentHistoryDataFilter) {
             to: filterToUse.to.trim() ? filterToUse.to.trim() : undefined,
             direction: filterToUse.direction ? filterToUse.direction : undefined,
             blockchains: filterToUse.blockchains.length > 0 ? filterToUse.blockchains : undefined,
-            transaction: filterToUse.transactionHash.trim() ? filterToUse.transactionHash.trim() : undefined
+            transaction: filterToUse.transaction.trim() ? filterToUse.transaction.trim() : undefined,
+            comment: filterToUse.comment.trim() ? filterToUse.comment.trim() : undefined
           },
           lastRef.current,
           size

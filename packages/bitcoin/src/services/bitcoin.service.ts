@@ -166,7 +166,7 @@ export class BitcoinServiceImpl implements BitcoinService {
     console.log(`debug >> BitcoinService: withdraw amount`)
     console.log(withdrawAmount)
 
-    const txId = await this.createTransaction(walletAddresses, selectedChunkUtxos, address, addressRest, withdrawAmount)
+    const transaction = await this.createTransaction(walletAddresses, selectedChunkUtxos, address, addressRest, withdrawAmount)
 
     await Promise.all(
       selectedChunkUtxos.map(async (utxo, i) => {
@@ -176,13 +176,15 @@ export class BitcoinServiceImpl implements BitcoinService {
 
     return selectedUtxos.length > chunk
       ? {
-        txId,
+        transaction,
+        index: 0,
         message: `Part amount ${withdrawAmount.toString()} of ${amount.toString()} was used because input UTXOs count ${selectedUtxos.length} exceed limit ${chunk}. Submit another transactions to use the rest.`,
         code: 'services.errors.bitcoin_errors.transaction_inputs_limit_exceed',
         args: { amount: amount.toString(), withdraw: withdrawAmount.toString(), count: `${selectedUtxos.length}`, limit: `${chunk}` }
       }
       : {
-        txId,
+        transaction,
+        index: 0,
         message: '',
         code: '',
         args: {}

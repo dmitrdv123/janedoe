@@ -3,7 +3,7 @@ import { ConstantsUtil, PresetsUtil } from '@web3modal/scaffold-utils'
 import { Asset, BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
 import { Address, Transport, encodeAbiParameters, fallback, formatUnits, getAddress, http, isAddress, parseAbiParameters, parseUnits, stringToHex } from 'viem'
 
-import { PaymentHistory, PaymentHistoryData } from '../types/payment-history'
+import { PaymentLog, PaymentLogData } from '../types/payment-log'
 import { ServiceError } from '../types/errors/service-error'
 import { PaymentConversionError } from '../types/errors/payment-conversion-error'
 import { TokenWithBalance } from '../types/token-with-balance'
@@ -327,14 +327,14 @@ export function convertTimestampToDate(value: number): Date {
   return new Date(1000 * value)
 }
 
-export function convertPaymentHistoryToPaymentHistoryData(
-  item: PaymentHistory,
+export function convertPaymentLogToPaymentLogData(
+  item: PaymentLog,
   blockchains: BlockchainMeta[] | undefined,
   tokens: Token[] | undefined,
   exchangeRates: { [timestamp: number]: number | null } | undefined,
   currentExchangeRate: number | undefined,
   currency: string | undefined
-): PaymentHistoryData {
+): PaymentLogData {
   const blockchain = blockchains?.find(blockchain => blockchain.name.toLocaleLowerCase() === item.blockchain.toLocaleLowerCase())
   const token = blockchain && tokens && item.tokenSymbol ? findToken(tokens, blockchain, item.tokenSymbol, item.tokenAddress) : undefined
 
@@ -349,7 +349,8 @@ export function convertPaymentHistoryToPaymentHistoryData(
   const amountCurrencyAtPaymentTime = item.amountUsd && currencyExchangeRateAtPaymentTime
     ? currencyExchangeRateAtPaymentTime * item.amountUsd : null
 
-  const res: PaymentHistoryData = {
+  const res: PaymentLogData = {
+    accountId: item.accountId,
     paymentId: item.paymentId,
 
     block: item.block,
@@ -359,6 +360,8 @@ export function convertPaymentHistoryToPaymentHistoryData(
 
     from: item.from,
     to: item.to,
+    direction: item.direction,
+
     amount: item.amount,
     amountUsdAtPaymentTime: item.amountUsd,
     amountUsdAtCurTime: amountUsdAtCurTime,
@@ -367,10 +370,12 @@ export function convertPaymentHistoryToPaymentHistoryData(
 
     blockchain: blockchain ?? null,
     blockchainName: item.blockchain,
+
     token: token ?? null,
     tokenAddress: item.tokenAddress,
     tokenSymbol: item.tokenSymbol,
     tokenDecimals: item.tokenDecimals,
+
     tokenUsdPriceAtPaymentTime: item.tokenUsdPrice,
     tokenUsdPriceAtCurTime: token?.usdPrice ?? null,
 

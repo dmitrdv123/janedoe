@@ -3,32 +3,32 @@ import { useCallback } from 'react'
 import useApiRequest from './useApiRequest'
 import { ApiWrapper } from '../services/api-wrapper'
 import { ExchangeRatesResponse } from '../../types/exchange-rate-response'
-import { convertPaymentHistoryToPaymentHistoryData } from '../utils'
+import { convertPaymentLogToPaymentLogData } from '../utils'
 import { useExchangeRate } from '../../states/settings/hook'
-import { PaymentHistoryResponse } from '../../types/payment-history'
+import { PaymentLogResponse } from '../../types/payment-log'
 import usePaymentData from './usePaymentData'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
-export default function usePaymentHistory() {
+export default function usePaymentLogs() {
   const exchangeRate = useExchangeRate()
   const { id, paymentId, currency } = usePaymentData()
 
-  const { process: loadPaymentHistory } = useApiRequest<PaymentHistoryResponse>()
+  const { process: loadPaymentLogs } = useApiRequest<PaymentLogResponse>()
   const { process: loadExchangeRates } = useApiRequest<ExchangeRatesResponse>()
 
   return useCallback(async (blockchains: BlockchainMeta[], tokens: Token[]) => {
-    const paymentHistory = await loadPaymentHistory(
-      ApiWrapper.instance.paymentHistoryRequest(id, paymentId)
+    const paymentLogs = await loadPaymentLogs(
+      ApiWrapper.instance.paymentLogsRequest(id, paymentId)
     )
 
-    const exchangeRates = paymentHistory && paymentHistory.data.length > 0
+    const exchangeRates = paymentLogs && paymentLogs.data.length > 0
       ? await loadExchangeRates(
-        ApiWrapper.instance.exchangeRatesRequest(currency, paymentHistory.data.map(item => item.timestamp))
+        ApiWrapper.instance.exchangeRatesRequest(currency, paymentLogs.data.map(item => item.timestamp))
       )
       : undefined
 
-    const data = paymentHistory?.data.map(
-      item => convertPaymentHistoryToPaymentHistoryData(
+    const data = paymentLogs?.data.map(
+      item => convertPaymentLogToPaymentLogData(
         item,
         blockchains,
         tokens,
@@ -39,5 +39,5 @@ export default function usePaymentHistory() {
     )
 
     return data
-  }, [currency, exchangeRate, id, paymentId, loadExchangeRates, loadPaymentHistory])
+  }, [currency, exchangeRate, id, paymentId, loadExchangeRates, loadPaymentLogs])
 }

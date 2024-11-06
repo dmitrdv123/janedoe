@@ -1,9 +1,12 @@
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
+
 import { IpnResult } from './ipn'
+import { PaymentSuccess } from './payment-success'
 
 export type PaymentHistoryDirection = 'incoming' | 'outgoing'
 
 export interface PaymentHistory {
+  accountId: string
   paymentId: string
 
   block: string
@@ -24,8 +27,7 @@ export interface PaymentHistory {
   tokenDecimals: number | null
   tokenUsdPrice: number | null
 
-  comment: string | null
-
+  paymentSuccess: PaymentSuccess | null
   ipnResult: IpnResult | null
 }
 
@@ -38,6 +40,7 @@ export interface PaymentHistoryFilter {
   direction: PaymentHistoryDirection | undefined
   blockchains: string[] | undefined
   transaction: string | undefined
+  comment: string | undefined
 }
 
 export interface PaymentHistoryResponse {
@@ -46,6 +49,7 @@ export interface PaymentHistoryResponse {
 }
 
 export interface PaymentHistoryData {
+  accountId: string
   paymentId: string
 
   block: string
@@ -78,8 +82,7 @@ export interface PaymentHistoryData {
   currencyExchangeRateAtPaymentTime: number | null
   currencyExchangeRateAtCurTime: number | null
 
-  comment: string | null
-
+  paymentSuccess: PaymentSuccess | null
   ipnResult: IpnResult | null
 }
 
@@ -91,7 +94,8 @@ export interface PaymentHistoryDataFilter {
   to: string
   direction: PaymentHistoryDirection | null
   blockchains: string[]
-  transactionHash: string
+  transaction: string
+  comment: string
 }
 
 export interface PaymentHistoryUpdatesResponse {

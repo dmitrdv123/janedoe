@@ -5,7 +5,7 @@ import { DynamoDB } from '@aws-sdk/client-dynamodb'
 
 import { AccountDaoImpl } from '@repo/dao-aws/dist/src/dao/account.dao'
 import { SupportDaoImpl } from '@repo/dao-aws/dist/src/dao/support.dao'
-import { PaymentLogDaoImpl } from '@repo/dao-aws/dist/src/dao/payment-log.dao'
+import { PaymentDaoImpl } from '@repo/dao-aws/dist/src/dao/payment.dao'
 import { DynamoServiceImpl } from '@repo/dao-aws/dist/src/services/dynamo.service'
 
 import { createAppConfig } from './app-config'
@@ -14,7 +14,7 @@ createAppConfig()
 const dynamoService = new DynamoServiceImpl(new DynamoDB())
 const accountDao = new AccountDaoImpl(dynamoService)
 const supportDao = new SupportDaoImpl(dynamoService)
-const paymentLogDao = new PaymentLogDaoImpl(dynamoService)
+const paymentDao = new PaymentDaoImpl(dynamoService)
 
 async function accountStatistics() {
   const accounts = await accountDao.listAccountProfiles()
@@ -24,7 +24,7 @@ async function accountStatistics() {
     accounts
       .sort((a, b) => a.id.localeCompare(b.id))
       .map(async account => {
-        const payments = await paymentLogDao.listPaymentLogs(account.id)
+        const payments = await paymentDao.listPaymentLogs(account.id)
         const totalAmountUsd = payments.reduce((acc, payment) => acc + (payment.amountUsd ?? 0), 0)
         console.log(`account ${account.id}, ${account.address} - ${payments.length} payments, total amount usd ${totalAmountUsd}`)
       })

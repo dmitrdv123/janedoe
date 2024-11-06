@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios'
 
 import { IpnDao } from '@repo/dao/dist/src/dao/ipn.dao'
+import { PaymentDao } from '@repo/dao/dist/src/dao/payment.dao'
 import { IpnData, IpnKey, IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
 
 import { logger } from '../utils/logger'
@@ -14,7 +15,8 @@ export interface IpnService {
 
 export class IpnServiceImpl implements IpnService {
   public constructor(
-    private ipnDao: IpnDao
+    private ipnDao: IpnDao,
+    private paymentDao: PaymentDao
   ) { }
 
   public async loadIpnData(ipnKey: IpnKey): Promise<IpnData | undefined> {
@@ -37,7 +39,7 @@ export class IpnServiceImpl implements IpnService {
   public async loadIpnResult(ipnKey: IpnKey): Promise<IpnResult | undefined> {
     logger.debug('IpnService: start to load ipn result for')
     logger.debug(ipnKey)
-    const ipnResult = await this.ipnDao.loadIpnResult(ipnKey)
+    const ipnResult = await this.paymentDao.loadIpnResult(ipnKey)
     logger.debug('IpnService: end to load ipn result')
     logger.debug(ipnResult)
 
@@ -105,7 +107,7 @@ export class IpnServiceImpl implements IpnService {
     logger.debug(`IpnService: start to save ipn result`)
     logger.debug(ipnKey)
     logger.debug(ipnResult)
-    await this.ipnDao.saveIpnResult(ipnKey, ipnResult)
+    await this.paymentDao.saveIpnResult(ipnKey, ipnResult)
     logger.debug('IpnService: end to save ipn result')
 
     logger.debug('IpnService: end to try to send ipn request')

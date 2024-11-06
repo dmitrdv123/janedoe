@@ -74,5 +74,6 @@ export const EMPTY_PAYMENT_HISTORY_DATA_FILTER: PaymentHistoryDataFilter = {
   to: '',
   direction: null,
   blockchains: [],
-  transactionHash: ''
+  transaction: '',
+  comment: ''
 }

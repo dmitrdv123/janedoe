@@ -16,8 +16,6 @@ import { ExchangeRateDaoImpl } from '../dao/exchange-rate.dao'
 import { IpnDaoImpl } from '../dao/ipn.dao'
 import { MetaDaoImpl } from '../dao/meta.dao'
 import { NotificationDaoImpl } from '../dao/notification.dao'
-import { PaymentLogDaoImpl } from '../dao/payment-log.dao'
-import { PaymentDaoImpl } from '../dao/payment.dao'
 import { SupportDaoImpl } from '../dao/support.dao'
 import { S3Service, S3ServiceImpl } from '../services/s3.service'
 import { EmailTemplateDaoImpl } from '../dao/email-template.dao'
@@ -27,6 +25,7 @@ import { CloudwatchService, CloudwatchServiceImpl } from '../services/cloudwatch
 import { MetricDaoImpl } from '../dao/metric.dao'
 import { BitcoinDaoImpl } from '../dao/bitcoin.dao'
 import { ArticleDaoImpl } from '../dao/article.dao'
+import { PaymentDaoImpl } from '../dao/payment.dao'
 
 export const daoContainer = new Container()
 
@@ -89,12 +88,6 @@ daoContainer.register(
 daoContainer.register(
   'notificationDao',
   new NotificationDaoImpl(
-    daoContainer.resolve<DynamoService>('dynamoService')
-  )
-)
-daoContainer.register(
-  'paymentLogDao',
-  new PaymentLogDaoImpl(
     daoContainer.resolve<DynamoService>('dynamoService')
   )
 )

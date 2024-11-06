@@ -27,8 +27,7 @@ bitcoinContainer.register(
   new BitcoinBlockServiceImpl(
     bitcoinContainer.resolve<BitcoinCoreService>('bitcoinCoreService'),
     commonContainer.resolve<CacheService>('cacheService'),
-    commonContainer.resolve<CryptoService>('cryptoService'),
-    daoContainer.resolve<BitcoinDao>('bitcoinDao'),
+    daoContainer.resolve<BitcoinDao>('bitcoinDao')
   )
 )
 bitcoinContainer.register(
