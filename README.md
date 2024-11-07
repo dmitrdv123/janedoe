@@ -200,6 +200,10 @@ others:
 - account: switch to some page and then to payment history. It always shows notification about new payments.
 - landing: show block with price
 - payment: we are sending tx and then saving success info. But it could be that this tx was processed before saving success info. In this case we are missing email sending.
+- donations
+- recurrent payments
+- resellers
+- top-up
 
 improvement backlog:
 - payment: не подписаны блокчейн и токен на форме платежа. Так что Паша подумал что выбирать нужно два токена один source и второй dest
@@ -219,9 +223,6 @@ improvement backlog:
   - api: use rest api with edge optimized endpoint instead of http api which does not support it
 
 long term backlog:
-- donations
-- recurrent payments
-- resellers
 - api: command line tools to extract statistics about new accounts, payments, errors and etc
 - account, payment: return payment that is less than expected, return amount that is over the price
 - account: news page
