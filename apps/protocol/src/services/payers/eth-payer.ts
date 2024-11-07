@@ -6,7 +6,7 @@ import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import { ETH_DECIMALS } from '../../constants'
 import { JaneDoeV2__factory, WrappedNative__factory } from '../../../typechain-types'
 import { ContractSettings } from '../../interfaces'
-import { encodeStringToBytes, generatePaymentIdForEvm } from '../../utils'
+import { generatePaymentIdForEvm } from '../../utils'
 
 export class EthPayerBuilder {
   private static instance: EthPayerBuilder | undefined = undefined
@@ -79,7 +79,7 @@ export class EthPayer {
     await contractJanedoe.connect(from).payFrom(from.address, to.address, contractWrappedNative.target, value, paymentId)
 
     console.log('4. Withdraw')
-    await contractJanedoe.connect(to).withdrawTo(to.address, contractWrappedNative.target, value, encodeStringToBytes(''))
+    await contractJanedoe.connect(to).withdrawTo(to.address, contractWrappedNative.target, value)
 
     console.log('5. Unwrap')
     await contractWrappedNative.connect(to).unwrapTo(to.address, value)
@@ -90,6 +90,6 @@ export class EthPayer {
     const contractJanedoe = JaneDoeV2__factory.connect(this.contractSettings.contractAddresses.JaneDoe, account)
 
     console.log(`Withdraw ${amount} ETH`)
-    await contractJanedoe.withdrawEthTo(account.address, value, encodeStringToBytes(''))
+    await contractJanedoe.withdrawEthTo(account.address, value)
   }
 }

@@ -83,7 +83,7 @@ export class TokenPayer {
     const value = parseFixed(amount.toString(), decimals).toString()
 
     console.log(`Withdraw ${amount} ${symbol}`)
-    await contractJanedoe.withdrawTo(account.address, erc20Address, value, encodeStringToBytes(''))
+    await contractJanedoe.withdrawTo(account.address, erc20Address, value)
   }
 
   public async mint(account: HardhatEthersSigner, amountEth: number, erc20Address: string): Promise<void> {
