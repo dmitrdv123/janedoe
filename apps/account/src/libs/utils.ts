@@ -520,3 +520,18 @@ export function parseToBigNumber(value: number, decimals: number): bigint {
 export function encodeStringToBytes(value: string): string {
   return stringToHex(value)
 }
+
+export function stringToAsset(val: string): Asset | undefined {
+  const parts1 = val.split('--')
+  const parts2 = parts1[0].split('.')
+
+  if (parts2.length < 2) {
+    return undefined
+  }
+
+  return {
+    blockchain: parts2[0],
+    symbol: parts2[1],
+    address: parts1.length > 1 ? parts1[1] : null
+  }
+}

@@ -8,7 +8,7 @@ import { useInfoMessages } from '../../states/application/hook'
 import PaymentBlockchainButton from './components/PaymentBlockchainButton'
 import { useBlockchains, useTokens } from '../../states/meta/hook'
 import { useSettings } from '../../states/settings/hook'
-import { currencyToTokenAmount, formatToFixed, isBlockchainAsset, parseToBigNumber, sameToken, sameTokenAndAsset, stringComparator, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator, tryParseFloat } from '../../libs/utils'
+import { currencyToTokenAmount, formatToFixed, isBlockchainAsset, parseToBigNumber, sameToken, sameTokenAndAsset, stringComparator, stringToAsset, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator, tryParseFloat } from '../../libs/utils'
 import { useAccountCommonSettings, useAccountPaymentSettings } from '../../states/account-settings/hook'
 import { AppSettingsCurrency } from '../../types/app-settings'
 import PaymentCurrencyDropdown from './components/PaymentCurrencyDropdown'
@@ -247,6 +247,18 @@ const Payment: React.FC = () => {
   useEffect(() => {
     setSelectedToken(current => {
       if (!current && selectedBlockchain) {
+        const queryParams = new URLSearchParams(location.search)
+        const initialAssetString = queryParams.get('token')
+        if (initialAssetString) {
+          const initialAsset = stringToAsset(initialAssetString)
+          const initialToken = initialAsset
+            ? preparedTokens?.find(token => sameTokenAndAsset(initialAsset, token))
+            : undefined
+          if (initialToken) {
+            return initialToken
+          }
+        }
+
         const asset = accountPaymentSettings?.assets.find(asset => isBlockchainAsset(selectedBlockchain, asset))
         if (asset) {
           return preparedTokens?.find(token => sameTokenAndAsset(asset, token))
@@ -255,7 +267,7 @@ const Payment: React.FC = () => {
 
       return current
     })
-  }, [accountPaymentSettings?.assets, preparedTokens, selectedBlockchain])
+  }, [accountPaymentSettings?.assets, location.search, preparedTokens, selectedBlockchain])
 
   useEffect(() => {
     setSelectedCurrency(current => {
@@ -292,6 +304,20 @@ const Payment: React.FC = () => {
       return current
     })
   }, [commonSettings, preparedCurrencies, location.search])
+
+  useEffect(() => {
+    setSelectedAddress(current => {
+      if (!current) {
+        const queryParams = new URLSearchParams(location.search)
+        const address = queryParams.get('address')
+        if (address) {
+          return address
+        }
+      }
+
+      return current
+    })
+  }, [location.search])
 
   useEffect(() => {
     setSelectedComment(current => {

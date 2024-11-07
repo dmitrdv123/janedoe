@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import { SupportTicket } from '@repo/dao/dist/src/interfaces/support-ticket'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 
-import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, minifyToken, paramsFromUrl, processControllerError, tryParseInt } from '../utils/utils'
+import { assertMaxLength, assertNumberParam, assertObjectParam, assertParam, minifyToken, paramsFromUrl, processControllerError } from '../utils/utils'
 import { PaymentService } from '../services/payment-service'
 import { ExchangeRateApiService } from '../services/exchange-rate-api-service'
 import { MetaService } from '../services/meta-service'

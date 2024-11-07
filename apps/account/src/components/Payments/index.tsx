@@ -26,6 +26,7 @@ import TokenAmount from '../TokenAmount'
 import CurrencyAmount from '../CurrencyAmount'
 import TransactionHash from '../TransactionHash'
 import WalletAddress from '../WalletAddress'
+import { Asset, assetToString } from 'rango-sdk-basic'
 
 const Payments: React.FC = () => {
   const [paymentHistoryLoadTimestamp, setPaymentHistoryLoadTimestamp] = useState<number>(Math.floor(Date.now() / 1000))
@@ -163,7 +164,23 @@ const Payments: React.FC = () => {
 
     const dt = convertTimestampToDate(paymentHistoryItem.timestamp)
 
+    const refundAsset: Asset | undefined = paymentHistoryItem.tokenSymbol
+      ? {
+        blockchain: paymentHistoryItem.blockchainName.toLocaleLowerCase(),
+        address: paymentHistoryItem.tokenAddress,
+        symbol: paymentHistoryItem.tokenSymbol?.toLocaleLowerCase()
+      }
+      : undefined
     const refundComment = encodeURIComponent(`${t('components.payments.refund_comment')} ${paymentHistoryItem.paymentId}`)
+    const refundParam = [
+      `blockchain=${paymentHistoryItem.blockchainName.toLocaleLowerCase()}`,
+      `token=${refundAsset ? assetToString(refundAsset) : ''}`,
+      `currency=${paymentHistoryItem.currency ?? ''}`,
+      `currencyAmount=${paymentHistoryItem.amountCurrencyAtPaymentTime ?? ''}`,
+      `address=${paymentHistoryItem.from ?? ''}`,
+      `comment=${refundComment}`
+    ].join('&')
+    const refundUrl = `/payment/${id ?? ''}?${refundParam}`
 
     return (
       <tr
@@ -270,7 +287,7 @@ const Payments: React.FC = () => {
         </td>
         <td>
           {(paymentHistoryItem.direction === 'incoming') && (
-            <Button variant="outline-secondary" onClick={() => navigate(`/payment/${id ?? ''}?currency=${paymentHistoryItem.currency}&currencyAmount=${paymentHistoryItem.amountCurrencyAtPaymentTime}&comment=${refundComment}`, { replace: true })}>
+            <Button variant="outline-secondary" onClick={() => navigate(refundUrl, { replace: true })}>
               {t('components.payments.refund_btn')}
             </Button>
           )}
