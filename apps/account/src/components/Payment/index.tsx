@@ -6,16 +6,15 @@ import { Alert, Col, Form, Row } from 'react-bootstrap'
 
 import { useInfoMessages } from '../../states/application/hook'
 import PaymentBlockchainButton from './components/PaymentBlockchainButton'
-import { useBlockchains, useTokens } from '../../states/meta/hook'
+import { useBlockchains } from '../../states/meta/hook'
 import { useSettings } from '../../states/settings/hook'
-import { currencyToTokenAmount, formatToFixed, isBlockchainAsset, parseToBigNumber, sameToken, sameTokenAndAsset, stringComparator, stringToAsset, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator, tryParseFloat } from '../../libs/utils'
-import { useAccountCommonSettings, useAccountPaymentSettings } from '../../states/account-settings/hook'
+import { currencyToTokenAmount, formatToFixed, parseToBigNumber, stringComparator, tokenAmountToCurrency, tryParseFloat } from '../../libs/utils'
+import { useAccountCommonSettings } from '../../states/account-settings/hook'
 import { AppSettingsCurrency } from '../../types/app-settings'
 import PaymentCurrencyDropdown from './components/PaymentCurrencyDropdown'
 import useSpecificExchangeRate from '../../libs/hooks/useSpecificExchangeRate'
 import { WithdrawResult } from '../../types/withdraw_result'
 import { TokenExt } from '../../types/token-ext'
-import useReadBalances from '../../libs/hooks/useReadBalances'
 import PaymentTokenButton from './components/PaymentTokenButton'
 import PaymentPayButton from './components/PaymentPayButton'
 import TransactionHash from '../TransactionHash'
@@ -37,18 +36,12 @@ const Payment: React.FC = () => {
   const { t, i18n } = useTranslation()
   const { clearInfoMessage } = useInfoMessages()
   const blockchains = useBlockchains()
-  const tokens = useTokens()
   const appSettings = useSettings()
   const commonSettings = useAccountCommonSettings()
-  const accountPaymentSettings = useAccountPaymentSettings()
   const exchangeRate = useSpecificExchangeRate(selectedCurrency?.symbol)
   const location = useLocation()
   const { process: successPayment } = useApiRequest()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
-
-  const {
-    tokens: tokensWithBalance
-  } = useReadBalances(selectedBlockchain)
 
   const preparedBlockchains = useMemo(() => {
     if (!blockchains) {
@@ -62,37 +55,6 @@ const Payment: React.FC = () => {
       .filter(item => !!item)
       .sort((a, b) => stringComparator((a as BlockchainMeta).displayName, (b as BlockchainMeta).displayName)) as BlockchainMeta[]
   }, [blockchains, appSettings])
-
-  const preparedTokens = useMemo(() => {
-    if (!selectedBlockchain || !accountPaymentSettings || !tokensWithBalance) {
-      return undefined
-    }
-
-    return tokens
-      ?.filter(
-        token => selectedBlockchain.name.toLocaleLowerCase() === token.blockchain.toLocaleLowerCase()
-      )
-      .map(token => {
-        const tokenWithBalance = tokensWithBalance.find(item => sameToken(item, token))
-
-        const tokenBalanceUsd = tokenWithBalance && token.usdPrice ? tokenAmountToUsd(tokenWithBalance.balance.toString(), token.usdPrice, token.decimals) : null
-        const tokenBalanceCurrency = tokenWithBalance && token.usdPrice && exchangeRate.data
-          ? tokenAmountToCurrency(tokenWithBalance.balance.toString(), token.usdPrice, token.decimals, exchangeRate.data)
-          : null
-
-        const result: TokenExt = {
-          ...token,
-          settingIndex: accountPaymentSettings.assets.findIndex(asset => sameTokenAndAsset(asset, token)),
-          currency: selectedCurrency?.symbol ?? null,
-          balance: tokenWithBalance?.balance.toString() ?? null,
-          balanceUsd: tokenBalanceUsd,
-          balanceCurrency: tokenBalanceCurrency
-        }
-
-        return result
-      })
-      .sort(tokenExtResultComparator)
-  }, [selectedBlockchain, accountPaymentSettings, tokens, tokensWithBalance, exchangeRate.data, selectedCurrency?.symbol])
 
   const preparedCurrencies = useMemo(() => {
     return appSettings.current
@@ -233,41 +195,7 @@ const Payment: React.FC = () => {
     })
   }, [preparedBlockchains, location.search])
 
-  useEffect(() => {
-    let token: TokenExt | undefined = undefined
 
-    const asset = selectedBlockchain ? accountPaymentSettings?.assets.find(asset => isBlockchainAsset(selectedBlockchain, asset)) : undefined
-    if (asset) {
-      token = preparedTokens?.find(token => sameTokenAndAsset(asset, token))
-    }
-
-    setSelectedToken(token)
-  }, [accountPaymentSettings?.assets, preparedTokens, selectedBlockchain])
-
-  useEffect(() => {
-    setSelectedToken(current => {
-      if (!current && selectedBlockchain) {
-        const queryParams = new URLSearchParams(location.search)
-        const initialAssetString = queryParams.get('token')
-        if (initialAssetString) {
-          const initialAsset = stringToAsset(initialAssetString)
-          const initialToken = initialAsset
-            ? preparedTokens?.find(token => sameTokenAndAsset(initialAsset, token))
-            : undefined
-          if (initialToken) {
-            return initialToken
-          }
-        }
-
-        const asset = accountPaymentSettings?.assets.find(asset => isBlockchainAsset(selectedBlockchain, asset))
-        if (asset) {
-          return preparedTokens?.find(token => sameTokenAndAsset(asset, token))
-        }
-      }
-
-      return current
-    })
-  }, [accountPaymentSettings?.assets, location.search, preparedTokens, selectedBlockchain])
 
   useEffect(() => {
     setSelectedCurrency(current => {
@@ -380,9 +308,9 @@ const Payment: React.FC = () => {
           </div>
         )}
 
-        {(!!selectedBlockchain && !!preparedTokens && preparedTokens.length > 1) && (
+        {(!!selectedBlockchain) && (
           <div className="mb-2">
-            <PaymentTokenButton selectedBlockchain={selectedBlockchain} selectedToken={selectedToken} selectedCurrency={selectedCurrency} selectedTokenAmount={selectedTokenAmount} tokens={preparedTokens} onUpdate={selectTokenHandler} />
+            <PaymentTokenButton selectedBlockchain={selectedBlockchain} selectedCurrency={selectedCurrency} selectedTokenAmount={selectedTokenAmount} onUpdate={selectTokenHandler} />
           </div>
         )}
 

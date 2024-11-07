@@ -17,7 +17,7 @@ import TokenAmountWithCurrency from '../../../TokenAmountWithCurrency'
 interface PaymentTokensModalProps {
   selectedBlockchain: BlockchainMeta | undefined
   selectedToken: TokenExt | undefined
-  tokens: TokenExt[]
+  tokens: TokenExt[] | undefined
   onUpdate: (token: TokenExt) => void
 }
 
