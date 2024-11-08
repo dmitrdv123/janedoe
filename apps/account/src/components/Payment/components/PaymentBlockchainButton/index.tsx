@@ -68,7 +68,7 @@ const PaymentBlockchainButton: React.FC<PaymentBlockchainButtonProps> = (props) 
         }
       }
 
-      return preparedBlockchains[0]
+      return preparedBlockchains.length > 0 ? preparedBlockchains[0] : undefined
     })
   }, [location.search, preparedBlockchains])
 

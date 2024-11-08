@@ -74,7 +74,7 @@ const PaymentCurrencyDropdown: React.FC<PaymentCurrencyDropdownProps> = (props) 
 
   useEffect(() => {
     setSelectedCurrency(current => {
-      if (!commonSettings) {
+      if (!commonSettings || !currencies) {
         return undefined
       }
 
@@ -84,13 +84,18 @@ const PaymentCurrencyDropdown: React.FC<PaymentCurrencyDropdownProps> = (props) 
 
       const currencyFromParam = new URLSearchParams(location.search).get('currency')
       if (currencyFromParam) {
-        const currency = currencies?.find(item => item.symbol.toLocaleLowerCase() === currencyFromParam.toLocaleLowerCase())
+        const currency = currencies.find(item => item.symbol.toLocaleLowerCase() === currencyFromParam.toLocaleLowerCase())
         if (currency) {
           return currency
         }
       }
 
-      return currencies?.find(item => item.symbol.toLocaleLowerCase() === commonSettings.currency?.toLocaleLowerCase())
+      const currency = currencies.find(item => item.symbol.toLocaleLowerCase() === commonSettings.currency?.toLocaleLowerCase())
+      if (currency) {
+        return currency
+      }
+
+      return currencies.length > 0 ? currencies[0] : undefined
     })
   }, [commonSettings, currencies, location.search])
 

@@ -9,7 +9,7 @@ import PaymentTokensModal from '../PaymentTokensModal'
 import { TokenExt } from '../../../../types/token-ext'
 import { AppSettingsCurrency } from '../../../../types/app-settings'
 import TokenAmountWithCurrency from '../../../TokenAmountWithCurrency'
-import { isBlockchainAsset, isBlockchainToken, sameToken, sameTokenAndAsset, stringToAsset, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator } from '../../../../libs/utils'
+import { isBlockchainAsset, sameToken, sameTokenAndAsset, stringToAsset, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator } from '../../../../libs/utils'
 import { useAccountPaymentSettings } from '../../../../states/account-settings/hook'
 import useReadBalances from '../../../../libs/hooks/useReadBalances'
 import useSpecificExchangeRate from '../../../../libs/hooks/useSpecificExchangeRate'
@@ -87,7 +87,7 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
 
   useEffect(() => {
     setSelectedToken(current => {
-      if (!blockchain || !tokens || !accountPaymentSettings) {
+      if (!blockchain || !preparedTokens || !accountPaymentSettings) {
         return undefined
       }
 
@@ -96,7 +96,7 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
       if (initialAssetString) {
         const initialAsset = stringToAsset(initialAssetString)
         const initialToken = initialAsset
-          ? tokens.find(token => sameTokenAndAsset(initialAsset, token) && isBlockchainToken(blockchain, token))
+          ? preparedTokens.find(token => sameTokenAndAsset(initialAsset, token))
           : undefined
         if (initialToken) {
           return initialToken
@@ -105,12 +105,12 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
 
       const asset = accountPaymentSettings.assets.find(asset => isBlockchainAsset(blockchain, asset))
       if (asset) {
-        return tokens.find(token => sameTokenAndAsset(asset, token))
+        return preparedTokens.find(token => sameTokenAndAsset(asset, token))
       }
 
       return current
     })
-  }, [blockchain, tokens, accountPaymentSettings])
+  }, [blockchain, preparedTokens, accountPaymentSettings])
 
   useEffect(() => {
     onUpdate(selectedToken)
