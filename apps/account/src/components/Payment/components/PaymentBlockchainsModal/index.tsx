@@ -12,7 +12,7 @@ import useBlockchainsDb from '../../../../libs/hooks/useBlockchainsDB'
 import { blockchainSchema } from '../../../../types/orama'
 
 interface PaymentBlockchainsModalProps {
-  blockchains: BlockchainMeta[]
+  blockchains: BlockchainMeta[] | undefined
   onUpdate: (blockchain: BlockchainMeta) => void
 }
 

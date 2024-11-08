@@ -6,7 +6,6 @@ import { Alert, Col, Form, Row } from 'react-bootstrap'
 
 import { useInfoMessages } from '../../states/application/hook'
 import PaymentBlockchainButton from './components/PaymentBlockchainButton'
-import { useBlockchains } from '../../states/meta/hook'
 import { useSettings } from '../../states/settings/hook'
 import { currencyToTokenAmount, formatToFixed, parseToBigNumber, stringComparator, tokenAmountToCurrency, tryParseFloat } from '../../libs/utils'
 import { useAccountCommonSettings } from '../../states/account-settings/hook'
@@ -34,26 +33,12 @@ const Payment: React.FC = () => {
 
   const { t, i18n } = useTranslation()
   const { clearInfoMessage } = useInfoMessages()
-  const blockchains = useBlockchains()
   const appSettings = useSettings()
   const commonSettings = useAccountCommonSettings()
   const exchangeRate = useSpecificExchangeRate(selectedCurrency?.symbol)
   const location = useLocation()
   const { process: successPayment } = useApiRequest()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
-
-  const preparedBlockchains = useMemo(() => {
-    if (!blockchains) {
-      return undefined
-    }
-
-    return appSettings.current?.paymentBlockchains
-      .map(
-        item => blockchains.find(blockchain => blockchain.name.toLocaleLowerCase() === item.blockchain.toLocaleLowerCase())
-      )
-      .filter(item => !!item)
-      .sort((a, b) => stringComparator((a as BlockchainMeta).displayName, (b as BlockchainMeta).displayName)) as BlockchainMeta[]
-  }, [blockchains, appSettings])
 
   const preparedCurrencies = useMemo(() => {
     return appSettings.current
@@ -176,27 +161,6 @@ const Payment: React.FC = () => {
   }
 
   useEffect(() => {
-    setSelectedBlockchain(current => {
-      if (!current && preparedBlockchains && preparedBlockchains.length > 0) {
-        const queryParams = new URLSearchParams(location.search)
-        const initialBlockchainName = queryParams.get('blockchain')
-        if (initialBlockchainName) {
-          const initialBlockchain = preparedBlockchains.find(blockchain => blockchain.name.toLocaleLowerCase() === initialBlockchainName.toLocaleLowerCase())
-          if (initialBlockchain) {
-            return initialBlockchain
-          }
-        }
-
-        return preparedBlockchains[0]
-      }
-
-      return current
-    })
-  }, [preparedBlockchains, location.search])
-
-
-
-  useEffect(() => {
     setSelectedCurrency(current => {
       if (!current && commonSettings) {
         const currencyFromParam = new URLSearchParams(location.search).get('currency')
@@ -301,17 +265,13 @@ const Payment: React.FC = () => {
       ))}
 
       <Form>
-        {!!preparedBlockchains && (
-          <div className="mb-2">
-            <PaymentBlockchainButton selectedBlockchain={selectedBlockchain} blockchains={preparedBlockchains} onUpdate={selectBlockchainHandler} />
-          </div>
-        )}
+        <div className="mb-2">
+          <PaymentBlockchainButton onUpdate={selectBlockchainHandler} />
+        </div>
 
-        {(!!selectedBlockchain) && (
-          <div className="mb-2">
-            <PaymentTokenButton blockchain={selectedBlockchain} currency={selectedCurrency} tokenAmount={selectedTokenAmount} onUpdate={selectTokenHandler} />
-          </div>
-        )}
+        <div className="mb-2">
+          <PaymentTokenButton blockchain={selectedBlockchain} currency={selectedCurrency} tokenAmount={selectedTokenAmount} onUpdate={selectTokenHandler} />
+        </div>
 
         <Row>
           <Col>
