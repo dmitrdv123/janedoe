@@ -27,6 +27,7 @@ import CurrencyAmount from '../CurrencyAmount'
 import TransactionHash from '../TransactionHash'
 import WalletAddress from '../WalletAddress'
 import { Asset, assetToString } from 'rango-sdk-basic'
+import RbacGuard from '../Guards/RbacGuard'
 
 const Payments: React.FC = () => {
   const [paymentHistoryLoadTimestamp, setPaymentHistoryLoadTimestamp] = useState<number>(Math.floor(Date.now() / 1000))
@@ -286,11 +287,15 @@ const Payments: React.FC = () => {
           )}
         </td>
         <td>
-          {(paymentHistoryItem.direction === 'incoming') && (
-            <Button variant="outline-secondary" onClick={() => navigate(refundUrl, { replace: true })}>
-              {t('components.payments.refund_btn')}
-            </Button>
-          )}
+          <RbacGuard requiredKeys={['balances']} requiredPermission='Modify' element={
+            <>
+              {(paymentHistoryItem.direction === 'incoming') && (
+                <Button variant="outline-secondary" onClick={() => navigate(refundUrl, { replace: true })}>
+                  {t('components.payments.refund_btn')}
+                </Button>
+              )}
+            </>
+          } />
         </td>
       </tr>
     )
