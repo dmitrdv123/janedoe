@@ -8,13 +8,14 @@ import { DynamoServiceImpl } from '@repo/dao-aws/dist/src/services/dynamo.servic
 import { queryItems, generateKey } from '@repo/dao-aws/dist/src/utils/dynamo-utils'
 import { AccountDaoImpl } from '@repo/dao-aws/dist/src/dao/account.dao'
 import { PaymentDaoImpl } from '@repo/dao-aws/dist/src/dao/payment.dao'
+import { IpnDaoImpl } from '@repo/dao-aws/dist/src/dao/ipn.dao'
 import { PaymentLog, PaymentLogDirection } from '@repo/dao/dist/src/interfaces/payment-log'
 import { AccountProfile } from '@repo/dao/dist/src/interfaces/account-profile'
 import { PaymentSuccess } from '@repo/dao/dist/src/interfaces/payment-success'
+import { IpnData, IpnKey, IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
 import appConfig from '@repo/common/dist/src/app-config'
 
 import { createAppConfig } from '../app-config'
-import { IpnKey, IpnResult } from '@repo/dao/dist/src/interfaces/ipn'
 createAppConfig()
 
 export interface PaymentLogOld {
@@ -50,9 +51,40 @@ export interface PaymentSuccessInfoOld {
   language: string
 }
 
+export interface IpnDataOld {
+  accountId: string
+  paymentId: string
+
+  block: string
+  timestamp: number
+  transaction: string
+  index: number
+
+  from: string | null
+  to: string
+  direction: PaymentLogDirection | null | undefined
+
+  amount: string
+  amountUsd: number | null
+  amountCurrency: number | null
+
+  totalAmountUsd: number | null
+  totalAmountCurrency: number | null
+
+  blockchain: string
+  tokenAddress: string | null
+  tokenSymbol: string | null
+  tokenDecimals: number | null
+  tokenUsdPrice: number | null
+
+  currency: string | null
+  currencyExchangeRate: number | null
+}
+
 const dynamoService = new DynamoServiceImpl(new DynamoDB())
 const accountDao = new AccountDaoImpl(dynamoService)
 const paymentDao = new PaymentDaoImpl(dynamoService)
+const ipnDao = new IpnDaoImpl(dynamoService)
 
 async function listOldPaymentLogs(id: string): Promise<PaymentLogOld[]> {
   const request: QueryInput = {
@@ -177,6 +209,66 @@ async function migrationIpnResults(paymentLogs: PaymentLog[]): Promise<void> {
   )
 }
 
+async function loadIpnDataOld(ipnKey: IpnKey): Promise<IpnDataOld | undefined> {
+  const result = await dynamoService.readItem({
+    TableName: appConfig.TABLE_NAME,
+    Key: marshall({
+      pk: generateKey('ipn', ipnKey.accountId, ipnKey.paymentId, ipnKey.blockchain.toLocaleLowerCase(), ipnKey.transaction, ipnKey.index),
+      sk: generateKey(ipnKey.accountId, ipnKey.paymentId, ipnKey.blockchain.toLocaleLowerCase(), ipnKey.transaction, ipnKey.index)
+    })
+  })
+
+  return result.Item ? unmarshall(result.Item).ipn as IpnDataOld : undefined
+}
+
+async function migrationIpnDataForPaymentLog(paymentLog: PaymentLog): Promise<void> {
+  const ipnDataOld = await loadIpnDataOld(paymentLog)
+  if (!ipnDataOld) {
+    return
+  }
+
+  const ipnData: IpnData = {
+    accountId: ipnDataOld.accountId,
+    paymentId: ipnDataOld.paymentId,
+
+    block: ipnDataOld.block,
+    timestamp: ipnDataOld.timestamp,
+    transaction: ipnDataOld.transaction,
+    index: ipnDataOld.index,
+
+    from: ipnDataOld.from,
+    to: ipnDataOld.to,
+    direction: ipnDataOld.direction ?? 'incoming',
+
+    amount: ipnDataOld.amount,
+    amountUsd: ipnDataOld.amountUsd,
+    amountCurrency: ipnDataOld.amountCurrency,
+
+    totalAmountUsd: ipnDataOld.totalAmountUsd,
+    totalAmountCurrency: ipnDataOld.totalAmountCurrency,
+
+    blockchain: ipnDataOld.blockchain,
+    tokenAddress: ipnDataOld.tokenAddress,
+    tokenSymbol: ipnDataOld.tokenSymbol,
+    tokenDecimals: ipnDataOld.tokenDecimals,
+    tokenUsdPrice: ipnDataOld.tokenUsdPrice,
+
+    currency: ipnDataOld.currency,
+    currencyExchangeRate: ipnDataOld.currencyExchangeRate,
+
+    comment: null
+  }
+  console.log(`found ipn data for accountId ${ipnData.accountId} and paymentId ${ipnData.paymentId}`)
+
+  // await ipnDao.saveIpnData(ipnData)
+}
+
+async function migrationIpnData(paymentLogs: PaymentLog[]): Promise<void> {
+  await Promise.all(
+    paymentLogs.map(paymentLog => migrationIpnDataForPaymentLog(paymentLog))
+  )
+}
+
 async function main() {
   console.log(`start migration script payment 1`)
 
@@ -189,8 +281,11 @@ async function main() {
   // console.log(`start to migrate payment successes`)
   // await migrationPaymentSuccesses(paymentLogs)
 
-  console.log(`start to migrate ipn results`)
-  await migrationIpnResults(paymentLogs)
+  // console.log(`start to migrate ipn results`)
+  // await migrationIpnResults(paymentLogs)
+
+  console.log(`start to migrate ipn data`)
+  await migrationIpnData(paymentLogs)
 }
 
 main()
