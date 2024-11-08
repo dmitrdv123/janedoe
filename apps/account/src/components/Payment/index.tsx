@@ -42,7 +42,7 @@ const Payment: React.FC = () => {
     }
 
     const amountNum = tryParseFloat(selectedTokenAmountFormatted)
-    if (!amountNum) {
+    if (amountNum === undefined) {
       return undefined
     }
 
@@ -151,21 +151,49 @@ const Payment: React.FC = () => {
   }
 
   useEffect(() => {
-    setSelectedCurrencyAmount(current => {
-      if (current) {
+    setSelectedTokenAmountFormatted(current => {
+      if (current !== undefined) {
         return current
       }
 
-      const amount = tryParseFloat(
-        new URLSearchParams(location.search).get('currencyAmount')
-      )
-      return amount?.toString()
+      const queryParams = new URLSearchParams(location.search)
+      return queryParams.get('tokenAmount') ?? undefined
     })
   }, [location.search])
 
   useEffect(() => {
+    setSelectedCurrencyAmount(current => {
+      if (current !== undefined) {
+        return current
+      }
+
+      if (selectedToken?.usdPrice && exchangeRate.data) {
+        const queryParams = new URLSearchParams(location.search)
+        const initialTokenAmount = queryParams.get('tokenAmount')
+        const initialTokenAmountNum = tryParseFloat(initialTokenAmount)
+        if (initialTokenAmountNum) {
+          const tokenAmount = parseToBigNumber(initialTokenAmountNum, selectedToken.decimals)
+          return tokenAmountToCurrency(tokenAmount.toString(), selectedToken.usdPrice, selectedToken.decimals, exchangeRate.data).toString()
+        }
+      }
+
+      return current
+    })
+  }, [location.search, exchangeRate.data, selectedToken?.decimals, selectedToken?.usdPrice])
+
+  useEffect(() => {
+    const currencyAmountNum = tryParseFloat(selectedCurrencyAmount)
+    if (selectedToken?.usdPrice && currencyAmountNum && exchangeRate.data) {
+      const tokenAmount = currencyToTokenAmount(currencyAmountNum, selectedToken.usdPrice, selectedToken.decimals, exchangeRate.data)
+      setSelectedTokenAmountFormatted(formatToFixed(tokenAmount, selectedToken.decimals))
+    } else {
+      setSelectedTokenAmountFormatted('')
+    }
+  }, [exchangeRate.data, selectedCurrencyAmount, selectedToken?.decimals, selectedToken?.usdPrice])
+
+  useEffect(() => {
     setSelectedAddress(current => {
-      if (current) {
+      if (current !== undefined) {
         return current
       }
 
@@ -178,7 +206,7 @@ const Payment: React.FC = () => {
 
   useEffect(() => {
     setSelectedComment(current => {
-      if (current) {
+      if (current !== undefined) {
         return current
       }
 
@@ -188,17 +216,6 @@ const Payment: React.FC = () => {
       return comment ? decodeURIComponent(comment) : undefined
     })
   }, [location.search])
-
-  useEffect(() => {
-    const currencyAmountNum = tryParseFloat(selectedCurrencyAmount)
-    if (selectedToken?.usdPrice && currencyAmountNum && exchangeRate.data) {
-      const tokenAmount = currencyToTokenAmount(currencyAmountNum, selectedToken.usdPrice, selectedToken.decimals, exchangeRate.data)
-      const tokenAmountFormatted = formatToFixed(tokenAmount, selectedToken.decimals)
-      setSelectedTokenAmountFormatted(tokenAmountFormatted)
-    } else {
-      setSelectedTokenAmountFormatted('')
-    }
-  }, [exchangeRate.data, selectedCurrencyAmount, selectedToken?.decimals, selectedToken?.usdPrice])
 
   useEffect(() => {
     const res = !!selectedBlockchain

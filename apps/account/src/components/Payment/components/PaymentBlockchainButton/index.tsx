@@ -51,12 +51,12 @@ const PaymentBlockchainButton: React.FC<PaymentBlockchainButtonProps> = (props) 
 
   useEffect(() => {
     setSelectedBlockchain(current => {
-      if (!preparedBlockchains || preparedBlockchains.length === 0) {
-        return undefined
+      if (current !== undefined) {
+        return current
       }
 
-      if (current) {
-        return current
+      if (!preparedBlockchains || preparedBlockchains.length === 0) {
+        return undefined
       }
 
       const queryParams = new URLSearchParams(location.search)
@@ -68,7 +68,7 @@ const PaymentBlockchainButton: React.FC<PaymentBlockchainButtonProps> = (props) 
         }
       }
 
-      return preparedBlockchains.length > 0 ? preparedBlockchains[0] : undefined
+      return preparedBlockchains[0]
     })
   }, [location.search, preparedBlockchains])
 

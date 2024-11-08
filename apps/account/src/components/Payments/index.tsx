@@ -5,7 +5,7 @@ import { Alert, Button, Spinner, Table } from 'react-bootstrap'
 import { CheckCircle, ExclamationCircle } from 'react-bootstrap-icons'
 import isEqual from 'lodash.isequal'
 
-import { convertErrorToMessage, convertTimestampToDate } from '../../libs/utils'
+import { convertErrorToMessage, convertTimestampToDate, formatToFixed } from '../../libs/utils'
 import { PaymentHistoryData, PaymentHistoryDataFilter, PaymentHistoryDirection } from '../../types/payment-history'
 import { useInfoMessages, useToggleModal } from '../../states/application/hook'
 import { CURRENCY_USD_SYMBOL, EMPTY_PAYMENT_HISTORY_DATA_FILTER, INFO_MESSAGE_PAYMENT_HISTORY_ERROR } from '../../constants'
@@ -176,7 +176,7 @@ const Payments: React.FC = () => {
       `blockchain=${paymentHistoryItem.blockchainName.toLocaleLowerCase()}`,
       `token=${refundAsset ? assetToString(refundAsset) : ''}`,
       `currency=${paymentHistoryItem.currency ?? ''}`,
-      `currencyAmount=${paymentHistoryItem.amountCurrencyAtPaymentTime ?? ''}`,
+      `tokenAmount=${paymentHistoryItem.tokenDecimals ? formatToFixed(paymentHistoryItem.amount, paymentHistoryItem.tokenDecimals) : ''}`,
       `address=${paymentHistoryItem.from ?? ''}`,
       `comment=${refundComment}`
     ].join('&')
