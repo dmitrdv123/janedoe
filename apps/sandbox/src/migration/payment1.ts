@@ -28,7 +28,7 @@ export interface PaymentLogOld {
 
   from: string | null
   to: string
-  direction: PaymentLogDirection
+  direction: PaymentLogDirection | null | undefined
 
   amount: string
   amountUsd: number | null
@@ -82,7 +82,7 @@ async function migrationPaymentLogs(profiles: AccountProfile[]): Promise<Payment
 
       from: paymentLogOld.from,
       to: paymentLogOld.to,
-      direction: paymentLogOld.direction,
+      direction: paymentLogOld.direction ?? 'incoming',
 
       amount: paymentLogOld.amount,
       amountUsd: paymentLogOld.amountUsd,
@@ -98,63 +98,59 @@ async function migrationPaymentLogs(profiles: AccountProfile[]): Promise<Payment
   })
   console.log(`found ${paymentLogs.length} payment logs`)
 
-  await Promise.all(
-    paymentLogs.map(paymentLog => paymentDao.savePaymentLog(paymentLog))
-  )
+  // await Promise.all(
+  //   paymentLogs.map(paymentLog => paymentDao.savePaymentLog(paymentLog))
+  // )
 
   return paymentLogs
 }
 
-async function listOldPaymentSuccess(id: string): Promise<PaymentSuccessInfoOld[]> {
-  const request: QueryInput = {
+async function loadPaymentSuccessOld(accountId: string, paymentId: string): Promise<PaymentSuccessInfoOld | undefined> {
+  const result = await dynamoService.readItem({
     TableName: appConfig.TABLE_NAME,
-    KeyConditionExpression: 'pk = :pk_value',
-    ExpressionAttributeValues: marshall({
-      ':pk_value': `payment_success#${id}`
+    Key: marshall({
+      pk: generateKey('payment_success', accountId),
+      sk: paymentId
     })
-  }
-
-  return await queryItems<PaymentSuccessInfoOld>(dynamoService, request, 'paymentSuccessInfo')
-}
-
-async function migrationPaymentSuccessesForProfile(profile: AccountProfile): Promise<void> {
-  const paymentSuccessesOld = await listOldPaymentSuccess(profile.id)
-
-  const paymentSuccesses = paymentSuccessesOld.flat().map(paymentSuccessOld => {
-    const paymentSuccess: PaymentSuccess = {
-      accountId: profile.id,
-      paymentId: '',
-
-      timestamp: paymentSuccessOld.timestamp,
-      blockchain: paymentSuccessOld.blockchain,
-      transaction: '',
-      index: 0,
-
-      email: paymentSuccessOld.email,
-      language: paymentSuccessOld.language,
-      currency: paymentSuccessOld.currency,
-      amountCurrency: paymentSuccessOld.amountCurrency,
-      description: paymentSuccessOld.description,
-      comment: null
-    }
-
-    return paymentSuccess
   })
-  console.log(`found ${paymentSuccesses.length} payment successes for account ${profile.id}`)
 
-  // await Promise.all(
-  //   paymentSuccesses.map(paymentSuccess => paymentDao.savePaymentSuccess(paymentSuccess))
-  // )
+  return result.Item ? unmarshall(result.Item).paymentSuccessInfo as PaymentSuccessInfoOld : undefined
 }
 
-async function migrationPaymentSuccesses(profiles: AccountProfile[]): Promise<void> {
+async function migrationPaymentSuccessForPaymentLog(paymentLog: PaymentLog): Promise<void> {
+  const paymentSuccessOld = await loadPaymentSuccessOld(paymentLog.accountId, paymentLog.paymentId)
+  if (!paymentSuccessOld) {
+    return
+  }
+  const paymentSuccess: PaymentSuccess = {
+    accountId: paymentLog.accountId,
+    paymentId: paymentLog.paymentId,
+
+    timestamp: paymentSuccessOld.timestamp,
+    blockchain: paymentSuccessOld.blockchain,
+    transaction: paymentLog.transaction,
+    index: paymentLog.index,
+
+    email: paymentSuccessOld.email,
+    language: paymentSuccessOld.language,
+    currency: paymentSuccessOld.currency,
+    amountCurrency: paymentSuccessOld.amountCurrency,
+    description: paymentSuccessOld.description,
+    comment: null
+  }
+  console.log(`found payment success for accountId ${paymentSuccess.accountId} and paymentId ${paymentSuccess.paymentId}`)
+
+  // await paymentDao.savePaymentSuccess(paymentSuccess)
+}
+
+async function migrationPaymentSuccesses(paymentLogs: PaymentLog[]): Promise<void> {
   await Promise.all(
-    profiles.map(profile => migrationPaymentSuccessesForProfile(profile))
+    paymentLogs.map(paymentLog => migrationPaymentSuccessForPaymentLog(paymentLog))
   )
 }
 
 async function loadIpnResultOld(ipnKey: IpnKey): Promise<IpnResult | undefined> {
-  const result = await this.dynamoService.readItem({
+  const result = await dynamoService.readItem({
     TableName: appConfig.TABLE_NAME,
     Key: marshall({
       pk: generateKey('ipn_result', ipnKey.accountId, ipnKey.paymentId, ipnKey.blockchain.toLocaleLowerCase(), ipnKey.transaction, ipnKey.index),
@@ -187,14 +183,14 @@ async function main() {
   const profiles = await accountDao.listAccountProfiles()
   console.log(`found ${profiles.length} account profiles`)
 
-  // console.log(`start to migrate payment logs`)
-  // const paymentLogs = await migrationPaymentLogs(profiles)
+  console.log(`start to migrate payment logs`)
+  const paymentLogs = await migrationPaymentLogs(profiles)
 
-  console.log(`start to migrate payment successes`)
-  await migrationPaymentSuccesses(profiles)
+  // console.log(`start to migrate payment successes`)
+  // await migrationPaymentSuccesses(paymentLogs)
 
-  // console.log(`start to migrate ipn results`)
-  // await migrationIpnResults(paymentLogs)
+  console.log(`start to migrate ipn results`)
+  await migrationIpnResults(paymentLogs)
 }
 
 main()
