@@ -6,9 +6,7 @@ import { Alert, Col, Form, Row } from 'react-bootstrap'
 
 import { useInfoMessages } from '../../states/application/hook'
 import PaymentBlockchainButton from './components/PaymentBlockchainButton'
-import { useSettings } from '../../states/settings/hook'
-import { currencyToTokenAmount, formatToFixed, parseToBigNumber, stringComparator, tokenAmountToCurrency, tryParseFloat } from '../../libs/utils'
-import { useAccountCommonSettings } from '../../states/account-settings/hook'
+import { currencyToTokenAmount, formatToFixed, parseToBigNumber, tokenAmountToCurrency, tryParseFloat } from '../../libs/utils'
 import { AppSettingsCurrency } from '../../types/app-settings'
 import PaymentCurrencyDropdown from './components/PaymentCurrencyDropdown'
 import useSpecificExchangeRate from '../../libs/hooks/useSpecificExchangeRate'
@@ -33,18 +31,10 @@ const Payment: React.FC = () => {
 
   const { t, i18n } = useTranslation()
   const { clearInfoMessage } = useInfoMessages()
-  const appSettings = useSettings()
-  const commonSettings = useAccountCommonSettings()
   const exchangeRate = useSpecificExchangeRate(selectedCurrency?.symbol)
   const location = useLocation()
   const { process: successPayment } = useApiRequest()
   const { addInfoMessage, removeInfoMessage } = useInfoMessages()
-
-  const preparedCurrencies = useMemo(() => {
-    return appSettings.current
-      ? [...appSettings.current.currencies].sort((a, b) => stringComparator(a.symbol, b.symbol))
-      : undefined
-  }, [appSettings])
 
   const selectedTokenAmount = useMemo(() => {
     if (!selectedToken || !selectedTokenAmountFormatted) {
@@ -161,66 +151,41 @@ const Payment: React.FC = () => {
   }
 
   useEffect(() => {
-    setSelectedCurrency(current => {
-      if (!current && commonSettings) {
-        const currencyFromParam = new URLSearchParams(location.search).get('currency')
-        if (currencyFromParam) {
-          const currency = preparedCurrencies?.find(item => item.symbol.toLocaleLowerCase() === currencyFromParam.toLocaleLowerCase())
-          if (currency) {
-            return currency
-          }
-        }
-
-        const currency = preparedCurrencies?.find(item => item.symbol.toLocaleLowerCase() === commonSettings.currency?.toLocaleLowerCase())
-        if (currency) {
-          return currency
-        }
-      }
-
-      return current
-    })
-  }, [commonSettings, preparedCurrencies, location.search])
-
-  useEffect(() => {
     setSelectedCurrencyAmount(current => {
-      if (!current) {
-        const amount = tryParseFloat(
-          new URLSearchParams(location.search).get('currencyAmount')
-        )
-        if (amount) {
-          return amount.toString()
-        }
+      if (current) {
+        return current
       }
 
-      return current
+      const amount = tryParseFloat(
+        new URLSearchParams(location.search).get('currencyAmount')
+      )
+      return amount?.toString()
     })
-  }, [commonSettings, preparedCurrencies, location.search])
+  }, [location.search])
 
   useEffect(() => {
     setSelectedAddress(current => {
-      if (!current) {
-        const queryParams = new URLSearchParams(location.search)
-        const address = queryParams.get('address')
-        if (address) {
-          return address
-        }
+      if (current) {
+        return current
       }
 
-      return current
+      const queryParams = new URLSearchParams(location.search)
+      const address = queryParams.get('address')
+
+      return address ?? undefined
     })
   }, [location.search])
 
   useEffect(() => {
     setSelectedComment(current => {
-      if (!current) {
-        const queryParams = new URLSearchParams(location.search)
-        const comment = queryParams.get('comment')
-        if (comment) {
-          return decodeURIComponent(comment)
-        }
+      if (current) {
+        return current
       }
 
-      return current
+      const queryParams = new URLSearchParams(location.search)
+      const comment = queryParams.get('comment')
+
+      return comment ? decodeURIComponent(comment) : undefined
     })
   }, [location.search])
 
@@ -275,11 +240,9 @@ const Payment: React.FC = () => {
 
         <Row>
           <Col>
-            {(!!preparedCurrencies) && (
-              <div className="mb-2">
-                <PaymentCurrencyDropdown selectedCurrency={selectedCurrency} currencies={preparedCurrencies} onUpdate={selectCurrencyHandler} />
-              </div>
-            )}
+            <div className="mb-2">
+              <PaymentCurrencyDropdown onUpdate={selectCurrencyHandler} />
+            </div>
 
             <div className="mb-2">
               <Form.Group>

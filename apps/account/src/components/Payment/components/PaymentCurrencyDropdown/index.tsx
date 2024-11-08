@@ -1,28 +1,41 @@
-import { Dropdown, Form, InputGroup, Spinner } from 'react-bootstrap'
-import { useDeferredValue, useEffect, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
+import { Dropdown, Form, InputGroup, Spinner } from 'react-bootstrap'
+import { Search } from 'react-bootstrap-icons'
+import { Orama, search } from '@orama/orama'
+import isEqual from 'lodash.isequal'
 
 import { AppSettingsCurrency } from '../../../../types/app-settings'
-import isEqual from 'lodash.isequal'
-import { Search } from 'react-bootstrap-icons'
 import useCurrenciesDb from '../../../../libs/hooks/useCurrenciesDb'
 import { currencySchema } from '../../../../types/orama'
-import { Orama, search } from '@orama/orama'
 import { isNullOrEmptyOrWhitespaces, stringComparator } from '../../../../libs/utils'
+import { useSettings } from '../../../../states/settings/hook'
+import { useAccountCommonSettings } from '../../../../states/account-settings/hook'
 
 interface PaymentCurrencyDropdownProps {
-  selectedCurrency: AppSettingsCurrency | undefined
-  currencies: AppSettingsCurrency[]
   onUpdate: (currency: AppSettingsCurrency | undefined) => void
 }
 
 const PaymentCurrencyDropdown: React.FC<PaymentCurrencyDropdownProps> = (props) => {
-  const { selectedCurrency, currencies, onUpdate } = props
+  const { onUpdate } = props
 
-  const { t } = useTranslation()
+  const [selectedCurrency, setSelectedCurrency] = useState<AppSettingsCurrency | undefined>(undefined)
   const [results, setResults] = useState<AppSettingsCurrency[] | undefined>(undefined)
   const [searchQuery, setSearchQuery] = useState<string>('')
+
+  const { t } = useTranslation()
+  const location = useLocation()
+  const appSettings = useSettings()
+  const commonSettings = useAccountCommonSettings()
   const deferredQuery = useDeferredValue(searchQuery)
+
+  const currencies = useMemo(() => {
+    return appSettings.current
+      ? [...appSettings.current.currencies].sort((a, b) => stringComparator(a.symbol, b.symbol))
+      : undefined
+  }, [appSettings])
+
   const currenciesDb = useCurrenciesDb(currencies)
 
   useEffect(() => {
@@ -59,6 +72,32 @@ const PaymentCurrencyDropdown: React.FC<PaymentCurrencyDropdownProps> = (props) 
     }
   }, [currenciesDb, deferredQuery, currencies])
 
+  useEffect(() => {
+    setSelectedCurrency(current => {
+      if (!commonSettings) {
+        return undefined
+      }
+
+      if (current) {
+        return current
+      }
+
+      const currencyFromParam = new URLSearchParams(location.search).get('currency')
+      if (currencyFromParam) {
+        const currency = currencies?.find(item => item.symbol.toLocaleLowerCase() === currencyFromParam.toLocaleLowerCase())
+        if (currency) {
+          return currency
+        }
+      }
+
+      return currencies?.find(item => item.symbol.toLocaleLowerCase() === commonSettings.currency?.toLocaleLowerCase())
+    })
+  }, [commonSettings, currencies, location.search])
+
+  useEffect(() => {
+    onUpdate(selectedCurrency)
+  }, [selectedCurrency, onUpdate])
+
   return (
     <Form.Group>
       <Dropdown>
@@ -94,7 +133,7 @@ const PaymentCurrencyDropdown: React.FC<PaymentCurrencyDropdownProps> = (props) 
 
           {(results && results.length > 0) && (
             results.map(currency => (
-              <Dropdown.Item onClick={() => onUpdate(currency)} active={isEqual(currency, selectedCurrency)} key={currency.symbol}>
+              <Dropdown.Item onClick={() => setSelectedCurrency(currency)} active={isEqual(currency, selectedCurrency)} key={currency.symbol}>
                 {currency.symbol}
                 <div className='text-muted'>{currency.desc} ({currency.country})</div>
               </Dropdown.Item>
