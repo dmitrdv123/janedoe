@@ -30,7 +30,6 @@ export default function useTokensExtDb(tokens: TokenExt[] | undefined) {
           settingIndex: token.settingIndex,
           balance: token.balance ?? '0',
           balanceUsd: token.balanceUsd ?? 0,
-          balanceCurrency: token.balanceCurrency ?? 0
         })))
 
         setTokensDb(db)

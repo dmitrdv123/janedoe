@@ -2,27 +2,30 @@ import { useEffect, useState, useRef, useCallback, useDeferredValue } from 'reac
 import { Form, InputGroup, ListGroup, Modal, Spinner, Image, Alert } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Search } from 'react-bootstrap-icons'
-import { BlockchainMeta, EVMChainInfo, TransactionType } from 'rango-sdk-basic'
+import { BlockchainMeta, EVMChainInfo, Token, TransactionType } from 'rango-sdk-basic'
 import { Orama, search } from '@orama/orama'
 
 import { useModalIsOpen, useToggleModal } from '../../../../states/application/hook'
 import { ApplicationModal } from '../../../../types/application-modal'
-import { isNullOrEmptyOrWhitespaces, sameToken, tokenDefaultResultComparator } from '../../../../libs/utils'
+import { isNullOrEmptyOrWhitespaces, sameToken, tokenAmountToCurrency, tokenDefaultResultComparator } from '../../../../libs/utils'
 import { tokenExtSchema } from '../../../../types/orama'
 import { PAGE_SIZE } from '../../../../constants'
 import { TokenExt } from '../../../../types/token-ext'
 import useTokensExtDb from '../../../../libs/hooks/useTokensExtDb'
 import TokenAmountWithCurrency from '../../../TokenAmountWithCurrency'
+import { AppSettingsCurrency } from '../../../../types/app-settings'
 
 interface PaymentTokensModalProps {
-  selectedBlockchain: BlockchainMeta | undefined
-  selectedToken: TokenExt | undefined
+  blockchain: BlockchainMeta | undefined
+  token: Token | undefined
+  currency: AppSettingsCurrency | undefined
   tokens: TokenExt[] | undefined
+  exchangeRate: number | undefined
   onUpdate: (token: TokenExt) => void
 }
 
 const PaymentTokensModal: React.FC<PaymentTokensModalProps> = (props) => {
-  const { selectedBlockchain, selectedToken, tokens, onUpdate } = props
+  const { blockchain, token, currency, tokens, exchangeRate, onUpdate } = props
 
   const [results, setResults] = useState<TokenExt[] | undefined>(undefined)
   const [searchQuery, setSearchQuery] = useState<string>('')
@@ -101,9 +104,15 @@ const PaymentTokensModal: React.FC<PaymentTokensModalProps> = (props) => {
     onUpdate(token)
   }, [onUpdate, toggleSearchModal])
 
-  const isActive = useCallback((token: TokenExt) => {
-    return selectedToken && sameToken(token, selectedToken)
-  }, [selectedToken])
+  const isActiveHandler = useCallback((tokenToUse: TokenExt) => {
+    return token && sameToken(token, tokenToUse)
+  }, [token])
+
+  const tokenCurrencyAmountHandler = useCallback((token: TokenExt) => {
+    return token.balance && token.usdPrice && exchangeRate
+      ? tokenAmountToCurrency(token.balance, token.usdPrice, token.decimals, exchangeRate)
+      : undefined
+  }, [exchangeRate])
 
   return (
     <Modal show={searchModalOpen} onHide={toggleSearchModal} className="modal-list">
@@ -148,7 +157,7 @@ const PaymentTokensModal: React.FC<PaymentTokensModalProps> = (props) => {
                   action
                   key={[token.blockchain, token.symbol, token.address].join('_')}
                   disabled={token.usdPrice === null}
-                  active={isActive(token)}
+                  active={isActiveHandler(token)}
                   onClick={(e) => {
                     if ((e.target as HTMLElement).tagName.toLocaleLowerCase() !== 'a') {
                       tokenSelectHandler(token);
@@ -165,17 +174,17 @@ const PaymentTokensModal: React.FC<PaymentTokensModalProps> = (props) => {
                         {token.symbol}
                       </div>
 
-                      {(selectedBlockchain?.type !== TransactionType.EVM || !token.address) && (
-                        <div className={isActive(token) ? '' : 'text-muted'}>
+                      {(blockchain?.type !== TransactionType.EVM || !token.address) && (
+                        <div className={isActiveHandler(token) ? '' : 'text-muted'}>
                           {token.name}
                         </div>
                       )}
 
-                      {(selectedBlockchain?.type === TransactionType.EVM && token.address) && (
+                      {(blockchain?.type === TransactionType.EVM && token.address) && (
                         <a
-                          href={(selectedBlockchain.info as EVMChainInfo).addressUrl.replace('{wallet}', token.address)}
+                          href={(blockchain.info as EVMChainInfo).addressUrl.replace('{wallet}', token.address)}
                           target='_blank'
-                          className={isActive(token) ? 'link-dark text-decoration-none' : 'text-decoration-none'}
+                          className={isActiveHandler(token) ? 'link-dark text-decoration-none' : 'text-decoration-none'}
                         >
                           {token.name}
                         </a>
@@ -189,8 +198,8 @@ const PaymentTokensModal: React.FC<PaymentTokensModalProps> = (props) => {
                         tokenSymbol={token.symbol}
                         tokenDecimals={token.decimals}
                         tokenAmount={token.balance}
-                        currency={token.currency}
-                        currencyAmount={token.balanceCurrency}
+                        currency={currency?.symbol ?? null}
+                        currencyAmount={tokenCurrencyAmountHandler(token) ?? null}
                         hideZeroBalance
                       />
                     </small>

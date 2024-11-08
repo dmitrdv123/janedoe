@@ -10,8 +10,6 @@ export interface TokenWithBalance extends Token {
 
 export interface TokenExt extends Token {
   settingIndex: number
-  currency: string | null
   balance: string | null,
   balanceUsd: number | null
-  balanceCurrency: number | null
 }

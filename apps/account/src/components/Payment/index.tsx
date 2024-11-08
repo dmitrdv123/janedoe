@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
-import { BlockchainMeta } from 'rango-sdk-basic'
+import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { Alert, Col, Form, Row } from 'react-bootstrap'
 
 import { useInfoMessages } from '../../states/application/hook'
@@ -14,7 +14,6 @@ import { AppSettingsCurrency } from '../../types/app-settings'
 import PaymentCurrencyDropdown from './components/PaymentCurrencyDropdown'
 import useSpecificExchangeRate from '../../libs/hooks/useSpecificExchangeRate'
 import { WithdrawResult } from '../../types/withdraw_result'
-import { TokenExt } from '../../types/token-ext'
 import PaymentTokenButton from './components/PaymentTokenButton'
 import PaymentPayButton from './components/PaymentPayButton'
 import TransactionHash from '../TransactionHash'
@@ -24,7 +23,7 @@ import { ApiWrapper } from '../../libs/services/api-wrapper'
 
 const Payment: React.FC = () => {
   const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainMeta | undefined>(undefined)
-  const [selectedToken, setSelectedToken] = useState<TokenExt | undefined>(undefined)
+  const [selectedToken, setSelectedToken] = useState<Token | undefined>(undefined)
   const [selectedCurrency, setSelectedCurrency] = useState<AppSettingsCurrency | undefined>(undefined)
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>(undefined)
   const [selectedCurrencyAmount, setSelectedCurrencyAmount] = useState<string | undefined>(undefined)
@@ -80,7 +79,7 @@ const Payment: React.FC = () => {
     setSelectedBlockchain(blockchainToUpdate)
   }, [clearInfoMessage])
 
-  const selectTokenHandler = useCallback((tokenToUpdate: TokenExt | undefined) => {
+  const selectTokenHandler = useCallback((tokenToUpdate: Token | undefined) => {
     clearInfoMessage()
     setSelectedToken(tokenToUpdate)
   }, [clearInfoMessage])
@@ -310,7 +309,7 @@ const Payment: React.FC = () => {
 
         {(!!selectedBlockchain) && (
           <div className="mb-2">
-            <PaymentTokenButton selectedBlockchain={selectedBlockchain} selectedCurrency={selectedCurrency} selectedTokenAmount={selectedTokenAmount} onUpdate={selectTokenHandler} />
+            <PaymentTokenButton blockchain={selectedBlockchain} currency={selectedCurrency} tokenAmount={selectedTokenAmount} onUpdate={selectTokenHandler} />
           </div>
         )}
 
