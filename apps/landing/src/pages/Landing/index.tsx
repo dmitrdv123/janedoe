@@ -7,7 +7,7 @@ import './index.css'
 
 import LandingNavbar from '../../components/navbars/LendingNavbar'
 import { useConfig } from '../../context/config/hook'
-import { MAILTO, SUPPORTED_LANGUAGES } from '../../constants'
+import { DEFAULT_LANGUAGE, MAILTO, SUPPORTED_LANGUAGES } from '../../constants'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
 import { Article } from '../../types/article'
 import useApiRequestImmediate from '../../libs/hooks/useApiRequestImmediate'
@@ -80,7 +80,7 @@ const Landing: React.FC = () => {
                   </a>
                 </li>
               </ul>
-              <a href={config.config?.baseUrlDocs} target='_blank'>
+              <a href={`${config.config?.baseUrlDocs}/${i18n.language ?? DEFAULT_LANGUAGE}/`} target='_blank'>
                 {t('pages.landing.read_more')}
               </a>
             </Col>

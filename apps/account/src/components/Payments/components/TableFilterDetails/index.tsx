@@ -12,7 +12,7 @@ interface TableFilterDetailsProps {
   from: string
   to: string
   direction: PaymentHistoryDirection | null
-  onChange: (transactionHash: string, from: string, to: string, direction: PaymentHistoryDirection | null) => void
+  onChange: (transaction: string, from: string, to: string, direction: PaymentHistoryDirection | null) => void
 }
 
 const TableFilterDetails: React.FC<TableFilterDetailsProps> = (props) => {

@@ -1,5 +1,5 @@
 export interface TransactionCreationResult {
-  transaction: string
+  txId: string
   index: number
   message: string
   code: string

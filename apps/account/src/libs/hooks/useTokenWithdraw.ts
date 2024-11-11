@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
 import { ContractCallResult } from '../../types/contract-call-result'
-import { encodeStringToBytes, getAddressOrDefault } from '../utils'
+import { getAddressOrDefault } from '../utils'
 import useJanedoeContractWrite from './useJanedoeContractWrite'
 
 export default function useTokenWithdraw(
@@ -26,8 +26,7 @@ export default function useTokenWithdraw(
     [
       address, // to
       getAddressOrDefault(token.address), // token
-      amount, // amount,
-      encodeStringToBytes('') // paymentId
+      amount // amount
     ],
     undefined,
     onError,

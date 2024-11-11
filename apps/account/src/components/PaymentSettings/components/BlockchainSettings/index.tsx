@@ -46,7 +46,7 @@ const BlockchainSettings: React.FC<BlockchainSettingsProps> = (props) => {
     return assetsToShow
       .map((asset, i) => {
         return <TokenSettings
-          key={asset.symbol}
+          key={[asset.blockchain, asset.symbol, asset.address].join('_')}
           baseIndex={index}
           index={i}
           asset={asset}

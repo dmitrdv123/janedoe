@@ -3,7 +3,6 @@ import { BlockchainMeta } from 'rango-sdk-basic'
 
 import { ContractCallResult } from '../../types/contract-call-result'
 import useJanedoeContractWrite from './useJanedoeContractWrite'
-import { encodeStringToBytes } from '../utils'
 
 export default function useNativeTokenWithdraw(
   blockchain: BlockchainMeta,
@@ -24,8 +23,7 @@ export default function useNativeTokenWithdraw(
     'withdrawEthTo',
     [
       address, // to
-      amount, // amount
-      encodeStringToBytes('') // paymentId
+      amount // amount
     ],
     undefined,
     onError,

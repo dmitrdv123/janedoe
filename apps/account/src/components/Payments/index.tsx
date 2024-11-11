@@ -141,10 +141,10 @@ const Payments: React.FC = () => {
     }))
   }, [])
 
-  const paymentDetailsFilterHandler = useCallback((filterTransactionHash: string, filterFrom: string, filterTo: string, filterDirection: PaymentHistoryDirection | null) => {
+  const paymentDetailsFilterHandler = useCallback((filterTransaction: string, filterFrom: string, filterTo: string, filterDirection: PaymentHistoryDirection | null) => {
     setPaymentHistoryDataFilter(filter => ({
       ...filter,
-      transactionHash: filterTransactionHash,
+      transaction: filterTransaction,
       from: filterFrom,
       to: filterTo,
       direction: filterDirection
@@ -248,7 +248,7 @@ const Payments: React.FC = () => {
         </td>
         <td>
           <div>
-            {t('components.payments.tran_hash')} <TransactionHash blockchain={blockchain} transactionHash={paymentHistoryItem.transaction} />
+            {t('components.payments.tran_hash')} <TransactionHash blockchain={blockchain} transaction={paymentHistoryItem.transaction} />
           </div>
 
           {!!paymentHistoryItem.from && (

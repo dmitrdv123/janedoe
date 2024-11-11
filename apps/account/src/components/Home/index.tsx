@@ -3,10 +3,10 @@ import useLocalStorageState from 'use-local-storage-state'
 
 import { AuthData } from '../../types/auth-data'
 import { useConfig } from '../../context/config/hook'
-import { AUTH_DATA_KEY } from '../../constants'
+import { AUTH_DATA_KEY, DEFAULT_LANGUAGE } from '../../constants'
 
 const Home: React.FC = () => {
-  const { t } = useTranslation()
+  const { i18n, t } = useTranslation()
   const [authData] = useLocalStorageState<AuthData>(AUTH_DATA_KEY)
   const config = useConfig()
 
@@ -39,7 +39,7 @@ const Home: React.FC = () => {
               <li>
                 <Trans i18nKey="components.home.currency_desc">
                   Replace <code>currency</code> with the necessary fiat currency, for example, USD
-                </Trans> (<a href={`${config.config?.baseUrlDocs}/#resources_currencies`} target='_blank'>{t('components.home.currency_List')}</a>).
+                </Trans> (<a href={`${config.config?.baseUrlDocs}/${i18n.language ?? DEFAULT_LANGUAGE}/resources_currencies`} target='_blank'>{t('components.home.currency_List')}</a>).
               </li>
               <li>
                 <Trans i18nKey="components.home.currency_amount_desc">
@@ -56,7 +56,7 @@ const Home: React.FC = () => {
 
           <p>
             <Trans i18nKey="components.home.more_details">
-              More details in <a href={config.config?.baseUrlDocs} target='_blank'>documentation</a>.
+              More details in <a href={`${config.config?.baseUrlDocs}/${i18n.language ?? DEFAULT_LANGUAGE}/`} target='_blank'>documentation</a>.
             </Trans>
           </p>
         </>

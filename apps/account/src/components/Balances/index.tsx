@@ -80,7 +80,7 @@ const Balances: React.FC = () => {
           dismissible
           onClose={() => removeWithdrawResults(result.blockchain.name)}
         >
-          {t('components.balances.success', { blockchain: result.blockchain.displayName })} {result.hash && (<TransactionHash blockchain={result.blockchain} transactionHash={result.hash} />)}
+          {t('components.balances.success', { blockchain: result.blockchain.displayName })} {result.hash && (<TransactionHash blockchain={result.blockchain} transaction={result.hash} />)}
           {!!result.message && (
             <div>{result.message}</div>
           )}

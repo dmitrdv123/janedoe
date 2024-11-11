@@ -46,6 +46,7 @@ export const PERMISSION_KEYS = ['balances', 'payments', 'common_settings', 'noti
 export const DEFAULT_PERMISSIONS = Object.fromEntries(PERMISSION_KEYS.map(key => [key, 'View' as Permission]))
 export const PERMISSION_PRIORITY = { 'Disable': 0, 'View': 1, 'Modify': 2 }
 export const SUPPORTED_LANGUAGES = ['en', 'ru']
+export const DEFAULT_LANGUAGE = 'en'
 
 export const CHAINS: [Chain, ...Chain[]] = import.meta.env.VITE_APP_IS_DEV
   ? [

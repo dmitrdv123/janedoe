@@ -6,34 +6,34 @@ import { BLOCKCHAIN_BTC } from '../../constants'
 
 interface TransactionHashProps {
   blockchain: BlockchainMeta | undefined
-  transactionHash: string
+  transaction: string
 }
 
 const TransactionHash: React.FC<TransactionHashProps> = (props) => {
   return (
     <>
       {(props.blockchain?.info?.infoType !== 'EvmMetaInfo' && props.blockchain?.name.toLocaleLowerCase() !== BLOCKCHAIN_BTC) && (
-        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transactionHash}>
-          {cutString(props.transactionHash)}
-          <button type="button" className="btn btn-link btn-sm text-dark" onClick={() => navigator.clipboard.writeText(props.transactionHash ?? '')}><Clipboard /></button>
+        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transaction}>
+          {cutString(props.transaction)}
+          <button type="button" className="btn btn-link btn-sm text-dark" onClick={() => navigator.clipboard.writeText(props.transaction ?? '')}><Clipboard /></button>
         </span>
       )}
 
       {(props.blockchain?.name.toLocaleLowerCase() === BLOCKCHAIN_BTC) && (
-        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transactionHash}>
-          <a href={`https://www.blockchain.com/explorer/transactions/btc/${props.transactionHash}`} target='_blank' data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transactionHash}>
-            {cutString(props.transactionHash)}
+        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transaction}>
+          <a href={`https://www.blockchain.com/explorer/transactions/btc/${props.transaction}`} target='_blank' data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transaction}>
+            {cutString(props.transaction)}
           </a>
-          <button type="button" className="btn btn-link btn-sm text-dark" onClick={() => navigator.clipboard.writeText(props.transactionHash ?? '')}><Clipboard /></button>
+          <button type="button" className="btn btn-link btn-sm text-dark" onClick={() => navigator.clipboard.writeText(props.transaction ?? '')}><Clipboard /></button>
         </span>
       )}
 
       {(props.blockchain?.info?.infoType === 'EvmMetaInfo') && (
-        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transactionHash}>
-          <a href={(props.blockchain.info as EVMChainInfo).transactionUrl.replace('{txHash}', props.transactionHash)} target='_blank' data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transactionHash}>
-            {cutString(props.transactionHash)}
+        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transaction}>
+          <a href={(props.blockchain.info as EVMChainInfo).transactionUrl.replace('{txHash}', props.transaction)} target='_blank' data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.transaction}>
+            {cutString(props.transaction)}
           </a>
-          <button type="button" className="btn btn-link btn-sm text-dark" onClick={() => navigator.clipboard.writeText(props.transactionHash ?? '')}><Clipboard /></button>
+          <button type="button" className="btn btn-link btn-sm text-dark" onClick={() => navigator.clipboard.writeText(props.transaction ?? '')}><Clipboard /></button>
         </span>
       )}
     </>

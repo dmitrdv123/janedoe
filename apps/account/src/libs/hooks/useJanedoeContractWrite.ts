@@ -385,12 +385,6 @@ export default function useJanedoeContractWrite(
             "internalType": "uint256",
             "name": "amount",
             "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "bytes",
-            "name": "paymentId",
-            "type": "bytes"
           }
         ],
         "name": "WithdrawTo",
@@ -428,12 +422,6 @@ export default function useJanedoeContractWrite(
             "internalType": "uint256[]",
             "name": "amounts",
             "type": "uint256[]"
-          },
-          {
-            "indexed": false,
-            "internalType": "bytes",
-            "name": "paymentId",
-            "type": "bytes"
           }
         ],
         "name": "WithdrawToBatch",
@@ -718,11 +706,6 @@ export default function useJanedoeContractWrite(
             "internalType": "uint256",
             "name": "amount",
             "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "paymentId",
-            "type": "bytes"
           }
         ],
         "name": "withdrawEthTo",
@@ -746,11 +729,6 @@ export default function useJanedoeContractWrite(
             "internalType": "uint256",
             "name": "amount",
             "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "paymentId",
-            "type": "bytes"
           }
         ],
         "name": "withdrawTo",
@@ -774,11 +752,6 @@ export default function useJanedoeContractWrite(
             "internalType": "uint256[]",
             "name": "amounts",
             "type": "uint256[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "paymentId",
-            "type": "bytes"
           }
         ],
         "name": "withdrawToBatch",
