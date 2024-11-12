@@ -13,7 +13,7 @@ interface PaymentPayButtonProps {
   selectedAddress: string | undefined
   selectedTokenAmount: bigint | undefined
   disabled: boolean
-  onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
+  onSuccess: (paymentId: string, blockchain: BlockchainMeta, hash: string | undefined, index: number, message?: string | undefined) => void
 }
 
 const PaymentPayButton: React.FC<PaymentPayButtonProps> = (props) => {

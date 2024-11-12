@@ -14,7 +14,7 @@ interface PaymentPayEvmTokenButtonProps {
   selectedAddress: string
   selectedTokenAmount: bigint
   disabled: boolean
-  onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
+  onSuccess: (paymentId: string, blockchain: BlockchainMeta, hash: string | undefined, index: number, message?: string | undefined) => void
 }
 
 const PaymentPayEvmTokenButton: React.FC<PaymentPayEvmTokenButtonProps> = (props) => {
@@ -33,7 +33,12 @@ const PaymentPayEvmTokenButton: React.FC<PaymentPayEvmTokenButtonProps> = (props
 
   const successCallback = useCallback((hash: string | undefined) => {
     removeInfoMessage(`${INFO_MESSAGE_BALANCE_WITHDRAW_ERROR}_${selectedBlockchain.name}`)
-    onSuccess(selectedBlockchain, hash)
+    onSuccess(
+      [selectedBlockchain.name.toLocaleLowerCase(), hash, 0].join('_'),
+      selectedBlockchain,
+      hash,
+      0
+    )
   }, [selectedBlockchain, onSuccess, removeInfoMessage])
 
   const { status: withdrawStatus, handle: withdraw } = useTokenWithdraw(

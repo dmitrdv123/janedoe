@@ -99,7 +99,7 @@ const Payment: React.FC = () => {
     setSelectedCurrencyAmount(currencyAmountToUpdate)
   }, [exchangeRate, selectedToken?.decimals, selectedToken?.usdPrice])
 
-  const successHandler = useCallback(async (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => {
+  const successHandler = useCallback(async (paymentId: string, blockchain: BlockchainMeta, hash: string | undefined, index: number, message?: string | undefined) => {
     const sendSuccess = async () => {
       try {
         removeInfoMessage(INFO_MESSAGE_ACCOUNT_PAYMENT_SUCCESS_ERROR)
@@ -108,10 +108,10 @@ const Payment: React.FC = () => {
         if (selectedBlockchain?.name && selectedCurrency?.symbol && currencyAmountNum !== undefined && hash) {
           await successPayment(
             ApiWrapper.instance.successRequest(
-              [blockchain.name.toLocaleLowerCase(), hash, 0].join('_'),
+              paymentId,
               selectedBlockchain.name,
               hash,
-              0,
+              index,
               selectedCurrency.symbol,
               currencyAmountNum,
               i18n.resolvedLanguage ?? 'EN',

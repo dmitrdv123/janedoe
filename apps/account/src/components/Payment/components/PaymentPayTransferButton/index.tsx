@@ -14,7 +14,7 @@ interface PaymentPayTransferButtonProps {
   selectedAddress: string
   selectedTokenAmount: bigint
   disabled: boolean
-  onSuccess: (blockchain: BlockchainMeta, hash: string | undefined, message?: string | undefined) => void
+  onSuccess: (paymentId: string, blockchain: BlockchainMeta, hash: string | undefined, index: number, message?: string | undefined) => void
 }
 
 const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props) => {
@@ -32,7 +32,13 @@ const PaymentPayTransferButton: React.FC<PaymentPayTransferButtonProps> = (props
       ))
       const message = result?.code ? t(result.code, result.args) : undefined
 
-      onSuccess(selectedBlockchain, result?.txId, message)
+      onSuccess(
+        [selectedBlockchain.name.toLocaleLowerCase(), result?.txId, 0].join('_'),
+        selectedBlockchain,
+        result?.txId,
+        0,
+        message
+      )
     } catch (error) {
       addInfoMessage(
         t('components.payment.errors.pay_error'),

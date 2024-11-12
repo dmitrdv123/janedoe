@@ -86,17 +86,17 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
         to: event.data.to,
         token: event.data.token,
         amount: event.data.amount,
-        paymentId: `${this.blockchain.name.toLocaleLowerCase()}_${event.transactionHash}`,
+        paymentId: `${this.blockchain.name.toLocaleLowerCase()}_${event.transactionHash}_0`,
         direction: 'outgoing' as EvmPaymentDirection
       })),
       ...withdrawBatchEvents.flatMap(event =>
-        event.data.tokens.map((account, index) => ({
+        event.data.tokens.map((token, index) => ({
           blockNumber: event.blockNumber,
           transactionHash: event.transactionHash,
           dt: event.data.dt,
           from: event.data.from,
-          to: account,
-          token: event.data.tokens[index],
+          to: event.data.accounts[index],
+          token: token,
           amount: event.data.amounts[index],
           paymentId: `${this.blockchain.name.toLocaleLowerCase()}_${event.transactionHash}_${index}`,
           direction: 'outgoing' as EvmPaymentDirection
