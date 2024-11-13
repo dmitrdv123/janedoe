@@ -141,6 +141,7 @@
       "pay_btn": "Оплатить",
       "pay_success": "Платеж был совершен успешно",
       "comment": "Комментарий к платежу (опционально)",
+      "refresh_token_balance": "Обновить баланс",
       "errors": {
         "blockchain_required": "Выберете блокчейн",
         "token_required": "Выберете токен",

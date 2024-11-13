@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 import { BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
-import { Alert, Button, Col, Form, Row, Spinner } from 'react-bootstrap'
+import { Alert, Col, Form, Row } from 'react-bootstrap'
 
 import { useInfoMessages } from '../../states/application/hook'
 import PaymentBlockchainButton from './components/PaymentBlockchainButton'
@@ -30,7 +30,6 @@ const Payment: React.FC = () => {
   const [selectedComment, setSelectedComment] = useState<string | undefined>(undefined)
   const [payResults, setPayResults] = useState<{ [key: string]: WithdrawResult }>({})
   const [isValid, setIsValid] = useState<boolean>(false)
-  const [isForceRefresh, setIsForceRefresh] = useState<boolean>(false)
 
   const { t, i18n } = useTranslation()
   const { clearInfoMessage } = useInfoMessages()
@@ -154,14 +153,6 @@ const Payment: React.FC = () => {
     })
   }
 
-  const forceRefreshEndHandler = useCallback(() => {
-    setIsForceRefresh(false)
-  }, [])
-
-  const forceRefreshHandler = () => {
-    setIsForceRefresh(true)
-  }
-
   useEffect(() => {
     setSelectedTokenAmountFormatted(current => {
       if (current !== undefined) {
@@ -259,17 +250,6 @@ const Payment: React.FC = () => {
         </Alert>
       ))}
 
-      <div className='mb-3'>
-        <Button variant="primary" onClick={forceRefreshHandler} disabled={isForceRefresh}>
-          {t('common.refresh_btn')}
-          {isForceRefresh && (
-            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true">
-              <span className="visually-hidden">{t('common.processing')}</span>
-            </Spinner>
-          )}
-        </Button>
-      </div>
-
       <Form>
         <div className="mb-2">
           <PaymentBlockchainButton onUpdate={selectBlockchainHandler} />
@@ -280,9 +260,7 @@ const Payment: React.FC = () => {
             <PaymentTokenEvmButton
               blockchain={selectedBlockchain}
               currency={selectedCurrency}
-              isForceRefresh={isForceRefresh}
               onUpdate={selectTokenHandler}
-              onForceRefreshEnd={forceRefreshEndHandler}
             />
           </div>
         )}
@@ -292,9 +270,7 @@ const Payment: React.FC = () => {
             <PaymentTokenTransferButton
               blockchain={selectedBlockchain}
               currency={selectedCurrency}
-              isForceRefresh={isForceRefresh}
               onUpdate={selectTokenHandler}
-              onForceRefreshEnd={forceRefreshEndHandler}
             />
           </div>
         )}
@@ -385,7 +361,7 @@ const Payment: React.FC = () => {
             selectedToken={selectedToken}
             selectedAddress={selectedAddress}
             selectedTokenAmount={selectedTokenAmount}
-            disabled={!isValid || isForceRefresh}
+            disabled={!isValid}
             onSuccess={successHandler}
           />
         </div>

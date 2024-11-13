@@ -1,5 +1,5 @@
-import { Form } from 'react-bootstrap'
-import { useEffect, useMemo } from 'react'
+import { Button, Form } from 'react-bootstrap'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
 
@@ -17,13 +17,11 @@ import { INFO_MESSAGE_BALANCE_ERROR } from '../../../../constants'
 interface PaymentTokenTransferButtonProps {
   blockchain: BlockchainMeta
   currency: AppSettingsCurrency | undefined
-  isForceRefresh: boolean
-  onForceRefreshEnd: () => void
   onUpdate: (token: Token | undefined, balance: bigint | undefined) => void
 }
 
 const PaymentTokenTransferButton: React.FC<PaymentTokenTransferButtonProps> = (props) => {
-  const { blockchain, currency, isForceRefresh, onForceRefreshEnd, onUpdate } = props
+  const { blockchain, currency, onUpdate } = props
 
   const { t } = useTranslation()
 
@@ -56,6 +54,10 @@ const PaymentTokenTransferButton: React.FC<PaymentTokenTransferButtonProps> = (p
       : undefined
   }, [selectedToken, selectedTokenBalance, exchangeRate.data])
 
+  const forceRefreshHandler = useCallback(() => {
+    accountBlockchainBalanceDataReload?.()
+  }, [accountBlockchainBalanceDataReload])
+
   useEffect(() => {
     if (accountBlockchainBalanceError) {
       addInfoMessage(convertErrorToMessage(accountBlockchainBalanceError, t('common.errors.default')), `${INFO_MESSAGE_BALANCE_ERROR}_${blockchain.name}`, 'danger')
@@ -63,13 +65,6 @@ const PaymentTokenTransferButton: React.FC<PaymentTokenTransferButtonProps> = (p
       removeInfoMessage(`${INFO_MESSAGE_BALANCE_ERROR}_${blockchain.name}`)
     }
   }, [blockchain.name, accountBlockchainBalanceError, t, addInfoMessage, removeInfoMessage])
-
-  useEffect(() => {
-    if (isForceRefresh) {
-      accountBlockchainBalanceDataReload?.()
-      onForceRefreshEnd()
-    }
-  }, [isForceRefresh, onForceRefreshEnd, accountBlockchainBalanceDataReload])
 
   useEffect(() => {
     onUpdate(selectedToken, selectedTokenBalance)
@@ -98,6 +93,10 @@ const PaymentTokenTransferButton: React.FC<PaymentTokenTransferButtonProps> = (p
                 hideZeroBalance
               />
             </Form.Text>
+
+            <Button variant="link" className='pt-0 pb-0' onClick={forceRefreshHandler}>
+              {t('components.payment.refresh_token_balance')}
+            </Button>
           </div>
         )}
       </Form.Group>

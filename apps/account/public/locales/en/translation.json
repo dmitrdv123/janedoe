@@ -141,6 +141,7 @@
       "pay_btn": "Pay",
       "pay_success": "Payment has been done successfully",
       "comment": "Payment comment (optional)",
+      "refresh_token_balance": "Refresh Balance",
       "errors": {
         "blockchain_required": "Select a blockchain",
         "token_required": "Select a token",

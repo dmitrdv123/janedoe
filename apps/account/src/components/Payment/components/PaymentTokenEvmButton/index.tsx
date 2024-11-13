@@ -1,4 +1,4 @@
-import { Form } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BlockchainMeta, Token } from 'rango-sdk-basic'
@@ -18,13 +18,11 @@ import { TokenExt } from '../../../../types/token-ext'
 interface PaymentTokenEvmButtonProps {
   blockchain: BlockchainMeta
   currency: AppSettingsCurrency | undefined
-  isForceRefresh: boolean
-  onForceRefreshEnd: () => void
   onUpdate: (token: Token | undefined, balance: bigint | undefined) => void
 }
 
 const PaymentTokenEvmButton: React.FC<PaymentTokenEvmButtonProps> = (props) => {
-  const { blockchain, currency, isForceRefresh, onUpdate, onForceRefreshEnd } = props
+  const { blockchain, currency, onUpdate } = props
 
   const [selectedToken, setSelectedToken] = useState<Token | undefined>(undefined)
 
@@ -87,6 +85,10 @@ const PaymentTokenEvmButton: React.FC<PaymentTokenEvmButtonProps> = (props) => {
     setSelectedToken(tokenToUpdate)
   }, [])
 
+  const forceRefreshHandler = useCallback(() => {
+    tokensWithBalanceReload?.()
+  }, [tokensWithBalanceReload])
+
   useEffect(() => {
     setSelectedToken(current => {
       if (!preparedTokens || !accountPaymentSettings) {
@@ -113,13 +115,6 @@ const PaymentTokenEvmButton: React.FC<PaymentTokenEvmButtonProps> = (props) => {
       return current
     })
   }, [blockchain, preparedTokens, accountPaymentSettings])
-
-  useEffect(() => {
-    if (isForceRefresh) {
-      tokensWithBalanceReload?.()
-      onForceRefreshEnd()
-    }
-  }, [isForceRefresh, onForceRefreshEnd, tokensWithBalanceReload])
 
   useEffect(() => {
     onUpdate(selectedToken, selectedTokenBalance)
@@ -161,6 +156,10 @@ const PaymentTokenEvmButton: React.FC<PaymentTokenEvmButtonProps> = (props) => {
                 hideZeroBalance
               />
             </Form.Text>
+
+            <Button variant="link" className='pt-0 pb-0' onClick={forceRefreshHandler}>
+              {t('components.payment.refresh_token_balance')}
+            </Button>
           </div>
         )}
       </Form.Group>
