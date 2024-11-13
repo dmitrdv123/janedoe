@@ -13,7 +13,7 @@ import { ApiRequestStatus } from '../../types/api-request'
 
 const PAGE_SIZE = 50
 
-export default function useReadBalances(blockchain: BlockchainMeta | undefined): ReadBalancesResult {
+export default function useReadBalances(blockchain: BlockchainMeta): ReadBalancesResult {
   const [tokenWithBalance, setTokenWithBalance] = useState<TokenWithBalance[] | undefined>(undefined)
   const [status, setStatus] = useState<ApiRequestStatus>('idle')
 
@@ -22,17 +22,14 @@ export default function useReadBalances(blockchain: BlockchainMeta | undefined):
   const rbacSettings = useAccountRbacSettings()
 
   const contracts = useMemo(() => {
-    if (!blockchain) {
-      return undefined
-    }
 
     return appSettings.current?.contracts.find(
       item => item.blockchain.toLocaleLowerCase() === blockchain.name.toLocaleLowerCase()
     )
-  }, [appSettings, blockchain])
+  }, [appSettings, blockchain.name])
 
   const blockchainTokensByChunks = useMemo(() => {
-    if (!blockchain || !tokens) {
+    if (!tokens) {
       return undefined
     }
 
@@ -109,7 +106,7 @@ export default function useReadBalances(blockchain: BlockchainMeta | undefined):
               address: getAddressOrDefault(contracts?.contractAddresses.JaneDoe),
               functionName: 'balanceOfBatch',
               abi: [abiFunction],
-              chainId: blockchain ? Number(blockchain.chainId) : undefined,
+              chainId: Number(blockchain.chainId),
               args: [
                 Array(chunk?.length).fill(getAddressOrDefault(rbacSettings?.ownerAddress)),
                 chunk?.map(token => token.id)

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
-import { BlockchainMeta, Token } from 'rango-sdk-basic'
-import { Alert, Col, Form, Row } from 'react-bootstrap'
+import { BlockchainMeta, Token, TransactionType } from 'rango-sdk-basic'
+import { Alert, Button, Col, Form, Row, Spinner } from 'react-bootstrap'
 
 import { useInfoMessages } from '../../states/application/hook'
 import PaymentBlockchainButton from './components/PaymentBlockchainButton'
@@ -11,16 +11,18 @@ import { AppSettingsCurrency } from '../../types/app-settings'
 import PaymentCurrencyDropdown from './components/PaymentCurrencyDropdown'
 import useSpecificExchangeRate from '../../libs/hooks/useSpecificExchangeRate'
 import { WithdrawResult } from '../../types/withdraw_result'
-import PaymentTokenButton from './components/PaymentTokenButton'
+import PaymentTokenEvmButton from './components/PaymentTokenEvmButton'
 import PaymentPayButton from './components/PaymentPayButton'
 import TransactionHash from '../TransactionHash'
 import { INFO_MESSAGE_ACCOUNT_PAYMENT_SUCCESS_ERROR, PAYMENT_MAX_COMMENT_LENGTH } from '../../constants'
 import useApiRequest from '../../libs/hooks/useApiRequest'
 import { ApiWrapper } from '../../libs/services/api-wrapper'
+import PaymentTokenTransferButton from './components/PaymentTokenTransferButton'
 
 const Payment: React.FC = () => {
   const [selectedBlockchain, setSelectedBlockchain] = useState<BlockchainMeta | undefined>(undefined)
   const [selectedToken, setSelectedToken] = useState<Token | undefined>(undefined)
+  const [selectedTokenBalance, setSelectedTokenBalance] = useState<bigint | undefined>(undefined)
   const [selectedCurrency, setSelectedCurrency] = useState<AppSettingsCurrency | undefined>(undefined)
   const [selectedAddress, setSelectedAddress] = useState<string | undefined>(undefined)
   const [selectedCurrencyAmount, setSelectedCurrencyAmount] = useState<string | undefined>(undefined)
@@ -28,6 +30,7 @@ const Payment: React.FC = () => {
   const [selectedComment, setSelectedComment] = useState<string | undefined>(undefined)
   const [payResults, setPayResults] = useState<{ [key: string]: WithdrawResult }>({})
   const [isValid, setIsValid] = useState<boolean>(false)
+  const [isForceRefresh, setIsForceRefresh] = useState<boolean>(false)
 
   const { t, i18n } = useTranslation()
   const { clearInfoMessage } = useInfoMessages()
@@ -54,9 +57,10 @@ const Payment: React.FC = () => {
     setSelectedBlockchain(blockchainToUpdate)
   }, [clearInfoMessage])
 
-  const selectTokenHandler = useCallback((tokenToUpdate: Token | undefined) => {
+  const selectTokenHandler = useCallback((tokenToUpdate: Token | undefined, tokenBalanceToUpdate: bigint | undefined) => {
     clearInfoMessage()
     setSelectedToken(tokenToUpdate)
+    setSelectedTokenBalance(tokenBalanceToUpdate)
   }, [clearInfoMessage])
 
   const selectCurrencyHandler = useCallback((currencyToUpdate: AppSettingsCurrency | undefined) => {
@@ -150,6 +154,14 @@ const Payment: React.FC = () => {
     })
   }
 
+  const forceRefreshEndHandler = useCallback(() => {
+    setIsForceRefresh(false)
+  }, [])
+
+  const forceRefreshHandler = () => {
+    setIsForceRefresh(true)
+  }
+
   useEffect(() => {
     setSelectedTokenAmountFormatted(current => {
       if (current !== undefined) {
@@ -224,9 +236,10 @@ const Payment: React.FC = () => {
       && !!selectedTokenAmount
       && selectedTokenAmount > BigInt(0)
       && (!selectedComment || selectedComment.length <= PAYMENT_MAX_COMMENT_LENGTH)
+      && (selectedTokenAmount !== undefined && selectedTokenBalance !== undefined && selectedTokenBalance >= selectedTokenAmount)
 
     setIsValid(res)
-  }, [selectedAddress, selectedBlockchain, selectedComment, selectedToken, selectedTokenAmount])
+  }, [selectedAddress, selectedBlockchain, selectedComment, selectedToken, selectedTokenAmount, selectedTokenBalance])
 
   return (
     <>
@@ -246,14 +259,45 @@ const Payment: React.FC = () => {
         </Alert>
       ))}
 
+      <div className='mb-3'>
+        <Button variant="primary" onClick={forceRefreshHandler} disabled={isForceRefresh}>
+          {t('common.refresh_btn')}
+          {isForceRefresh && (
+            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true">
+              <span className="visually-hidden">{t('common.processing')}</span>
+            </Spinner>
+          )}
+        </Button>
+      </div>
+
       <Form>
         <div className="mb-2">
           <PaymentBlockchainButton onUpdate={selectBlockchainHandler} />
         </div>
 
-        <div className="mb-2">
-          <PaymentTokenButton blockchain={selectedBlockchain} currency={selectedCurrency} tokenAmount={selectedTokenAmount} onUpdate={selectTokenHandler} />
-        </div>
+        {(selectedBlockchain?.type === TransactionType.EVM) && (
+          <div className="mb-2">
+            <PaymentTokenEvmButton
+              blockchain={selectedBlockchain}
+              currency={selectedCurrency}
+              isForceRefresh={isForceRefresh}
+              onUpdate={selectTokenHandler}
+              onForceRefreshEnd={forceRefreshEndHandler}
+            />
+          </div>
+        )}
+
+        {(selectedBlockchain?.type === TransactionType.TRANSFER) && (
+          <div className="mb-2">
+            <PaymentTokenTransferButton
+              blockchain={selectedBlockchain}
+              currency={selectedCurrency}
+              isForceRefresh={isForceRefresh}
+              onUpdate={selectTokenHandler}
+              onForceRefreshEnd={forceRefreshEndHandler}
+            />
+          </div>
+        )}
 
         <Row>
           <Col>
@@ -275,6 +319,12 @@ const Payment: React.FC = () => {
                   </Form.Text>
                 )}
               </Form.Group>
+
+              {(selectedTokenBalance !== undefined && selectedTokenAmount !== undefined && selectedTokenBalance < selectedTokenAmount) && (
+                <Form.Text className="text-danger">
+                  {t('components.payment.errors.no_balance')}
+                </Form.Text>
+              )}
             </div>
           </Col>
           <Col>
@@ -335,7 +385,7 @@ const Payment: React.FC = () => {
             selectedToken={selectedToken}
             selectedAddress={selectedAddress}
             selectedTokenAmount={selectedTokenAmount}
-            disabled={!isValid}
+            disabled={!isValid || isForceRefresh}
             onSuccess={successHandler}
           />
         </div>

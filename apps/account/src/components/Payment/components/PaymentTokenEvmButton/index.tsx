@@ -6,7 +6,6 @@ import { BlockchainMeta, Token } from 'rango-sdk-basic'
 import { ApplicationModal } from '../../../../types/application-modal'
 import { useToggleModal } from '../../../../states/application/hook'
 import PaymentTokensModal from '../PaymentTokensModal'
-import { TokenExt } from '../../../../types/token-ext'
 import { AppSettingsCurrency } from '../../../../types/app-settings'
 import TokenAmountWithCurrency from '../../../TokenAmountWithCurrency'
 import { isBlockchainAsset, sameToken, sameTokenAndAsset, stringToAsset, tokenAmountToCurrency, tokenAmountToUsd, tokenExtResultComparator } from '../../../../libs/utils'
@@ -14,16 +13,18 @@ import { useAccountPaymentSettings } from '../../../../states/account-settings/h
 import useReadBalances from '../../../../libs/hooks/useReadBalances'
 import useSpecificExchangeRate from '../../../../libs/hooks/useSpecificExchangeRate'
 import { useTokens } from '../../../../states/meta/hook'
+import { TokenExt } from '../../../../types/token-ext'
 
-interface PaymentTokenButtonProps {
-  blockchain: BlockchainMeta | undefined
-  tokenAmount: bigint | undefined
+interface PaymentTokenEvmButtonProps {
+  blockchain: BlockchainMeta
   currency: AppSettingsCurrency | undefined
-  onUpdate: (token: Token | undefined) => void
+  isForceRefresh: boolean
+  onForceRefreshEnd: () => void
+  onUpdate: (token: Token | undefined, balance: bigint | undefined) => void
 }
 
-const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
-  const { blockchain, currency, tokenAmount, onUpdate } = props
+const PaymentTokenEvmButton: React.FC<PaymentTokenEvmButtonProps> = (props) => {
+  const { blockchain, currency, isForceRefresh, onUpdate, onForceRefreshEnd } = props
 
   const [selectedToken, setSelectedToken] = useState<Token | undefined>(undefined)
 
@@ -35,11 +36,12 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
   const tokens = useTokens()
 
   const {
-    tokens: tokensWithBalance
+    tokens: tokensWithBalance,
+    refetch: tokensWithBalanceReload
   } = useReadBalances(blockchain)
 
   const preparedTokens = useMemo(() => {
-    if (!blockchain || !accountPaymentSettings || !tokensWithBalance) {
+    if (!accountPaymentSettings) {
       return undefined
     }
 
@@ -48,7 +50,7 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
         token => blockchain.name.toLocaleLowerCase() === token.blockchain.toLocaleLowerCase()
       )
       .map(token => {
-        const tokenWithBalance = tokensWithBalance.find(item => sameToken(item, token))
+        const tokenWithBalance = tokensWithBalance?.find(item => sameToken(item, token))
         const tokenBalanceUsd = tokenWithBalance && token.usdPrice ? tokenAmountToUsd(tokenWithBalance.balance.toString(), token.usdPrice, token.decimals) : null
 
         const result: TokenExt = {
@@ -87,7 +89,7 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
 
   useEffect(() => {
     setSelectedToken(current => {
-      if (!blockchain || !preparedTokens || !accountPaymentSettings) {
+      if (!preparedTokens || !accountPaymentSettings) {
         return undefined
       }
 
@@ -113,8 +115,15 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
   }, [blockchain, preparedTokens, accountPaymentSettings])
 
   useEffect(() => {
-    onUpdate(selectedToken)
-  }, [selectedToken, onUpdate])
+    if (isForceRefresh) {
+      tokensWithBalanceReload?.()
+      onForceRefreshEnd()
+    }
+  }, [isForceRefresh, onForceRefreshEnd, tokensWithBalanceReload])
+
+  useEffect(() => {
+    onUpdate(selectedToken, selectedTokenBalance)
+  }, [selectedToken, selectedTokenBalance, onUpdate])
 
   return (
     <>
@@ -140,14 +149,6 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
           </div>
         )}
 
-        {(selectedTokenBalance !== undefined && tokenAmount !== undefined && selectedTokenBalance < tokenAmount) && (
-          <div>
-            <Form.Text className="text-danger">
-              {t('components.payment.errors.no_balance')}
-            </Form.Text>
-          </div>
-        )}
-
         {(!!selectedToken) && (
           <div>
             <Form.Text muted>
@@ -167,4 +168,4 @@ const PaymentTokenButton: React.FC<PaymentTokenButtonProps> = (props) => {
   )
 }
 
-export default PaymentTokenButton
+export default PaymentTokenEvmButton
