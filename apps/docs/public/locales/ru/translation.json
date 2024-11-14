@@ -11,6 +11,8 @@
       "tutorials_payment_settings": "Как настроить блокчейны и токены для приема платежей",
       "tutorials_notifications": "Как получать уведомления о платежах",
       "tutorials_api": "Как интегрироваться с API",
+      "tutorials_outgoing_payments": "Как совершать исходящие платежи",
+      "tutorials_refund": "Как осуществлять возврат платежей",
       "resources": "Ресурсы",
       "resources_currencies": "Поддерживаемые валюты",
       "resources_blockchains": "Поддерживаемые блокчейны",
@@ -38,7 +40,9 @@
       "tutorials_payment_settings_title": "Как настроить блокчейны и токены для приема платежей",
       "tutorials_receive_payments_title": "Как получать платежи",
       "tutorials_share_access_title": "Как предоставить доступ к вашему аккаунту для других пользователей",
-      "tutorials_withdraw_title": "Как выводить средства"
+      "tutorials_withdraw_title": "Как выводить средства",
+      "tutorials_monitor_outgoing_title": "Как совершать исходящие платежи",
+      "tutorials_refund_title": "Как осуществлять возврат платежей"
     },
     "resources": {
       "title": "Ресурсы",

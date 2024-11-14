@@ -6,6 +6,7 @@ import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { ACCOUNT_ID_LENGTH } from '@repo/common/dist/src/constants'
 import { EvmEvent, EvmPayment, EvmPaymentDirection, EvmPaymentEvent, EvmWithdrawBatchEvent, EvmWithdrawEvent } from '@repo/evm/dist/src/interfaces/evm-event'
 import { EvmService } from '@repo/evm/dist/src/services/evm-service'
+import { getPaymentIdFromProtocolPaymentId } from '@repo/common/dist/src/utils/utils'
 
 import { logger } from '../../utils/logger'
 import { AbiEvent } from 'abitype'
@@ -154,7 +155,7 @@ export class EvmPaymentLogsIterator implements PaymentLogsIterator {
         return undefined
       }
 
-      paymentId = protocolPaymentId.substring(ACCOUNT_ID_LENGTH)
+      paymentId = getPaymentIdFromProtocolPaymentId(protocolPaymentId)
     }
 
     const timestamp = Number(payment.dt.toString())

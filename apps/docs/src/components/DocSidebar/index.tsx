@@ -50,6 +50,12 @@ const DocSidebar: React.FC<DocSidebarProps> = (props) => {
                   <Nav.Link as={Link} to={getNavigationPath('tutorials_monitor_payments')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_MONITOR_PAYMENTS}>
                     <span className="ms-4">{t('pages.app.tutorials_monitor_payments')}</span>
                   </Nav.Link>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_outgoing_payments')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_OUTGOING_PAYMENTS}>
+                    <span className="ms-4">{t('pages.app.tutorials_outgoing_payments')}</span>
+                  </Nav.Link>
+                  <Nav.Link as={Link} to={getNavigationPath('tutorials_refund')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_REFUND}>
+                    <span className="ms-4">{t('pages.app.tutorials_refund')}</span>
+                  </Nav.Link>
                   <Nav.Link as={Link} to={getNavigationPath('tutorials_withdraw')} className="text-white text-decoration-none" active={page === ApplicationPage.TUTORIALS_WITHDRAW}>
                     <span className="ms-4">{t('pages.app.tutorials_withdraw')}</span>
                   </Nav.Link>

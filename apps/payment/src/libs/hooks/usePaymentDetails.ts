@@ -7,6 +7,7 @@ import { PaymentDetails } from '../../types/payment-details'
 import { useAppSettings } from '../../states/settings/hook'
 import { useInfoMessages } from '../../states/application/hook'
 import { INFO_MESSAGE_PAYMENT_DETAILS_ERROR } from '../../constants'
+import { createProtocolPaymentId } from '../utils'
 
 export default function usePaymentDetails(
   id: string,
@@ -46,7 +47,7 @@ export default function usePaymentDetails(
       return
     }
 
-    const protocolPaymentId = id + paymentId
+    const protocolPaymentId = createProtocolPaymentId(id, paymentId)
 
     const fromContracts = appSettings.contracts.find(
       item => item.blockchain.toLocaleLowerCase() === fromToken.blockchain.toLocaleLowerCase()

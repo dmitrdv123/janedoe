@@ -431,3 +431,7 @@ export function getTransport(chainId: number, projectId: string): Transport {
 
   return fallback(arr)
 }
+
+export function createProtocolPaymentId(accountId: string, paymentId: string): string {
+  return `${accountId}${paymentId}`
+}

@@ -189,7 +189,6 @@ NODE_ENV=production pnpm run init --filter=installer
 ## TODO
 
 others:
-- docs: update documentation IPN, API with new field of payment, outgoing payment
 - payment form: switch to another tab, return back. Timer start from the beginning.
 - payment: switch to another tab, return back. User need to wait 10 seconds before request will be sent to check btc payment status. It means that users will stuck forever on this page due to constantly switching.
 - api: check batchReadItemsByChunks usage and other bulk operations to not have duplicates, in other way we have errors

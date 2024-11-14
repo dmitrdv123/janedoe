@@ -31,6 +31,8 @@ import Currencies from './components/Resources/components/Currencies'
 import Blockchains from './components/Resources/components/Blockchains'
 import Tokens from './components/Resources/components/Tokens'
 import Contracts from './components/Resources/components/Contracts'
+import OutgoingPayments from './components/Tutorials/components/OutgoingPayments'
+import Refund from './components/Tutorials/components/Refund'
 
 const root = createRoot(document.getElementById("root") as HTMLElement)
 
@@ -82,6 +84,24 @@ root.render(
                   <App
                     page={ApplicationPage.TUTORIALS_MONITOR_PAYMENTS}
                     element={<MonitorPayments />}
+                  />
+                </Suspense>
+              } />} />
+
+              <Route path="/:lang?/tutorials_outgoing_payments" element={<LanguageWrapper element={
+                <Suspense fallback={<Loader />}>
+                  <App
+                    page={ApplicationPage.TUTORIALS_OUTGOING_PAYMENTS}
+                    element={<OutgoingPayments />}
+                  />
+                </Suspense>
+              } />} />
+
+              <Route path="/:lang?/tutorials_refund" element={<LanguageWrapper element={
+                <Suspense fallback={<Loader />}>
+                  <App
+                    page={ApplicationPage.TUTORIALS_REFUND}
+                    element={<Refund />}
                   />
                 </Suspense>
               } />} />

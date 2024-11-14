@@ -1,8 +1,9 @@
 import { BitcoinDao } from '@repo/dao/dist/src/dao/bitcoin.dao'
-import { BitcoinUtxo, BitcoinUtxoDataKey, BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressKey } from '@repo/dao/dist/src/interfaces/bitcoin'
+import { BitcoinUtxo, BitcoinWallet, BitcoinWalletAddress, BitcoinWalletAddressKey } from '@repo/dao/dist/src/interfaces/bitcoin'
 
 import appConfig from '@repo/common/dist/src/app-config'
 import { TransactionCreationResult } from '@repo/common/dist/src/interfaces/transaction-creation-result'
+import { createProtocolPaymentId } from '@repo/common/dist/src/utils/utils'
 
 import { BitcoinCoreService } from './bitcoin-core.service'
 import { BitcoinUtilsService } from './bitcoin-utils.service'
@@ -210,7 +211,8 @@ export class BitcoinServiceImpl implements BitcoinService {
   }
 
   private async getWalletAddressForRest(walletName: string): Promise<string> {
-    const walletAddressRest = await this.createWalletAddress(walletName, `rest_${walletName}`)
+    const label = createProtocolPaymentId(walletName, walletName)
+    const walletAddressRest = await this.createWalletAddress(walletName, label)
     return walletAddressRest.data.address
   }
 }

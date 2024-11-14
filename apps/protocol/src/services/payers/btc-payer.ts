@@ -5,6 +5,7 @@ import { AxiosError } from 'axios'
 import { AccountDao } from '@repo/dao/dist/src/dao/account.dao'
 import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
 import { bitcoinContainer } from '@repo/bitcoin/dist/src/containers/bitcoin.container'
+import { createProtocolPaymentId } from '@repo/common/dist/src/utils/utils'
 
 import { BitcoinWrapperServiceImpl } from '../bitcoin-wrapper.service'
 
@@ -47,7 +48,7 @@ export class BtcPayer {
 
     const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz')
     const paymentId = nanoid()
-    const protocolPaymentId = accountProfile.id + paymentId
+    const protocolPaymentId = createProtocolPaymentId(accountProfile.id, paymentId)
 
     const bitcoinService = bitcoinContainer.resolve<BitcoinService>('bitcoinService')
 

@@ -78,8 +78,8 @@ const Api: React.FC = () => {
           </p>
           <pre>
 {`
-export interface PaymentHistoryData {
-  id: string
+interface PaymentHistoryData {
+  accountId: string
   paymentId: string
 
   block: string
@@ -90,6 +90,7 @@ export interface PaymentHistoryData {
   from: string | null
   to: string
   direction: incoming | outgoing
+
   amount: string
   amountUsdAtPaymentTime: number | null
   amountUsdAtCurTime: number | null
@@ -107,6 +108,21 @@ export interface PaymentHistoryData {
   currency: string | null
   currencyExchangeRateAtPaymentTime: number | null
   currencyExchangeRateAtCurTime: number | null
+
+  paymentSuccess: {
+    accountId: string
+    paymentId: string
+    timestamp: number
+    blockchain: string
+    transaction: string
+    index: number
+    email: string | null
+    language: string
+    currency: string
+    amountCurrency: number
+    description: string | null
+    comment: string | null
+  } | null
 
   ipnResult: {
     timestamp: number
@@ -326,42 +342,58 @@ export interface TransferBlockchainMeta {
         </p>
         <pre>
 {`
-export interface PaymentHistoryData {
-id: string
-paymentId: string
+interface PaymentHistoryData {
+  accountId: string
+  paymentId: string
 
-block: string
-timestamp: number
-transaction: string
-index: number
-
-from: string | null
-to: string
-direction: incoming | outgoing
-amount: string
-amountUsdAtPaymentTime: number | null
-amountUsdAtCurTime: number | null
-amountCurrencyAtPaymentTime: number | null
-amountCurrencyAtCurTime: number | null
-
-blockchain: string
-tokenAddress: string | null
-tokenSymbol: string | null
-tokenDecimals: number | null
-
-tokenUsdPriceAtPaymentTime: number | null
-tokenUsdPriceAtCurTime: number | null
-
-currency: string | null
-currencyExchangeRateAtPaymentTime: number | null
-currencyExchangeRateAtCurTime: number | null
-
-ipnResult: {
+  block: string
   timestamp: number
-  result: unknown,
-  status: number,
-  error?: string
-} | null
+  transaction: string
+  index: number
+
+  from: string | null
+  to: string
+  direction: incoming | outgoing
+
+  amount: string
+  amountUsdAtPaymentTime: number | null
+  amountUsdAtCurTime: number | null
+  amountCurrencyAtPaymentTime: number | null
+  amountCurrencyAtCurTime: number | null
+
+  blockchain: string
+  tokenAddress: string | null
+  tokenSymbol: string | null
+  tokenDecimals: number | null
+
+  tokenUsdPriceAtPaymentTime: number | null
+  tokenUsdPriceAtCurTime: number | null
+
+  currency: string | null
+  currencyExchangeRateAtPaymentTime: number | null
+  currencyExchangeRateAtCurTime: number | null
+
+  paymentSuccess: {
+    accountId: string
+    paymentId: string
+    timestamp: number
+    blockchain: string
+    transaction: string
+    index: number
+    email: string | null
+    language: string
+    currency: string
+    amountCurrency: number
+    description: string | null
+    comment: string | null
+  } | null
+
+  ipnResult: {
+    timestamp: number
+    result: unknown,
+    status: number,
+    error?: string
+  } | null
 }
 `}
         </pre>

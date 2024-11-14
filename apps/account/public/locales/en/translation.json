@@ -107,7 +107,7 @@
       "desc": "To receive payments you need to create a URL using the following template:",
       "payment_where": "Where:",
       "account_id_desc": "is your account ID.",
-      "payment_id_desc": "Replace <1>payment id</1> with some unique id that will be allowed to identify user purchases. It can be any string with max length 50 symbols that can contains only alphabetic symbols, numbers, symbols '_', '-'.",
+      "payment_id_desc": "Replace <1>payment id</1> with some unique id that will be allowed to identify user purchases. It can be any string with max length 50 symbols that can contains only alphabetic symbols, numbers, symbols '_', '-'. And it should not be equal to your Account ID.",
       "currency_desc": "Replace <1>currency</1> with the necessary fiat currency, for example, USD",
       "currency_List": "list of supported currencies",
       "currency_amount_desc": "Replace <1>currency amount</1> with the necessary payment amount in choosed currency, for example, in USD amount.",

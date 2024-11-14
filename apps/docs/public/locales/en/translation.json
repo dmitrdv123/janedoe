@@ -3,7 +3,7 @@
     "app": {
       "home": "Introduction",
       "tutorials": "Tutorials",
-      "tutorials_create_account": "How to create account",
+      "tutorials_create_account": "How to create an account",
       "tutorials_receive_payments": "How to receive payments",
       "tutorials_monitor_payments": "How to monitor payments",
       "tutorials_withdraw": "How to withdraw funds",
@@ -11,6 +11,8 @@
       "tutorials_payment_settings": "How to setup blockchains and tokens for payments",
       "tutorials_notifications": "How to receive notifications about payments",
       "tutorials_api": "How to use API",
+      "tutorials_outgoing_payments": "How to make a outgoing payments",
+      "tutorials_refund": "How to make a payment refund",
       "resources": "Resources",
       "resources_currencies": "Supported currencies",
       "resources_blockchains": "Supported blockchains",
@@ -30,13 +32,15 @@
     "tutorials": {
       "title": "Tutorials",
       "tutorials_api_title": "How to use API",
-      "tutorials_create_account_title": "How to create account",
+      "tutorials_create_account_title": "How to create an account",
       "tutorials_monitor_payments_title": "How to monitor payments",
       "tutorials_notifications_title": "How to receive notifications about payments",
       "tutorials_payment_settings_title": "How to setup blockchains and tokens for payments",
       "tutorials_receive_payments_title": "How to receive payments",
       "tutorials_share_access_title": "How to share access to your account",
-      "tutorials_withdraw_title": "How to withdraw funds"
+      "tutorials_withdraw_title": "How to withdraw funds",
+      "tutorials_monitor_outgoing_title": "How to make a outgoing payments",
+      "tutorials_refund_title": "How to make a payment refund"
     },
     "resources": {
       "title": "Resources",

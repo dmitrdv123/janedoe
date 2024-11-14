@@ -40,34 +40,37 @@ const Notifications: React.FC = () => {
             <li>
               Body:
 <pre>
-  {`{
-    "accountId": "string",
-    "paymentId": "string",
+{`{
+  "accountId": "string"
+  "paymentId": "string"
 
-    "block": "string",
-    "timestamp": "number",
-    "transaction": "string",
-    "index": "number",
+  "block": "string"
+  "timestamp": "number"
+  "transaction": "string"
+  "index": "number"
 
-    "from": "string | null",
-    "to": "string",
-    "direction": "incoming | outgoing",
-    "amount": "string",
-    "amountUsd": "number | null",
-    "amountCurrency": "number | null",
+  "from": "string | null"
+  "to": "string"
+  "direction": "incoming | outgoing"
 
-    "totalAmountUsd": "number | null",
-    "totalAmountCurrency": "number | null",
+  "amount": "string"
+  "amountUsd": "number | null"
+  "amountCurrency": "number | null"
 
-    "blockchain": "string",
-    "tokenAddress": "string | null",
-    "tokenSymbol": "string | null",
-    "tokenDecimals": "number | null",
-    "tokenUsdPrice": "number | null",
+  "totalAmountUsd": "number | null"
+  "totalAmountCurrency": "number | null"
 
-    "currency": "string | null",
-    "currencyExchangeRate": "number | null"
-  }`}
+  "blockchain": "string"
+  "tokenAddress": "string | null"
+  "tokenSymbol": "string | null"
+  "tokenDecimals": "number | null"
+  "tokenUsdPrice": "number | null"
+
+  "currency": "string | null"
+  "currencyExchangeRate": "number | null"
+
+  "comment": "string | null"
+}`}
 </pre>
             </li>
           </ul>
@@ -124,6 +127,7 @@ const Notifications: React.FC = () => {
   "from": "string | null",
   "to": "string",
   "direction": "incoming | outgoing",
+
   "amount": "string",
   "amountUsd": "number | null",
   "amountCurrency": "number | null",
@@ -139,6 +143,8 @@ const Notifications: React.FC = () => {
 
   "currency": "string | null",
   "currencyExchangeRate": "number | null"
+
+  "comment": "string | null"
 }`}
 </pre>
           </li>

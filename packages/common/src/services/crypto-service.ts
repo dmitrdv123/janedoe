@@ -8,6 +8,7 @@ export interface CryptoService {
   generateSecret(size: number): string
   encrypt(text: string): string
   decrypt(text: string): string
+  hash(text: string): string
 }
 
 export class CryptoServiceImpl implements CryptoService {
@@ -32,5 +33,9 @@ export class CryptoServiceImpl implements CryptoService {
     let dec = decipher.update(text, 'hex', 'utf8')
     dec += decipher.final('utf8')
     return dec
+  }
+
+  public hash(text: string): string {
+    return crypto.createHash('sha256').update(text).digest('hex')
   }
 }

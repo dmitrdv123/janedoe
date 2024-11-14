@@ -1,6 +1,7 @@
 import { Account } from '@repo/dao/dist/src/interfaces/account-profile'
 import { PaymentLog } from '@repo/dao/dist/src/interfaces/payment-log'
 import { BitcoinService } from '@repo/bitcoin/dist/src/services/bitcoin.service'
+import { createProtocolPaymentId } from '@repo/common/dist/src/utils/utils'
 
 import { BLOCKCHAIN_BTC } from '../constants'
 import { logger } from '../utils/logger'
@@ -77,7 +78,7 @@ export class PaymentServiceImpl implements PaymentService {
         try {
           switch (blockchain.toLocaleLowerCase()) {
             case BLOCKCHAIN_BTC:
-              const protocolPaymentId = id + paymentId
+              const protocolPaymentId = createProtocolPaymentId(id, paymentId)
 
               logger.debug(`PaymentService: start to create bitcoin address for ${id} with protocols payment id ${protocolPaymentId}`)
               const walletAddress = await this.bitcoinService.createWalletAddress(id, protocolPaymentId)

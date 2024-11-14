@@ -32,7 +32,7 @@ const ReceivePayments: React.FC = () => {
               Account ID - you can get it on the main page <a href={`${config.config?.baseUrlAccount}/app`} target="_blank">JaneDoe</a>.
             </li>
             <li>
-              Payment ID - generate any unique identifier that will be used by you to identify the payment. It can consist of alphabetic symbols, numbers, '_' and '-' and be no more than 50 characters long.
+              Payment ID - generate any unique identifier that will be used by you to identify the payment. It can consist of alphabetic symbols, numbers, '_' and '-' and be no more than 50 characters long. And it should not be equal to your Account ID.
             </li>
             <li>
               Currency - symbolic of the fiat currency, for example, USD or EUR.
@@ -94,7 +94,7 @@ const ReceivePayments: React.FC = () => {
               Идентификатор вашего аккаунта - вы можете взять его на главной странице <a href={`${config.config?.baseUrlAccount}/app`} target="_blank">JaneDoe</a>.
             </li>
             <li>
-              Идентификатор платежа - сгенерируйте любой уникальный идентификатор, который будет использоваться вами для идентификации платежа. Он может состоять из буквенных символов, цифр, '_' и '-' и быть длиной не более 50 символов.
+              Идентификатор платежа - сгенерируйте любой уникальный идентификатор, который будет использоваться вами для идентификации платежа. Он может состоять из буквенных символов, цифр, '_' и '-' и быть длиной не более 50 символов. И он не должен быть равен идентификатору вашего аккаунта.
             </li>
             <li>
               Валюта - символ фиатной валюты, например, USD или EUR.

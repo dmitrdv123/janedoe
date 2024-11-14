@@ -117,7 +117,7 @@ export class BitcoinBlockServiceImpl implements BitcoinBlockService {
 
       if (txOutput.scriptPubKey.address) {
         const outputAddress = txOutput.scriptPubKey.address
-        const walletAddress = this.cacheService.get<BitcoinWalletAddress>(`wallet_address#${txOutput.scriptPubKey.address}`)
+        const walletAddress = this.cacheService.get<BitcoinWalletAddress>(`wallet_address#${outputAddress}`)
         console.log(`debug >> processTransaction: walletAddress ${JSON.stringify(walletAddress)}`)
 
         if (walletAddress) {
