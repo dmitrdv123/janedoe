@@ -196,7 +196,6 @@ others:
 - api: BitcoinService, withdraw method. We are loading all wallet addresses, but nobody deleted them. Because of that we can have OOM.
 - api, account: for BTC show 3 balances - total - frozen, frozen, available to use in current block
 - account: switch to some page and then to payment history. It always shows notification about new payments.
-- landing: show block with price
 - payment: we are sending tx and then saving success info. But it could be that this tx was processed before saving success info. In this case we are missing email sending.
 - donations
 - recurrent payments
