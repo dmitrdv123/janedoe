@@ -189,7 +189,6 @@ NODE_ENV=production pnpm run init --filter=installer
 ## TODO
 
 others:
-- payment form: switch to another tab, return back. Timer start from the beginning.
 - api: check batchReadItemsByChunks usage and other bulk operations to not have duplicates, in other way we have errors
 - api: output bitcoin tx are created based on utxo. But utxo can be deleted. This means that we cannot recreate output transaction if we will reprocess the block
 - api: need to implement paging for payment history api
