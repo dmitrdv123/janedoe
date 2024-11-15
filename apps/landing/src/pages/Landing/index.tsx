@@ -118,6 +118,33 @@ const Landing: React.FC = () => {
                 </Col>
               </Row>
 
+              <hr className="featurette-divider" id='tariff' />
+
+              <Row className="featurette">
+                <Col lg={12}>
+                  <h2 className="featurette-heading fw-normal lh-1" >
+                    Tariffs
+                  </h2>
+                  <p className="lead">
+                    We offer the main functionality for free, without any fees or restrictions on our part. And you also can choose additional paid services if you need them.
+                  </p>
+                  <p className="lead">
+                    Coming soon:
+                    <ul>
+                      <li >
+                        Enterprise level support
+                      </li>
+                      <li>
+                        Volatility token insurance
+                      </li>
+                      <li>
+                        Crypto - Fiat gateway
+                      </li>
+                    </ul>
+                  </p>
+                </Col>
+              </Row>
+
               <hr className="featurette-divider" id='no_fees' />
 
               <Row className="featurette">
@@ -345,6 +372,33 @@ const Landing: React.FC = () => {
 
                   <p className='lead'>
                     Управлять таким в ручном режиме практически невозможно, даже если платежей немного. Поэтому JaneDoe предлагает вам автоматизированную систему для приема платежей в криптовалюте с нулевыми комиссиями.
+                  </p>
+                </Col>
+              </Row>
+
+              <hr className="featurette-divider" id='tariff' />
+
+              <Row className="featurette">
+                <Col lg={12}>
+                  <h2 className="featurette-heading fw-normal lh-1" >
+                    Тарифы
+                  </h2>
+                  <p className="lead">
+                    Мы предлагаем основной функционал бесплатно, без каких либо комиссий и ограничений с нашей стороны. И также вы можете выбрать дополнительные платные услуги, если они вам будут нужны.
+                  </p>
+                  <p className="lead">
+                    Скоро будут доступны:
+                    <ul>
+                      <li >
+                        Поддержка корпоративного уровня
+                      </li>
+                      <li>
+                        Страхование волатильных токенов от изменения цены
+                      </li>
+                      <li>
+                        Крипто - Фиат шлюз
+                      </li>
+                    </ul>
                   </p>
                 </Col>
               </Row>
