@@ -118,7 +118,7 @@ const TransferPayment: React.FC<TransferPaymentProps> = (props) => {
     setEmail(emailToUpdate)
   }, [])
 
-  useInterval(reloadReceivedAmount, 1000 * 10, false)
+  useInterval(reloadReceivedAmount, 1000 * 10, true)
 
   return (
     <>
