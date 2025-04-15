@@ -6,7 +6,7 @@ interface WalletData {
 }
 
 // Replace with your actual bot token
-const token: string = '7328382539:AAHWn374eXcdHSsVA5o-aYyWuzgqhClLkkU'
+const token: string = ''
 
 // Create a bot that uses 'polling' to fetch new updates
 const bot: TelegramBot = new TelegramBot(token, { polling: true })
